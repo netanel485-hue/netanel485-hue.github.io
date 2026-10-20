@@ -1316,23 +1316,16 @@ function hubRenderHome(){
   let dueTot=0;for(const s2 of HUB_SUBJECTS){if(!s2.books)continue;for(const b2 of s2.books)for(const t2 of b2.topics)dueTot+=hubDueCount(t2.id);}
   const dailies=hubDailyTopics();
   const hasCont=!!(hubLast&&hubFindTopic(hubLast.topic));
-  // ONE main action by priority: due review > continue > daily suggestion
-  let main='',mainDaily=null;
-  if(dueTot>0)main='<button class="h-mission" style="margin-top:10px" onclick="hubStartDue()">🔁 '+dueTot+' שאלות בשלות לחזרה היום — מתחילים בחיזוק קצר</button>';
-  else if(hasCont){const f=hubFindTopic(hubLast.topic);main='<button class="h-mission" style="margin-top:10px" onclick="hubContinue()">▶️ המשך מאיפה שהפסקת: '+f.subj.emoji+' '+hEsc(f.topic.name)+'</button>';}
-  else if(dailies.length){mainDaily=dailies[0].id;main='<button class="h-mission" style="margin-top:10px" onclick="hubStartDaily(\''+dailies[0].id+'\')">🎯 הצעת היום: '+hEsc(dailies[0].name)+' — סבב קצר אחד</button>';}
-  // everything else = compact chips in one row
+  // compact action chips only — no full-width suggestion rows on home (user feedback: visual clutter)
   let chips='';
-  if(dueTot>0&&hasCont){const f=hubFindTopic(hubLast.topic);chips+='<button class="btn" onclick="hubContinue()">▶️ המשך מאיפה שהפסקת: '+hEsc(f.topic.name)+'</button>';}
-  for(const dt of dailies){if(dt.id===mainDaily)continue;chips+='<button class="btn" onclick="hubStartDaily(\''+dt.id+'\')">🎯 '+hEsc(dt.name)+'</button>';}
+  if(dueTot>0)chips+='<button class="btn" onclick="hubStartDue()">🔁 '+dueTot+' שאלות לחזרה היום</button>';
+  if(hasCont){const f=hubFindTopic(hubLast.topic);chips+='<button class="btn" onclick="hubContinue()">▶️ המשך מאיפה שהפסקת: '+hEsc(f.topic.name)+'</button>';}
   th+='<div class="h-bankcard">'
     +'<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:18px;font-weight:800">🏦 בנק הידע שלי</span><span style="font-size:22px;font-weight:800">'+hubBank.coins+' 🪙</span></div>'
     +'<div style="margin-top:6px">השבוע: '+dots+' <span class="h-ssub">'+ad+' ימי למידה'+(ad>=4?' · הבונוס השבועי (+20) כבר נכנס ✔':' · עוד '+(4-ad)+' ימי למידה לבונוס +20')+'</span></div>'
     +(gi?'<div style="margin-top:8px">🎯 היעד שלי השבוע: <b>'+hEsc(gi.g.label)+'</b><div class="h-goalbar"><div style="width:'+Math.min(100,Math.round(gi.cur/gi.g.target*100))+'%"></div></div><span class="h-ssub">'+Math.min(gi.cur,gi.g.target)+'/'+gi.g.target+(gi.done?' · הושג! 🎉':'')+'</span></div>'
        :'<div style="margin-top:8px"><span class="h-ssub">🎯 יעד לשבוע הזה:</span> <span class="h-rowbtns" style="display:inline-flex;margin-top:0;vertical-align:middle">'+dailies.slice(0,1).map(dt=>'<button class="btn" onclick="hubSetGoal(\'topic\',\''+dt.id+'\')">לעלות רמה ב'+hEsc(dt.name)+'</button>').join('')+'<button class="btn" onclick="hubSetGoal(\'grads\')">15 שאלות שיבגירו</button><button class="btn" onclick="hubSetGoal(\'rounds\')">8 סבבים</button></span></div>')
-    + main
-    +(chips?'<div class="h-rowbtns">'+chips+'</div>':'')
-    +'<div class="h-rowbtns"><button class="btn" onclick="hubOpenMap()">🗺️ מפת ההתקדמות</button><button class="btn" onclick="hubOpenParent()">👨‍👧 מסך להורה</button><button class="btn" onclick="hubShareWeek()">📤 סיכום שבועי</button>'
+    +'<div class="h-rowbtns">'+chips+'<button class="btn" onclick="hubOpenMap()">🗺️ מפת ההתקדמות</button><button class="btn" onclick="hubOpenParent()">👨‍👧 מסך להורה</button><button class="btn" onclick="hubShareWeek()">📤 סיכום שבועי</button>'
     +(hubBank.reqs.some(r=>r.st==='pending')?'<span class="h-ssub" style="align-self:center">🎁 בקשת הצ׳ופר ממתינה לאישור הורה</span>':(hubBank.coins>=50?'<button class="btn" onclick="hubReqReward()">🎁 בקש צ׳ופר (50 🪙)</button>':''))
     +'</div></div>';
   cont.innerHTML=th;
