@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ערכת חזרה למבחן במתמטיקה — כיתה ו׳ · לאריאל</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { overflow-x: hidden; }
+  body { font-family: "Segoe UI", Arial, sans-serif; background: #f0f6ff; color: #1c2b3a; margin: 0; padding: 12px; font-size: 16px; }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  header { background: linear-gradient(135deg, #3a7bd5, #6a4fd0); color: #fff; border-radius: 18px; padding: 20px 18px; text-align: center; }
+  header h1 { margin: 0 0 6px; font-size: clamp(20px, 5.6vw, 27px); }
+  header p { margin: 0; opacity: .92; font-size: clamp(13px, 3.6vw, 15px); }
+  .tabs { display: flex; gap: 10px; margin: 14px 0; }
+  .tab { flex: 1; min-height: 60px; border-radius: 14px; border: 2px solid #d5e2f2; background: #fff;
+         font-size: clamp(15px, 4vw, 17px); font-weight: 700; cursor: pointer; color: #1c2b3a;
+         touch-action: manipulation; padding: 10px 6px; font-family: inherit; }
+  .tab.active { background: linear-gradient(135deg, #3a7bd5, #6a4fd0); color: #fff; border-color: transparent; }
+  .card { background: #fff; border-radius: 16px; padding: 18px; box-shadow: 0 2px 10px rgba(30,60,110,.08); margin-bottom: 14px; }
+  .qnum { color: #6a4fd0; font-weight: 700; font-size: 13px; margin-bottom: 6px; }
+  .qtext { font-size: clamp(17px, 4.6vw, 20px); line-height: 1.6; margin-bottom: 8px; }
+  .frac { display: inline-block; vertical-align: middle; text-align: center; margin: 0 3px; unicode-bidi: isolate; }
+  .m { direction: ltr; unicode-bidi: isolate; white-space: nowrap; }
+  .frac .top { display: block; border-bottom: 2px solid #1c2b3a; padding: 0 5px; font-size: .92em; }
+  .frac .bot { display: block; padding: 0 5px; font-size: .92em; }
+  .viz { margin: 10px 0 4px; }
+  .vizcap { font-size: 14px; color: #5a6b7d; }
+  .opts { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 12px; }
+  @media (min-width: 640px) { .opts { grid-template-columns: 1fr 1fr; } }
+  .opt { min-height: 56px; border: 2px solid #d5e2f2; background: #f8fbff; border-radius: 12px; padding: 12px;
+         font-size: 19px; cursor: pointer; text-align: center; transition: all .15s;
+         display: flex; align-items: center; justify-content: center;
+         font-family: inherit; color: inherit; width: 100%; touch-action: manipulation; }
+  .opt:hover { border-color: #3a7bd5; }
+  .opt.sel { border-color: #3a7bd5; background: #e3efff; font-weight: 700; }
+  .opt.right { border-color: #43b581; background: #e2f6ec; font-weight: 700; }
+  .opt.wrong { border-color: #e05252; background: #fdecec; }
+  .opt:disabled { cursor: default; opacity: 1; }
+  .btn { display: inline-block; border: none; border-radius: 12px; padding: 13px 26px; font-size: 17px;
+         font-weight: 700; cursor: pointer; min-height: 52px; touch-action: manipulation; font-family: inherit; }
+  .btn-main { background: #3a7bd5; color: #fff; }
+  .btn-main:disabled { background: #b9cbe2; cursor: not-allowed; }
+  .btn-new { background: #43b581; color: #fff; }
+  .center { text-align: center; }
+  .explain { display: none; margin-top: 12px; background: #fff8e1; border: 1px solid #ffe082;
+             border-radius: 10px; padding: 10px 14px; font-size: 16px; line-height: 1.55; }
+  .score { font-size: 44px; font-weight: 800; }
+  .msg { font-size: 19px; margin: 6px 0 2px; }
+  details.parents { background: #eef7ee; border: 1px solid #c8e6c9; border-radius: 14px;
+                    padding: 14px 18px; margin-top: 18px; font-size: 15.5px; line-height: 1.65; }
+  details.parents summary { font-weight: 700; cursor: pointer; font-size: 16.5px; }
+  .segbar { display: flex; gap: 2px; direction: ltr; max-width: 340px; }
+  .seg { height: 26px; flex: 1; border: 2px solid #3a7bd5; background: #fff; border-radius: 3px; min-width: 0; }
+  .seg.fill { background: #3a7bd5; }
+  .bar { display: flex; justify-content: space-between; align-items: center; margin: 14px 2px 8px; font-size: 15px; font-weight: 600; }
+  .progress { height: 12px; background: #dbe7f7; border-radius: 99px; overflow: hidden; margin-bottom: 16px; }
+  .progress > div { height: 100%; background: #43b581; width: 0%; transition: width .3s; }
+  /* ---- training mode ---- */
+  .t-status { background: linear-gradient(135deg, #f2f7ff, #f6f0ff); }
+  .st { font-size: 22px; color: #d5e2f2; }
+  .st.on { color: #ffb400; }
+  .dots { display: inline-flex; gap: 8px; direction: ltr; vertical-align: middle; }
+  .dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #ff9f43; background: #fff; display: inline-block; }
+  .dot.on { background: #ff9f43; }
+  .streakrow { display: flex; align-items: center; gap: 10px; justify-content: center; margin-top: 8px;
+               font-weight: 700; font-size: 16px; flex-wrap: wrap; }
+  .celebrate { position: fixed; inset: 0; background: rgba(20,30,60,.55); z-index: 50;
+               display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .celeb-box { background: #fff; border-radius: 20px; padding: 28px 32px; text-align: center;
+               font-size: clamp(20px, 5.4vw, 25px); font-weight: 800; max-width: 92vw; animation: pop .35s; }
+  .confetti { position: fixed; top: -40px; z-index: 51; pointer-events: none;
+              animation-name: fall; animation-timing-function: linear; animation-fill-mode: forwards; }
+  @keyframes fall { to { transform: translateY(112vh) rotate(420deg); } }
+  @keyframes pop { from { transform: scale(.6); } to { transform: scale(1); } }
+  .intro-emoji { font-size: 44px; }
+  .intro-list { text-align: right; font-size: clamp(16px, 4.4vw, 18px); line-height: 2.05; margin: 12px 0 18px; }
+  .t-help { background: none; border: none; color: #3a7bd5; font-size: 14px; cursor: pointer;
+            text-decoration: underline; padding: 8px; font-family: inherit; min-height: 40px; }
+  .sharebtn { margin-top: 10px; background: rgba(255,255,255,.22); color: #fff; border: 2px solid rgba(255,255,255,.65);
+    border-radius: 99px; padding: 10px 22px; font-size: 16px; font-weight: 700; cursor: pointer;
+    touch-action: manipulation; font-family: inherit; -webkit-tap-highlight-color: transparent; }
+  .sharebtn:active { background: rgba(255,255,255,.35); }
+  .reset-link { font-size: 14px; color: #8a97a8; }
+  /* ---- topic picker ---- */
+  .tgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 6px 0 14px; }
+  @media (min-width: 640px) { .tgrid { grid-template-columns: 1fr 1fr 1fr; } }
+  .tcard { background: #fff; border: 2px solid #d5e2f2; border-radius: 16px; padding: 18px 10px;
+           text-align: center; cursor: pointer; font-family: inherit; color: inherit;
+           touch-action: manipulation; min-height: 120px; }
+  .tcard:hover { border-color: #3a7bd5; }
+  .tcard .em { font-size: 40px; }
+  .tcard .nm { font-weight: 800; font-size: clamp(15px, 4vw, 17px); margin: 6px 0 2px; }
+  .tcard .ds { font-size: 13px; color: #5a6b7d; line-height: 1.4; }
+  .tcard .ct { font-size: 12px; color: #6a4fd0; font-weight: 700; margin-top: 6px; }
+  .topicbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 14px 2px; }
+  .topicbar .tn { font-weight: 800; font-size: clamp(16px, 4.4vw, 19px); }
+  .btn-ghost { background: #fff; border: 2px solid #d5e2f2; color: #1c2b3a; border-radius: 12px;
+               padding: 10px 16px; font-weight: 700; cursor: pointer; font-family: inherit;
+               font-size: 15px; touch-action: manipulation; min-height: 48px; }
+  /* ---- page-range mode ---- */
+  .pageform { display: flex; gap: 16px; justify-content: center; align-items: flex-end; flex-wrap: wrap; margin: 14px 0 8px; }
+  .pagefield { display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 15px; text-align: center; }
+  .pageinput { width: 100px; font-size: 24px; font-weight: 700; text-align: center; padding: 10px 6px;
+               border: 2px solid #d5e2f2; border-radius: 12px; font-family: inherit; color: inherit;
+               -moz-appearance: textfield; appearance: textfield; }
+  .pageinput::-webkit-outer-spin-button, .pageinput::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .pageinput:focus { border-color: #3a7bd5; outline: none; }
+  .pagespreview { background: #f2f7ff; border: 1px dashed #9db8dd; border-radius: 12px; padding: 10px 14px;
+                  font-size: 15.5px; line-height: 1.75; margin: 6px 0 14px; min-height: 52px; }
+  .btn-new:disabled { background: #b9cbe2; cursor: not-allowed; }
+  .spanhint { margin: 2px 0 0; color: #8a97a8; font-size: 13.5px; font-weight: 600; }
+  .bkspan { font-size: 12.5px; font-weight: 600; opacity: .75; }
+  .chiprow { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 10px 0 2px; }
+  .chip { border: 2px solid #d5e2f2; background: #fff; border-radius: 999px; padding: 7px 16px;
+          font-size: 14.5px; font-weight: 700; font-family: inherit; color: #2b5ea7; cursor: pointer;
+          touch-action: manipulation; min-height: 40px; }
+  .chip:hover { border-color: #3a7bd5; background: #f2f7ff; }
+</style>
+</head>
+<body>
+<style>
+  .parthead { display:flex; align-items:center; gap:10px; margin:20px 2px 10px; }
+  .parthead .pem { font-size:30px; }
+  .parthead .pt { font-weight:800; font-size:clamp(18px,5vw,22px); }
+  .parthead .pd { font-size:13.5px; color:#5a6b7d; }
+  .ramzor { background:#fff; border:2px solid #d5e2f2; border-radius:14px; padding:12px 14px; margin:10px 0 4px; }
+  .ramzor .rt { font-weight:800; font-size:15.5px; margin-bottom:8px; }
+  .ramzor .rrow { display:flex; gap:8px; flex-wrap:wrap; }
+  .rz { flex:1; min-width:100px; border:2px solid #d5e2f2; background:#f8fbff; border-radius:12px; padding:10px 6px;
+        font-family:inherit; font-size:14.5px; font-weight:700; cursor:pointer; color:inherit; touch-action:manipulation; min-height:48px; }
+  .rz.sel-g { border-color:#43b581; background:#e2f6ec; }
+  .rz.sel-y { border-color:#ffb400; background:#fff6dd; }
+  .rz.sel-r { border-color:#e05252; background:#fdecec; }
+  .learncard { border-right:6px solid #6a4fd0; }
+  .learncard h3 { margin:0 0 8px; font-size:19px; }
+  .learncard .lx { font-size:16.5px; line-height:1.7; }
+  .learncard .ex { background:#f2f7ff; border-radius:10px; padding:10px 14px; margin-top:10px; font-size:16px; line-height:1.65; }
+  .bigbtn { display:block; width:100%; border:none; border-radius:16px; padding:20px; cursor:pointer; font-family:inherit;
+            background:linear-gradient(135deg,#ff9f43,#e05252); color:#fff; font-size:clamp(18px,5vw,22px); font-weight:800;
+            box-shadow:0 3px 12px rgba(224,82,82,.25); touch-action:manipulation; }
+  .opt svg { max-width:100%; height:auto; }
+  .qfig { text-align:center; margin:8px 0; }
+  .legend { display:flex; flex-wrap:wrap; gap:8px 16px; justify-content:center; font-size:15px; margin-top:6px; }
+  .swatch { display:inline-block; width:14px; height:14px; border-radius:3px; vertical-align:-2px; margin-left:5px; }
+  .breakdown { text-align:right; font-size:16px; line-height:1.9; }
+</style>
+<div class="wrap">
+  <header>
+    <h1>🧮 ערכת חזרה למבחן במתמטיקה — כיתה ו׳</h1>
+    <p>הכנה למבחן של אריאל · לפי ערכת החזרה של בית הספר · גאומטריה, חישוב, בעיות מילוליות והעשרה</p>
+    <button class="sharebtn" onclick="shareApp()">📤 שיתוף</button>
+  </header>
+
+  <!-- ============ HOME / TOPIC PICKER ============ -->
+  <div id="topicPane">
+    <div class="card center">
+      <div class="intro-emoji">🎯</div>
+      <h2 style="margin:8px 0">שלום אריאל! מתכוננים למבחן ביחד</h2>
+      <p style="margin:0;color:#5a6b7d">בכל נושא יש <b>📖 למידה</b> קצרה, <b>🏋️ אימון רמות</b> עם כוכבים,<br>ו<b>📝 מבחן</b> של 10 שאלות. בסוף — <b>מבחן מדומה</b> כמו המבחן האמיתי!</p>
+    </div>
+    <div id="partsHost"></div>
+    <div style="margin:18px 0 6px">
+      <button class="bigbtn" onclick="startMock()">🎓 מבחן מדומה — כמו המבחן האמיתי!</button>
+      <p class="center" style="color:#5a6b7d;font-size:14.5px;margin:8px 0 0">14 שאלות מכל ארבעת החלקים, עם ציון ופירוט לפי חלקים</p>
+    </div>
+    <details class="parents">
+      <summary>👨‍👩‍👦 להורים — איך עובדת הערכה?</summary>
+      <div>
+        הערכה בנויה בדיוק לפי ערכת החזרה של בית הספר (35 שאלות, 4 חלקים: גאומטריה, מיומנויות חישוב, בעיות מילוליות, העשרה והעמקה).
+        כל השאלות נוצרות מחדש בכל פעם (מספרים משתנים), כך שאפשר לתרגל שוב ושוב בלי לשנן תשובות.
+        בכל חלק יש "רמזור למידה" כמו בעלון המקורי — הילד מסמן איך הרגיש, וכדאי לעבור יחד על החלקים שסומנו באדום.
+        טיפ: קודם קוראים את כרטיסי הלמידה, אחר כך מתאמנים, ורק בסוף עושים מבחן.
+      </div>
+    </details>
+  </div>
+
+  <!-- ============ TOPIC MAIN ============ -->
+  <div id="mainPane" style="display:none">
+    <div class="topicbar">
+      <button class="btn-ghost" onclick="showTopics()">← לכל הנושאים</button>
+      <div class="tn" id="curTopicName"></div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" id="tabLearn" onclick="showLearn()">📖 למידה</button>
+      <button class="tab" id="tabTrain" onclick="showTrain()">🏋️ אימון רמות</button>
+      <button class="tab" id="tabTest" onclick="showTest()">📝 מבחן</button>
+    </div>
+
+    <!-- LEARN -->
+    <div id="learnPane"></div>
+
+    <!-- TRAIN -->
+    <div id="trainPane" style="display:none">
+      <div id="tIntro" class="card center">
+        <div class="intro-emoji">🎮</div>
+        <h2 style="margin:8px 0">ברוכים הבאים לאימון!</h2>
+        <div class="intro-list">
+          <div>✏️ עונים על שאלה אחת בכל פעם</div>
+          <div>⭐ כל תשובה נכונה = <b>כוכב</b>! <b>5 כוכבים</b> מעלים אותך רמה</div>
+          <div>🔥 <b>3 נכונות ברצף</b> = עליית רמה מיידית! 🚀</div>
+          <div>💚 טעות? לא נורא! הכוכבים <b>נשארים</b> והרמה <b>אף פעם לא יורדת</b></div>
+          <div>🏆 יש <b>3 רמות</b> — מהקל לקשה ביותר!</div>
+        </div>
+        <button class="btn btn-new" onclick="acceptIntro()">הבנתי, מתחילים! 🎉</button>
+      </div>
+      <div id="tMain" style="display:none">
+        <div class="card t-status center">
+          <div id="tLevel" style="font-size:18px"></div>
+          <div id="tStars" style="margin:4px 0"></div>
+          <div class="streakrow"><span>🔥 רצף נכונות:</span><span class="dots" id="tDots"></span></div>
+          <div class="streakrow"><span>⭐ כוכבים לרמה הבאה:</span><span id="tProgStars" style="font-size:17px;letter-spacing:2px"></span></div>
+          <div id="tTotal" style="margin-top:6px;color:#5a6b7d;font-size:14px"></div>
+        </div>
+        <div id="tQ"></div>
+        <div class="center">
+          <button class="btn btn-main" id="tNext" style="display:none" onclick="nextTrainQ()">הבא ➜</button>
+        </div>
+      </div>
+      <div id="tMastery" class="card center" style="display:none">
+        <div style="font-size:52px">🏆</div>
+        <h2 style="margin:8px 0">אלוף האלופים!</h2>
+        <p class="msg">סיימת את כל 3 הרמות בנושא הזה! 🎉</p>
+        <p id="masteryStats" style="font-size:17px"></p>
+        <button class="btn btn-new" onclick="showTest()">עכשיו למבחן! 📝</button>
+        <div style="margin-top:10px"><button class="btn-ghost" onclick="restartTrain()">🔄 עוד אימון</button></div>
+      </div>
+    </div>
+
+    <!-- TEST -->
+    <div id="testPane" style="display:none">
+      <div class="bar"><span id="counter"></span><span>כל שאלה: 10 נקודות</span></div>
+      <div class="progress"><div id="pfill"></div></div>
+      <div id="quiz"></div>
+      <div class="center" style="margin:14px 0">
+        <button class="btn btn-main" id="submitBtn" onclick="gradeTest()">סיימתי — בדוק ציון ✅</button>
+      </div>
+      <div id="result" class="card center" style="display:none">
+        <div style="font-size:40px">🎓</div>
+        <div class="score" id="scoreNum"></div>
+        <div class="msg" id="scoreMsg"></div>
+        <div id="scoreDetail" style="margin-top:8px"></div>
+        <div style="margin-top:12px">
+          <button class="btn btn-new" onclick="showTest()">📝 מבחן חדש</button>
+          <button class="btn-ghost" onclick="showTopics()">← לכל הנושאים</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MOCK TEST ============ -->
+  <div id="mockPane" style="display:none">
+    <div class="topicbar">
+      <button class="btn-ghost" onclick="showTopics()">← לכל הנושאים</button>
+      <div class="tn">🎓 מבחן מדומה — מבנה כמו במבחן האמיתי</div>
+    </div>
+    <div class="bar"><span id="mockCounter"></span><span>בהצלחה רבה, אריאל!</span></div>
+    <div class="progress"><div id="mockFill"></div></div>
+    <div id="mockQuiz"></div>
+    <div class="center" style="margin:14px 0">
+      <button class="btn btn-main" id="mockSubmit" onclick="gradeMock()">סיימתי — בדוק ציון ✅</button>
+    </div>
+    <div id="mockResult" class="card center" style="display:none">
+      <div style="font-size:40px">🎓</div>
+      <div class="score" id="mockScoreNum"></div>
+      <div class="msg" id="mockScoreMsg"></div>
+      <div id="mockBreakdown" class="breakdown" style="margin-top:10px"></div>
+      <div style="margin-top:12px">
+        <button class="btn btn-new" onclick="startMock()">🎓 מבחן מדומה חדש</button>
+        <button class="btn-ghost" onclick="showTopics()">← לכל הנושאים</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="celebrate" class="celebrate" style="display:none">
+  <div class="celeb-box">
+    <div style="font-size:52px" id="celebEmoji">🎉</div>
+    <div id="celebText"></div>
+    <div><button class="btn btn-new" style="margin-top:14px" onclick="hideCeleb()">ממשיכים! 🚀</button></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ================= helpers (pure) ================= */
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;}
+function frac(n,d){const g=gcd(n,d);n/=g;d/=g;if(d===1)return `<span class="m">${n}</span>`;return `<span class="frac"><span class="top">${n}</span><span class="bot">${d}</span></span>`;}
+function mixed(w,n,d){const g=gcd(n,d);n/=g;d/=g;if(n===0)return `<span class="m">${w}</span>`;return `<span class="m">${w}</span> ${frac(n,d)}`;}
+function fracStr(n,d){const g=gcd(n,d);n/=g;d/=g;return d===1?String(n):`${n}/${d}`;}
+function num(x){ // decimal display: trim trailing zeros, max 3 dp
+  if(typeof x!=="number")return String(x);
+  let s=(Math.round(x*1000)/1000).toString();return s;}
+function money(x){return num(Math.round(x*100)/100);}
+function M(x){return `<span class="m">${x}</span>`;} // ltr math span
+function makeOpts(correct,wrongs){ // returns {opts, ans} with unique strings, shuffled; ans = correct string
+  const seen=new Set([correct]);const out=[correct];
+  for(const w of wrongs){ if(out.length>=4)break; if(!seen.has(w)){seen.add(w);out.push(w);} }
+  let guard=1; while(out.length<4){ const f=correct+"׳"+(guard++); if(!seen.has(f)){seen.add(f);out.push(f);} }
+  return {opts:shuffle(out), ans:correct};
+}
+function numOpts(ans, deltas){ // numeric options around ans
+  const c=num(ans); const ws=[];
+  for(const d of deltas){ const v=ans+d; ws.push(num(v)); }
+  return makeOpts(c, ws);
+}
+function Q(text, viz, opts, ans, why, meta){ return {text, viz:viz||"", opts, ans, why, meta:meta||{}}; }
+/* ================= PART A — GEOMETRY ================= */
+function rectPairs(area){const p=[];for(let a=2;a<area;a++){if(area%a===0&&a<=area/a)p.push([a,area/a]);}return p;}
+const T_A1={id:"a1",part:0,emoji:"▭",name:"שטח והיקף — הפוך",desc:"מלבנים ומשולשים: מוצאים צלעות מתוך שטח או היקף",
+learn:[
+ {t:"שטח מלבן",x:"שטח מלבן = אורך × רוחב. אם יודעים את השטח, מחפשים שני מספרים שהמכפלה שלהם שווה לשטח.",e:"שטח 60 סמ״ר: אפשר 10×6, אפשר 12×5, אפשר 30×2 — כל זוג שמכפלתו 60 מתאים!"},
+ {t:"היקף משולש שווה־שוקיים",x:"במשולש שווה־שוקיים יש שתי שוקיים שוות. היקף = שוק + שוק + בסיס, לכן בסיס = היקף − פעמיים השוק.",e:"היקף 28 ס״מ ושוק 10 ס״מ: הבסיס = 28 − 20 = 8 ס״מ."}],
+gen(L){
+ if(Math.random()<0.5){ // rectangle reverse area
+   const areas=[36,48,60,72,80,96,120,54,90,108]; const A=pick(areas); const pairs=rectPairs(A); const pr=pick(pairs);
+   const correct=`${pr[0]} ס"מ ו־${pr[1]} ס"מ`;
+   const wrongs=[`${pr[0]+1} ס"מ ו־${pr[1]} ס"מ`,`${pr[0]} ס"מ ו־${pr[1]+2} ס"מ`,`${pr[0]+2} ס"מ ו־${pr[1]+1} ס"מ`];
+   const o=makeOpts(correct,wrongs);
+   return Q(`שטחו של מלבן הוא ${M(A)} סמ"ר. איזה זוג אורכי צלעות יכול להתאים למלבן? (מספרים שלמים)`,"",o.opts,o.ans,
+     `בודקים מכפלות: ${pr[0]} × ${pr[1]} = ${A} ✓. בשאר הזוגות המכפלה שונה מ־${A}.`,{type:"rect",A,pair:pr});
+ } else { // isosceles perimeter
+   const leg=rnd(6,14); const base=rnd(3,2*leg-2); if(base===leg) return T_A1.gen(L);
+   const P=2*leg+base;
+   const correct=`בסיס ${base} ס"מ, שוק ${leg} ס"מ`;
+   const wrongs=[`בסיס ${leg} ס"מ, שוק ${base} ס"מ`,`בסיס ${base+2} ס"מ, שוק ${leg} ס"מ`,`בסיס ${base} ס"מ, שוק ${leg+2} ס"מ`];
+   const o=makeOpts(correct,wrongs);
+   return Q(`היקפו של משולש שווה־שוקיים הוא ${M(P)} ס"מ. איזו אפשרות יכולה להתאים לאורכי צלעותיו?`,"",o.opts,o.ans,
+     `שוק + שוק + בסיס = ${leg} + ${leg} + ${base} = ${P} ✓`,{type:"tri",P,leg,base});
+ }}};
+
+const TF_POOL=[
+ ["במעוין כל הצלעות שוות",true],["במעוין כל הזוויות ישרות",false],
+ ["במקבילית הצלעות הנגדיות מקבילות ושוות זו לזו",true],
+ ["בטרפז יש בדיוק זוג אחד של צלעות מקבילות",true],
+ ["בדלתון יש שני זוגות נפרדים של צלעות סמוכות שוות",true],
+ ["במלבן כל הצלעות שוות",false],["בריבוע כל הזוויות ישרות וכל הצלעות שוות",true],
+ ["בטרפז יש שני זוגות של צלעות מקבילות",false],
+ ["במקבילית כל הזוויות ישרות",false],["למעוין יש שתי זוגות צלעות מקבילות",true]];
+const T_A2={id:"a2",part:0,emoji:"✔️",name:"תכונות מרובעים — נכון או לא?",desc:"מעוין, מקבילית, טרפז, דלתון וריבוע",
+learn:[
+ {t:"מי הוא מי במרובעים",x:"ריבוע: כל הצלעות שוות + כל הזוויות ישרות. מלבן: זוויות ישרות, צלעות נגדיות שוות. מעוין: כל הצלעות שוות, אבל הזוויות אינן ישרות (בדרך כלל). מקבילית: צלעות נגדיות מקבילות ושוות. טרפז: בדיוק זוג אחד של צלעות מקבילות. דלתון: שני זוגות נפרדים של צלעות סמוכות שוות.",e:"טריק לזכירה: טרפז = רק זוג מקבילות אחד. אם יש שני זוגות — זו כבר מקבילית!"}],
+gen(L){ const s=pick(TF_POOL); const o=makeOpts(s[1]?"נכון":"לא נכון",[s[1]?"לא נכון":"נכון","תמיד נכון חלקית","אי אפשר לדעת"]);
+  return Q(`האם המשפט נכון או לא נכון?<br><b>${s[0]}</b>`,"",o.opts,o.ans,
+   s[1]?`המשפט נכון. ${T_A2.why(s[0])}`:`המשפט לא נכון. ${T_A2.why(s[0])}`,{type:"tf",truth:s[1]});
+ },
+why(st){
+ const m={"במעוין כל הזוויות ישרות":"במעוין הצלעות שוות, אבל הזוויות אינן חייבות להיות ישרות.",
+ "במלבן כל הצלעות שוות":"במלבן רק הצלעות הנגדיות שוות — לא כולן.",
+ "בטרפז יש שני זוגות של צלעות מקבילות":"בטרפז יש בדיוק זוג אחד של צלעות מקבילות.",
+ "במקבילית כל הזוויות ישרות":"במקבילית הזוויות הנגדיות שוות, אבל אינן חייבות להיות ישרות."};
+ return m[st]||"זו אחת התכונות המגדירות את הצורה.";}};
+
+const WHOAMI=[
+ {d:"כל הצלעות שלי שוות באורכן, אך אין לי אף זווית ישרה. מי אני?",a:"מעוין",w:["ריבוע","מלבן","טרפז"]},
+ {d:"יש לי שני זוגות של צלעות מקבילות, וכל הזוויות שלי ישרות. מי אני?",a:"מלבן",w:["מעוין","דלתון","טרפז"]},
+ {d:"כל הצלעות שלי שוות וכל הזוויות שלי ישרות. מי אני?",a:"ריבוע",w:["מעוין","מלבן","מקבילית"]},
+ {d:"יש לי בדיוק זוג אחד של צלעות מקבילות. מי אני?",a:"טרפז",w:["מקבילית","מלבן","דלתון"]},
+ {d:"יש לי שני זוגות נפרדים של צלעות סמוכות שוות, כמו עפיפון. מי אני?",a:"דלתון",w:["טרפז","מעוין","מקבילית"]},
+ {d:"הצלעות הנגדיות שלי מקבילות ושוות, אבל אין לי זוויות ישרות וצלעותיי אינן כולן שוות. מי אני?",a:"מקבילית",w:["מלבן","טרפז","דלתון"]}];
+const T_A3={id:"a3",part:0,emoji:"🕵️",name:"שאלות אמריקאיות — מי אני?",desc:"מזהים מרובע לפי התכונות שלו",
+learn:[{t:"איך פותרים ״מי אני?״",x:"קוראים את התכונות אחת־אחת ומוחקים אפשרויות: קודם בודקים צלעות (שוות? מקבילות?), אחר כך זוויות (ישרות?).",e:"״כל הצלעות שוות״ מתאים לריבוע ולמעוין. ״אין זווית ישרה״ מוחק את הריבוע — נשאר מעוין!"}],
+gen(L){ const s=pick(WHOAMI); const o=makeOpts(s.a,s.w);
+ return Q(`אני מרובע. ${s.d}`,"",o.opts,o.ans,`לפי התכונות: התשובה היא <b>${s.a}</b>.`,{type:"who",a:s.a});}};
+
+const T_A4={id:"a4",part:0,emoji:"📐",name:"גובה במשולש ושטח משולש",desc:"מהו גובה? ושטח = בסיס × גובה ÷ 2",
+learn:[
+ {t:"מהו גובה במשולש?",x:"גובה הוא קטע היוצא מקודקוד של המשולש ומאונך (יוצר זווית ישרה) לצלע שממול — או להמשכה.",e:"שימו לב: הגובה חייב להיות מאונך! קטע מקודקוד שאינו מאונך לצלע — אינו גובה."},
+ {t:"שטח משולש",x:"שטח משולש = (בסיס × גובה) ÷ 2. קודם כופלים, אחר כך מחלקים ב־2.",e:"בסיס 10 ס״מ, גובה 6 ס״מ: השטח = 10 × 6 ÷ 2 = 30 סמ״ר."}],
+gen(L){
+ if(Math.random()<0.4){ const o=makeOpts("קטע היוצא מקודקוד ומאונך לצלע שממולו (יוצר זווית ישרה)",
+   ["הקטע הארוך ביותר במשולש המחבר שני קודקודים","קטע החוצה את המשולש לשניים","קטע המחבר קודקוד לאמצע הצלע שממולו, בכל זווית"]);
+  return Q(`מהו הגובה במשולש? סמנו את המשפט המדויק ביותר.`,"",o.opts,o.ans,
+   `גובה חייב לצאת מקודקוד ולהיות <b>מאונך</b> לצלע שממולו.`,{type:"def"});
+ }
+ let b,h; do{ b=rnd(4,16); h=rnd(3,12);}while((b*h)%2!==0);
+ const area=b*h/2; const o=numOpts(area,[b*h-area, area+ h, area+b, -area/1===0?5:area*2-area+ b]);
+ const oo=numOpts(area,[b*h, area+h, Math.max(1,area-b)]);
+ return Q(`במשולש, אורך הבסיס הוא ${M(b)} ס"מ, והגובה היורד אליו הוא ${M(h)} ס"מ. מהו שטח המשולש?`,"",oo.opts,oo.ans,
+  `שטח = בסיס × גובה ÷ 2 = ${b} × ${h} ÷ 2 = ${area} סמ"ר.`,{type:"area",b,h,area});
+}};
+
+function svgGrid(inner,w,h){let g="";const W=w||220,H=h||130;
+ for(let x=0;x<=W;x+=20)g+=`<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="#dce8f5" stroke-width="1"/>`;
+ for(let y=0;y<=H;y+=20)g+=`<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#dce8f5" stroke-width="1"/>`;
+ return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="background:#fff;border:1px solid #d5e2f2;border-radius:8px;max-width:100%">${g}${inner}</svg>`;}
+const T_A5={id:"a5",part:0,emoji:"🔲",name:"צורות על רשת משבצות",desc:"גובה במשולש וזיהוי טרפז בציור",
+learn:[{t:"מחפשים גובה וטרפז בציור",x:"גובה במשולש: מחפשים קטע מקודקוד שיורד בזווית ישרה אל הבסיס (מחפשים את סימן הזווית הישרה!). טרפז: מרובע עם בדיוק זוג אחד של צלעות מקבילות — בודקים כל זוג צלעות נגדיות.",e:"בציור של טרפז על משבצות: הבסיס העליון והתחתון אופקיים (מקבילים), והשוקיים אלכסוניות ולא מקבילות."}],
+gen(L){
+ if(Math.random()<0.5){ // height or not
+   const isH=Math.random()<0.5;
+   const inner=isH
+     ?`<polygon points="20,110 200,110 120,20" fill="#eaf3ff" stroke="#3a7bd5" stroke-width="2.5"/><line x1="120" y1="20" x2="120" y2="110" stroke="#e05252" stroke-width="2.5" stroke-dasharray="6 4"/><rect x="120" y="100" width="10" height="10" fill="none" stroke="#e05252" stroke-width="1.8"/>`
+     :`<polygon points="20,110 200,110 120,20" fill="#eaf3ff" stroke="#3a7bd5" stroke-width="2.5"/><line x1="120" y1="20" x2="150" y2="110" stroke="#e05252" stroke-width="2.5" stroke-dasharray="6 4"/>`;
+   const o=makeOpts(isH?"גובה של המשולש":"קטע שאינו גובה של המשולש",
+     isH?["צלע של המשולש","קטע שאינו גובה של המשולש","אלכסון של המשולש"]:["גובה של המשולש","צלע של המשולש","אלכסון של המשולש"]);
+   return Q(`במשולש שלפניכם, מהו הקטע האדום המקווקו?`,`<div class="qfig">${svgGrid(inner)}</div>`,o.opts,o.ans,
+     isH?`הקטע יוצא מהקודקוד ומאונך לבסיס (שימו לב לסימן הזווית הישרה) — זהו <b>גובה</b>.`:`הקטע יוצא מהקודקוד אבל <b>אינו מאונך</b> לבסיס — לכן הוא אינו גובה.`,{type:"figH",isH});
+ }
+ // which is trapezoid — 4 SVG options
+ const sh={
+  rect:`<svg width="110" height="80" viewBox="0 0 110 80"><polygon points="15,15 95,15 95,65 15,65" fill="#eaf3ff" stroke="#3a7bd5" stroke-width="2.5"/></svg>`,
+  para:`<svg width="110" height="80" viewBox="0 0 110 80"><polygon points="30,15 100,15 80,65 10,65" fill="#eaf3ff" stroke="#3a7bd5" stroke-width="2.5"/></svg>`,
+  trap:`<svg width="110" height="80" viewBox="0 0 110 80"><polygon points="35,15 80,15 100,65 10,65" fill="#fff3e0" stroke="#e07b00" stroke-width="2.5"/></svg>`,
+  kite:`<svg width="110" height="80" viewBox="0 0 110 80"><polygon points="55,8 90,35 55,72 20,35" fill="#eaf3ff" stroke="#3a7bd5" stroke-width="2.5"/></svg>`};
+ const o=makeOpts(sh.trap,[sh.rect,sh.para,sh.kite]);
+ return Q(`איזה מהמרובעים הבאים הוא <b>טרפז</b>?`,"",o.opts,o.ans,
+  `הטרפז הוא המרובע הכתום: רק הבסיס העליון והתחתון מקבילים — בדיוק זוג אחד.`,{type:"figTrap"});
+}};
+
+const ANGLES=[["זווית חדה","קטנה מ־90 מעלות"],["זווית ישרה","שווה בדיוק ל־90 מעלות"],["זווית קהה","גדולה מ־90 מעלות וקטנה מ־180 מעלות"],["זווית שטוחה","שווה בדיוק ל־180 מעלות"]];
+const T_A6={id:"a6",part:0,emoji:"∠",name:"סוגי זוויות",desc:"חדה, ישרה, קהה ושטוחה",
+learn:[{t:"ארבעת סוגי הזוויות",x:"חדה: קטנה מ־90°. ישרה: בדיוק 90°. קהה: בין 90° ל־180°. שטוחה: בדיוק 180° (קו ישר).",e:"זווית של 35° היא חדה, 90° ישרה, 120° קהה, 180° שטוחה."}],
+gen(L){ const mode=rnd(0,1);
+ if(mode===0){ const a=pick(ANGLES); const o=makeOpts(a[0],ANGLES.filter(x=>x!==a).map(x=>x[0]));
+   return Q(`איזו זווית היא זווית <b>${a[1]}</b>?`,"",o.opts,o.ans,`זווית ${a[1]} נקראת <b>${a[0]}</b>.`,{type:"ang",a:a[0]});
+ }
+ const vals=[[35,"זווית חדה"],[72,"זווית חדה"],[90,"זווית ישרה"],[120,"זווית קהה"],[165,"זווית קהה"],[180,"זווית שטוחה"],[88,"זווית חדה"],[91,"זווית קהה"]];
+ const v=pick(vals); const o=makeOpts(v[1],ANGLES.map(x=>x[0]).filter(x=>x!==v[1]));
+ return Q(`גודלה של זווית הוא ${M(v[0])} מעלות. איזו זווית זו?`,"",o.opts,o.ans,
+  `${v[0]} מעלות — זו <b>${v[1]}</b>.`,{type:"ang2",deg:v[0],a:v[1]});
+}};
+
+/* ================= PART B — CALCULATION ================= */
+const T_B1={id:"b1",part:1,emoji:"🔢",name:"סדר פעולות חשבון",desc:"סוגריים קודם, כפל וחילוק לפני חיבור וחיסור",
+learn:[{t:"סדר הפעולות",x:"1) קודם סוגריים. 2) אחר כך כפל וחילוק (משמאל לימין). 3) בסוף חיבור וחיסור.",e:"35 + (24 − 9) × 3: סוגריים ← 15, כפל ← 45, חיבור ← 80."}],
+gen(L){
+ const kind=rnd(0,3); let text,ans,expr,steps;
+ if(kind===0){ const b=rnd(10,30),c=rnd(2,b-2),d=rnd(2,6),a=rnd(10,60);
+   ans=a+(b-c)*d; expr=`${a} + (${b} - ${c}) × ${d}`; steps=`סוגריים: ${b} − ${c} = ${b-c}; כפל: ${b-c} × ${d} = ${(b-c)*d}; חיבור: ${a} + ${(b-c)*d} = ${ans}`;
+   text=`${a} + (${b} − ${c}) × ${d} = ?`;
+ } else if(kind===1){ const c=rnd(2,9),q=rnd(3,12),d=rnd(2,6); const b=c*q; const a=b/c*d+rnd(20,60);
+   ans=a-(b/c)*d; expr=`${a} - ${b} ÷ ${c} × ${d}`; steps=`חילוק: ${b} ÷ ${c} = ${q}; כפל: ${q} × ${d} = ${q*d}; חיסור: ${a} − ${q*d} = ${ans}`;
+   text=`${a} − ${b} ÷ ${c} × ${d} = ?`;
+ } else if(kind===2){ const c=rnd(2,9),q=rnd(4,15); const diff=c*q; const b=rnd(10,40); const a=diff+b; const d=rnd(5,30);
+   ans=(a-b)/c+d; expr=`(${a} - ${b}) ÷ ${c} + ${d}`; steps=`סוגריים: ${a} − ${b} = ${diff}; חילוק: ${diff} ÷ ${c} = ${q}; חיבור: ${q} + ${d} = ${ans}`;
+   text=`(${a} − ${b}) ÷ ${c} + ${d} = ?`;
+ } else { const a=rnd(3,9),b=rnd(4,12),c=rnd(2,8),d=rnd(3,9);
+   ans=a*b+c*d; expr=`${a} × ${b} + ${c} × ${d}`; steps=`כפל: ${a} × ${b} = ${a*b} וגם ${c} × ${d} = ${c*d}; חיבור: ${a*b} + ${c*d} = ${ans}`;
+   text=`${a} × ${b} + ${c} × ${d} = ?`;
+ }
+ const o=numOpts(ans,[ans+ (rnd(2,10)), ans-(rnd(2,10)), ans+ (rnd(11,20)), -(rnd(1,9))].filter(()=>true).slice(0,3).concat([ans+ (rnd(2,8))]));
+ return Q(`פתרו לפי סדר פעולות החשבון: ${M(text)}`,"",o.opts,o.ans,steps,{type:"order",expr,ans});
+}};
+
+const T_B2={id:"b2",part:1,emoji:"🧩",name:"משוואות והשלמת מספרים",desc:"מוצאים את המספר החסר בתרגיל",
+learn:[{t:"איך מוצאים מספר חסר?",x:"חושבים הפוך: אם __ × 5 + 18 = 68, קודם מחסירים 68 − 18 = 50, אחר כך מחלקים 50 ÷ 5 = 10.",e:"בודקים תמיד בהצבה: 18 + 10 × 5 = 68 ✓"}],
+gen(L){
+ const kind=rnd(0,3); let text,ans,why;
+ if(kind===0){ const a=rnd(8,40),b=rnd(3,9),x=rnd(3,15); const R=a+x*b;
+   text=`${a} + __ × ${b} = ${R}`; ans=x; why=`${R} − ${a} = ${R-a}; ${R-a} ÷ ${b} = ${x}. בדיקה: ${a} + ${x} × ${b} = ${R} ✓`;
+ } else if(kind===1){ const b=rnd(2,9),R=rnd(5,30),a=rnd(5,60); const x=R*b+a;
+   text=`(${x} − __) ÷ ${b} = ${R}`; ans=a; why=`${R} × ${b} = ${R*b}; ${x} − ${R*b} = ${a}. בדיקה: (${x} − ${a}) ÷ ${b} = ${R} ✓`;
+ } else if(kind===2){ const b=rnd(3,9),x=rnd(3,12),R=rnd(20,80); const a=R+b*x;
+   text=`${a} − ${b} × __ = ${R}`; ans=x; why=`${a} − ${R} = ${a-R}; ${a-R} ÷ ${b} = ${x}. בדיקה: ${a} − ${b} × ${x} = ${R} ✓`;
+ } else { const a=rnd(3,9),x=rnd(4,15),b=rnd(5,40); const R=a*x+b;
+   text=`${a} × __ + ${b} = ${R}`; ans=x; why=`${R} − ${b} = ${R-b}; ${R-b} ÷ ${a} = ${x}. בדיקה: ${a} × ${x} + ${b} = ${R} ✓`;
+ }
+ const o=numOpts(ans,[ans+1,ans-1,ans+2,ans+10]);
+ return Q(`השלימו את המספר החסר כדי שהשוויון יהיה נכון: ${M(text)}`,"",o.opts,o.ans,why,{type:"missing",text,ans});
+}};
+
+const T_B3={id:"b3",part:1,emoji:"➗",name:"סימני התחלקות",desc:"התחלקות ב־2, 3, 5 ו־10",
+learn:[
+ {t:"סימני התחלקות",x:"ב־2: הספרה האחרונה זוגית. ב־5: הספרה האחרונה 0 או 5. ב־10: הספרה האחרונה 0. ב־3: סכום הספרות מתחלק ב־3.",e:"המספר 5,430: נגמר ב־0 (מתחלק ב־2, 5, 10) וסכום ספרותיו 12 (מתחלק ב־3)."},
+ {t:"למה מתחלק ב־10 ⇒ מתחלק ב־2 וב־5?",x:"כי 10 = 2 × 5. אם מספר הוא כפולה של 10, הוא גם כפולה של 2 ושל 5.",e:"70 = 7 × 10 = 7 × 2 × 5 — לכן 70 מתחלק גם ב־2 וגם ב־5."}],
+gen(L){
+ const kind=rnd(0,2);
+ if(kind===0){ // complete digit divisible by 3 and 5
+   let base,digitSum;
+   while(true){ const th=pick([1,2,3,4,5,6,7,8,9]), hu=pick([0,1,2,3,4]), te=pick([0,1,2,3,4,5,6]);
+     base=`${th},${hu}${te}`; digitSum=th+hu+te;
+     const ok0=(digitSum+0)%3===0, ok5=(digitSum+5)%3===0;
+     if(ok0!==ok5) break; }
+   const correct=((digitSum)%3===0)?0:5;
+   const wrongs=[1,2,3,4,6,7,8,9].filter(d=>d!==correct && !((digitSum+d)%3===0 && (d===0||d===5)));
+   const o=makeOpts(String(correct),shuffle(wrongs).slice(0,3).map(String));
+   return Q(`השלימו ספרה במספר ${M(base+"_")} כך שיתחלק ב־3 וגם ב־5 ללא שארית.`,"",o.opts,o.ans,
+     `כדי להתחלק ב־5 הספרה חייבת להיות 0 או 5. סכום הספרות הידועות הוא ${digitSum}: עם ${correct} הסכום הוא ${digitSum+correct} — מתחלק ב־3 ✓`,{type:"divdigit",digitSum,ans:correct});
+ }
+ if(kind===1){ // which divisible by 3
+   let good; do{ good=rnd(100,9999);}while(good%3!==0);
+   const bads=new Set(); while(bads.size<3){ const n=rnd(100,9999); if(n%3!==0) bads.add(n); }
+   const o=makeOpts(String(good),[...bads].map(String));
+   return Q(`איזה מהמספרים הבאים מתחלק ב־3 ללא שארית?`,"",o.opts,o.ans,
+     `בודקים סכום ספרות: במספר ${good} סכום הספרות הוא ${String(good).split("").reduce((s,c)=>s+ +c,0)} — מתחלק ב־3 ✓`,{type:"div3",ans:good});
+ }
+ const o=makeOpts("כי 10 = 2 × 5, וכל כפולה של 10 היא גם כפולה של 2 ושל 5",
+   ["כי כל מספר זוגי מתחלק ב־10","כי 10 הוא מספר ראשוני","כי הספרה האחרונה היא תמיד 5"]);
+ return Q(`הסבירו: מדוע כל מספר שמתחלק ב־10 חייב להתחלק גם ב־2 וגם ב־5?`,"",o.opts,o.ans,
+  `10 = 2 × 5, לכן כפולה של 10 מכילה בתוכה גם את 2 וגם את 5.`,{type:"divwhy"});
+}};
+
+const T_B4={id:"b4",part:1,emoji:"🎯",name:"אומדן והערכה",desc:"מעריכים תוצאות בלי לחשב בדיוק",
+learn:[{t:"אומדן חכם",x:"מעגלים את המספרים למספרים ״נוחים״ ומחשבים בערך. באומדן לא צריך תשובה מדויקת — צריך תשובה קרובה!",e:"502,100 − 184,350 ≈ 500,000 − 180,000 = 320,000."}],
+gen(L){
+ if(Math.random()<0.5){ const mult=pick([40,50,60,80]); const x=rnd(55,75); const prod=mult*x; const lo=prod-rnd(150,400), hi=prod+rnd(150,400);
+   const wrongs=[x-20,x+25,x+40].map(v=>String(v));
+   const o=makeOpts(String(x),wrongs);
+   return Q(`השלימו מספר כך שתוצאת התרגיל ${M(mult+" × __")} תהיה בין ${M(lo.toLocaleString("en-US"))} ל־${M(hi.toLocaleString("en-US"))}.`,"",o.opts,o.ans,
+     `${mult} × ${x} = ${prod.toLocaleString("en-US")} — בין ${lo.toLocaleString("en-US")} ל־${hi.toLocaleString("en-US")} ✓`,{type:"est",mult,ans:x,lo,hi});
+ }
+ const a=rnd(300,900)*1000+rnd(0,999), b=rnd(100,400)*1000+rnd(0,999);
+ const estA=Math.round(a/10000)*10000, estB=Math.round(b/10000)*10000, est=estA-estB;
+ const wrongs=[est+50000,est-60000,est+120000].map(v=>v.toLocaleString("en-US"));
+ const o=makeOpts(est.toLocaleString("en-US"),wrongs);
+ return Q(`אמדו את התוצאה (עגלו לעשרות אלפים): ${M(a.toLocaleString("en-US")+" − "+b.toLocaleString("en-US"))} ≈ ?`,"",o.opts,o.ans,
+  `מעגלים: ${a.toLocaleString("en-US")} ≈ ${estA.toLocaleString("en-US")}, ו־${b.toLocaleString("en-US")} ≈ ${estB.toLocaleString("en-US")}. ההפרש ≈ ${est.toLocaleString("en-US")}.`,{type:"est2",a,b,ans:est});
+}};
+
+const T_B5={id:"b5",part:1,emoji:"🧮",name:"ארבע פעולות במספרים שלמים",desc:"חיבור, חיסור, כפל וחילוק במאונך",
+learn:[{t:"טיפים לחישוב במאונך",x:"חיבור וחיסור: מסדרים ספרה מתחת לספרה (יחידות מתחת ליחידות!). כפל במספר דו־ספרתי: כופלים בכל ספרה בנפרד ומחברים. חילוק ארוך: מחלקים, כופלים, מחסירים, מורידים.",e:"346 × 15 = 346 × 10 + 346 × 5 = 3,460 + 1,730 = 5,190."}],
+gen(L){
+ const kind=rnd(0,3); let text,ans,why;
+ if(kind===0){ const a=rnd(100000,900000),b=rnd(10000,99999); ans=a+b; text=`${a.toLocaleString("en-US")} + ${b.toLocaleString("en-US")}`; why=`מחברים במאונך, ספרה מתחת לספרה: התוצאה ${ans.toLocaleString("en-US")}.`;
+ } else if(kind===1){ const a=rnd(300000,999999),b=rnd(100000,a-100000); ans=a-b; text=`${a.toLocaleString("en-US")} − ${b.toLocaleString("en-US")}`; why=`מחסרים במאונך עם הלוואות: התוצאה ${ans.toLocaleString("en-US")}.`;
+ } else if(kind===2){ const a=rnd(120,999),b=rnd(12,29); ans=a*b; text=`${a} × ${b}`; why=`${a} × ${b} = ${a} × ${Math.floor(b/10)*10} + ${a} × ${b%10} = ${(a*Math.floor(b/10)*10).toLocaleString("en-US")} + ${(a*(b%10)).toLocaleString("en-US")} = ${ans.toLocaleString("en-US")}.`;
+ } else { const d=rnd(3,9),q=rnd(40,300); const a=d*q; ans=q; text=`${a} ÷ ${d}`; why=`${d} × ${q} = ${a}, לכן ${a} ÷ ${d} = ${q}.`;
+ }
+ const o=numOpts(ans,[ans+ (rnd(1,9))*10, ans-(rnd(1,9))*10, ans+ (rnd(1,5)), ans+(rnd(50,200))]);
+ const oo={opts:o.opts.map(s=>{const n=parseFloat(s.replace(/,/g,""));return isNaN(n)?s:(+s).toLocaleString("en-US");}),ans:(+o.ans).toLocaleString("en-US")};
+ return Q(`חשבו: ${M(text+" = ?")}`,"",oo.opts,oo.ans,why,{type:"four",text,ans});
+}};
+
+function isPrime(n){ if(n<2)return false; for(let i=2;i*i<=n;i++) if(n%i===0)return false; return true;}
+const T_B6={id:"b6",part:1,emoji:"💎",name:"מספרים ראשוניים ופריקים",desc:"ראשוני מתחלק רק ב־1 ובעצמו",
+learn:[{t:"ראשוני או פריק?",x:"מספר ראשוני מתחלק רק ב־1 ובעצמו (כמו 2, 3, 5, 7, 11, 29, 37). מספר פריק מתחלק בעוד מספרים. זהירות: 51 = 3 × 17 הוא פריק! וגם 91 = 7 × 13.",e:"המספר 1 אינו ראשוני ואינו פריק."}],
+gen(L){
+ if(Math.random()<0.6){ const primes=[7,11,13,17,19,23,29,31,37,41,43,47]; const p=pick(primes);
+   const comps=new Set(); while(comps.size<3){ const c=pick([9,15,21,27,33,39,45,49,51,55,57,63,65,69,77,85,87,91,93,95,99]); comps.add(c);}
+   const o=makeOpts(String(p),[...comps].map(String));
+   return Q(`איזה מהמספרים הבאים הוא מספר <b>ראשוני</b>?`,"",o.opts,o.ans,
+     `${p} מתחלק רק ב־1 ובעצמו — ראשוני. השאר פריקים.`,{type:"prime",ans:p});
+ }
+ const n=pick([24,36,51,29,48,37,63,91,42,53]);
+ const o=makeOpts(isPrime(n)?"ראשוני":"פריק",[isPrime(n)?"פריק":"ראשוני","זוגי","אי־זוגי"]);
+ return Q(`האם המספר ${M(n)} הוא ראשוני או פריק?`,"",o.opts,o.ans,
+   isPrime(n)?`${n} מתחלק רק ב־1 ובעצמו — ראשוני.`:`${n} מתחלק בעוד מספרים חוץ מ־1 ומעצמו — פריק.`,{type:"prime2",n,ans:isPrime(n)});
+}};
+
+const T_B7={id:"b7",part:1,emoji:"🔟",name:"שברים עשרוניים — מבנה וערך",desc:"עשיריות, מאיות ואלפיות, פירוק והשוואה",
+learn:[
+ {t:"ערך הספרה",x:"במספר 15.378: הספרה 3 היא עשיריות (0.3), הספרה 7 היא מאיות (0.07), והספרה 8 היא אלפיות (0.008).",e:"סופרים מקומות אחרי הנקודה: מקום ראשון = עשיריות, שני = מאיות, שלישי = אלפיות."},
+ {t:"מעשרוני לשבר פשוט",x:"0.12 = 12/100, ומצמצמים ב־4: 3/25. תמיד מצמצמים ככל האפשר!",e:"0.5 = 5/10 = 1/2. 0.25 = 25/100 = 1/4."}],
+gen(L){
+ const kind=rnd(0,3);
+ if(kind===0){ const whole=rnd(3,29); const th=rnd(1,9), hu=rnd(1,9), mi=rnd(1,9);
+   const dec=`${whole}.${th}${hu}${mi}`; const which=rnd(0,2);
+   const names=["עשיריות","מאיות","אלפיות"]; const digits=[th,hu,mi];
+   const correct=`${digits[which]} ${names[which]}`;
+   const wrongs=names.map((nm,i)=> i===which?null:`${digits[which]} ${nm}`).filter(Boolean);
+   wrongs.push(`${digits[(which+1)%3]} ${names[which]}`);
+   const o=makeOpts(correct,wrongs);
+   return Q(`מהו ערך הספרה ${M(digits[which])} במספר העשרוני ${M(dec)}?`,"",o.opts,o.ans,
+     `במספר ${dec}: מקום ראשון אחרי הנקודה = עשיריות, שני = מאיות, שלישי = אלפיות. הספרה נמצאת במקום ה${names[which]}.`,{type:"place",ans:correct});
+ }
+ if(kind===1){ const dens=[["0.5",1,2],["0.25",1,4],["0.2",1,5],["0.75",3,4],["0.12",3,25],["0.4",2,5],["0.125",1,8],["0.6",3,5],["0.08",2,25],["0.35",7,20]];
+   const d=pick(dens); const correct=frac(d[1],d[2]);
+   const wrongs=[frac(d[1]+1,d[2]),frac(d[1],d[2]*2),frac(d[2],d[1]*10)].filter(w=>w!==correct);
+   const o=makeOpts(correct,wrongs);
+   const rawN=parseInt(d[0].replace(".",""),10), rawD=Math.pow(10,d[0].split(".")[1].length);
+   return Q(`כתבו את השבר העשרוני ${M(d[0])} כשבר פשוט מצומצם ככל האפשר:`,"",o.opts,o.ans,
+     `${d[0]} = ${rawN}/${rawD}, ומצמצמים (מחלקים מונה ומכנה באותו מספר) ומקבלים ${fracStr(d[1],d[2])}.`,{type:"dec2frac",ans:fracStr(d[1],d[2])});
+ }
+ if(kind===2){ const w=rnd(2,19), th=rnd(1,9), hu=rnd(1,9); const dec=w+th/10+hu/100;
+   const missingPos=pick([1,2]); const parts=[`${w}`,`${num(th/10)}`,`${num(hu/100)}`];
+   const shown=parts.map((p,i)=> i===missingPos?"__":p).join(" + ");
+   const missVal=missingPos===1?th/10:hu/100;
+   const o=numOpts(missVal,[0.05,0.5,5,0.005].filter(v=>num(v)!==num(missVal)));
+   return Q(`השלימו את החסר לפי המבנה העשרוני: ${M(num(dec)+" = "+shown)}`,"",o.opts,o.ans,
+     `במספר ${num(dec)}: הספרה ${missingPos===1?th:hu} נמצאת במקום ה${missingPos===1?"עשיריות":"מאיות"}, ושוויה ${o.ans}.`,{type:"expand",ans:o.ans,missVal});
+ }
+ // compare: largest
+ const base=[0.405,0.5,0.45,0.099]; const vars=[[0.305,0.35,0.3,0.299],[0.705,0.75,0.7,0.079],[0.905,0.95,0.9,0.909],[0.605,0.65,0.6,0.069]];
+ const set=pick([base].concat(vars)); const mx=Math.max(...set);
+ const o=makeOpts(num(mx),set.filter(v=>v!==mx).map(num));
+ return Q(`הקיפו את השבר העשרוני בעל הערך הגדול ביותר:`,"",o.opts,o.ans,
+  `משווים ספרה־ספרה משמאל: הערך הגדול ביותר הוא ${num(mx)}.`,{type:"cmp",ans:mx});
+}};
+
+const T_B8={id:"b8",part:1,emoji:"💰",name:"פעולות בשברים עשרוניים",desc:"חיבור וחיסור עשרוניים והשלמה לשלם",
+learn:[{t:"מחברים עשרוניים",x:"מסדרים נקודה מתחת לנקודה! 5.8 + 3.45: כותבים 5.80 מעל 3.45 ומחברים רגיל.",e:"7.2 − 2.85 = 7.20 − 2.85 = 4.35."}],
+gen(L){
+ const kind=rnd(0,2); const C=v=>Math.round(v); // work in hundredths (integers)
+ let a,b,ans,text,why;
+ if(kind===0){ a=rnd(150,990)/100*100; a=Math.round(a); b=Math.round(rnd(120,880)); ans=(a+b)/100;
+   text=`${num(a/100)} + ${num(b/100)}`; why=`מיישרים נקודות ומחברים: ${num(a/100)} + ${num(b/100)} = ${num(ans)}.`;
+ } else if(kind===1){ a=Math.round(rnd(400,990)); b=Math.round(rnd(120,a-60)); ans=(a-b)/100;
+   text=`${num(a/100)} − ${num(b/100)}`; why=`מיישרים נקודות ומחסירים: ${num(a/100)} − ${num(b/100)} = ${num(ans)}.`;
+ } else { b=Math.round(rnd(110,390)); const tot=(Math.floor(b/100)+1)*100; const x=tot-b; ans=x/100;
+   text=`__ + ${num(b/100)} = ${num(tot/100)}`; why=`${num(tot/100)} − ${num(b/100)} = ${num(ans)}.`;
+   const o=numOpts(ans,[ans+0.1,ans-0.1,ans+1,ans+0.05].map(v=>Math.round(v*100)/100));
+   return Q(`השלימו את המספר החסר: ${M(text)}`,"",o.opts,o.ans,why,{type:"decop",ans});
+ }
+ const o=numOpts(Math.round(ans*100)/100,[Math.round((ans+0.11)*100)/100,Math.round((ans-0.2)*100)/100,Math.round((ans+1)*100)/100,Math.round((ans+0.02)*100)/100]);
+ return Q(`פתרו: ${M(text+" = ?")}`,"",o.opts,o.ans,why,{type:"decop",ans:Math.round(ans*100)/100});
+}};
+
+function dispFrac(n,d){ const g=gcd(n,d); n/=g; d/=g; if(d===1)return M(n); if(n>d){const w=Math.floor(n/d),r=n%d; return r===0?M(w):mixed(w,r,d);} return frac(n,d); }
+function fracOpts(n,d){ const g=gcd(n,d); const rn=n/g, rd=d/g; const correct=dispFrac(n,d);
+ const cand=[[rn+rd,rd],[rn,rd+1],[rn+1,rd],[rn+ (rd),rd*1],[Math.max(1,rn-1),rd],[rn,rd*2],[rn+2,rd+1]];
+ const ws=[]; const seen=new Set([fracStr(rn,rd)]);
+ for(const c of cand){ const k=fracStr(c[0],c[1]); if(!seen.has(k)){seen.add(k); ws.push(dispFrac(c[0],c[1]));} if(ws.length>=3)break; }
+ return makeOpts(correct,ws);
+}
+const T_B9={id:"b9",part:1,emoji:"🍕",name:"חישובים בשברים פשוטים",desc:"חיבור, חיסור וכפל — מכנים שווים ושונים, מספרים מעורבים",
+learn:[
+ {t:"מחברים שברים",x:"מכנים שווים: מחברים רק את המונים. מכנים שונים: מוצאים מכנה משותף קודם! ובסוף — מצמצמים.",e:"2/5 + 3/10: מכנה משותף 10 ← 4/10 + 3/10 = 7/10."},
+ {t:"מספר מעורב × או −",x:"הופכים לשבר מדומה, מחשבים, והופכים בחזרה למעורב. כפל שלם בשבר: כופלים את השלם במונה.",e:"6 × 3/8 = 18/8 = 9/4 = 2 ורבע."}],
+gen(L){
+ const kind=rnd(0,4); let text,why,n,d;
+ if(kind===0){ d=pick([5,6,8,9,10,12]); const a=rnd(1,d-2),b=rnd(1,d-1-a); n=a+b;
+   text=`${fracStr(a,d)} + ${fracStr(b,d)}`; why=`המכנים שווים: מחברים מונים ${a} + ${b} = ${n}, ומצמצמים אם אפשר: ${fracStr(n,d)}.`;
+   const o=fracOpts(n,d); return Q(`פתרו וצמצמו: ${frac(a,d)} + ${frac(b,d)} = ?`,"",o.opts,o.ans,why,{type:"frac",n,d});
+ }
+ if(kind===1){ const pairs=[[2,5,3,10],[3,8,1,4],[5,6,1,3],[3,4,1,2],[2,3,1,6],[4,9,1,3]]; const p=pick(pairs);
+   const cd=p[1]*p[3]/gcd(p[1],p[3]); n=p[0]*(cd/p[1])+p[2]*(cd/p[3]); d=cd;
+   text=`${fracStr(p[0],p[1])} + ${fracStr(p[2],p[3])}`;
+   why=`מכנה משותף ${cd}: ${fracStr(p[0]*(cd/p[1]),cd)} + ${fracStr(p[2]*(cd/p[3]),cd)} = ${fracStr(n,d)}.`;
+   const o=fracOpts(n,d); return Q(`פתרו וצמצמו: ${frac(p[0],p[1])} + ${frac(p[2],p[3])} = ?`,"",o.opts,o.ans,why,{type:"frac",n,d});
+ }
+ if(kind===2){ // mixed minus mixed
+   const dd=pick([3,4,5,6]); let w1=rnd(3,6), n1=rnd(0,dd-1), w2=rnd(1,w1-1), n2=rnd(0,dd-1);
+   let N=(w1*dd+n1)-(w2*dd+n2); if(N<=0){w1+=2; N=(w1*dd+n1)-(w2*dd+n2);} d=dd; n=N;
+   why=`הופכים למדומים: ${fracStr(w1*dd+n1,dd)} − ${fracStr(w2*dd+n2,dd)} = ${fracStr(n,d)}, והופכים למעורב: ${fracStr(n,d)}.`;
+   const o=fracOpts(n,d);
+   return Q(`פתרו: ${mixed(w1,n1,dd)} − ${mixed(w2,n2,dd)} = ?`,"",o.opts,o.ans,why,{type:"frac",n,d});
+ }
+ if(kind===3){ const w=rnd(3,9); d=pick([4,6,8,9]); const a=rnd(1,d-1); n=w*a;
+   why=`כופלים את השלם במונה: ${w} × ${a} = ${n}, המכנה נשאר ${d}: ${fracStr(n,d)}.`;
+   const o=fracOpts(n,d);
+   return Q(`פתרו: ${M(w)} × ${frac(a,d)} = ?`,"",o.opts,o.ans,why,{type:"frac",n,d});
+ }
+ // sub diff denominators
+ const pairs=[[7,10,2,5],[5,6,1,2],[8,9,1,3],[9,10,1,2],[5,8,1,4]]; const p=pick(pairs);
+ const cd=p[1]*p[3]/gcd(p[1],p[3]); n=p[0]*(cd/p[1])-p[2]*(cd/p[3]); d=cd;
+ why=`מכנה משותף ${cd}: ${fracStr(p[0]*(cd/p[1]),cd)} − ${fracStr(p[2]*(cd/p[3]),cd)} = ${fracStr(n,d)}.`;
+ const o=fracOpts(n,d);
+ return Q(`פתרו וצמצמו: ${frac(p[0],p[1])} − ${frac(p[2],p[3])} = ?`,"",o.opts,o.ans,why,{type:"frac",n,d});
+}};
+
+
+/* ================= PART C — WORD PROBLEMS ================= */
+function wpBook(){ const sets=[[2,5,1,3],[1,4,1,3],[3,10,1,5],[1,6,1,4],[2,9,1,3],[3,8,1,4]]; const p=pick(sets);
+ const cd=p[1]*p[3]/gcd(p[1],p[3]); const read=p[0]*(cd/p[1])+p[2]*(cd/p[3]); const n=cd-read, d=cd;
+ const o=fracOpts(n,d);
+ return Q(`יואב קרא ${frac(p[0],p[1])} מדפי הספר ביום ראשון, ו־${frac(p[2],p[3])} מדפי הספר ביום שני. איזה חלק מהספר נותר לו לקרוא?`,"",o.opts,o.ans,
+  `קרא בסך הכול ${fracStr(read,cd)} מהספר. נותר: 1 − ${fracStr(read,cd)} = ${fracStr(n,d)}.`,{type:"wp",n,d}); }
+function wpMoney(){ const bill=pick([100,120,200]); const n1=rnd(2,4); const p1=1450; const p2=1820;
+ const items=Math.random()<0.5?[{n:n1,pr:p1,nm:"מחברות",prS:"14.50"}]:[{n:n1,pr:p1,nm:"מחברות",prS:"14.50"},{n:1,pr:p2,nm:"עט",prS:"18.20"}];
+ let total=0; let desc=[];
+ for(const it of items){ total+=it.n*it.pr; desc.push(`${it.n} ${it.nm} במחיר של ${it.prS} ש"ח ליחידה`); }
+ const change=bill*100-total; const ans=change/100;
+ const o=numOpts(ans,[ans+5,ans-3.5,ans+10,ans-10].map(v=>Math.round(v*100)/100));
+ return Q(`למאיה היו ${M(bill)} ש"ח. היא קנתה ${desc.join(", וגם ")}. כמה עודף קיבלה מאיה?`,"",o.opts,o.ans,
+  `שילמה בסך הכול ${num(total/100)} ש"ח. עודף: ${bill} − ${num(total/100)} = ${num(ans)} ש"ח.`,{type:"wp",ans}); }
+function wpGarden(){ const s=pick([8,10,12,15,16]); const o2=rnd(6,14); const A=s*o2; const per=2*(s+o2);
+ const o=numOpts(per,[per+ (s), per-4, 2*s+o2, A]);
+ return Q(`לגינה מלבנית שטח של ${M(A)} סמ"ר. ידוע שאורך אחת מצלעות הגינה הוא ${M(s)} ס"מ. מהו היקף הגינה?`,"",o.opts,o.ans,
+  `הצלע השנייה: ${A} ÷ ${s} = ${o2} ס"מ. היקף: (${s} + ${o2}) × 2 = ${per} ס"מ.`,{type:"wp",ans:per}); }
+function wpBuses(){ const classes=rnd(14,20), per=rnd(28,34); const total=classes*per;
+ const divisors=[]; for(let b=6;b<=12;b++) if(total%b===0) divisors.push(b);
+ if(!divisors.length) return wpBuses();
+ const buses=pick(divisors); const perBus=total/buses;
+ const o=numOpts(perBus,[perBus+2,perBus-3,perBus+5,per]);
+ return Q(`בבית ספר "אורנים" יש ${M(classes)} כיתות, ובכל כיתה ${M(per)} תלמידים. לקראת הטיול השנתי, חילקו את כל תלמידי בית הספר באופן שווה ל־${M(buses)} אוטובוסים. כמה תלמידים נסעו בכל אוטובוס?`,"",o.opts,o.ans,
+  `סך התלמידים: ${classes} × ${per} = ${total}. בכל אוטובוס: ${total} ÷ ${buses} = ${perBus}.`,{type:"wp",ans:perBus}); }
+function wpMarbles(){ const k=rnd(8,12); const T=45*k; const red=T*2/9, blue=T*3/5, yellow=T-red-blue;
+ const o=numOpts(yellow,[yellow+10,yellow-15,red,blue]);
+ return Q(`בכד יש ${M(T)} גולות. ${frac(2,9)} מהגולות הן אדומות, ${frac(3,5)} מהגולות הן כחולות, והשאר צהובות. כמה גולות צהובות יש בכד?`,"",o.opts,o.ans,
+  `אדומות: ${T} × 2/9 = ${red}. כחולות: ${T} × 3/5 = ${blue}. צהובות: ${T} − ${red} − ${blue} = ${yellow}.`,{type:"wp",ans:yellow}); }
+function wpDiscount(){ const P=pick([100,120,150,180,200,250,300]); const disc=P/5; const ans=P-disc;
+ const o=numOpts(ans,[P-disc-10,disc,ans+10,P-20]);
+ return Q(`מחיר חולצה בחנות הוא ${M(P)} ש"ח. בסוף העונה ניתנה הנחה של ${frac(1,5)} ממחירה. מהו המחיר החדש של החולצה לאחר ההנחה?`,"",o.opts,o.ans,
+  `ההנחה: ${P} ÷ 5 = ${disc} ש"ח. המחיר החדש: ${P} − ${disc} = ${ans} ש"ח.`,{type:"wp",ans}); }
+function wpCookies(){ const total=rnd(200,300); const box=12; const full=Math.floor(total/box), left=total%box;
+ if(left===0) return wpCookies();
+ const correct=`${full} קופסאות מלאות, ויישארו ${left} עוגיות`;
+ const wrongs=[`${full+1} קופסאות מלאות, ויישארו ${left} עוגיות`,`${full} קופסאות מלאות, ויישארו ${box-left} עוגיות`,`${left} קופסאות מלאות, ויישארו ${full} עוגיות`];
+ const o=makeOpts(correct,wrongs);
+ return Q(`לאופה יש ${M(total)} עוגיות. הוא אורז אותן בקופסאות של ${M(box)} עוגיות בכל קופסה. כמה קופסאות מלאות הוא יכול לארוז, וכמה עוגיות יישארו ללא קופסה?`,"",o.opts,o.ans,
+  `${total} ÷ ${box} = ${full} ושארית ${left}: ${full} × ${box} = ${full*box}, ו־${total} − ${full*box} = ${left}.`,{type:"wp",full,left}); }
+function wpBottle(){ const B=pick([150,175,200]); const cups=rnd(3,5); const cup=pick([25,30]); const used=cups*cup; const ans=(B-used)/100;
+ const o=numOpts(ans,[ans+0.2,ans-0.15,ans+0.5,B/100-used/10].map(v=>Math.round(v*100)/100));
+ return Q(`בקבוק מים מכיל ${M(num(B/100))} ליטר. דני מילא ממנו ${M(cups)} כוסות שוות, כאשר בכל כוס יש ${M(num(cup/100))} ליטר. כמה ליטר מים נותרו בבקבוק?`,"",o.opts,o.ans,
+  `דני מזג ${cups} × ${num(cup/100)} = ${num(used/100)} ליטר. נותרו: ${num(B/100)} − ${num(used/100)} = ${num(ans)} ליטר.`,{type:"wp",ans}); }
+function wpTriHeight(){ const b=pick([6,8,9,12]); const h=rnd(4,10); const A=b*h/2;
+ const o=numOpts(h,[h+2,h-1,A/b*2===h?h+4:Math.round(A/b),h+5]);
+ return Q(`שטחו של משולש הוא ${M(A)} סמ"ר, ואורך הבסיס שלו הוא ${M(b)} ס"מ. מהו אורך הגובה היורד לבסיס זה?`,"",o.opts,o.ans,
+  `שטח = בסיס × גובה ÷ 2, לכן גובה = ${A} × 2 ÷ ${b} = ${h} ס"מ.`,{type:"wp",ans:h}); }
+function wpAvg(){ const avg=rnd(78,95); const offs=[[5,-3,-2,0],[8,-4,-4,0],[10,-6,-2,-2],[4,4,-6,-2],[12,-8,-2,-2]];
+ const o1=pick(offs); const grades=o1.map(x=>avg+x); const sum=grades.reduce((s,x)=>s+x,0);
+ const o=numOpts(avg,[avg+2,avg-3,avg+5,Math.round(sum/3)]);
+ return Q(`רוני קיבל במבחנים במתמטיקה את הציונים הבאים: ${grades.join(", ")}. מהו הציון הממוצע שלו?`,"",o.opts,o.ans,
+  `סכום הציונים: ${sum}. ממוצע: ${sum} ÷ 4 = ${avg}.`,{type:"wp",ans:avg}); }
+const WP_GENS=[wpBook,wpMoney,wpGarden,wpBuses,wpMarbles,wpDiscount,wpCookies,wpBottle,wpTriHeight,wpAvg];
+const T_C={id:"c",part:2,emoji:"📖",name:"בעיות מילוליות",desc:"שברים, כסף ועודף, היקף, חלוקה, חילוק עם שארית, ממוצע ועוד",
+learn:[
+ {t:"המתכון לבעיה מילולית",x:"1) קוראים עד הסוף. 2) מסמנים: מה ידוע? מה שואלים? 3) כותבים תרגיל. 4) פותרים. 5) בודקים שהתשובה הגיונית וכותבים אותה במשפט.",e:"״חלק מהכמות״ = כופלים את הכמות בשבר. ״נותר״ = מחסירים ממה שהיה."},
+ {t:"מילון קצר",x:"עודף = הכסף שחוזר אלינו. ממוצע = סכום ÷ כמות. היקף מלבן = (אורך + רוחב) × 2. שטח משולש = בסיס × גובה ÷ 2 — ולהפך: גובה = שטח × 2 ÷ בסיס.",e:"בחילוק עם שארית: 250 ÷ 12 = 20 ושארית 10 — 20 קופסאות מלאות ו־10 עוגיות בחוץ."}],
+gen(L){ return pick(WP_GENS)(); },
+genIdx(i){ return WP_GENS[i%WP_GENS.length](); }};
+
+/* ================= PART D — ENRICHMENT ================= */
+const T_D1={id:"d1",part:3,emoji:"🔗",name:"סדרות מספרים וחוקיות",desc:"מוצאים את המספר החסר ואת הכלל",
+learn:[{t:"איך מגלים חוקיות?",x:"בודקים איך עוברים ממספר למספר: אם כל פעם כופלים באותו מספר — זו סדרת כפל. מחלקים מספר במספר שלפניו כדי לגלות בכמה כופלים.",e:"4, __, 100, 500, 2500: 100 ÷ 5 = 20, 500 ÷ 100 = 5... הכלל: כופלים ב־5. החסר: 4 × 5 = 20."}],
+gen(L){ const k=pick([3,4,5]); const s=rnd(2,6); const terms=[s,s*k,s*k*k,s*k*k*k,s*k*k*k*k];
+ const missIdx=pick([1,2]); const shown=terms.map((t,i)=> i===missIdx?"____":t).join(" , ");
+ const o=numOpts(terms[missIdx],[terms[missIdx]*k,terms[missIdx]+k,terms[missIdx]/k,s*k*(k+1)]);
+ return Q(`לפניכם סדרת מספרים הבנויה לפי כלל מסוים: ${M(shown+" ...")} מהו המספר החסר בסדרה, ומהו הכלל?`,"",o.opts,o.ans,
+  `הכלל: כל מספר הוא הקודם כפול ${k}. המספר החסר: ${terms[missIdx-1]} × ${k} = ${terms[missIdx]}.`,{type:"seq",k,ans:terms[missIdx],terms});
+}};
+const T_D2={id:"d2",part:3,emoji:"🧱",name:"פירוק עשרוני",desc:"מפרקים מספר עשרוני לחלקים של עשיריות, מאיות ואלפיות",
+learn:[{t:"פירוק עשרוני עם שברים",x:"כל ספרה אחרי הנקודה הופכת לשבר: ספרה ראשונה — מונה מעל 10, שנייה — מעל 100, שלישית — מעל 1000.",e:"8.47 = 8 + 4/10 + 7/100. ובמספר 15.083: ה־8 היא מאיות (8/100) וה־3 היא אלפיות (3/1000)."}],
+gen(L){
+ const kind=rnd(0,2);
+ if(kind===0){ const w=rnd(2,19), a=rnd(1,9), b=rnd(1,9); const dec=`${w}.${a}${b}`;
+   const correct=`המונה מעל 10 הוא ${a}, והמונה מעל 100 הוא ${b}`;
+   const wrongs=[`המונה מעל 10 הוא ${b}, והמונה מעל 100 הוא ${a}`,`המונה מעל 10 הוא ${a}, והמונה מעל 100 הוא ${a}`,`המונה מעל 10 הוא ${w}, והמונה מעל 100 הוא ${b}`];
+   const o=makeOpts(correct,wrongs);
+   return Q(`השלימו את המספרים החסרים במשבצות כך שיתקבל שוויון נכון: ${M(dec+" = "+w+" + □/10 + □/100")}`,"",o.opts,o.ans,
+    `הספרה ${a} היא עשיריות (מעל 10) והספרה ${b} היא מאיות (מעל 100).`,{type:"decomp",a,b});
+ }
+ if(kind===1){ const w=rnd(11,29), a=rnd(1,9), b=rnd(1,9); const dec=`${w}.0${a}${b}`;
+   const correct=`המונה מעל 100 הוא ${a}, והמונה מעל 1000 הוא ${b}`;
+   const wrongs=[`המונה מעל 100 הוא ${b}, והמונה מעל 1000 הוא ${a}`,`המונה מעל 100 הוא 0, והמונה מעל 1000 הוא ${a}`,`המונה מעל 100 הוא ${a}, והמונה מעל 1000 הוא ${a}`];
+   const o=makeOpts(correct,wrongs);
+   return Q(`השלימו את המספרים החסרים במשבצות: ${M(dec+" = "+w+" + □/100 + □/1000")}`,"",o.opts,o.ans,
+    `במספר ${dec}: אחרי הנקודה יש 0 עשיריות, ${a} מאיות ו־${b} אלפיות.`,{type:"decomp",a,b});
+ }
+ const w=rnd(2,9), a=rnd(1,9), b=rnd(1,9); const t=rnd(1,9); const dec=`${w}.${t}${a}${b}`;
+ const correct=`המונה מעל 100 הוא ${a}, והמונה מעל 1000 הוא ${b}`;
+ const wrongs=[`המונה מעל 100 הוא ${b}, והמונה מעל 1000 הוא ${a}`,`המונה מעל 100 הוא ${t}, והמונה מעל 1000 הוא ${a}`,`המונה מעל 100 הוא ${a}, והמונה מעל 1000 הוא ${t}`];
+ const o=makeOpts(correct,wrongs);
+ return Q(`השלימו את המספרים החסרים במשבצות: ${M(dec+" = "+w+" + 0."+t+" + □/100 + □/1000")}`,"",o.opts,o.ans,
+  `במספר ${dec}: העשיריות הן ${t} (נתון), המאיות ${a} והאלפיות ${b}.`,{type:"decomp",a,b});
+}};
+const T_D3={id:"d3",part:3,emoji:"🪑",name:"ערימות — כיסאות וקופסאות",desc:"כמה גדלה ערימה עם כל פריט נוסף?",
+learn:[{t:"הטריק של הערימות",x:"הפריט הראשון נותן את רוב הגובה, וכל פריט נוסף מוסיף רק קצת. כדי למצוא תוספת לפריט: (גובה הערימה − גובה פריט אחד) ÷ (מספר הפריטים הנוספים).",e:"כיסא 80 ס״מ, ערימת 5 כיסאות 120 ס״מ: התוספת לכיסא = (120 − 80) ÷ 4 = 10 ס״מ. ערימת 9: 80 + 8 × 10 = 160 ס״מ."}],
+gen(L){
+ const chair=Math.random()<0.5;
+ const h0=chair?rnd(70,90):rnd(18,26);
+ const per=chair?pick([8,10,12]):pick([4,5,6]);
+ const n1=chair?5:4; const H1=h0+per*(n1-1);
+ const n2=chair?9:8; const H2=h0+per*(n2-1);
+ const item=chair?"כיסא":"קופסת פלסטיק", items=chair?"כיסאות":"קופסאות", stored=chair?"מכניסים כיסאות זה לתוך זה":"מאחסנים קופסאות זו בתוך זו";
+ if(Math.random()<0.5){ const o=numOpts(per,[per+2,per-2,(H1-h0),Math.round((H1)/n1)]);
+   return Q(`גובה ${item} בודד הוא ${M(h0)} ס"מ. כאשר ${stored}, גובה ערימה של ${M(n1)} ${items} הוא ${M(H1)} ס"מ. בכמה ס"מ גדל גובה הערימה עבור כל ${item} נוסף?`,"",o.opts,o.ans,
+    `התוספת הכוללת: ${H1} − ${h0} = ${H1-h0} ס"מ עבור ${n1-1} פריטים נוספים. לכל פריט: ${H1-h0} ÷ ${n1-1} = ${per} ס"מ.`,{type:"stack",per});
+ }
+ const o=numOpts(H2,[H2+per,H2-per,h0*n2, H1+per]);
+ return Q(`גובה ${item} בודד הוא ${M(h0)} ס"מ. כאשר ${stored}, גובה ערימה של ${M(n1)} ${items} הוא ${M(H1)} ס"מ. מהו הגובה של ערימה הכוללת ${M(n2)} ${items} המונחות זו בתוך זו?`,"",o.opts,o.ans,
+  `כל פריט נוסף מוסיף (${H1} − ${h0}) ÷ ${n1-1} = ${per} ס"מ. ערימת ${n2}: ${h0} + ${n2-1} × ${per} = ${H2} ס"מ.`,{type:"stack",ans:H2});
+}};
+function pieSlice(cx,cy,r,a0,a1,color){ const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0),x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
+ const laf=(a1-a0)>Math.PI?1:0;
+ return `<path d="M ${cx} ${cy} L ${x0.toFixed(1)} ${y0.toFixed(1)} A ${r} ${r} 0 ${laf} 1 ${x1.toFixed(1)} ${y1.toFixed(1)} Z" fill="${color}" stroke="#fff" stroke-width="2"/>`;}
+const T_D4={id:"d4",part:3,emoji:"🥧",name:"דיאגרמת עוגה — ענפי ספורט",desc:"קוראים חלקים מתוך דיאגרמת עוגה",
+learn:[{t:"קוראים דיאגרמת עוגה",x:"העוגה כולה = השלם (כל התלמידים). כל פרוסה היא חלק מהשלם. אם חצי מהעוגה היא כדורגל — חצי מהתלמידים בחרו כדורגל.",e:"160 תלמידים, כדורגל = 1/2 ← 80 תלמידים. כדורסל 1/4 ושחייה 1/8 ביחד = 3/8 — פחות מחצי!"}],
+gen(L){
+ const T=pick([120,160,200,240]); const cx=90,cy=90,r=80;
+ let a=-Math.PI/2; let slices="";
+ const parts=[[0.5,"#3a7bd5"],[0.25,"#43b581"],[0.125,"#ffb400"],[0.125,"#e05252"]];
+ for(const p of parts){ slices+=pieSlice(cx,cy,r,a,a+p[0]*2*Math.PI,p[1]); a+=p[0]*2*Math.PI; }
+ const viz=`<div class="qfig"><svg width="180" height="180" viewBox="0 0 180 180">${slices}</svg>
+ <div class="legend"><span><span class="swatch" style="background:#3a7bd5"></span>כדורגל (1/2)</span><span><span class="swatch" style="background:#43b581"></span>כדורסל (1/4)</span><span><span class="swatch" style="background:#ffb400"></span>שחייה (1/8)</span><span><span class="swatch" style="background:#e05252"></span>טניס</span></div></div>`;
+ const kind=rnd(0,2);
+ const intro=`בסקר שנערך בקרב ${M(T)} תלמידי שכבה ו' על הספורט האהוב עליהם, התקבלו התוצאות המוצגות בדיאגרמה:`;
+ if(kind===0){ const ans=T/2; const o=numOpts(ans,[T/4,T/8,ans+20,T-ans+10]);
+   return Q(`${intro} כמה תלמידים בחרו בכדורגל?`,viz,o.opts,o.ans,`כדורגל הוא חצי מהעוגה: ${T} ÷ 2 = ${ans} תלמידים.`,{type:"pie",ans}); }
+ if(kind===1){ const o=makeOpts(fracStr(1,8),[fracStr(1,4),fracStr(1,2),fracStr(3,8)].map(s=>{const[a,b]=s.split("/");return frac(+a,+b);}));
+   const oo=makeOpts(frac(1,8),[frac(1,4),frac(1,2),frac(3,8)]);
+   return Q(`${intro} איזה חלק מכלל התלמידים בחרו בטניס?`,viz,oo.opts,oo.ans,
+    `טניס = השלם פחות השאר: 1 − 1/2 − 1/4 − 1/8 = 1/8.`,{type:"pie",ans:"1/8"}); }
+ const o=makeOpts("לא נכון — ביחד הם 3/8, פחות מחצי",["נכון — ביחד הם יותר מחצי","אי אפשר לדעת מהדיאגרמה","נכון — בדיוק חצי"]);
+ return Q(`${intro} דן טוען: "יותר מחצי מכלל התלמידים בחרו בכדורסל ושחייה יחד". האם דן צודק?`,viz,o.opts,o.ans,
+  `כדורסל 1/4 + שחייה 1/8 = 3/8. ו־3/8 קטן מחצי (4/8) — דן לא צודק.`,{type:"pie",ans:false});
+}};
+const T_D5={id:"d5",part:3,emoji:"📊",name:"דיאגרמת עמודות — קריאת ספרים",desc:"הכי הרבה, סך הכול וממוצע מתוך דיאגרמה",
+learn:[{t:"קוראים דיאגרמת עמודות",x:"גובה העמודה מול הסקאלה בצד נותן את המספר. ממוצע = סכום כל העמודות ÷ מספר העמודות.",e:"עמודות 40, 56, 32, 48: הסכום 176, הממוצע 176 ÷ 4 = 44."}],
+gen(L){
+ const base=pick([[40,56,32,48],[36,52,28,44],[44,60,36,48],[32,48,40,56],[48,36,56,40]]);
+ const cls=["ו'1","ו'2","ו'3","ו'4"]; const maxI=base.indexOf(Math.max(...base));
+ let bars=""; const bw=44,gap=26,x0=44,baseY=170,scale=2.2;
+ let axis=`<line x1="${x0}" y1="20" x2="${x0}" y2="${baseY}" stroke="#5a6b7d" stroke-width="1.5"/><line x1="${x0}" y1="${baseY}" x2="${x0+4*(bw+gap)}" y2="${baseY}" stroke="#5a6b7d" stroke-width="1.5"/>`;
+ for(let v=0;v<=60;v+=20){ const y=baseY-v*scale; axis+=`<line x1="${x0-4}" y1="${y}" x2="${x0+4*(bw+gap)}" y2="${y}" stroke="#e3ebf5"/><text x="${x0-8}" y="${y+4}" font-size="11" text-anchor="end" fill="#5a6b7d">${v}</text>`; }
+ base.forEach((v,i)=>{ const h=v*scale; const x=x0+10+i*(bw+gap);
+   bars+=`<rect x="${x}" y="${baseY-h}" width="${bw}" height="${h}" fill="${i===maxI?"#6a4fd0":"#3a7bd5"}"/><text x="${x+bw/2}" y="${baseY+16}" font-size="13" text-anchor="middle" fill="#1c2b3a">${cls[i]}</text>`; });
+ const viz=`<div class="qfig"><svg width="320" height="196" viewBox="0 0 320 196" style="max-width:100%">${axis}${bars}</svg></div>`;
+ const total=base.reduce((s,x)=>s+x,0); const kind=rnd(0,2);
+ const intro=`לפניכם דיאגרמת עמודות המציגה את מספר הספרים שקראו תלמידי כיתות ו' במהלך החופש:`;
+ if(kind===0){ const o=makeOpts(cls[maxI],cls.filter((c,i)=>i!==maxI));
+   return Q(`${intro} באיזו כיתה קראו הכי הרבה ספרים?`,viz,o.opts,o.ans,`העמודה הגבוהה ביותר היא של כיתה ${cls[maxI]} — ${base[maxI]} ספרים.`,{type:"bar",ans:cls[maxI]}); }
+ if(kind===1){ const o=numOpts(total,[total+10,total-12,total+24,Math.round(total/4)]);
+   return Q(`${intro} כמה ספרים קראו בסך הכול 4 הכיתות?`,viz,o.opts,o.ans,`מחברים: ${base.join(" + ")} = ${total}.`,{type:"bar",ans:total}); }
+ const avg=total/4; const o=numOpts(avg,[avg+4,avg-5,total,avg+11]);
+ return Q(`${intro} חשבו את ממוצע הספרים שקראה כיתה אחת בשכבה:`,viz,o.opts,o.ans,`סך הכול ${total} ספרים ÷ 4 כיתות = ${avg}.`,{type:"bar",ans:avg});
+}};
+
+const TOPICS=[T_A1,T_A2,T_A3,T_A4,T_A5,T_A6,T_B1,T_B2,T_B3,T_B4,T_B5,T_B6,T_B7,T_B8,T_B9,T_C,T_D1,T_D2,T_D3,T_D4,T_D5];
+const PARTS=[
+ {emoji:"📐",name:"חלק א׳ — גאומטריה",desc:"צורות, תכונות ומדידות · שאלות 1–6 בערכה"},
+ {emoji:"🧮",name:"חלק ב׳ — מיומנויות חישוב ומספרים",desc:"סדר פעולות, התחלקות, שברים ועשרוניים · שאלות 7–15 בערכה"},
+ {emoji:"📖",name:"חלק ג׳ — בעיות מילוליות מגוונות",desc:"סיפורים עם מספרים · שאלות 16–25 בערכה"},
+ {emoji:"🚀",name:"חלק ד׳ — העשרה והעמקה",desc:"חוקיות, פירוק עשרוני, ערימות ודיאגרמות · שאלות 26–35 בערכה"}];
+
+
+/* ================= UI ================= */
+const $=id=>document.getElementById(id);
+let curTopic=null, trainState=null, testQs=[], testSel=[], mockQs=[], mockSel=[];
+const ramzorState={}; // partIdx -> 0 green,1 yellow,2 red
+
+function shareApp(){ const data={title:document.title,text:"ערכת חזרה למבחן במתמטיקה — כיתה ו׳",url:location.href};
+ if(navigator.share){ navigator.share(data).catch(()=>{}); }
+ else if(navigator.clipboard){ navigator.clipboard.writeText(location.href).then(()=>alert("הקישור הועתק! 📋")).catch(()=>alert(location.href)); }
+ else alert(location.href); }
+
+function ramzorHtml(p){ const sel=ramzorState[p];
+ return `<div class="ramzor" id="rz-${p}"><div class="rt">🚦 רמזור למידה — חלק ${"א׳ב׳ג׳ד׳"[p]}: איך הרגשת בפתרון פרק זה?</div>
+ <div class="rrow">
+  <button class="rz ${sel===0?"sel-g":""}" onclick="setRamzor(${p},0)">🟢 מבין מצוין<br>ופתרתי בקלות</button>
+  <button class="rz ${sel===1?"sel-y":""}" onclick="setRamzor(${p},1)">🟡 הבנתי את הרוב<br>נזקקתי למעט עזרה</button>
+  <button class="rz ${sel===2?"sel-r":""}" onclick="setRamzor(${p},2)">🔴 נושא זה דורש<br>ממני תרגול נוסף</button>
+ </div></div>`; }
+function setRamzor(p,v){ ramzorState[p]=v; document.querySelectorAll(`[id="rz-${p}"]`).forEach(el=>{ el.outerHTML=ramzorHtml(p); }); }
+
+function renderHome(){
+ const host=$("partsHost"); host.innerHTML="";
+ PARTS.forEach((part,p)=>{
+   const sec=document.createElement("div");
+   sec.innerHTML=`<div class="parthead"><div class="pem">${part.emoji}</div><div><div class="pt">${part.name}</div><div class="pd">${part.desc}</div></div></div>`;
+   const grid=document.createElement("div"); grid.className="tgrid";
+   TOPICS.filter(t=>t.part===p).forEach(t=>{
+     const b=document.createElement("button"); b.className="tcard";
+     b.innerHTML=`<div class="em">${t.emoji}</div><div class="nm">${t.name}</div><div class="ds">${t.desc}</div><div class="ct">📖 למידה · 🏋️ אימון · 📝 מבחן</div>`;
+     b.onclick=()=>openTopic(t.id); grid.appendChild(b);
+   });
+   sec.appendChild(grid);
+   const rz=document.createElement("div"); rz.innerHTML=ramzorHtml(p); sec.appendChild(rz);
+   host.appendChild(sec);
+ });
+}
+function showTopics(){ $("topicPane").style.display=""; $("mainPane").style.display="none"; $("mockPane").style.display="none"; window.scrollTo({top:0,behavior:"smooth"}); }
+function openTopic(id){ curTopic=TOPICS.find(t=>t.id===id); trainState=null;
+ $("topicPane").style.display="none"; $("mockPane").style.display="none"; $("mainPane").style.display="";
+ $("curTopicName").textContent=curTopic.emoji+" "+curTopic.name; showLearn(); window.scrollTo({top:0}); }
+function setTabs(which){ for(const [id,key] of [["tabLearn","learn"],["tabTrain","train"],["tabTest","test"]]) $(id).classList.toggle("active",key===which);
+ $("learnPane").style.display=which==="learn"?"":"none";
+ $("trainPane").style.display=which==="train"?"":"none";
+ $("testPane").style.display=which==="test"?"":"none"; }
+
+/* ---------- LEARN ---------- */
+function showLearn(){ if(!curTopic)return; setTabs("learn");
+ const host=$("learnPane"); host.innerHTML="";
+ curTopic.learn.forEach((c,i)=>{
+   const d=document.createElement("div"); d.className="card learncard";
+   d.innerHTML=`<h3>${i+1}. ${c.t}</h3><div class="lx">${c.x}</div>${c.e?`<div class="ex">💡 <b>דוגמה:</b> ${c.e}</div>`:""}`;
+   host.appendChild(d);
+ });
+ const b=document.createElement("div"); b.className="center";
+ b.innerHTML=`<button class="btn btn-new" onclick="showTrain()">הבנתי — לאימון! 🏋️</button>`;
+ host.appendChild(b);
+}
+
+/* ---------- TRAIN ---------- */
+function showTrain(){ if(!curTopic)return; setTabs("train");
+ if(!trainState){ trainState={level:1,stars:0,streak:0,total:0,correct:0,answered:false,cur:null};
+   $("tIntro").style.display=""; $("tMain").style.display="none"; $("tMastery").style.display="none"; }
+ else { $("tIntro").style.display="none"; $("tMain").style.display=""; if(!trainState.cur) nextTrainQ(); }
+}
+function acceptIntro(){ $("tIntro").style.display="none"; $("tMain").style.display=""; updateTrainStatus(); nextTrainQ(); }
+function restartTrain(){ trainState={level:1,stars:0,streak:0,total:0,correct:0,answered:false,cur:null};
+ $("tMastery").style.display="none"; $("tMain").style.display=""; updateTrainStatus(); nextTrainQ(); }
+function stars(n,on){ let s=""; for(let i=0;i<n;i++) s+=`<span class="st ${on?"on":""}">★</span>`; return s; }
+function updateTrainStatus(){ const st=trainState; if(!st)return;
+ $("tLevel").innerHTML=`<b>רמה ${st.level} מתוך 3</b> ${st.level===1?"🌱":st.level===2?"🌿":"🌳"}`;
+ $("tStars").innerHTML=""; for(let i=0;i<5;i++){ const sp=document.createElement("span"); sp.className="st"+(i<st.stars?" on":""); sp.textContent="★"; sp.style.fontSize="26px"; $("tStars").appendChild(sp); }
+ $("tDots").innerHTML=""; for(let i=0;i<3;i++){ const d=document.createElement("span"); d.className="dot"+(i<st.streak?" on":""); $("tDots").appendChild(d); }
+ $("tProgStars").textContent="⭐".repeat(st.stars)+"☆".repeat(5-st.stars);
+ $("tTotal").textContent=`ענית על ${st.total} שאלות · ${st.correct} נכונות`;
+}
+function renderTrainQ(){
+ const st=trainState; const q=st.cur; const host=$("tQ"); host.innerHTML="";
+ const card=document.createElement("div"); card.className="card";
+ card.innerHTML=`<div class="qnum">שאלה · רמה ${st.level}</div><div class="qtext">${q.text}</div>${q.viz||""}`;
+ const opts=document.createElement("div"); opts.className="opts";
+ q.opts.forEach(op=>{
+   const b=document.createElement("button"); b.className="opt"; b.innerHTML=op;
+   b.onclick=()=>answerTrain(b,op,q); opts.appendChild(b);
+ });
+ card.appendChild(opts);
+ const ex=document.createElement("div"); ex.className="explain"; ex.id="tExplain"; ex.innerHTML=`💡 <b>הסבר:</b> ${q.why}`;
+ card.appendChild(ex); host.appendChild(card);
+ $("tNext").style.display="none";
+}
+function answerTrain(btn,op,q){
+ const st=trainState; if(st.answered)return; st.answered=true; st.total++;
+ const buttons=$("tQ").querySelectorAll(".opt");
+ buttons.forEach(b=>{ b.disabled=true; if(b.innerHTML===q.ans) b.classList.add("right"); });
+ const isRight = op===q.ans;
+ if(isRight){ st.correct++; st.streak++; st.stars++; btn.classList.add("right"); }
+ else { st.streak=0; btn.classList.add("wrong"); }
+ $("tExplain").style.display="block";
+ let leveled=false;
+ if(st.streak>=3 && st.level<3){ st.level++; st.stars=0; st.streak=0; leveled=true; }
+ else if(st.stars>=5){ if(st.level<3){ st.level++; st.stars=0; leveled=true; } else { mastery(); return; } }
+ updateTrainStatus();
+ if(leveled) showCeleb("🚀",`עלית לרמה ${st.level}! כל הכבוד, אריאל!`);
+ $("tNext").style.display="";
+}
+function nextTrainQ(){ const st=trainState; st.answered=false; st.cur=curTopic.gen(st.level); renderTrainQ(); }
+function mastery(){ $("tMain").style.display="none"; const m=$("tMastery"); m.style.display="";
+ $("masteryStats").textContent=`ענית על ${trainState.total} שאלות, ${trainState.correct} נכונות!`;
+ const rz=document.createElement("div"); rz.innerHTML=ramzorHtml(curTopic.part); m.appendChild(rz);
+ showCeleb("🏆","סיימת את כל הרמות! אתה מוכן למבחן!"); }
+function showCeleb(em,tx){ $("celebEmoji").textContent=em; $("celebText").textContent=tx; $("celebrate").style.display="flex"; }
+function hideCeleb(){ $("celebrate").style.display="none"; }
+
+/* ---------- TESTS (list style) ---------- */
+function qCardHtml(q,idx,prefix,partName){
+ return `<div class="card" id="${prefix}-card-${idx}"><div class="qnum">${partName?partName+" · ":""}שאלה ${idx+1}</div>
+ <div class="qtext">${q.text}</div>${q.viz||""}
+ <div class="opts">${q.opts.map((op,j)=>`<button type="button" class="opt" id="${prefix}-opt-${idx}-${j}" onclick="pickOpt('${prefix}',${idx},${j})">${op}</button>`).join("")}</div>
+ <div class="explain" id="${prefix}-ex-${idx}">💡 <b>הסבר:</b> ${q.why}</div></div>`;
+}
+function pickOpt(prefix,idx,j){ const qs=prefix==="mock"?mockQs:testQs; const sel=prefix==="mock"?mockSel:testSel; sel[idx]=j;
+ qs[idx].opts.forEach((_,k)=>{ const el=$(`${prefix}-opt-${idx}-${k}`); if(el) el.classList.toggle("sel",k===j); });
+ const fill=prefix==="mock"?"mockFill":"pfill"; const done=sel.filter(x=>x!==undefined&&x!==null).length;
+ $(fill).style.width=(done/qs.length*100)+"%";
+ const ctr=prefix==="mock"?"mockCounter":"counter"; $(ctr).textContent=`נענו ${done} מתוך ${qs.length} שאלות`;
+}
+function gradeList(prefix){
+ const qs=prefix==="mock"?mockQs:testQs; const sel=prefix==="mock"?mockSel:testSel; let score=0;
+ qs.forEach((q,i)=>{ q.opts.forEach((op,j)=>{ const el=$(`${prefix}-opt-${i}-${j}`); if(!el)return; el.disabled=true;
+    if(op===q.ans) el.classList.add("right"); else if(sel[i]===j) el.classList.add("wrong"); });
+   const ex=$(`${prefix}-ex-${i}`); if(ex) ex.style.display="block";
+   if(sel[i]!==undefined && sel[i]!==null && q.opts[sel[i]]===q.ans) score++; });
+ return score;
+}
+function scoreMsg(pct){ return pct===100?"מושלם! אתה מוכן למבחן! 🌟":pct>=80?"מצוין! כמעט שם 💪":pct>=60?"טוב! עוד קצת תרגול בנושאים שסימנת 💡":"לא נורא — חוזרים ללמידה ולאימון ומנסים שוב 🌱"; }
+
+function showTest(){ if(!curTopic)return; setTabs("test");
+ testQs=[]; testSel=[];
+ if(curTopic.id==="c"){ const off=rnd(0,9); for(let i=0;i<10;i++) testQs.push(curTopic.genIdx(off+i)); }
+ else { for(let i=0;i<10;i++) testQs.push(curTopic.gen(3)); }
+ $("quiz").innerHTML=testQs.map((q,i)=>qCardHtml(q,i,"test","")).join("");
+ $("counter").textContent=`נענו 0 מתוך ${testQs.length} שאלות`; $("pfill").style.width="0%";
+ $("result").style.display="none"; $("submitBtn").style.display=""; window.scrollTo({top:0,behavior:"smooth"});
+}
+function gradeTest(){ const n=gradeList("test"); const pct=Math.round(n/testQs.length*100);
+ $("submitBtn").style.display="none"; const r=$("result"); r.style.display="";
+ $("scoreNum").textContent=pct; $("scoreMsg").textContent=scoreMsg(pct);
+ $("scoreDetail").innerHTML=`ענית נכון על ${n} מתוך ${testQs.length} שאלות.`+ramzorHtml(curTopic.part);
+ r.scrollIntoView({behavior:"smooth"}); }
+
+/* ---------- MOCK TEST ---------- */
+function startMock(){
+ $("topicPane").style.display="none"; $("mainPane").style.display="none"; $("mockPane").style.display="";
+ mockQs=[]; mockSel=[];
+ const A=shuffle(TOPICS.filter(t=>t.part===0)).slice(0,4);
+ const B=shuffle(TOPICS.filter(t=>t.part===1)).slice(0,5);
+ const D=shuffle(TOPICS.filter(t=>t.part===3)).slice(0,2);
+ const items=[];
+ A.forEach(t=>items.push({q:t.gen(2),part:0,label:"חלק א׳ — גאומטריה"}));
+ B.forEach(t=>items.push({q:t.gen(3),part:1,label:"חלק ב׳ — חישוב ומספרים"}));
+ const cOff=rnd(0,9); for(let i=0;i<3;i++) items.push({q:T_C.genIdx(cOff+i),part:2,label:"חלק ג׳ — בעיות מילוליות"});
+ D.forEach(t=>items.push({q:t.gen(2),part:3,label:"חלק ד׳ — העשרה"}));
+ mockQs=items.map(x=>x.q); mockQs._parts=items.map(x=>x.part);
+ $("mockQuiz").innerHTML=items.map((x,i)=>qCardHtml(x.q,i,"mock",x.label)).join("");
+ $("mockCounter").textContent=`נענו 0 מתוך ${mockQs.length} שאלות`; $("mockFill").style.width="0%";
+ $("mockResult").style.display="none"; $("mockSubmit").style.display=""; window.scrollTo({top:0,behavior:"smooth"});
+}
+function gradeMock(){ const n=gradeList("mock"); const pct=Math.round(n/mockQs.length*100);
+ $("mockSubmit").style.display="none";
+ const per=[0,0,0,0], tot=[0,0,0,0];
+ mockQs.forEach((q,i)=>{ const p=mockQs._parts[i]; tot[p]++; if(mockSel[i]!==undefined&&mockSel[i]!==null&&q.opts[mockSel[i]]===q.ans) per[p]++; });
+ const r=$("mockResult"); r.style.display="";
+ $("mockScoreNum").textContent=pct; $("mockScoreMsg").textContent=scoreMsg(pct);
+ $("mockBreakdown").innerHTML="<b>התוצאות לפי חלקים:</b><br>"+PARTS.map((pt,p)=>`${pt.emoji} ${pt.name}: ${per[p]} מתוך ${tot[p]}`).join("<br>")
+   +[0,1,2,3].map(p=>ramzorHtml(p)).join("");
+ r.scrollIntoView({behavior:"smooth"}); }
+
+renderHome();
+
+</script>
+</body>
+</html>
