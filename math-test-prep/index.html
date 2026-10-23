@@ -343,8 +343,45 @@ function pick(arr){ return arr[Math.floor(rand()*arr.length)]; }
 function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(rand()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
 /* ---------- question model ---------- */
+/* ---------- bidi safety: wrap pure-math runs in LTR isolates so expressions
+   never render reversed inside the RTL page. A run whose "=" chain does not
+   evaluate equal is left untouched (it is Hebrew prose with numbers). ---------- */
+function _mathVal(t){
+  t = t.replace(/×/g,"*").replace(/÷/g,"/").replace(/−/g,"-").replace(/,/g,"");
+  t = t.replace(/²/g,"**2").replace(/³/g,"**3");
+  if(!/^[\d\s+\-*/().%]+$/.test(t)) return null;
+  try { const v = Function('"use strict";return('+t+")")(); return (typeof v==="number" && isFinite(v))? v : null; } catch(e){ return null; }
+}
+function fixMath(s){
+  if(typeof s!=="string" || !s || s.indexOf("<svg")>=0) return s;
+  const atoms=[], vals=[];
+  s = s.replace(/<span class="frac"><span class="top">(-?[\d,]+)<\/span><span class="bot">(-?[\d,]+)<\/span><\/span>|<span class="m">([^<]*)<\/span>/g,
+    (mm, tn, td, mv)=>{ atoms.push(mm); vals.push(td!==undefined && td!==null ? parseFloat(tn.replace(/,/g,""))/parseFloat(td.replace(/,/g,"")) : parseFloat(String(mv).replace(/,/g,""))); return "\u0001"+(atoms.length-1)+"\u0002"; });
+  const tags=[];
+  s = s.replace(/<[^>]+>/g, mm=>{ tags.push(mm); return "\u0003"+(tags.length-1)+"\u0004"; });
+  const RUN = /[\d\u0001(\[_\u25a1\u2212-][\d\s+\-\u2212\u00d7\u00f7=<>\.,\/)\]\u00b2\u00b3%\u00b0_\u25a1\u0001\u0002]*/g;
+  s = s.replace(RUN, run=>{
+    let a=0, b=run.length;
+    while(a<b && /\s/.test(run[a])) a++;
+    while(b>a && /[\s+\-\u2212\u00d7\u00f7=<>\.,\/]/.test(run[b-1])) b--;
+    if(b-a<1) return run;
+    const core = run.slice(a,b);
+    if(!/[\d\u0001]/.test(core)) return run;
+    let ok = true;
+    if(core.indexOf("=")>=0){
+      const vs = core.split("=").map(p=> _mathVal(p.trim().replace(/\u0001(\d+)\u0002/g, (m,i)=>"("+(vals[+i]===undefined? "NaN" : vals[+i])+")")));
+      if(vs.every(v=>v!==null)) ok = vs.every(v=>Math.abs(v-vs[0])<1e-9);
+    }
+    if(!ok) return run;
+    return run.slice(0,a) + '<span class="m">' + core + '</span>' + run.slice(b);
+  });
+  s = s.replace(/\u0001(\d+)\u0002/g, (m,i)=>atoms[+i]);
+  s = s.replace(/\u0003(\d+)\u0004/g, (m,i)=>tags[+i]);
+  return s;
+}
+
 function Q(text, viz, opts, ans, why, meta, hint, steps){
-  return { text, viz: viz||"", opts, ans, why, meta: meta||{}, hint: hint||"", steps: steps||null };
+  return { text: fixMath(text), viz: viz||"", opts: (opts||[]).map(o=>fixMath(o)), ans: fixMath(ans), why: fixMath(why), meta: meta||{}, hint: fixMath(hint||""), steps: steps? steps.map(x=>fixMath(x)) : null };
 }
 function fracHTML(n, d){
   if(d===1) return `<span class="m">${n}</span>`;
@@ -445,7 +482,7 @@ const PROP_MATRIX = [
   ["יש בדיוק זוג אחד של צלעות מקבילות",{"ריבוע":0,"מלבן":0,"מעוין":0,"מקבילית":0,"טרפז":1,"דלתון":0}],
   ["כל הזוויות ישרות (90°)",        {"ריבוע":1,"מלבן":1,"מעוין":0,"מקבילית":0,"טרפז":0,"דלתון":0}],
   ["סכום הזוויות הפנימיות הוא 360°",{"ריבוע":1,"מלבן":1,"מעוין":1,"מקבילית":1,"טרפז":1,"דלתון":1}],
-  ["כל שתי צלעות סמוכות שוות זו לזו",{"ריבוע":1,"מלבן":0,"מעוין":1,"מקבילית":0,"טרפז":0,"דלתון":1}],
+  ["כל שתי צלעות סמוכות שוות זו לזו",{"ריבוע":1,"מלבן":0,"מעוין":1,"מקבילית":0,"טרפז":0,"דלתון":0}],
   ["שני זוגות של זוויות נגדיות שוות",{"ריבוע":1,"מלבן":1,"מעוין":1,"מקבילית":1,"טרפז":0,"דלתון":0}],
   ["כל הזוויות שוות זו לזו",        {"ריבוע":1,"מלבן":1,"מעוין":0,"מקבילית":0,"טרפז":0,"דלתון":0}],
   ["יש ארבע צלעות וארבע זוויות",    {"ריבוע":1,"מלבן":1,"מעוין":1,"מקבילית":1,"טרפז":1,"דלתון":1}]
@@ -456,10 +493,10 @@ const CLUES = [
   { t:"כל הזוויות שלי ישרות", fits:["ריבוע","מלבן"] },
   { t:"יש לי שני זוגות של צלעות מקבילות", fits:["ריבוע","מלבן","מעוין","מקבילית"] },
   { t:"הצלעות הנגדיות שלי שוות", fits:["ריבוע","מלבן","מעוין","מקבילית"] },
-  { t:"כל הזוויות שלי שוות זו לזו", fits:["ריבוע","מלבן"] },
+  { t:"כל הזוויות שלי שוות זו לזו", fits:["ריבוע","מלבן","משולש שווה־צלעות"] },
   { t:"יש לי בדיוק זוג אחד של צלעות מקבילות", fits:["טרפז"] },
   { t:"יש לי שני זוגות נפרדים של צלעות סמוכות שוות, ולא כל הצלעות שוות", fits:["דלתון"] },
-  { t:"אין לי אף זוג של צלעות מקבילות, ויש לי זוג צלעות ארוכות וזוג צלעות קצרות", fits:["מלבן"] },
+  { t:"אין לי אף זוג של צלעות מקבילות, ויש לי זוג צלעות ארוכות וזוג צלעות קצרות", fits:["דלתון"] },
   { t:"יש לי שלוש צלעות", fits:["משולש שווה־צלעות","משולש שווה־שוקיים","משולש שונה־צלעות"] },
   { t:"כל שלוש הצלעות שלי שוות", fits:["משולש שווה־צלעות"] },
   { t:"בדיוק שתיים מהצלעות שלי שוות", fits:["משולש שווה־שוקיים"] },
@@ -655,7 +692,7 @@ function genA4(L){
     let b,h; do { b=rnd(3,40); h=rnd(2,30); } while((b*h)%2!==0);
     const A=b*h/2;
     if(kind===2){
-      const ctx = pick(["","בציור שלט משולש ש","במגרש יש אזור משולש ש","דגל משולש ש"]);
+      const ctx = pick(["משולש ש","בציור שלט משולש ש","במגרש יש אזור משולש ש","דגל משולש ש"]);
       return Q(`${ctx}בסיסו ${b} ס"מ וגובהו ${h} ס"מ. מהו שטחו?`, "",
         numOpts(A,[b*h-A+ (A>10?5:-3), b*h/2===A? b*h : 0, b+h, -h]), fmtN(A),
         `שטח משולש = בסיס × גובה ÷ 2 = ${b} × ${h} ÷ 2 = ${A}.`, {type:"area", b, h, A},
@@ -887,7 +924,7 @@ function genB2(L){
     steps=[`מחפשים מספר שכפול ${b} נותן ${a*b}`, `בודקים: ${a} × ${b} = ${a*b} ✓`, `המספר החסר הוא ${x}`]; check=`${x} × ${b} = ${a*b}`; }
   else if(kind===2){ const b=rnd(2,9), q=rnd(3,15), a=b*q; x=a; text=`___ ÷ ${b} = ${q}`;
     steps=[`הופכים את החילוק לכפל: ${q} × ${b}`, `${q} × ${b} = ${a}`, `המספר החסר הוא ${x}`]; check=`${x} ÷ ${b} = ${q}`; }
-  else if(kind===3){ const a=rnd(20,90), r=rnd(5,40); x=a-r; text=`${a} − ___ = ${r}`;
+  else if(kind===3){ let a=rnd(20,90), r=rnd(5,40); if(r>=a){ const _t=a; a=r+5; r=_t; } x=a-r; text=`${a} − ___ = ${r}`;
     steps=[`המספר החסר הוא ההפרש בין ${a} ל־${r}`, `${a} − ${r} = ${x}`, `בדיקה: ${a} − ${x} = ${r} ✓`]; check=`${a} − ${x} = ${r}`; }
   else if(kind===4){ const b=rnd(2,12), q=rnd(2,12); x=q; text=`${b*q} ÷ ___ = ${b}`;
     steps=[`המחולל הוא המספר שמחלק ל־${q} חלקים שווים`, `${b*q} ÷ ${q} = ${b} ✓`, `המספר החסר הוא ${x}`]; check=`${b*q} ÷ ${x} = ${b}`; }
@@ -1009,7 +1046,8 @@ function genB4(L){
       [`מעגלים: ${a} ≈ ${mult}, ו־${x} ≈ ${roundTo(x,1)}`, `כופלים: ${mult} × ${roundTo(x,1)} = ${fmtN(est)}`, `התוצאה האמיתית (${fmtN(a*x)}) נמצאת בטווח הזה ✓`]);
   }
   if(kind===2){
-    const a=rnd(20000,99999), b=rnd(10000,89999);
+    let a=rnd(20000,99999), b=rnd(10000,89999);
+    if(b>=a){ const t=a; a=b; b=t; }
     const est=roundTo(a,4)-roundTo(b,4);
     return Q(`מהו בערך ההפרש ${fmtN(a)} − ${fmtN(b)}? (אומדן לעשרות־אלפים)`, "",
       numOpts(est,[10000,-10000,20000,-5000]), fmtN(est),
@@ -1026,7 +1064,7 @@ function genB4(L){
       `מעגלים: ${fmtN(roundTo(a,4))} + ${fmtN(roundTo(b,4))} = ${fmtN(est)} (המדויק: ${fmtN(a+b)}).`,
       {type:"estAdd", val:a+b, est},
       "מעגלים כל מספר לעשרות האלפים הקרובות, ואז מחברים.",
-      [`${fmtN(a)} ≈ ${fmtN(roundTo(a,4))}`, `${fmtN(b)} ≈ ${fmtN(roundTo(b,4))}`, `מחברים: ${fmtN(est)}`]);
+      [`${fmtN(a)} ≈ ${fmtN(roundTo(a,4))}`, `${fmtN(b)} ≈ ${fmtN(roundTo(b,4))}`, `מחברים: ${fmtN(roundTo(a,4))} + ${fmtN(roundTo(b,4))} = ${fmtN(est)}`]);
   }
   const d=rnd(3,9); let R; do { R=rnd(1,9)*1000; } while(R%d!==0);
   const a=R+rnd(-450,450), est=R/d;
@@ -1134,14 +1172,18 @@ function fmtH(h){ /* hundredths integer -> trimmed decimal string */
 function genB7(L){
   const kind = rnd(1,4);
   if(kind===1){ /* place value */
-    const w=rnd(3,99), d1=rnd(0,9), d2=rnd(0,9), d3=rnd(0,9);
-    const numTxt=`${w}.${d1}${d2}${d3}`;
+    const w=rnd(3,99); let d1=rnd(0,9), d2=rnd(0,9), d3=rnd(0,9);
     const pos=pick([1,2,3]);
+    if(pos===1 && d1===0) d1=(w+pos)%9+1;
+    if(pos===2 && d2===0) d2=(w+pos)%9+1;
+    if(pos===3 && d3===0) d3=(w+pos)%9+1;
+    const numTxt=`${w}.${d1}${d2}${d3}`;
     const digit=[,d1,d2,d3][pos];
     const val=[,"0."+digit,"0.0"+digit,"0.00"+digit][pos];
     const names=[,"עשיריות","מאיות","אלפיות"];
-    const wrongs=new Set();
-    while(wrongs.size<3){ const o=pick(["0."+rnd(0,9),"0.0"+rnd(0,9),"0.00"+rnd(0,9),String(rnd(0,9))]); if(o!==val) wrongs.add(o); }
+    const wrongs=new Set(); const seenV=new Set([parseFloat(val)]); let _wt=0;
+    while(wrongs.size<3 && _wt++<80){ const o=pick(["0."+rnd(0,9),"0.0"+rnd(0,9),"0.00"+rnd(0,9),String(rnd(0,9))]); if(o!==val && !seenV.has(parseFloat(o))){ seenV.add(parseFloat(o)); wrongs.add(o); } }
+    for(const fb of ["0.7","0.07","0.007","7"]){ if(wrongs.size>=3) break; if(fb!==val && !seenV.has(parseFloat(fb))){ seenV.add(parseFloat(fb)); wrongs.add(fb); } }
     return Q(`במספר ${numTxt}, מה מייצגת הספרה ${digit} שנמצאת במקום ה${names[pos]}?`, "",
       makeOpts(val, [...wrongs]), val,
       `הספרה ${digit} במקום ה${names[pos]} שווה ${val}.`, {type:"place", num:numTxt, digit, val},
@@ -1168,7 +1210,7 @@ function genB7(L){
     const ans=parts[missIdx];
     const wrongs=parts.filter((p,i)=>i!==missIdx).concat([String([w,d1,d2,d3][missIdx])]);
     return Q(`השלימו את הפירוק: ${numTxt} = ${shown.join(" + ")} — מהו המספר החסר?`, "",
-      makeOpts(ans, [...new Set(wrongs)].filter(x=>x!==ans)), ans,
+      makeOpts(ans, [...new Set(wrongs)].filter(x=>x!==ans && parseFloat(x)!==parseFloat(ans))), ans,
       `כל ספרה תורמת לפי המקום שלה: ${numTxt} = ${parts.join(" + ")}. החסר הוא ${ans}.`,
       {type:"expand", num:numTxt, ans},
       "מפרקים לפי ערך המקום: יחידות, עשיריות, מאיות, אלפיות — ומשווים לפירוק השלם.",
@@ -1224,7 +1266,7 @@ function genB8(L){
   return Q(`חשבו: ${fmtH(a)} ÷ ${k}`, "", decOpts(q,[100,-100,10,-10]), fmtH(q),
     `בודקים בכפל: ${fmtH(q)} × ${k} = ${fmtH(a)} ✓.`, {type:"ddiv", ansH:q},
     "מחפשים מספר שכפול " + k + " נותן את המספר הנתון — כמו חילוק רגיל.",
-    [`מחלקים כמו במספרים שלמים: ${a} ÷ ${k} = ${q}`,`ממקמים את הנקודה: שתי ספרות אחריה`,`התוצאה: ${fmtH(q)} (בדיקה: × ${k} = ${fmtH(a)} ✓)`]);
+    [`מחלקים כמו במספרים שלמים: ${a} ÷ ${k} = ${q}`,`ממקמים את הנקודה: שתי ספרות אחריה`,`התוצאה: ${fmtH(q)} (בדיקה: ${fmtH(q)} × ${k} = ${fmtH(a)} ✓)`]);
 }
 
 /* ---- B9: simple fractions ---- */
@@ -1273,27 +1315,28 @@ function genB9(L){
       `${sub?"מחסרים":"מחברים"} שלמים בנפרד ושברים בנפרד: שלמים ${w1} ${sub?"−":"+"} ${w2} = ${W}, שברים ${f1}/${d} ${sub?"−":"+"} ${f2}/${d} = ${F}/${d}. יחד: ${fracStr(n,d)}.`,
       {type:"mixed", n, d},
       "מפרידים: שלמים עם שלמים, שברים עם שברים — ואז מחברים.",
-      [`מטפלים בשלמים: ${w1} ${sub?"−":"+"} ${w2} = ${W}`, `מטפלים בשברים (אותו מכנה): ${f1} ${sub?"−":"+"} ${f2} = ${F}`, `מחברים: ${W} ו־${F}/${d} = ${fracStr(n,d)}`]);
+      [`מטפלים בשלמים: ${w1} ${sub?"−":"+"} ${w2} = ${W}`, `מטפלים בשברים (אותו מכנה): ${f1} ${sub?"−":"+"} ${f2} = ${F}`, `מחברים את החלקים: ${W} + ${F}/${d} = ${fracStr(n,d)}`]);
   }
   if(kind===4){ /* whole x fraction / whole - fraction */
     if(rnd(0,1)){
       const w=rnd(2,12), d=pick([3,4,5,6,7,8,9,10,12]);
-      let n0=rnd(1,d-1); const n=w*n0;
-      return Q(`חשבו: ${w} × ${fracHTML(n0,d)}`, "",
-        fracOpts(n,d), dispFrac(n,d),
-        `כפל שלם בשבר: כופלים את השלם במונה בלבד: ${w} × ${n0} = ${n}, והמכנה נשאר: ${fracStr(n,d)}.`,
-        {type:"wholeFrac", n, d},
+      let n0=rnd(1,d-1); const g0=gcd(n0,d); n0=n0/g0; const dd=d/g0; const n=w*n0;
+      return Q(`חשבו: ${w} × ${fracHTML(n0,dd)}`, "",
+        fracOpts(n,dd), dispFrac(n,dd),
+        `כפל שלם בשבר: כופלים את השלם במונה בלבד: ${w} × ${n0} = ${n}, והמכנה נשאר: ${fracStr(n,dd)}.`,
+        {type:"wholeFrac", n, d:dd},
         "בכפל שלם × שבר — כופלים רק את המונה. המכנה נשאר אותו דבר.",
-        [`כופלים את המונה: ${w} × ${n0} = ${n}`, `המכנה נשאר: ${d}`, `התוצאה: ${fracStr(n,d)}`]);
+        [`כופלים את המונה: ${w} × ${n0} = ${n}`, `המכנה נשאר: ${dd}`, `התוצאה: ${fracStr(n,dd)}`]);
     }
     const w=rnd(2,9), d=pick([3,4,5,6,7,8,9,10,12]);
-    const n0=rnd(1,d-1), n=(w-1)*d + (d-n0);
-    return Q(`חשבו: ${w} − ${fracHTML(n0,d)}`, "",
-      fracOpts(n,d), dispFrac(n,d),
-      `לווים שלם אחד: ${w} = ${w-1} ו־${d}/${d}. ${d}/${d} − ${n0}/${d} = ${d-n0}/${d}. יחד: ${fracStr(n,d)}.`,
-      {type:"wholeMinus", n, d},
+    let n0=rnd(1,d-1); const g0=gcd(n0,d); n0=n0/g0; const dd=d/g0;
+    const n=(w-1)*dd + (dd-n0);
+    return Q(`חשבו: ${w} − ${fracHTML(n0,dd)}`, "",
+      fracOpts(n,dd), dispFrac(n,dd),
+      `לווים שלם אחד: ${w} = ${w-1} + ${dd}/${dd}. מחסרים: ${dd}/${dd} − ${n0}/${dd} = ${dd-n0}/${dd}. יחד: ${fracStr(n,dd)}.`,
+      {type:"wholeMinus", n, d:dd},
       "הופכים שלם אחד לשבר עם אותו מכנה (למשל 1 = 8/8), ואז מחסרים.",
-      [`לווים שלם: ${w} = ${w-1} + ${d}/${d}`, `מחסרים את השברים: ${d}/${d} − ${n0}/${d} = ${d-n0}/${d}`, `התוצאה: ${w-1} ו־${d-n0}/${d} = ${fracStr(n,d)}`]);
+      [`לווים שלם אחד: ${w} = ${w-1} + ${dd}/${dd}`, `מחסרים את השברים: ${dd}/${dd} − ${n0}/${dd} = ${dd-n0}/${dd}`, `התוצאה: ${fracStr(n,dd)}`]);
   }
   /* kind 5: frac + frac with different denoms, result > 1 possible */
   const pairs=[[2,3],[3,4],[2,5],[4,5],[3,5],[2,7],[5,7],[3,7],[6,7],[4,7],[5,8],[3,8],[2,9],[4,9],[5,9],[7,9],[3,10],[7,10],[9,10]];
@@ -1310,19 +1353,20 @@ function genB9(L){
 
 /* ================= PART C — WORD PROBLEMS (10 types) ================= */
 const NAMES = ["יואב","דנה","אורי","מיכל","נועה","אבי","תמר","רוני","ליאור","הילה"];
+const NAMES_F = {"דנה":1,"מיכל":1,"נועה":1,"תמר":1,"הילה":1};
 function wpBook(){
   let n1,d1,n2,d2,L,read,tries=0;
   do { d1=pick([2,3,4,5,6,8,9,10,12]); d2=pick([2,3,4,5,6,8,9,10,12]);
        n1=rnd(1,d1-1); n2=rnd(1,d2-1); L=lcm(d1,d2); read=n1*(L/d1)+n2*(L/d2); tries++; } while(read>=L && tries<60);
   if(read>=L) return wpBook();
   const n=L-read;
-  const nm=pick(NAMES);
-  return Q(`${nm} קרא ${fracHTML(n1,d1)} מדפי הספר ביום ראשון, ו־${fracHTML(n2,d2)} מדפי הספר ביום שני. איזה חלק מהספר נותר ל${nm} לקרוא?`,
+  const nm=pick(NAMES); const kr = NAMES_F[nm]? "קראה" : "קרא";
+  return Q(`${nm} ${kr} ${fracHTML(n1,d1)} מהספר ביום ראשון, ו־${fracHTML(n2,d2)} מהספר ביום שני. איזה חלק מהספר נותר ל${nm} לקרוא?`,
     "", fracOpts(n,L), dispFrac(n,L),
-    `קרא בסך הכול ${fracStr(read,L)} מהספר. נותר: 1 − ${fracStr(read,L)} = ${fracStr(n,L)}.`,
+    `${kr} בסך הכול ${fracStr(read,L)} מהספר. נותר: 1 − ${fracStr(read,L)} = ${fracStr(n,L)}.`,
     {wp:"book", n, d:L},
     "מחברים את שני החלקים שקרא — ומחסירים מהשלם (1).",
-    [`מכנה משותף: ${L}`, `קרא בסך הכול: ${fracStr(n1,d1)} + ${fracStr(n2,d2)} = ${fracStr(read,L)}`, `נותר: 1 − ${fracStr(read,L)} = ${fracStr(n,L)}`]);
+    [`מכנה משותף: ${L}`, `${kr} בסך הכול: ${fracStr(n1,d1)} + ${fracStr(n2,d2)} = ${fracStr(read,L)}`, `נותר: 1 − ${fracStr(read,L)} = ${fracStr(n,L)}`]);
 }
 function wpMoney(){
   const bill=pick([100,150,200]);
@@ -1337,8 +1381,8 @@ function wpMoney(){
   });
   if(total>=bill*100) return wpMoney();
   const change=bill*100-total;
-  const nm=pick(NAMES);
-  return Q(`ל${nm} היו ${bill} ש"ח. ${nm} קנה ${desc.join(", וגם ")}. כמה עודף קיבל ${nm}?`,
+  const nm=pick(NAMES); const kn = NAMES_F[nm]? "קנתה" : "קנה", kb = NAMES_F[nm]? "קיבלה" : "קיבל";
+  return Q(`ל${nm} היו ${bill} ש"ח. ${nm} ${kn} ${desc.join(", וגם ")}. כמה עודף ${kb} ${nm}?`,
     "", decOpts(change,[500,-300,1000,-100,550]), fmtH(change),
     `שילם בסך הכול ${fmtH(total)} ש"ח. עודף: ${bill} − ${fmtH(total)} = ${fmtH(change)} ש"ח.`,
     {wp:"money", ansH:change},
@@ -1445,12 +1489,12 @@ function wpBottle(){
   const cups=rnd(2,6), used=cups*cupML;
   if(used>=bottleML) return wpBottle();
   const leftML=bottleML-used;
-  const nm=pick(NAMES);
+  const nm=pick(NAMES); const ml = NAMES_F[nm]? "מילאה" : "מילא", mz = NAMES_F[nm]? "מזגה" : "מזג";
   const askLeft = rnd(0,1)===1;
   const ansH = (askLeft? leftML : used)/10; /* hundredths of a liter */
-  return Q(`בקבוק מים מכיל ${fmtH(bottleML/10)} ליטר. ${nm} מילא ממנו ${cups} כוסות שוות, ובכל כוס ${fmtH(cupML/10)} ליטר. ${askLeft? "כמה ליטר מים נותרו בבקבוק?" : "כמה ליטר מים מזג " + nm + " בסך הכול?"}`,
+  return Q(`בקבוק מים מכיל ${fmtH(bottleML/10)} ליטר. ${nm} ${ml} ממנו ${cups} כוסות שוות, ובכל כוס ${fmtH(cupML/10)} ליטר. ${askLeft? "כמה ליטר מים נותרו בבקבוק?" : "כמה ליטר מים " + mz + " " + nm + " בסך הכול?"}`,
     "", decOpts(ansH,[20,-15,50,-50]), fmtH(ansH),
-    `מזג בסך הכול: ${cups} × ${fmtH(cupML/10)} = ${fmtH(used/10)} ליטר. נותרו: ${fmtH(bottleML/10)} − ${fmtH(used/10)} = ${fmtH(leftML/10)} ליטר.`,
+    `${mz} בסך הכול: ${cups} × ${fmtH(cupML/10)} = ${fmtH(used/10)} ליטר. נותרו: ${fmtH(bottleML/10)} − ${fmtH(used/10)} = ${fmtH(leftML/10)} ליטר.`,
     {wp:"bottle", ansH},
     "קודם כופלים: כוסות × כמות בכוס = כמה מזג. אחר כך מחסירים מנפח הבקבוק.",
     [`בכל כוס ${fmtH(cupML/10)} ליטר, ויש ${cups} כוסות`, `סך הכול מזג: ${cups} × ${fmtH(cupML/10)} = ${fmtH(used/10)} ליטר`, askLeft? `נותרו בבקבוק: ${fmtH(bottleML/10)} − ${fmtH(used/10)} = ${fmtH(leftML/10)} ליטר` : `התשובה: ${fmtH(used/10)} ליטר`]);
@@ -1474,13 +1518,15 @@ function wpTriHeight(){
 }
 function wpAvg(){
   const nm=pick(NAMES), subj=pick(["מתמטיקה","אנגלית","מדעים","עברית"]);
+  const kb2 = NAMES_F[nm]? "קיבלה" : "קיבל";
   if(rnd(0,1)){
     const avg=rnd(70,97);
     let offs, tries=0;
     do { const o1=rnd(-12,12), o2=rnd(-12,12), o3=rnd(-12,12); offs=[o1,o2,o3,-(o1+o2+o3)]; tries++; }
     while((offs.some(o=>avg+o<40||avg+o>100) || new Set(offs).size<3) && tries<60);
+    if(offs.some(o=>avg+o<40||avg+o>100) || new Set(offs).size<3) return wpAvg();
     const grades=offs.map(o=>avg+o), sum=grades.reduce((s,x)=>s+x,0);
-    return Q(`${nm} קיבל במבחנים ב${subj} את הציונים: ${grades.join(", ")}. מהו הציון הממוצע?`,
+    return Q(`${nm} ${kb2} במבחנים ב${subj} את הציונים: ${grades.join(", ")}. מהו הציון הממוצע?`,
       "", numOpts(avg,[2,-3,5,-5]), fmtN(avg),
       `סכום הציונים: ${sum}. ממוצע: ${sum} ÷ 4 = ${avg}.`,
       {wp:"avg", ans:avg, sum},
@@ -1612,6 +1658,8 @@ function genD2(L){
 function genD3(L){
   const isChair = rnd(0,1)===1;
   const item = isChair? "כיסא" : "קופסה";
+  const G = isChair? {one:"אחד", h:"גובהו", plus:"נוסף", adds:"מוסיף", first:"הכיסא הראשון"}
+                   : {one:"אחת", h:"גובהה", plus:"נוספת", adds:"מוסיפה", first:"הקופסה הראשונה"};
   const h0 = isChair? rnd(65,100) : rnd(15,32);
   const per = isChair? pick([6,8,10,12,15]) : pick([3,4,5,6,7]);
   const n1 = rnd(3,6), t1 = h0 + per*(n1-1);
@@ -1619,25 +1667,25 @@ function genD3(L){
   const kind = rnd(1,3);
   if(kind===1){
     const t2 = h0 + per*(n2-1);
-    return Q(`${item} אחד גובהו ${h0} ס"מ. כשמערימים ${n1} ${isChair?"כיסאות":"קופסאות"} זה על זה, גובה הערימה הוא ${t1} ס"מ. מה יהיה גובהה של ערימה של ${n2} ${isChair?"כיסאות":"קופסאות"}?`,
+    return Q(`${item} ${G.one} ${G.h} ${h0} ס"מ. כשמערימים ${n1} ${isChair?"כיסאות":"קופסאות"} זה על זה, גובה הערימה הוא ${t1} ס"מ. מה יהיה גובהה של ערימה של ${n2} ${isChair?"כיסאות":"קופסאות"}?`,
       "", numOpts(t2,[per,-per,2*per,h0]), fmtN(t2),
-      `כל ${item} נוסף מוסיף (${t1} − ${h0}) ÷ ${n1-1} = ${per} ס"מ. ערימת ${n2}: ${h0} + ${n2-1} × ${per} = ${t2}.`,
+      `כל ${item} ${G.plus} ${G.adds} (${t1} − ${h0}) ÷ ${n1-1} = ${per} ס"מ. ערימת ${n2}: ${h0} + ${n2-1} × ${per} = ${t2}.`,
       {type:"stackTotal", ans:t2, per},
       "הפריט הראשון נותן את רוב הגובה. כל פריט נוסף מוסיף רק חלק קטן — מוצאים כמה.",
       [`התוספת של כל פריט נוסף: (${t1} − ${h0}) ÷ ${n1-1} = ${per} ס"מ`, `בערימת ${n2} יש ${n2-1} תוספות מעל הפריט הראשון`, `הגובה: ${h0} + ${n2-1} × ${per} = ${t2} ס"מ`]);
   }
   if(kind===2){
-    return Q(`${item} אחד גובהו ${h0} ס"מ. ערימה של ${n1} ${isChair?"כיסאות":"קופסאות"} גובהה ${t1} ס"מ. כמה ס"מ מוסיף כל ${item} נוסף לערימה?`,
+    return Q(`${item} ${G.one} ${G.h} ${h0} ס"מ. ערימה של ${n1} ${isChair?"כיסאות":"קופסאות"} גובהה ${t1} ס"מ. כמה ס"מ ${G.adds} כל ${item} ${G.plus} לערימה?`,
       "", numOpts(per,[2,-2,per+3,h0]), fmtN(per),
-      `הערימה כולה מעל ה${item} הראשון היא ${t1} − ${h0} = ${t1-h0} ס"מ, והיא נוצרה מ־${n1-1} תוספות: ${t1-h0} ÷ ${n1-1} = ${per}.`,
+      `הערימה כולה מעל ${G.first} היא ${t1} − ${h0} = ${t1-h0} ס"מ, והיא נוצרה מ־${n1-1} תוספות: ${t1-h0} ÷ ${n1-1} = ${per}.`,
       {type:"stackPer", ans:per, per},
       "מחסרים את גובה הפריט הראשון, ומחלקים במספר הפריטים שהתווספו מעליו.",
       [`מעל הפריט הראשון נוספו ${n1-1} פריטים`, `הגובה שנוסף: ${t1} − ${h0} = ${t1-h0} ס"מ`, `כל פריט מוסיף: ${t1-h0} ÷ ${n1-1} = ${per} ס"מ`]);
   }
   const m=rnd(5,11), target=h0 + per*m;
-  return Q(`${item} אחד גובהו ${h0} ס"מ, וכל ${item} נוסף מעלה את הערימה ב־${per} ס"מ. כמה ${isChair?"כיסאות":"קופסאות"} יש בערימה שגובהה ${target} ס"מ?`,
+  return Q(`${item} ${G.one} ${G.h} ${h0} ס"מ, וכל ${item} ${G.plus} מעלה את הערימה ב־${per} ס"מ. כמה ${isChair?"כיסאות":"קופסאות"} יש בערימה שגובהה ${target} ס"מ?`,
     "", numOpts(m+1,[1,-1,2,-2]), fmtN(m+1),
-    `מעל ה${item} הראשון הגובה עלה ב־${target} − ${h0} = ${target-h0} ס"מ, כלומר ${m} תוספות של ${per}. יחד עם הראשון: ${m+1}.`,
+    `מעל ${G.first} הגובה עלה ב־${target} − ${h0} = ${target-h0} ס"מ, כלומר ${m} תוספות של ${per}. יחד עם הראשון: ${m+1}.`,
     {type:"stackCount", ans:m+1, per},
     "מחסרים את גובה הראשון, מחלקים בתוספת לפריט — ולא שוכחים להוסיף את הפריט הראשון!",
     [`הגובה מעל הפריט הראשון: ${target} − ${h0} = ${target-h0} ס"מ`, `מספר התוספות: ${target-h0} ÷ ${per} = ${m}`, `מוסיפים את הפריט הראשון: ${m} + 1 = ${m+1}`]);
@@ -1682,7 +1730,7 @@ function genD4(L){
     const what = combined? "כדורגל וכדורסל יחד" : "כמה יותר תלמידים בחרו כדורגל מאשר כדורסל";
     return Q(`בדיאגרמה: חוגי הספורט שבחרו ${T} תלמידי בית הספר. ${combined? "כמה תלמידים בחרו" : ""} ${what}${combined?"?":"?"}`,
       viz, numOpts(val,[T/8, -T/8, T/2===val? T/4: 0, 16]), fmtN(val),
-      combined? `כדורגל ${T/2} + כדורסל ${T/4} = ${val}.` : `כדורגל ${T/2} − כדורסל ${T/4} = ${val}.`,
+      combined? `כדורגל: ${T/2} תלמידים, כדורסל: ${T/4} תלמידים. יחד: ${T/2} + ${T/4} = ${val}.` : `כדורגל: ${T/2} תלמידים, כדורסל: ${T/4} תלמידים. ההפרש: ${T/2} − ${T/4} = ${val}.`,
       {type: combined?"pieComb":"pieDiff", T, ans:val},
       "מחשבים כל ענף בנפרד (החלק × כל התלמידים), ואז מחברים או מחסרים.",
       [`כדורגל: ${T} × 1/2 = ${T/2}`, `כדורסל: ${T} × 1/4 = ${T/4}`, combined? `מחברים: ${T/2} + ${T/4} = ${val}` : `מחסרים: ${T/2} − ${T/4} = ${val}`]);
@@ -1811,7 +1859,7 @@ const TOPICS=[
  {id:"b9",part:1,emoji:"🍕",name:"חישובים בשברים פשוטים",desc:"חיבור, חיסור וכפל — מכנים שווים ושונים, מספרים מעורבים",gen:genB9,
   learn:[
    {t:"מחברים שברים",x:"מכנים שווים: מחברים רק את המונים. מכנים שונים: מוצאים מכנה משותף קודם! ובסוף — מצמצמים.",e:"2/5 + 3/10: מכנה משותף 10 ← 4/10 + 3/10 = 7/10."},
-   {t:"מספר מעורב × או −",x:"הופכים לשבר מדומה, מחשבים, והופכים בחזרה למעורב. כפל שלם בשבר: כופלים את השלם במונה.",e:"6 × 3/8 = 18/8 = 9/4 = 2 ורבע."}]},
+   {t:"מספר מעורב × או −",x:"הופכים לשבר מדומה, מחשבים, והופכים בחזרה למעורב. כפל שלם בשבר: כופלים את השלם במונה.",e:"6 × 3/8 = 18/8 = 9/4 — כלומר 2 ורבע."}]},
  {id:"c",part:2,emoji:"📖",name:"בעיות מילוליות",desc:"שברים, כסף ועודף, היקף, חלוקה, חילוק עם שארית, ממוצע ועוד",gen:(L)=>pick(WP_GENS)(),bankDraw:(slot)=>WP_GENS[slot%WP_GENS.length](),
   learn:[
    {t:"המתכון לבעיה מילולית",x:"1) קוראים עד הסוף. 2) מסמנים: מה ידוע? מה שואלים? 3) כותבים תרגיל. 4) פותרים. 5) בודקים שהתשובה הגיונית וכותבים אותה במשפט.",e:"״חלק מהכמות״ = כופלים את הכמות בשבר. ״נותר״ = מחסירים ממה שהיה."},
@@ -1879,7 +1927,7 @@ function buildBank(topic, seed){
     seen.add(key);
     q.lvl=L; q.bankIdx=items.length;
     if(!q.steps || !q.steps.length) q.steps = q.why? [q.why] : [];
-    if(!q.hint) q.hint = TOPIC_HINTS[topic.id]||"חשבו צעד־צעד.";
+    if(!q.hint) q.hint = fixMath(TOPIC_HINTS[topic.id]||"חשבו צעד־צעד.");
     items.push(q);
   }
   return items;
@@ -2067,7 +2115,7 @@ function showLearn(){ if(!curTopic)return; setTabs("learn");
  const host=$("learnPane"); host.innerHTML="";
  curTopic.learn.forEach((c,i)=>{
    const d=document.createElement("div"); d.className="card learncard";
-   d.innerHTML=`<h3>${i+1}. ${c.t}</h3><div class="lx">${c.x}</div>${c.e? `<div class="ex">💡 <b>דוגמה:</b> ${c.e}</div>`:""}`;
+   d.innerHTML=`<h3>${i+1}. ${c.t}</h3><div class="lx">${fixMath(c.x)}</div>${c.e? `<div class="ex">💡 <b>דוגמה:</b> ${fixMath(c.e)}</div>`:""}`;
    host.appendChild(d);
  });
  /* interactive mini-check: one quick bank question with instant feedback (skippable) */
