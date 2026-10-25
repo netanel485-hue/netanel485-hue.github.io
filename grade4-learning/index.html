@@ -31056,7 +31056,7 @@ const DATA_ENG = {
     {
      "lvl": 1,
      "type": "picture",
-     "q": "What is this? 🌳",
+     "q": "What is this? 🌻",
      "opts": [
       "family",
       "garden",
@@ -40368,7 +40368,7 @@ const DATA_ENG = {
     {
      "lvl": 5,
      "type": "true",
-     "q": "Which sentence about Mimi is NOT true?",
+     "q": "Which sentence is NOT true?",
      "opts": [
       "Pip sings in the morning.",
       "Pip sings at night.",
@@ -41012,7 +41012,7 @@ const DATA_ENG = {
     {
      "lvl": 8,
      "type": "true",
-     "q": "Which sentence about Pip is TRUE?",
+     "q": "Which sentence about Sara's party is TRUE?",
      "opts": [
       "Three friends came to the party.",
       "Mother gave cake and milk.",
@@ -42997,7 +42997,9 @@ function gaKind(cfg,kind){
   else if(type==='obtuse'){deg=rnd(95,175);label='קהה';range='גדולה מ־90° וקטנה מ־180°';}
   else{deg=180;label='שטוחה';range='בדיוק 180° — קו ישר';}
   const text=kind==='word'
-    ?`במשולש של ${pick(NAMES)} יש זווית שגודלה ${deg}°. איזו זווית זו?`
+    ?(type==='straight'
+      ?`יש קו ישר, והזווית שעליו היא ${deg}°. איזו זווית זו?`
+      :`במשולש של ${pick(NAMES)} יש זווית שגודלה ${deg}°. איזו זווית זו?`)
     :`זווית שגודלה ${deg}° היא זווית:`;
   const ans=label;
   const all=['חדה','ישרה','קהה','שטוחה'];
@@ -43119,7 +43121,7 @@ function gpSide(cfg,kind){
   let text,ans,explain,wrongs;
   if(mode==='sqP'){
     const a=rnd(3,12),P=4*a;
-    text=kind==='word'?`היקף של ריבוע הוא ${P} ס״מ. מה אורך הצלע של הריבוע?`:`היקפו של ריבוע הוא ${P} מטר. מה אורך צלעו?`;
+    text=kind==='word'?`היקף של ריבוע הוא ${P} ס״מ. מה אורך הצלע של הריבוע?`:`היקפו של ריבוע הוא ${P} ס״מ. מה אורך צלעו?`;
     ans=`${a} ס״מ`;
     wrongs=[`${a+1} ס״מ`,`${a-1>0?a-1:a+2} ס״מ`,`${P/2} ס״מ`,`${a+2} ס״מ`];
     explain=`לריבוע 4 צלעות שוות, ולכן מחלקים את ההיקף ב־4: ${P} ÷ 4 = ${a} ס״מ.`;
