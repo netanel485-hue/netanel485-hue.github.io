@@ -89,6 +89,14 @@
   /* ---- topic picker ---- */
   .tgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 6px 0 14px; }
   @media (min-width: 640px) { .tgrid { grid-template-columns: 1fr 1fr 1fr; } }
+@media (min-width: 640px) { .t-status { padding: 10px 14px !important; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 2px 18px; }
+  .t-status #tLevel { font-size: 15px !important; }
+  .t-status #tStars { margin: 0 !important; }
+  .t-status #tStars .st { font-size: 18px; }
+  .t-status .streakrow { margin-top: 0; font-size: 14px; }
+  .t-status #tProgStars { font-size: 15px !important; }
+  .t-status #tTotal { margin-top: 0 !important; font-size: 13px !important; }
+  .t-status .t-help { min-height: auto; padding: 2px 8px; font-size: 13px; } }
   .tcard { background: #fff; border: 2px solid #d5e2f2; border-radius: 16px; padding: 18px 10px;
            text-align: center; cursor: pointer; font-family: inherit; color: inherit;
            touch-action: manipulation; min-height: 120px; }
@@ -42324,12 +42332,12 @@ function n10Compare(cfg,kind){
   const s=cfg.s;
   if(Math.random()<0.5){
     const th=s<=2?rnd(1,9)*100:rnd(1,9)*1000,span=s<=2?99:999;
-    const set=new Set();while(set.size<3)set.add(th+rnd(0,span));
+    const set=new Set();while(set.size<4)set.add(th+rnd(0,span));
     const nums=[...set],mx=Math.max(...nums),ans=String(mx);
     let text;
-    if(kind==='word')text=`שלושה ילדים קפצו לרוחק. המרחקים (בס״מ): ${nums.join(', ')}. איזה מרחק הוא הגדול ביותר?`;
+    if(kind==='word')text=`ארבעה ילדים קפצו לרוחק. המרחקים (בס״מ): ${nums.join(', ')}. איזה מרחק הוא הגדול ביותר?`;
     else text=`איזה מספר הוא הגדול ביותר?`;
-    const wrongs=nums.filter(v=>v!==mx).map(String).concat([String(mx+10)]);
+    const wrongs=nums.filter(v=>v!==mx).map(String);
     return{text,options:makeOptions(ans,uniqWrongs(ans,wrongs)),answer:ans,
       explain:`משווים ספרה אחר ספרה משמאל לימין. מהקטן לגדול: ${[...nums].sort((a,b)=>a-b).join(', ')}. הגדול ביותר הוא ${mx}.`};
   }
@@ -42523,12 +42531,12 @@ function n100Place(cfg,kind){
 function n100Compare(cfg,kind){
   if(Math.random()<0.5){
     const th=rnd(1,9)*10000,set=new Set();
-    while(set.size<3)set.add(th+rnd(0,9999));
+    while(set.size<4)set.add(th+rnd(0,9999));
     const nums=[...set],mx=Math.max(...nums),ans=String(mx);
     const text=kind==='word'
-      ?`שלוש ערים בישראל. מספר התושבים: ${nums.join(', ')}. באיזו עיר מספר התושבים גדול ביותר? (כתבו את המספר)`
+      ?`ארבע ערים בישראל. מספר התושבים: ${nums.join(', ')}. באיזו עיר מספר התושבים גדול ביותר? (כתבו את המספר)`
       :`איזה מספר הוא הגדול ביותר?`;
-    const wrongs=nums.filter(v=>v!==mx).map(String).concat([String(mx+100)]);
+    const wrongs=nums.filter(v=>v!==mx).map(String);
     return{text,options:makeOptions(ans,uniqWrongs(ans,wrongs)),answer:ans,
       explain:`משווים ספרה אחר ספרה משמאל לימין, מעשרות האלפים. מהקטן לגדול: ${[...nums].sort((a,b)=>a-b).join(', ')}. הגדול ביותר הוא ${mx}.`};
   }
