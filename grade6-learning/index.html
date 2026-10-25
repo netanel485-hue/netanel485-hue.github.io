@@ -204,6 +204,15 @@
   <div id="hubGrid" class="h-grid"></div>
 </div>
 
+<div id="hubProfiles" class="h-wrap h-hidden">
+  <div class="h-head">
+    <div style="font-size:40px">👤</div>
+    <h1 style="font-size:26px">מי לומד?</h1>
+    <p>לכל ילד פרופיל משלו — המיקום, הרמות והמטבעות נשמרים בנפרד. בלי חשבון ובלי שרת, הכול במכשיר הזה.</p>
+  </div>
+  <div id="hubProfilesBody"></div>
+</div>
+
 
 <div id="hubMap" class="h-wrap h-hidden">
   <button class="btn btn-ghost" onclick="hubHomeFromEnd()">🏠 כל המקצועות</button>
@@ -1057,7 +1066,8 @@ DATA_ENG_STUDENT.topics.push({
 // ============================================================
 // Subjects Hub — generic engine for all knowledge subjects.
 // Everything is hub-prefixed / inside this IIFE: the math kit in the same
-// page keeps its own globals. Session-only progress (like the math kit).
+// page keeps its own globals. Progress is per-profile in localStorage
+// (this device only — no login, no server).
 // ============================================================
 (function(){
 'use strict';
@@ -1169,14 +1179,37 @@ function hubStartFocus(){
 const hubProg={}; // topicId -> {mastery:0..8, rounds:int, correct:int, total:int}
 function hubTopicProg(id){if(!hubProg[id])hubProg[id]={mastery:0,rounds:0,correct:0,total:0};return hubProg[id];}
 const hubLastTest={}; // topicId -> Set of last test question texts
-// ---------- persistence (this device only) ----------
+// ---------- persistence: per-profile, this device only (no login, no server) ----------
+window.hubProfileBase='hubProgV1';
+const HUB_BASE='hubProgV1';
+const HUB_REG_KEY=HUB_BASE+':profiles';
 let hubMiss={}; // topicId -> {qtext: {n,st,due,ld}} — Leitner: stage advances on successes on DIFFERENT days
 let hubLast=null; // {subj, book, topic}
 let hubDays={}; // dateStr -> finished rounds that day
 function hubToday(){return new Date().toISOString().slice(0,10);}
 function hubDayPlusMs(n){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+n);return d.getTime();}
-function hubSave(){try{localStorage.setItem('hubProgV1',JSON.stringify({prog:hubProg,miss:hubMiss,last:hubLast,days:hubDays,bank:hubBank,goal:hubGoal,wk:hubWk}));}catch(e){}}
-function hubLoad(){try{const d=JSON.parse(localStorage.getItem('hubProgV1')||'null');if(d){for(const k in (d.prog||{}))hubProg[k]=d.prog[k];hubMiss=d.miss||{};hubLast=d.last||null;hubDays=d.days||{};if(d.bank)hubBank=d.bank;if(d.goal)hubGoal=d.goal;if(d.wk)hubWk=d.wk;
+let hubProfiles=[]; // [{id,name,emoji}]
+let hubActiveId=null;
+function hubNewId(){return 'p'+Date.now().toString(36)+Math.floor(Math.random()*46656).toString(36);}
+function hubProfileKey(id){return HUB_BASE+':'+id;}
+function hubMathKeyFor(pid){return 'mathProgV1:'+HUB_BASE+':'+pid;}
+function hubRegLoad(){try{const r=JSON.parse(localStorage.getItem(HUB_REG_KEY)||'null');if(r&&Array.isArray(r.list)){hubProfiles=r.list;hubActiveId=r.active||null;}}catch(e){}}
+function hubRegSave(){try{localStorage.setItem(HUB_REG_KEY,JSON.stringify({v:1,active:hubActiveId,list:hubProfiles}));}catch(e){}}
+function hubActiveProfile(){return hubProfiles.find(p=>p.id===hubActiveId)||null;}
+function hubResetState(){for(const k in hubProg)delete hubProg[k];for(const k in hubLastTest)delete hubLastTest[k];hubMiss={};hubLast=null;hubDays={};hubBank={coins:0,log:[],reqs:[]};hubGoal=null;hubWk=null;}
+function hubMigrateLegacy(){ // one-time: the old single key becomes the first profile, nothing lost
+  try{
+    if(localStorage.getItem(HUB_REG_KEY))return;
+    const raw=localStorage.getItem(HUB_BASE);if(!raw)return;
+    const d=JSON.parse(raw);if(!d||typeof d!=='object')return;
+    const id=hubNewId();hubProfiles=[{id:id,name:'הפרופיל שלי',emoji:'👤'}];hubActiveId=id;
+    localStorage.setItem(hubProfileKey(id),JSON.stringify(d));
+    if(localStorage.getItem(hubProfileKey(id)))localStorage.removeItem(HUB_BASE);
+    hubRegSave();
+  }catch(e){}
+}
+function hubSave(){try{if(!hubActiveId)return;localStorage.setItem(hubProfileKey(hubActiveId),JSON.stringify({prog:hubProg,miss:hubMiss,last:hubLast,days:hubDays,bank:hubBank,goal:hubGoal,wk:hubWk}));}catch(e){}}
+function hubLoad(){try{if(!hubActiveId)return;const d=JSON.parse(localStorage.getItem(hubProfileKey(hubActiveId))||'null');if(d){for(const k in (d.prog||{}))hubProg[k]=d.prog[k];hubMiss=d.miss||{};hubLast=d.last||null;hubDays=d.days||{};if(d.bank)hubBank=d.bank;if(d.goal)hubGoal=d.goal;if(d.wk)hubWk=d.wk;
   for(const tid in hubMiss)for(const q in hubMiss[tid]){const v=hubMiss[tid][q];if(typeof v==='number')hubMiss[tid][q]={n:v,st:0,due:0,ld:''};}}}catch(e){}}
 
 // ---------- bank, weekly goal, parent view (v2.3) ----------
@@ -1250,13 +1283,25 @@ function hubMapGo(tid){const f=hubFindTopic(tid);if(!f)return;hubSubj=f.subj;hub
 function hubOpenParent(){hubRenderParent();hubShow('hubParent');}
 function hubRenderParent(){
   hubWkReset();const ad=hubActiveDays();
+  const profMsg=hubProfMsg;hubProfMsg='';
+  const profRows=hubProfiles.map(p=>{
+    let coins=0;try{const d=JSON.parse(localStorage.getItem(hubProfileKey(p.id))||'null');coins=(d&&d.bank&&d.bank.coins)||0;}catch(e){}
+    return '<div class="h-typerow"><span>'+p.emoji+' '+hEsc(p.name)+(p.id===hubActiveId?' · פעיל עכשיו':'')+' · '+coins+' 🪙</span><span>'
+      +'<button class="btn" onclick="hubRenameProfile(\''+p.id+'\')">✏️ שינוי שם</button>'
+      +(hubProfiles.length>1?'<button class="btn" onclick="hubDeleteProfile(\''+p.id+'\')">🗑️ מחיקה</button>':'')
+      +'<button class="btn" onclick="hubExportProfile(\''+p.id+'\')">📤 קוד העברה</button></span></div>';
+  }).join('');
   const mg=hubWk.mastery.length?hubWk.mastery.map(m=>'<div class="h-typerow"><span>🏆 '+hEsc(m)+'</span></div>').join(''):'<div class="h-ssub">עדיין לא השבוע</div>';
   let talk=null,mx=0;for(const k in hubWk.missTop)if(hubWk.missTop[k]>mx){mx=hubWk.missTop[k];talk=k;}
   const gi=hubGoalInfo();
   const reqs=hubBank.reqs.map((r,i)=>'<div class="h-typerow"><span>🎁 בקשת צ׳ופר · '+r.d+'</span>'+(r.st==='pending'?'<button class="btn" onclick="hubApproveReq('+i+')">✔ אישור ומימוש (50 מטבעות)</button>':'<span>✔ מומש</span>')+'</div>').join('');
   const log=hubBank.log.slice(0,8).map(l=>'<div class="h-typerow"><span>'+hEsc(l.why)+'</span><span>+'+l.amt+' 🪙</span></div>').join('');
   hEl('hubParentBody').innerHTML=
-    '<div class="h-bankcard"><div style="font-size:19px;font-weight:800">🏦 בנק הידע</div><div style="font-size:30px;font-weight:800;margin:4px 0">'+hubBank.coins+' מטבעות</div>'
+    '<div class="h-lab">פרופילים במכשיר הזה</div>'+profRows
+    +'<div class="h-rowbtns"><button class="btn" onclick="hubOpenProfiles()">👤 החלפת פרופיל / פרופיל חדש</button><button class="btn" onclick="hubImportPanel()">📥 ייבוא פרופיל מקוד</button></div>'
+    +(profMsg?'<div class="fb good">'+hEsc(profMsg)+'</div>':'')
+    +'<div id="hubProfPanel" class="h-sharebox h-hidden"></div>'
+    +'<div class="h-bankcard"><div style="font-size:19px;font-weight:800">🏦 בנק הידע</div><div style="font-size:30px;font-weight:800;margin:4px 0">'+hubBank.coins+' מטבעות</div>'
     +'<div class="h-ssub">השבוע נכנסו +'+hubWk.coins+' מטבעות. מטבעות נצברים רק על למידה מאומתת: שאלה שבוגרה בחזרה מרווחת (+3), עליית שליטה (+15), סבב חיזוק שהושלם (+5), מבחן מעל 80% (+10), בונוס 4 ימי למידה בשבוע (+20). צ׳ופר אחד = 50 מטבעות, והמימוש באישורכם כאן במסך.</div></div>'
     +'<div class="h-lab">השבוע (ראשון–שבת)</div>'
     +'<div class="h-typerow"><span>ימי למידה</span><span><b>'+ad+'</b> מתוך 7</span></div>'
@@ -1269,6 +1314,96 @@ function hubRenderParent(){
     +(reqs?'<div class="h-lab">בקשות צ׳ופר</div>'+reqs:'')
     +(log?'<div class="h-lab">תנועות אחרונות בבנק</div>'+log:'')
     +'<div class="h-ssub" style="margin-top:10px">המידע נשמר במכשיר הזה בלבד. הילד רואה בדיוק את אותם נתונים — אין מעקב נסתר.</div>';
+}
+// ---------- profiles: picker, switch, parent management, transfer code ----------
+const HUB_EMOJIS=['😊','😎','🤩','🦁','🐯','🦊','🐼','🦄','⚽','🎸','🚀','🌸'];
+let hubProfEmoji='😊';
+let hubProfMsg='';
+function hubProfilesInit(){
+  hubRegLoad();hubMigrateLegacy();
+  if(!hubActiveProfile()&&hubProfiles.length){hubActiveId=hubProfiles[0].id;hubRegSave();}
+  if(hubActiveProfile()){hubLoad();hubRenderHome();}
+  else{hubRenderProfiles();hubShow('hubProfiles');}
+}
+function hubOpenProfiles(){hubSave();hubRenderProfiles();hubShow('hubProfiles');}
+function hubProfilesHome(){if(hubActiveProfile()){hubRenderHome();hubShow('hubHome');}else{hubRenderProfiles();hubShow('hubProfiles');}}
+function hubSelectProfile(id){const p=hubProfiles.find(x=>x.id===id);if(!p)return;hubActiveId=id;hubRegSave();location.reload();}
+function hubSetProfEmoji(e){hubProfEmoji=e;hubRenderProfiles();}
+function hubCreateProfile(){
+  const inp=hEl('hubProfName');const name=(inp?inp.value.trim():'');
+  if(!name){if(inp)inp.focus();return;}
+  const id=hubNewId();hubProfiles.push({id:id,name:name.slice(0,20),emoji:hubProfEmoji});hubActiveId=id;hubRegSave();location.reload();
+}
+function hubRenderProfiles(){
+  const body=hEl('hubProfilesBody');if(!body)return;
+  let html='';
+  if(hubProfiles.length){
+    html+='<div class="h-lab">בחרו מי לומד עכשיו:</div><div class="h-tgrid">';
+    for(const p of hubProfiles){
+      let coins=0;try{const d=JSON.parse(localStorage.getItem(hubProfileKey(p.id))||'null');coins=(d&&d.bank&&d.bank.coins)||0;}catch(e){}
+      html+='<button class="h-tcard'+(p.id===hubActiveId?' h-active':'')+'" onclick="hubSelectProfile(\''+p.id+'\')"><div class="h-temoji">'+p.emoji+'</div><div class="h-tname">'+hEsc(p.name)+'</div><div class="h-ssub">'+coins+' 🪙</div></button>';
+    }
+    html+='</div>';
+    if(hubActiveProfile())html+='<div class="h-rowbtns"><button class="btn btn-ghost" onclick="hubProfilesHome()">↩️ חזרה למסך הבית</button></div>';
+  } else {
+    html+='<div class="h-tip">עוד אין פרופילים במכשיר הזה. יוצרים את הראשון — כל ההתקדמות שלו תישמר בנפרד.</div>';
+  }
+  html+='<div class="h-lab">פרופיל חדש:</div>'
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0">'+HUB_EMOJIS.map(e=>'<button class="btn'+(e===hubProfEmoji?' btn-main':'')+'" onclick="hubSetProfEmoji(\''+e+'\')">'+e+'</button>').join('')+'</div>'
+    +'<input class="h-sel" id="hubProfName" maxlength="20" placeholder="שם הילד/ה...">'
+    +'<div class="h-rowbtns"><button class="btn btn-main" onclick="hubCreateProfile()">➕ יצירת פרופיל</button></div>';
+  body.innerHTML=html;
+}
+function hubB64enc(str){const bytes=new TextEncoder().encode(str);let bin='';const CH=32768;for(let i=0;i<bytes.length;i+=CH){bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+CH));}return btoa(bin);}
+function hubB64dec(b64){const bin=atob(b64);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes);}
+function hubExportProfile(id){
+  const p=hubProfiles.find(x=>x.id===id);if(!p)return;
+  let data=null,math=null;
+  try{data=JSON.parse(localStorage.getItem(hubProfileKey(id))||'null');}catch(e){}
+  try{math=localStorage.getItem(hubMathKeyFor(id));}catch(e){}
+  if(!data){hubProfMsg='אין נתונים שמורים לפרופיל הזה.';hubRenderParent();return;}
+  const code=hubB64enc(JSON.stringify({v:1,base:HUB_BASE,name:p.name,emoji:p.emoji,data:data,math:math}));
+  hubProfMsg='';
+  hubRenderParent();
+  const panel=hEl('hubProfPanel');if(!panel)return;
+  panel.innerHTML='<div class="h-lab">קוד העברה של '+hEsc(p.name)+' — מעתיקים אותו, ובמכשיר השני מדביקים במסך להורה ← ייבוא פרופיל מקוד:</div>'
+    +'<textarea id="hubProfCode" readonly rows="4" style="width:100%;padding:9px;border:1.5px solid #d7dce6;border-radius:10px;font-size:12px;font-family:inherit;direction:ltr">'+code+'</textarea>'
+    +'<div class="h-rowbtns"><button class="btn" id="hubProfCopyBtn" onclick="hubCopyProfCode()">📋 העתקת הקוד</button></div>';
+  panel.classList.remove('h-hidden');
+}
+function hubCopyProfCode(){const i=hEl('hubProfCode');if(!i)return;i.select();i.setSelectionRange(0,99999);try{navigator.clipboard.writeText(i.value);}catch(e){try{document.execCommand('copy');}catch(e2){}}const b=hEl('hubProfCopyBtn');if(b){b.textContent='✓ הועתק';setTimeout(()=>{b.textContent='📋 העתקת הקוד';},1800);}}
+function hubImportPanel(){
+  hubRenderParent();
+  const panel=hEl('hubProfPanel');if(!panel)return;
+  panel.innerHTML='<div class="h-lab">הדביקו כאן קוד העברה שהועתק ממכשיר אחר (מאותה כיתה):</div>'
+    +'<textarea id="hubProfImport" rows="4" style="width:100%;padding:9px;border:1.5px solid #d7dce6;border-radius:10px;font-size:12px;font-family:inherit;direction:ltr"></textarea>'
+    +'<div class="h-rowbtns"><button class="btn btn-main" onclick="hubImportProfile()">📥 ייבוא כפרופיל חדש</button></div>';
+  panel.classList.remove('h-hidden');
+}
+function hubImportProfile(){
+  const i=hEl('hubProfImport');if(!i)return;const code=i.value.trim();if(!code)return;
+  let pay=null;try{pay=JSON.parse(hubB64dec(code));}catch(e){}
+  if(!pay||pay.v!==1||pay.base!==HUB_BASE||!pay.data||typeof pay.data.prog!=='object'){hubProfMsg='הקוד לא תקין או מכיתה אחרת — הייבוא לא בוצע.';hubRenderParent();return;}
+  let name=String(pay.name||'פרופיל מיובא').slice(0,20);
+  if(hubProfiles.some(p=>p.name===name))name=(name+' (מיובא)').slice(0,20);
+  const id=hubNewId();hubProfiles.push({id:id,name:name,emoji:pay.emoji||'👤'});
+  try{localStorage.setItem(hubProfileKey(id),JSON.stringify(pay.data));}catch(e){}
+  if(pay.math){try{localStorage.setItem(hubMathKeyFor(id),pay.math);}catch(e){}}
+  hubRegSave();hubProfMsg='פרופיל "'+name+'" נוסף בהצלחה ✅';hubRenderParent();
+}
+function hubRenameProfile(id){
+  const p=hubProfiles.find(x=>x.id===id);if(!p)return;
+  const name=prompt('שם חדש לפרופיל:',p.name);if(name===null)return;const t=name.trim();if(!t)return;
+  p.name=t.slice(0,20);hubRegSave();hubRenderParent();hubRenderHome();
+}
+function hubDeleteProfile(id){
+  if(hubProfiles.length<2)return;const p=hubProfiles.find(x=>x.id===id);if(!p)return;
+  if(!confirm('למחוק את הפרופיל "'+p.name+'" וכל ההתקדמות שלו במכשיר הזה? אי אפשר לבטל.'))return;
+  try{localStorage.removeItem(hubProfileKey(id));localStorage.removeItem(hubMathKeyFor(id));}catch(e){}
+  hubProfiles=hubProfiles.filter(x=>x.id!==id);
+  if(hubActiveId===id){hubActiveId=hubProfiles.length?hubProfiles[0].id:null;}
+  hubRegSave();
+  if(hubActiveId)location.reload();else{hubRenderParent();}
 }
 function hubMissCount(tid){const m=hubMiss[tid];return m?Object.keys(m).length:0;}
 function hubDueCount(tid){const m=hubMiss[tid];if(!m)return 0;const now=Date.now();let n=0;for(const q in m)if((m[q].due||0)<=now)n++;return n;}
@@ -1284,7 +1419,7 @@ function hubClearMiss(tid,qtext){hubReviewSuccess(tid,qtext);}
 // ---------- navigation ----------
 let hubSubj=null,hubBookIdx=0;
 function hubShow(view){
-  for(const v of ['hubHome','hubSubject','hubQuiz','hubEnd','hubLearn','hubCards','hubMatch','hubDict','hubType','mathWrap','hubMap','hubParent'])hEl(v).classList.add('h-hidden');
+  for(const v of ['hubHome','hubSubject','hubQuiz','hubEnd','hubLearn','hubCards','hubMatch','hubDict','hubType','mathWrap','hubMap','hubParent','hubProfiles'])hEl(v).classList.add('h-hidden');
   hEl(view).classList.remove('h-hidden');
   window.scrollTo(0,0);
 }
@@ -1321,6 +1456,8 @@ function hubRenderHome(){
   const hasCont=!!(hubLast&&hubFindTopic(hubLast.topic));
   // compact action chips only — no full-width suggestion rows on home (user feedback: visual clutter)
   let chips='';
+  const ap=hubActiveProfile();
+  if(ap)chips+='<button class="btn" onclick="hubOpenProfiles()">'+ap.emoji+' '+hEsc(ap.name)+' ▾</button>';
   if(dueTot>0)chips+='<button class="btn" onclick="hubStartDue()">🔁 '+dueTot+' שאלות לחזרה היום</button>';
   if(hasCont){const f=hubFindTopic(hubLast.topic);chips+='<button class="btn" onclick="hubContinue()">▶️ המשך מאיפה שהפסקת: '+hEsc(f.topic.name)+'</button>';}
   th+='<div class="h-bankcard">'
@@ -1923,7 +2060,8 @@ window.hubOpenMatch=hubOpenMatch;window.hubOpenDict=hubOpenDict;window.hubNextDi
 window.hubOpenType=hubOpenType;window.hubNextTypeItem=hubNextTypeItem;window.hubCheckType=hubCheckType;
 window.hubShare=hubShare;window.hubCopyShare=hubCopyShare;
 window.hubSetGoal=hubSetGoal;window.hubGoalSwap=hubGoalSwap;window.hubGoalCancel=hubGoalCancel;window.hubReqReward=hubReqReward;window.hubApproveReq=hubApproveReq;window.hubOpenMap=hubOpenMap;window.hubMapGo=hubMapGo;window.hubOpenParent=hubOpenParent;window.hubShareWeek=hubShareWeek;window.hubCopyWeek=hubCopyWeek;
-document.addEventListener('DOMContentLoaded',function(){hubLoad();hubRenderHome();});
+window.hubOpenProfiles=hubOpenProfiles;window.hubProfilesHome=hubProfilesHome;window.hubSelectProfile=hubSelectProfile;window.hubSetProfEmoji=hubSetProfEmoji;window.hubCreateProfile=hubCreateProfile;window.hubRenameProfile=hubRenameProfile;window.hubDeleteProfile=hubDeleteProfile;window.hubExportProfile=hubExportProfile;window.hubImportPanel=hubImportPanel;window.hubImportProfile=hubImportProfile;window.hubCopyProfCode=hubCopyProfCode;
+document.addEventListener('DOMContentLoaded',function(){hubProfilesInit();});
 })();
 
 </script>
@@ -3363,8 +3501,30 @@ function startSession(s){
   newTest();
   showTrain();
 }
-function loadS(){/* web-shared version: progress lives in memory for the session only */}
-function saveS(){/* web-shared version: progress lives in memory for the session only */}
+let mathLoadedFor=null;
+function mathProfKey(){
+  try{
+    const base=window.hubProfileBase;
+    if(base){
+      const r=JSON.parse(localStorage.getItem(base+':profiles')||'null');
+      if(r&&r.active)return 'mathProgV1:'+base+':'+r.active;
+    }
+  }catch(e){}
+  return 'mathProgV1:solo';
+}
+function loadS(){
+  try{
+    const k=mathProfKey();if(mathLoadedFor===k)return;
+    const raw=localStorage.getItem(k);if(!raw)return;
+    const d=JSON.parse(raw);if(!d||typeof d!=='object')return;
+    for(const x in PROG)delete PROG[x];
+    for(const x in d)PROG[x]=d[x];
+    mathLoadedFor=k;
+  }catch(e){}
+}
+function saveS(){
+  try{const k=mathProfKey();localStorage.setItem(k,JSON.stringify(PROG));mathLoadedFor=k;}catch(e){}
+}
 function shuffled(n){const a=[];for(let i=0;i<n;i++)a.push(i);for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}return a;}
 function drawQ(level){
   if(!decks[level]||decks[level].length===0)decks[level]=shuffled(curBank()[level].length);
@@ -3494,6 +3654,7 @@ function resetProgress(){
   const k=sessKey();
   PROG[k]={level:0,streak:0,stars:0,correct:0,answered:0,mastered:0,introSeen:0};
   S=PROG[k];
+  saveS();
   decks={};lvlCount=[0,0,0,0,0,0,0,0];tCurrent=null;
   document.getElementById('tMastery').style.display='none';
   showTrain();
