@@ -3073,7 +3073,7 @@ function mxShop(cfg,kind){
 }
 function mxPart(cfg,kind){
   const b=pick([2,3,4,5,6,8]),a=coprimeA(b),u=rnd(3,8+cfg.s),N=b*u,part=a*u;
-  const e=rnd(1,Math.max(2,part-1)),left=N-part-e,A=String(left);
+  const room=N-part,e=rnd(1,room-1),left=room-e,A=String(left);
   let text;
   if(kind==='word')text=pick([
     `בשקית היו ${N} סוכריות. נועם אכל ${frac(a,b)} מהסוכריות, ואחר כך נתן לחבר עוד ${e} סוכריות. כמה סוכריות נשארו בשקית?`,
@@ -3094,7 +3094,7 @@ function mxDec(cfg,kind){
     explain:`שלב 1 — סכום הקנייה: ${_f2(x/100)} + ${_f2(y/100)} = ${_f2(total/100)}. שלב 2 — עודף: ${_f2(note/100)} - ${_f2(total/100)} = ${A}.`};
 }
 function mxTrip(cfg,kind){
-  const T=rnd(12,30+cfg.s)*10,v=rnd(4,8)*10,h=rnd(1,3),d1=v*h,left=T-d1;
+  const v=rnd(4,8)*10,h=rnd(1,3),d1=v*h,left=rnd(2,8+cfg.s)*10,T=d1+left;
   let text;
   if(kind==='word')text=`משפחה נוסעת לטיול במרחק ${T} ק״מ. היא נסעה ${h} שעות במהירות ${v} קמ״ש. כמה קילומטרים נשארו לה לנסוע?`;
   else text=`מסלול של ${T} ק״מ. רכב נסע ${h} שעות במהירות ${v} קמ״ש. כמה ק״מ נשארו לו?`;
