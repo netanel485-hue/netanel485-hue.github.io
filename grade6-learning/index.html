@@ -193,8 +193,13 @@
 .whos{display:flex;gap:6px;width:100%}
 .who{flex:1;min-height:44px;border-radius:12px;border:2px solid #e3e7ef;background:#fff;font:inherit;font-weight:800;font-size:15px;color:#243056}
 .who.on{border-color:#4a7dff;background:#eef3ff}
-.kidstats{display:flex;gap:8px;width:100%;justify-content:space-between}
-.kid-hero{min-height:calc(50vh - 120px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px 4px 8px}
+.kidstats{display:flex;gap:8px;width:100%;justify-content:space-between;align-items:center}
+.switchbtn{border:none;background:transparent;color:#5a6a8a;font:inherit;font-weight:800;font-size:14px;min-height:44px;padding:4px 2px;cursor:pointer;text-decoration:underline}
+.familymenu{width:100%;background:#fff;border:2px solid #e3e7ef;border-radius:14px;padding:8px}
+.familymenu[hidden]{display:none}
+.familymenu .lbl{font-size:13px;color:#5a6a8a;margin-bottom:6px}
+.backmain{display:block;text-align:center;margin-top:8px;font-weight:800;min-height:44px;line-height:44px;color:#3a7bd5}
+.kid-hero{min-height:calc(50vh - 56px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px 4px 8px}
 .kid-av{font-size:68px;line-height:1}
 .kid-name{font-size:30px;font-weight:800;margin:2px 0}
 .mission-btn{display:block;width:100%;max-width:460px;border:none;border-radius:18px;padding:16px 14px;margin:10px auto 0;font-size:24px;font-weight:800;font-family:inherit;color:#fff;background:linear-gradient(135deg,#ff9f43,#e05252);cursor:pointer;min-height:64px;touch-action:manipulation;box-shadow:0 4px 14px rgba(224,82,82,.28)}
@@ -1272,10 +1277,13 @@ function familyKids(reg){
   for(const p of reg.list){if(!FAMILY_SEED.some(k=>k.id===p.id))out.push(p);}
   return out;
 }
-function familySwitchHtml(){
+function familyMenuHtml(){
   const reg=familyLoad(HUB_OWNER);
-  return '<div class="whos" role="group" aria-label="מי משחק">'+familyKids(reg).map(k=>'<button type="button" class="who'+(k.id===reg.active?' on':'')+'" onclick="familySwitch(\''+k.id+'\')">'+k.emoji+' '+hEsc(k.name)+'</button>').join('')+'</div>';
+  const kids=familyKids(reg).map(k=>'<button type="button" class="who'+(k.id===reg.active?' on':'')+'" onclick="familySwitch(\''+k.id+'\')">'+k.emoji+' '+hEsc(k.name)+'</button>').join('');
+  return '<div id="familyMenu" class="familymenu" hidden><div class="lbl">מי משחק?</div><div class="whos">'+kids+'</div><a class="backmain" href="../">← לכל הכיתות</a></div>';
 }
+function familyMenuToggle(){const m=document.getElementById('familyMenu'); if(m) m.hidden=!m.hidden;}
+window.familyMenuToggle=familyMenuToggle;
 function familySwitch(id){
   const reg=familyLoad(HUB_OWNER);
   if(!reg.list.some(p=>p.id===id)||reg.active===id)return;
@@ -1568,7 +1576,7 @@ function hubPaintBar(){
   const bar=hEl('kidBar'); if(!bar) return;
   const reg=familyLoad(HUB_OWNER);
   const kid=familyKids(reg).find(k=>k.id===reg.active)||{emoji:HUB_KID.emoji,name:HUB_KID.name};
-  bar.innerHTML=familySwitchHtml()+'<div class="kidstats"><span>'+kid.emoji+' '+hEsc(kid.name)+'</span><span>🪙 '+hubBank.coins+'</span><span>🔥 '+hubKidStreak()+'</span><span>רמה '+hubKidLevel()+'</span></div>';
+  bar.innerHTML='<div class="kidstats"><span>'+kid.emoji+' '+hEsc(kid.name)+'</span><span>🪙 '+hubBank.coins+'</span><span>🔥 '+hubKidStreak()+'</span><span>רמה '+hubKidLevel()+'</span><button type="button" class="switchbtn" onclick="familyMenuToggle()">החלף משתמש</button></div>'+familyMenuHtml();
 }
 function hubRenderHome(){
   hubWkReset();

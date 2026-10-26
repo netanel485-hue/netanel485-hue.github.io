@@ -154,8 +154,13 @@
 .whos{display:flex;gap:6px;width:100%}
 .who{flex:1;min-height:44px;border-radius:12px;border:2px solid #d5e2f2;background:#fff;font:inherit;font-weight:800;font-size:15px;color:#1c3d66}
 .who.on{border-color:#3a7bd5;background:#eef5ff}
-.kidstats{display:flex;gap:8px;width:100%;justify-content:space-between}
-.kid-hero{min-height:calc(50vh - 120px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px 4px 8px}
+.kidstats{display:flex;gap:8px;width:100%;justify-content:space-between;align-items:center}
+.switchbtn{border:none;background:transparent;color:#5a6b7d;font:inherit;font-weight:800;font-size:14px;min-height:44px;padding:4px 2px;cursor:pointer;text-decoration:underline}
+.familymenu{width:100%;background:#fff;border:2px solid #d5e2f2;border-radius:14px;padding:8px}
+.familymenu[hidden]{display:none}
+.familymenu .lbl{font-size:13px;color:#5a6b7d;margin-bottom:6px}
+.backmain{display:block;text-align:center;margin-top:8px;font-weight:800;min-height:44px;line-height:44px;color:#3a7bd5}
+.kid-hero{min-height:calc(50vh - 56px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px 4px 8px}
   .kid-av{font-size:64px;line-height:1}
   .kid-name{font-size:30px;font-weight:800;margin:2px 0}
   .mission-sub{color:#5a6b7d;font-size:15px;margin-top:6px;font-weight:700}
@@ -1999,10 +2004,12 @@ function familySwitch(id){
   try{ saveStore(); }catch(e){}
   reg.active=id; familySaveReg(reg); location.reload();
 }
-function familySwitchHtml(){
+function familyMenuHtml(){
   const reg=familyLoad("ariel");
-  return '<div class="whos" role="group" aria-label="מי משחק">'+familyKids(reg).map(k=>'<button type="button" class="who'+(k.id===reg.active?" on":"")+'" onclick="familySwitch(\''+k.id+'\')">'+k.emoji+" "+k.name+"</button>").join("")+"</div>";
+  const kids=familyKids(reg).map(k=>'<button type="button" class="who'+(k.id===reg.active?" on":"")+'" onclick="familySwitch(\''+k.id+'\')">'+k.emoji+" "+k.name+"</button>").join("");
+  return '<div id="familyMenu" class="familymenu" hidden><div class="lbl">מי משחק?</div><div class="whos">'+kids+'</div><a class="backmain" href="../">← לכל הכיתות</a></div>';
 }
+function familyMenuToggle(){ const m=$("familyMenu"); if(m) m.hidden=!m.hidden; }
 function mathMigrate(){
   const dest="mathKitV2:ariel";
   try{
@@ -2179,7 +2186,7 @@ function paintKidBar(){
   const kid=familyActive("ariel");
   const q=dayQCount();
   const ready=store.plan ? (readinessPct()+"% מוכנות") : "מסלול שבוע";
-  bar.innerHTML=familySwitchHtml()+`<div class="kidstats"><span>${kid.emoji} ${kid.name}</span><span>🔥 ${mathStreak()}</span><span>⭐ ${ready}</span></div>`;
+  bar.innerHTML=`<div class="kidstats"><span>${kid.emoji} ${kid.name}</span><span>🔥 ${mathStreak()}</span><span>⭐ ${ready}</span><button type="button" class="switchbtn" onclick="familyMenuToggle()">החלף משתמש</button></div>`+familyMenuHtml();
   const title=$("kidTitle"); if(title) title.textContent=kid.name;
   const btn=$("btnMission"), hint=$("missionHint");
   if(btn && hint){

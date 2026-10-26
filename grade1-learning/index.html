@@ -78,8 +78,13 @@ table.ptable td,table.ptable th{border-bottom:1px solid #eee;padding:7px 4px;tex
 .whos{display:flex;gap:6px;width:100%}
 .who{flex:1;min-height:44px;border-radius:12px;border:2px solid #e7e2ff;background:#fff;font:inherit;font-weight:800;font-size:15px;color:#3a2d6b}
 .who.on{border-color:#7c5cbf;background:#f6f0ff}
-.kidstats{display:flex;gap:8px;width:100%;justify-content:space-between}
-.hero{min-height:calc(50vh - 120px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.kidstats{display:flex;gap:8px;width:100%;justify-content:space-between;align-items:center}
+.switchbtn{border:none;background:transparent;color:#7c6aa8;font:inherit;font-weight:800;font-size:14px;min-height:44px;padding:4px 2px;cursor:pointer;text-decoration:underline}
+.familymenu{width:100%;background:#fff;border:2px solid #e7e2ff;border-radius:14px;padding:8px}
+.familymenu[hidden]{display:none}
+.familymenu .lbl{font-size:13px;color:#7c6aa8;margin-bottom:6px}
+.backmain{display:block;text-align:center;margin-top:8px;font-weight:800;min-height:44px;line-height:44px;color:#7c5cbf}
+.hero{min-height:calc(50vh - 56px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
 .hero svg{width:88px;height:88px}
 .missub{color:#8a86b8;font-size:15px;margin:4px 0 0;font-weight:700}
 .daily{width:100%;max-width:460px;margin-top:6px}
@@ -186,12 +191,14 @@ function familySwitch(id){
   try { save(); } catch (e) {}
   reg.active = id; familySaveReg(reg); location.reload();
 }
-function familySwitchHtml(){
+function familyMenuHtml(){
   var reg = familyLoad('adi');
-  return '<div class="whos" role="group" aria-label="מי משחק">' + familyKids(reg).map(function (k) {
+  var kids = familyKids(reg).map(function (k) {
     return '<button type="button" class="who' + (k.id === reg.active ? ' on' : '') + '" onclick="familySwitch(\'' + k.id + '\')">' + k.emoji + ' ' + k.name + '</button>';
-  }).join('') + '</div>';
+  }).join('');
+  return '<div id="familyMenu" class="familymenu" hidden><div class="lbl">מי משחק?</div><div class="whos">' + kids + '</div><a class="backmain" href="../">← לכל הכיתות</a></div>';
 }
+function familyMenuToggle(){ var m = el('familyMenu'); if (m) m.hidden = !m.hidden; }
 function g1Migrate(){
   var dest = 'hub1ProgV1:adi';
   try {
@@ -321,7 +328,7 @@ function starCount() {
 function paintBar() {
   var kid = familyActive('adi');
   var q = todayQs();
-  el('g1bar').innerHTML = familySwitchHtml() + '<div class="kidstats"><span>' + kid.emoji + ' ' + kid.name + '</span><span>🪙 ' + prog.bank + '</span><span>🔥 ' + g1Streak() + '</span><span>⭐ ' + starCount() + '</span></div>';
+  el('g1bar').innerHTML = '<div class="kidstats"><span>' + kid.emoji + ' ' + kid.name + '</span><span>🪙 ' + prog.bank + '</span><span>🔥 ' + g1Streak() + '</span><span>⭐ ' + starCount() + '</span><button type="button" class="switchbtn" onclick="familyMenuToggle()">החלף משתמש</button></div>' + familyMenuHtml();
   if (el('kidTitle')) el('kidTitle').textContent = kid.name;
   if (el('dailyCount')) {
     el('dailyCount').textContent = Math.min(q, 5) + '/5' + (q >= 5 ? ' ✓' : '');
