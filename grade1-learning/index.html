@@ -74,20 +74,45 @@ table.ptable td,table.ptable th{border-bottom:1px solid #eee;padding:7px 4px;tex
 .eq{font-size:42px;font-weight:800;text-align:center;margin:8px 0;direction:ltr}
 .gone{filter:grayscale(1);opacity:.35}
 .shpbtn{display:inline-flex;flex-direction:column;align-items:center;gap:2px;margin:4px}
+.kidbar{position:sticky;top:0;z-index:5;background:#fff;border-radius:0 0 18px 18px;margin:-14px -14px 12px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 4px 14px rgba(80,50,120,.08)}
+.kidbar .coins{font-size:22px;font-weight:800}
+.todaybar{height:10px;background:#eee9ff;border-radius:8px;overflow:hidden;margin-top:4px}
+.todaybar>div{height:100%;background:var(--pink)}
+.mission{font-size:24px;padding:18px 16px;min-height:72px}
+.mission small{display:block;font-size:15px;font-weight:700;opacity:.95;margin-top:4px}
+.lookfall{display:flex;flex-direction:column;align-items:center;gap:4px}
+.lookletter{font-size:clamp(64px,18vw,96px);font-weight:800;line-height:1.05;color:var(--purple)}
+.lookname{font-size:22px;font-weight:800}
+.lookpic{font-size:72px;line-height:1}
+.lookhint{font-size:16px;color:#8a86b8;margin-top:2px}
+#celeb{position:fixed;inset:0;z-index:30;pointer-events:none;display:flex;align-items:center;justify-content:center}
+.celeb-pop{background:#fff;border-radius:24px;padding:16px 26px;text-align:center;box-shadow:0 10px 40px rgba(80,40,100,.2);animation:pop .28s ease}
+.celeb-em{font-size:40px}
+.celeb-tx{font-size:28px;font-weight:800;color:var(--purple);margin-top:2px}
+.coinfly{position:absolute;bottom:20%;font-size:28px;animation:fly .9s ease-out forwards}
+@keyframes pop{0%{transform:scale(.55);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes fly{0%{transform:translateY(0) scale(.6);opacity:0}20%{opacity:1}100%{transform:translateY(-170px) scale(1.1);opacity:0}}
+.morepages{margin-top:6px}
+.morepages summary{font-size:18px;font-weight:800;color:var(--purple);cursor:pointer;padding:12px 4px;min-height:48px}
+@media (prefers-reduced-motion:reduce){.coinfly,.celeb-pop{animation:none}}
 </style>
 </head>
 <body>
 <div class="wrap">
+  <div class="kidbar" id="kidBar">
+    <div><div class="coins">🪙 <span id="bankCoins">0</span></div><div class="note">מטבעות</div></div>
+    <div class="goal" style="flex:1"><div id="goalText"></div><div class="dots" id="weekDots"></div></div>
+  </div>
   <!-- HOME -->
   <div id="screen-home">
-    <h1>🌸 המרכז של עדי 🌸</h1>
-    <p class="sub">לומדים לקרוא עם "צלילים מספרים"</p>
-    <div class="bank">
-      <div><div class="coins">🪙 <span id="bankCoins">0</span></div><div class="note">מטבעות בבנק הידע</div></div>
-      <div class="goal"><div id="goalText"></div><div class="dots" id="weekDots"></div></div>
-    </div>
+    <h1>🌸 עדי</h1>
+    <p class="sub">משימה קצרה — ואז עוד עמוד אם בא לך</p>
+    <button class="bigbtn mission" id="btnMission">🌟 משימת היום<small id="missionSub">5 שאלות</small></button>
     <button class="bigbtn purple" id="btnReview">🔀 חזרה על הכול</button>
-    <div id="booklets"></div>
+    <details class="morepages">
+      <summary>כל העמודים</summary>
+      <div id="booklets"></div>
+    </details>
     <button class="bigbtn ghost" id="btnGoal">🎯 היעד השבועי שלי</button>
     <button class="bigbtn ghost" id="btnParent">👨‍👩‍👧 מסך הורים</button>
   </div>
@@ -113,7 +138,7 @@ table.ptable td,table.ptable th{border-bottom:1px solid #eee;padding:7px 4px;tex
       <div class="stars" id="endStars"></div>
       <div class="msg" id="endMsg"></div>
       <div id="endCoins" style="font-size:19px"></div>
-      <button class="bigbtn" id="endAgain">🔁 עוד פעם</button>
+      <button class="bigbtn" id="endAgain">🔁 עוד סיבוב?</button>
       <button class="bigbtn purple" id="endHome">🏠 הביתה</button>
     </div>
   </div>
@@ -125,6 +150,7 @@ table.ptable td,table.ptable th{border-bottom:1px solid #eee;padding:7px 4px;tex
     <div id="parentBody"></div>
   </div>
 </div>
+<div id="celeb" class="hidden" aria-hidden="true"></div>
 
 <script>
 var DATA = {"PAGES": [{"id": "א1", "booklet": "א", "page": 1, "kind": "letter", "title": "האות מֵם", "icon": "מ", "letters": ["מ"], "vowels": ["a"]}, {"id": "א2", "booklet": "א", "page": 2, "kind": "letter", "title": "האות נוּן", "icon": "נ", "letters": ["נ"], "vowels": ["a"]}, {"id": "א3", "booklet": "א", "page": 3, "kind": "letter", "title": "האות חֵית", "icon": "ח", "letters": ["ח"], "vowels": ["a"]}, {"id": "א4", "booklet": "א", "page": 4, "kind": "letter", "title": "האות בֵּית", "icon": "ב", "letters": ["ב"], "vowels": ["a"]}, {"id": "א5", "booklet": "א", "page": 5, "kind": "letter", "title": "האות לָמֶד", "icon": "ל", "letters": ["ל"], "vowels": ["a"]}, {"id": "א6", "booklet": "א", "page": 6, "kind": "letter", "title": "האות גִּימֶל", "icon": "ג", "letters": ["ג"], "vowels": ["a"]}, {"id": "א7", "booklet": "א", "page": 7, "kind": "letter", "title": "האות רֵישׁ", "icon": "ר", "letters": ["ר"], "vowels": ["a"]}, {"id": "א8", "booklet": "א", "page": 8, "kind": "letter", "title": "האות שִׁין", "icon": "ש", "letters": ["ש"], "vowels": ["a"]}, {"id": "א9", "booklet": "א", "page": 9, "kind": "letter", "title": "האות הֵא", "icon": "ה", "letters": ["ה"], "vowels": ["a"]}, {"id": "א10", "booklet": "א", "page": 10, "kind": "letter", "title": "האות אָלֶף", "icon": "א", "letters": ["א"], "vowels": ["a"]}, {"id": "א11", "booklet": "א", "page": 11, "kind": "letter", "title": "האות דָּלֶת", "icon": "ד", "letters": ["ד"], "vowels": ["a"]}, {"id": "א12", "booklet": "א", "page": 12, "kind": "letter", "title": "האות וָו", "icon": "ו", "letters": ["ו"], "vowels": ["a"]}, {"id": "א13", "booklet": "א", "page": 13, "kind": "letter", "title": "האות טֵית", "icon": "ט", "letters": ["ט"], "vowels": ["a"]}, {"id": "א14", "booklet": "א", "page": 14, "kind": "letter", "title": "האות יוֹד", "icon": "י", "letters": ["י"], "vowels": ["a"]}, {"id": "א15", "booklet": "א", "page": 15, "kind": "letter", "title": "האות כַּף", "icon": "כ", "letters": ["כ"], "vowels": ["a"]}, {"id": "א16", "booklet": "א", "page": 16, "kind": "letter", "title": "האות סָמֶךְ", "icon": "ס", "letters": ["ס"], "vowels": ["a"]}, {"id": "א17", "booklet": "א", "page": 17, "kind": "letter", "title": "האות עַיִן", "icon": "ע", "letters": ["ע"], "vowels": ["a"]}, {"id": "א18", "booklet": "א", "page": 18, "kind": "review", "title": "סיכום חוברת א׳", "icon": "🏆", "letters": [], "vowels": ["a"]}, {"id": "ב1", "booklet": "ב", "page": 1, "kind": "letter", "title": "האות זַיִן", "icon": "ז", "letters": ["ז"], "vowels": ["a"]}, {"id": "ב2", "booklet": "ב", "page": 2, "kind": "letter", "title": "האות פֵּא", "icon": "פ", "letters": ["פ"], "vowels": ["a"]}, {"id": "ב3", "booklet": "ב", "page": 3, "kind": "letter", "title": "האות צָדִי", "icon": "צ", "letters": ["צ"], "vowels": ["a"]}, {"id": "ב4", "booklet": "ב", "page": 4, "kind": "letter", "title": "האות קוֹף", "icon": "ק", "letters": ["ק"], "vowels": ["a"]}, {"id": "ב5", "booklet": "ב", "page": 5, "kind": "letter", "title": "האות תָּו", "icon": "ת", "letters": ["ת"], "vowels": ["a"]}, {"id": "ב6", "booklet": "ב", "page": 6, "kind": "finals", "title": "אותיות סופיות — מנצפ״ך", "icon": "🔚", "letters": [], "vowels": ["a"]}, {"id": "ב7", "booklet": "ב", "page": 7, "kind": "vowel", "title": "צלילים: חִירִיק", "icon": "🎵", "letters": [], "vowels": ["a", "i"]}, {"id": "ב8", "booklet": "ב", "page": 8, "kind": "vowel", "title": "צלילים: צֵירֵי וְסֶגּוֹל", "icon": "🎵", "letters": [], "vowels": ["a", "i", "e"]}, {"id": "ב9", "booklet": "ב", "page": 9, "kind": "vowel", "title": "צלילים: חוֹלָם", "icon": "🎵", "letters": [], "vowels": ["a", "i", "e", "o"]}, {"id": "ב10", "booklet": "ב", "page": 10, "kind": "vowel", "title": "צלילים: שׁוּרוּק וְקֻבּוּץ", "icon": "🎵", "letters": [], "vowels": ["a", "i", "e", "o", "u"]}, {"id": "ב11", "booklet": "ב", "page": 11, "kind": "vowel", "title": "צלילים: שְׁוָא וַחֲטָפִים", "icon": "🎵", "letters": [], "vowels": ["a", "i", "e", "o", "u", "shva"]}, {"id": "ב12", "booklet": "ב", "page": 12, "kind": "sentences", "title": "קוראים משפטים", "icon": "📖", "letters": [], "vowels": ["a", "i", "e", "o", "u", "shva"]}, {"id": "ב13", "booklet": "ב", "page": 13, "kind": "sentences", "title": "קוראים משפטים", "icon": "📖", "letters": [], "vowels": ["a", "i", "e", "o", "u", "shva"]}, {"id": "ב14", "booklet": "ב", "page": 14, "kind": "review", "title": "סיכום חוברת ב׳", "icon": "🏆", "letters": [], "vowels": ["a", "i", "e", "o", "u", "shva"]}, {"id": "m0", "booklet": "M", "page": null, "kind": "math", "math": "count", "title": "סופרים עד 10", "icon": "🍎", "letters": [], "vowels": []}, {"id": "m1", "booklet": "M", "page": null, "kind": "math", "math": "numhear", "title": "איזה מספר שמעתי?", "icon": "👂", "letters": [], "vowels": []}, {"id": "m2", "booklet": "M", "page": null, "kind": "math", "math": "nums20", "title": "מספרים עד 20", "icon": "🎈", "letters": [], "vowels": []}, {"id": "m3", "booklet": "M", "page": null, "kind": "math", "math": "add10", "title": "חיבור עד 10", "icon": "➕", "letters": [], "vowels": []}, {"id": "m4", "booklet": "M", "page": null, "kind": "math", "math": "sub10", "title": "חיסור עד 10", "icon": "➖", "letters": [], "vowels": []}, {"id": "m5", "booklet": "M", "page": null, "kind": "math", "math": "mix20", "title": "חיבור וחיסור עד 20", "icon": "🧮", "letters": [], "vowels": []}, {"id": "m6", "booklet": "M", "page": null, "kind": "math", "math": "compare", "title": "מי גדול יותר?", "icon": "⚖️", "letters": [], "vowels": []}, {"id": "m7", "booklet": "M", "page": null, "kind": "math", "math": "shapes", "title": "צורות", "icon": "🔷", "letters": [], "vowels": []}], "WORDS": [{"p": "חם", "n": "חָם", "e": "🌡️", "s": 2}, {"p": "חלש", "n": "חָלָשׁ", "e": "🪫", "s": 7}, {"p": "חנה", "n": "חַנָּה", "e": "👧", "s": 8}, {"p": "נחה", "n": "נָחָה", "e": "😴", "s": 8}, {"p": "חנן", "n": "חָנָן", "e": "👱‍♂️", "s": 2}, {"p": "רן", "n": "רָן", "e": "🎵", "s": 6}, {"p": "ברח", "n": "בָּרַח", "e": "🏃", "s": 6}, {"p": "לגן", "n": "לְגַן", "e": "🌲", "s": 28}, {"p": "חלב", "n": "חָלָב", "e": "🥛", "s": 4}, {"p": "בננה", "n": "בָּנָנָה", "e": "🍌", "s": 8}, {"p": "נחש", "n": "נָחָשׁ", "e": "🐍", "s": 7}, {"p": "נחל", "n": "נַחַל", "e": "🏞️", "s": 4}, {"p": "גן", "n": "גַּן", "e": "🌻", "s": 5}, {"p": "הר", "n": "הָר", "e": "⛰️", "s": 8}, {"p": "שם", "n": "שָׁם", "e": "👉", "s": 7}, {"p": "שנה", "n": "שָׁנָה", "e": "📅", "s": 8}, {"p": "לבן", "n": "לָבָן", "e": "⚪", "s": 4}, {"p": "חלה", "n": "חַלָּה", "e": "🥖", "s": 8}, {"p": "בנה", "n": "בָּנָה", "e": "🔨", "s": 8}, {"p": "מנה", "n": "מָנָה", "e": "🍽️", "s": 8}, {"p": "גמל", "n": "גָּמָל", "e": "🐪", "s": 5}, {"p": "חסה", "n": "חַסָּה", "e": "🥬", "s": 15}, {"p": "למה", "n": "לָמָּה", "e": "❓", "s": 8}, {"p": "חלל", "n": "חָלָל", "e": "🚀", "s": 4}, {"p": "קטן", "n": "קָטָן", "e": "🤏", "s": 21}, {"p": "דג", "n": "דָּג", "e": "🐟", "s": 10}, {"p": "אבא", "n": "אַבָּא", "e": "👨", "s": 9}, {"p": "סבא", "n": "סָבָא", "e": "👴", "s": 15}, {"p": "קפה", "n": "קָפֶה", "e": "☕", "s": 25}, {"p": "פרה", "n": "פָּרָה", "e": "🐄", "s": 19}, {"p": "צב", "n": "צָב", "e": "🐢", "s": 20}, {"p": "ענן", "n": "עָנָן", "e": "☁️", "s": 16}, {"p": "נהר", "n": "נָהָר", "e": "🌊", "s": 8}, {"p": "ים", "n": "יָם", "e": "🏖️", "s": 13}, {"p": "יד", "n": "יָד", "e": "✋", "s": 13}, {"p": "אדם", "n": "אָדָם", "e": "🧍", "s": 10}, {"p": "אננס", "n": "אַנָנָס", "e": "🍍", "s": 15}, {"p": "בשר", "n": "בָּשָׂר", "e": "🥩", "s": 7}, {"p": "שבת", "n": "שַׁבָּת", "e": "🕯️", "s": 22}, {"p": "נגן", "n": "נַגָּן", "e": "🎸", "s": 5}, {"p": "חג", "n": "חַג", "e": "🎉", "s": 5}, {"p": "לילה", "n": "לַיְלָה", "e": "🌙", "s": 28}, {"p": "גג", "n": "גַּג", "e": "🔺", "s": 5}, {"p": "אח", "n": "אָח", "e": "👦", "s": 9}, {"p": "אגס", "n": "אַגָּס", "e": "🍐", "s": 15}, {"p": "תמר", "n": "תָּמָר", "e": "🌴", "s": 22}, {"p": "בצל", "n": "בָּצָל", "e": "🧅", "s": 20}, {"p": "לחם", "n": "לֶחֶם", "e": "🍞", "s": 25}, {"p": "שמש", "n": "שֶׁמֶשׁ", "e": "☀️", "s": 25}, {"p": "גשם", "n": "גֶּשֶׁם", "e": "🌧️", "s": 25}, {"p": "שלג", "n": "שֶׁלֶג", "e": "❄️", "s": 25}, {"p": "רגל", "n": "רֶגֶל", "e": "🦵", "s": 25}, {"p": "חבל", "n": "חֶבֶל", "e": "🪢", "s": 25}, {"p": "מחנה", "n": "מַחֲנֶה", "e": "⛺", "s": 28}, {"p": "מבנה", "n": "מִבְנֶה", "e": "🏢", "s": 28}, {"p": "נר", "n": "נֵר", "e": "🔥", "s": 25}, {"p": "חבר", "n": "חָבֵר", "e": "🧑‍🤝‍🧑", "s": 25}, {"p": "שלם", "n": "שָׁלֵם", "e": "🧩", "s": 25}, {"p": "ירח", "n": "יָרֵחַ", "e": "🌕", "s": 25}, {"p": "משה", "n": "מֹשֶׁה", "e": "🧺", "s": 26}, {"p": "שלום", "n": "שָׁלוֹם", "e": "🕊️", "s": 26}, {"p": "חלון", "n": "חַלּוֹן", "e": "🪟", "s": 26}, {"p": "חלום", "n": "חָלוֹם", "e": "💭", "s": 26}, {"p": "מים", "n": "מַיִם", "e": "💧", "s": 24}, {"p": "חנות", "n": "חָנוּת", "e": "🏪", "s": 27}, {"p": "תפוח", "n": "תַּפּוּחַ", "e": "🍎", "s": 27}, {"p": "כדור", "n": "כַּדּוּר", "e": "⚽", "s": 27}, {"p": "סוס", "n": "סוּס", "e": "🐴", "s": 27}, {"p": "חתול", "n": "חָתוּל", "e": "🐱", "s": 27}, {"p": "רוח", "n": "רוּחַ", "e": "💨", "s": 27}, {"p": "שועל", "n": "שׁוּעָל", "e": "🦊", "s": 27}, {"p": "דבורה", "n": "דְּבוֹרָה", "e": "🐝", "s": 28}, {"p": "נמלה", "n": "נְמָלָה", "e": "🐜", "s": 28}, {"p": "פרפר", "n": "פַּרְפַּר", "e": "🦋", "s": 28}, {"p": "סתיו", "n": "סְתָו", "e": "🍂", "s": 28}, {"p": "סבתא", "n": "סָבְתָּא", "e": "👵", "s": 28}, {"p": "גמבה", "n": "גַּמְבָּה", "e": "🫑", "s": 28}, {"p": "בטטה", "n": "בְּטָטָה", "e": "🍠", "s": 28}, {"p": "גבינה", "n": "גְּבִינָה", "e": "🧀", "s": 28}, {"p": "מלפפון", "n": "מְלָפְפוֹן", "e": "🥒", "s": 28}, {"p": "עגבניה", "n": "עַגְבָנִיָּה", "e": "🍅", "s": 28}, {"p": "עדש", "n": "עֲדָשׁ", "e": "🫘", "s": 28}, {"p": "אמא", "n": "אִמָּא", "e": "👩", "s": 24}, {"p": "ילד", "n": "יֶלֶד", "e": "🧒", "s": 25}, {"p": "מטה", "n": "מִטָּה", "e": "🛏️", "s": 24}, {"p": "ספר", "n": "סֵפֶר", "e": "📖", "s": 25}, {"p": "כסא", "n": "כִּסֵּא", "e": "🪑", "s": 25}, {"p": "כובע", "n": "כּוֹבַע", "e": "🧢", "s": 26}, {"p": "בלון", "n": "בַּלּוֹן", "e": "🎈", "s": 26}, {"p": "מנורה", "n": "מְנוֹרָה", "e": "🪔", "s": 28}, {"p": "גזר", "n": "גֶּזֶר", "e": "🥕", "s": 25}, {"p": "גינה", "n": "גִּנָּה", "e": "🌷", "s": 24}, {"p": "פיל", "n": "פִּיל", "e": "🐘", "s": 24}, {"p": "ציפור", "n": "צִפּוֹר", "e": "🐦", "s": 26}, {"p": "תנין", "n": "תַּנִּין", "e": "🐊", "s": 24}, {"p": "ראש", "n": "רֹאשׁ", "e": "🗣️", "s": 26}, {"p": "כוכב", "n": "כּוֹכָב", "e": "⭐", "s": 26}, {"p": "דוב", "n": "דֹּב", "e": "🐻", "s": 26}, {"p": "קוף", "n": "קוֹף", "e": "🐒", "s": 26}, {"p": "חוף", "n": "חוֹף", "e": "🏝️", "s": 26}, {"p": "אריה", "n": "אַרְיֵה", "e": "🦁", "s": 28}, {"p": "זאב", "n": "זְאֵב", "e": "🐺", "s": 28}, {"p": "צפרדע", "n": "צְפַרְדֵּעַ", "e": "🐸", "s": 28}, {"p": "כלב", "n": "כֶּלֶב", "e": "🐶", "s": 25}, {"p": "עץ", "n": "עֵץ", "e": "🌳", "s": 25}, {"p": "פה", "n": "פֶּה", "e": "👄", "s": 25}, {"p": "דלת", "n": "דֶּלֶת", "e": "🚪", "s": 25}, {"p": "בית", "n": "בַּיִת", "e": "🏠", "s": 24}, {"p": "עין", "n": "עַיִן", "e": "👁️", "s": 24}, {"p": "קיץ", "n": "קַיִץ", "e": "🌞", "s": 24}, {"p": "שמים", "n": "שָׁמַיִם", "e": "🌤️", "s": 24}, {"p": "ארץ", "n": "אֶרֶץ", "e": "🌍", "s": 25}, {"p": "אדמה", "n": "אֲדָמָה", "e": "🌱", "s": 28}, {"p": "מלך", "n": "מֶלֶךְ", "e": "👑", "s": 28}, {"p": "אביב", "n": "אָבִיב", "e": "🌸", "s": 24}, {"p": "חורף", "n": "חֹרֶף", "e": "🧣", "s": 26}, {"p": "בריכה", "n": "בְּרֵכָה", "e": "🏊", "s": 28}, {"p": "גדול", "n": "גָּדוֹל", "e": "🗼", "s": 26}, {"p": "ארוך", "n": "אָרֹךְ", "e": "📏", "s": 28}, {"p": "מתוק", "n": "מָתוֹק", "e": "🍬", "s": 26}, {"p": "שמח", "n": "שָׂמֵחַ", "e": "😄", "s": 25}, {"p": "נמר", "n": "נָמֵר", "e": "🐆", "s": 25}, {"p": "קיר", "n": "קִיר", "e": "🧱", "s": 24}, {"p": "חדר", "n": "חֶדֶר", "e": "🛋️", "s": 25}, {"p": "תה", "n": "תֵּה", "e": "🍵", "s": 25}, {"p": "דבש", "n": "דְּבַשׁ", "e": "🍯", "s": 28}, {"p": "חמאה", "n": "חֶמְאָה", "e": "🧈", "s": 28}, {"p": "ביצה", "n": "בֵּיצָה", "e": "🥚", "s": 25}, {"p": "אורז", "n": "אֹרֶז", "e": "🍚", "s": 26}, {"p": "סוכר", "n": "סֻכָּר", "e": "🍭", "s": 27}, {"p": "מלח", "n": "מֶלַח", "e": "🧂", "s": 25}, {"p": "פלפל", "n": "פִּלְפֵּל", "e": "🌶️", "s": 28}, {"p": "תות", "n": "תּוּת", "e": "🍓", "s": 27}, {"p": "ענבים", "n": "עֲנָבִים", "e": "🍇", "s": 28}, {"p": "לימון", "n": "לִימוֹן", "e": "🍋", "s": 26}, {"p": "מנגו", "n": "מַנְגוֹ", "e": "🥭", "s": 28}, {"p": "אבטיח", "n": "אַבְטִיחַ", "e": "🍉", "s": 28}, {"p": "זית", "n": "זַיִת", "e": "🫒", "s": 24}, {"p": "חיטה", "n": "חִטָּה", "e": "🌾", "s": 24}, {"p": "אחות", "n": "אָחוֹת", "e": "👭", "s": 26}, {"p": "תינוק", "n": "תִּינוֹק", "e": "👶", "s": 26}], "SENTENCES": [{"text": "הַיֶּלֶד בַּגַּן", "emoji": "🌻", "q": "אֵיפֹה הַיֶּלֶד?"}, {"text": "אִמָּא בַּבַּיִת", "emoji": "🏠", "q": "אֵיפֹה אִמָּא?"}, {"text": "הַכֶּלֶב רָץ", "emoji": "🐶", "q": "מִי רָץ?"}, {"text": "הַשֶּׁמֶשׁ זוֹרַחַת", "emoji": "☀️", "q": "מָה זוֹרַחַת?"}, {"text": "עֲדִי אוֹכֶלֶת לֶחֶם", "emoji": "🍞", "q": "מָה עֲדִי אוֹכֶלֶת?"}, {"text": "הַצִּפּוֹר עָפָה", "emoji": "🐦", "q": "מִי עָפָה?"}, {"text": "אַבָּא שׁוֹתֶה קָפֶה", "emoji": "☕", "q": "מָה אַבָּא שׁוֹתֶה?"}, {"text": "הַדָּג שׂוֹחֶה בַּיָּם", "emoji": "🏖️", "q": "אֵיפֹה הַדָּג שׂוֹחֶה?"}], "NAMES": {"א": "אָלֶף", "ב": "בֵּית", "ג": "גִּימֶל", "ד": "דָּלֶת", "ה": "הֵא", "ו": "וָו", "ז": "זַיִן", "ח": "חֵית", "ט": "טֵית", "י": "יוֹד", "כ": "כַּף", "ל": "לָמֶד", "מ": "מֵם", "נ": "נוּן", "ס": "סָמֶךְ", "ע": "עַיִן", "פ": "פֵּא", "צ": "צָדִי", "ק": "קוֹף", "ר": "רֵישׁ", "ש": "שִׁין", "ת": "תָּו"}, "DAG": {"ב": "בּ", "ג": "גּ", "ד": "דּ", "כ": "כּ", "פ": "פּ", "ת": "תּ"}};
@@ -146,6 +172,29 @@ function checkWeekBonus() {
   if (cnt >= 4 && !prog.weekBonus[wk]) { prog.weekBonus[wk] = 1; addCoins(20, 'בונוס שבועי — 4 ימי למידה!'); }
 }
 function addCoins(n, why) { prog.bank += n; prog.log.unshift({d: todayKey(), n: n, why: why}); if (prog.log.length > 60) prog.log.length = 60; save(); }
+function todayCount() { return (prog.today && prog.today.d === todayKey()) ? (prog.today.n || 0) : 0; }
+function bumpToday(n) {
+  if (!prog.today || prog.today.d !== todayKey()) prog.today = {d: todayKey(), n: 0};
+  prog.today.n += n; save(); updateKidBar();
+}
+var PRAISE_TXT = ['כל הכבוד!', 'מצוין!', 'איזה יופי!', 'בול!', 'כוכבת!'];
+function celebrateHit() {
+  bumpToday(1);
+  var layer = el('celeb');
+  var tx = PRAISE_TXT[Math.floor(Math.random() * PRAISE_TXT.length)];
+  layer.classList.remove('hidden');
+  layer.innerHTML = '<div class="celeb-pop"><div class="celeb-em">⭐🪙✨</div><div class="celeb-tx">' + tx + '</div></div>';
+  for (var i = 0; i < 8; i++) {
+    var s = document.createElement('span');
+    s.className = 'coinfly';
+    s.textContent = (i % 2) ? '⭐' : '🪙';
+    s.style.left = (8 + Math.random() * 80) + '%';
+    s.style.animationDelay = (Math.random() * 0.12) + 's';
+    layer.appendChild(s);
+  }
+  setTimeout(function () { layer.classList.add('hidden'); layer.innerHTML = ''; }, 900);
+  praise();
+}
 
 /* ================= audio ================= */
 var curAudio = null;
@@ -221,14 +270,22 @@ function cumVowels(pageIdx) {
 }
 
 /* ================= home ================= */
-function renderHome() {
+function updateKidBar() {
   el('bankCoins').textContent = prog.bank;
   var wk = weekKey(); var donePages = 0;
-  Object.keys(prog.pages).forEach(function (k) { if (prog.pages[k].wk === wk) donePages++; });
-  el('goalText').innerHTML = 'היעד: ' + prog.goalPages + ' עמודים השבוע<br>סיימתי: ' + donePages + ' 📄';
+  Object.keys(prog.pages).forEach(function (k) { if (prog.pages[k].wk === wk && k.indexOf('rev|') !== 0) donePages++; });
+  var n = todayCount();
+  var pct = Math.min(100, Math.round(n / 5 * 100));
+  el('goalText').innerHTML = '5 שאלות היום · ' + Math.min(n, 5) + '/5<div class="todaybar"><div style="width:' + pct + '%"></div></div><div class="note">🔥 השבוע ' + donePages + '/' + prog.goalPages + ' עמודים</div>';
   var dots = el('weekDots'); dots.innerHTML = '';
   var s = new Date(); s.setDate(s.getDate() - s.getDay());
   for (var i = 0; i < 7; i++) { var d = new Date(s); d.setDate(s.getDate() + i); var k = d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate(); var dv = document.createElement('div'); dv.className = 'dot' + (prog.days[k] ? ' on' : ''); dots.appendChild(dv); }
+}
+function renderHome() {
+  updateKidBar();
+  var mi = missionIndex();
+  var sub = el('missionSub');
+  if (sub) sub.textContent = (mi < 0 ? 'חזרה קצרה על מה שלמדת' : DATA.PAGES[mi].title) + ' · 5 שאלות';
   var host = el('booklets'); host.innerHTML = '';
   var curBooklet = '';
   DATA.PAGES.forEach(function (pg, idx) {
@@ -240,7 +297,7 @@ function renderHome() {
     }
     var st = prog.pages[pg.id] || {};
     var b = document.createElement('div');
-    b.className = 'page-btn' + (st.best >= 6 ? ' done' : '');
+    b.className = 'page-btn' + ((st.mastered || st.best >= 6) ? ' done' : '');
     var stars = st.best === undefined ? '' : (st.best >= 8 ? '⭐⭐⭐' : st.best >= 6 ? '⭐⭐' : st.best >= 4 ? '⭐' : '🌱');
     b.innerHTML = pg.math
       ? '<span class="big">' + pg.icon + '</span><span class="ttl">' + pg.title + '</span><span class="stars">' + stars + '</span>'
@@ -361,7 +418,7 @@ function genMathQuestions(pg) {
   }
   function qHear(maxN) {
     var n = ri(1, maxN);
-    push({inst: 'min|hear', seq: ['min|hear', 'num|' + n], promptHtml: '<span class="spk">🔊</span>', options: numOpts(n, maxN), correct: String(n), optClass: 'small', itemKey: 'M:hear:' + n});
+    push({inst: 'min|count', seq: ['min|hear', 'num|' + n], promptHtml: objs(EM[ri(0, EM.length - 1)], n) + '<div class="lookhint">סופרים את מה שרואים — ואפשר גם לשמוע</div>', options: numOpts(n, maxN), correct: String(n), optClass: 'small', itemKey: 'M:hear:' + n});
   }
   function qNext() {
     var n = ri(4, 19);
@@ -392,7 +449,7 @@ function genMathQuestions(pg) {
     var t = SHAPES[ri(0, SHAPES.length - 1)];
     var pool = SHAPES.filter(function (s) { return s[0] !== t[0]; });
     var opts = shuffle([t].concat(pickN(pool, 3))).map(function (s) { return s[1]; });
-    push({inst: 'min|shape', seq: ['min|shape', 'shp|' + t[0]], promptHtml: '<span class="spk">🔊</span>', options: opts, correct: t[1], optClass: 'emoji', itemKey: 'M:shp:' + t[0]});
+    push({inst: 'min|shape', seq: ['min|shape', 'shp|' + t[0]], promptHtml: '<div class="lookfall"><div class="lookletter" style="font-size:56px">' + t[3] + '</div><span class="spk">🔊</span><div class="lookhint">קוראים את השם — ואפשר גם לשמוע</div></div>', options: opts, correct: t[1], optClass: 'emoji', itemKey: 'M:shp:' + t[0]});
   }
   var guard = 0;
   if (pg.math === 'count') { while (qs.length < 8 && guard++ < 40) qCount(10); }
@@ -424,7 +481,10 @@ function genQuestions(pageIdx) {
     var opts;
     if (letters.length >= 3) opts = letterOpts(L, Math.min(4, letters.length));
     else { var all = Object.keys(DATA.NAMES).filter(function (x) { return x !== L; }); opts = shuffle([L].concat(pickN(all, 3))); }
-    return {type: 'snd', inst: 'inst|snd', audio: syllable(L, v), promptHtml: '<span class="spk">🔊</span>', options: opts, correct: L, itemKey: 'L:' + L};
+    var syl = syllable(L, v);
+    var pics = words.filter(function (w) { return baseOf(w.p.charAt(0)) === L && w.e; });
+    var pic = pics.length ? '<div class="lookpic">' + pics[Math.floor(Math.random() * pics.length)].e + '</div>' : '';
+    return {type: 'snd', inst: 'inst|snd', audio: syl, promptHtml: '<div class="lookfall"><div class="lookletter">' + syl + '</div><div class="lookname">' + (DATA.NAMES[L] || '') + '</div>' + pic + '<span class="spk">🔊</span><div class="lookhint">רואים את האות — ואפשר גם לשמוע</div></div>', options: opts, correct: L, itemKey: 'L:' + L};
   }
   function qFirst() {
     var w = target(words); if (!w) return null;
@@ -435,7 +495,7 @@ function genQuestions(pageIdx) {
     var w = target(words.length > 6 && newWords.length ? newWords.concat(words) : words); if (!w) return null;
     var pool = words.filter(function (x) { return x.p !== w.p; });
     var opts = shuffle([w].concat(pickN(pool, 2)));
-    return {type: 'hearword', inst: 'inst|hearword', audio: w.p, promptHtml: '<span class="spk">🔊</span>', options: opts.map(function (x) { return x.n; }), correct: w.n, itemKey: 'W:' + w.p};
+    return {type: 'hearword', inst: 'inst|hearword', audio: w.p, promptHtml: '<div class="lookfall"><div class="lookpic">' + w.e + '</div><span class="spk">🔊</span><div class="lookhint">התמונה מראה את המילה — ואפשר גם לשמוע</div></div>', options: opts.map(function (x) { return x.n; }), correct: w.n, itemKey: 'W:' + w.p};
   }
   function qReadEmoji() {
     var w = target(words); if (!w) return null;
@@ -472,7 +532,7 @@ function genQuestions(pageIdx) {
     var snt = DATA.SENTENCES[si];
     var pool = DATA.SENTENCES.filter(function (x) { return x !== snt; });
     var opts = shuffle([snt].concat(pickN(pool, 2)));
-    return {type: 'sent', inst: 'inst|sent', audio: 'sent|' + si, audio2: 'sentq|' + si, promptHtml: '<div class="word" style="font-size:30px">' + snt.q + '</div>', options: opts.map(function (x) { return x.emoji; }), correct: snt.emoji, optClass: 'emoji', itemKey: 'S:' + si};
+    return {type: 'sent', inst: 'inst|sent', audio: 'sent|' + si, audio2: 'sentq|' + si, promptHtml: '<div class="lookfall"><div class="word" style="font-size:30px">' + snt.q + '</div><span class="spk">🔊</span><div class="lookhint">קוראים את השאלה — ואפשר גם לשמוע</div></div>', options: opts.map(function (x) { return x.emoji; }), correct: snt.emoji, optClass: 'emoji', itemKey: 'S:' + si};
   }
   function finOpts(ans) { var all = ['ם', 'ן', 'ץ', 'ף', 'ך']; var opts = shuffle(all.filter(function (f) { return f !== ans; })).slice(0, 3); opts.push(ans); return shuffle(opts); }
   function qFin() {
@@ -501,12 +561,13 @@ function genQuestions(pageIdx) {
 }
 
 /* ================= quiz runner ================= */
-var round = [], roundIdx = 0, roundScore = 0, roundPage = -1, roundReview = false, firstTry = true;
-function startRound(pageIdx, review) {
-  roundPage = pageIdx; roundReview = !!review;
+var round = [], roundIdx = 0, roundScore = 0, roundPage = -1, roundReview = false, roundMission = false, firstTry = true;
+function startRound(pageIdx, review, limit) {
+  roundPage = pageIdx; roundReview = !!review; roundMission = !!limit;
   var lastReadIdx = 0;
   DATA.PAGES.forEach(function (p, i) { if (!p.math) lastReadIdx = i; });
   round = review ? genQuestions(lastReadIdx) : genQuestions(pageIdx);
+  if (limit) round = round.slice(0, limit);
   roundIdx = 0; roundScore = 0;
   show('screen-quiz'); renderQ();
 }
@@ -539,8 +600,8 @@ function answer(q, chosen, btn, grid) {
     btn.classList.add('right');
     Array.prototype.forEach.call(grid.children, function (c) { c.disabled = true; });
     if (firstTry) { roundScore++; recordItem(q, true); } else recordItem(q, false);
-    praise();
-    setTimeout(nextQ, 1200);
+    celebrateHit();
+    setTimeout(nextQ, 1100);
   } else {
     btn.classList.add('wrong'); btn.disabled = true;
     if (firstTry) { firstTry = false; }
@@ -565,7 +626,7 @@ function renderBuild(q, body) {
         pos++;
         if (pos === word.length) {
           if (firstTry) { roundScore++; recordItem(q, true); } else recordItem(q, false);
-          praise(); setTimeout(nextQ, 1300);
+          celebrateHit(); setTimeout(nextQ, 1100);
         }
       } else {
         t.classList.add('wrong'); firstTry = false;
@@ -589,8 +650,14 @@ function finishRound() {
   var coinMsg = '';
   if (!roundReview && score >= Math.ceil(total * 0.75)) {
     var st = prog.pages[DATA.PAGES[roundPage].id] || {};
-    if (!st.mastered) { st.mastered = 1; addCoins(10, 'סיימתי עמוד: ' + DATA.PAGES[roundPage].title); coinMsg = '🪙 +10 מטבעות לבנק!'; }
-    st.best = Math.max(st.best || 0, score); st.wk = weekKey(); prog.pages[DATA.PAGES[roundPage].id] = st;
+    var firstClear = !st.mastered;
+    var shown = score;
+    if (roundMission) shown = score >= total ? 8 : 6;
+    st.best = Math.max(st.best || 0, shown);
+    st.wk = weekKey();
+    if (firstClear) { st.mastered = 1; }
+    prog.pages[DATA.PAGES[roundPage].id] = st;
+    if (firstClear) { addCoins(10, 'סיימתי עמוד: ' + DATA.PAGES[roundPage].title); coinMsg = '🪙 +10 מטבעות לבנק!'; }
   } else if (roundReview && score >= Math.ceil(total * 0.75)) {
     var key = 'rev|' + todayKey();
     if (!prog.pages[key]) { prog.pages[key] = {best: score}; addCoins(5, 'סבב חזרה מוצלח'); coinMsg = '🪙 +5 מטבעות לבנק!'; }
@@ -599,10 +666,11 @@ function finishRound() {
     st2.best = Math.max(st2.best || 0, score); prog.pages[DATA.PAGES[roundPage].id] = st2;
   }
   save();
+  updateKidBar();
   el('endStars').textContent = stars;
   el('endMsg').textContent = msg + ' (' + score + ' מתוך ' + total + ')';
   el('endCoins').textContent = coinMsg;
-  speak(score >= 6 ? 'praise|0' : 'praise|3');
+  speak(score >= Math.ceil(total * 0.75) ? 'praise|0' : 'praise|3');
   show('screen-end');
 }
 
@@ -635,12 +703,36 @@ function renderParent() {
 }
 
 /* ================= wiring ================= */
+function missionIndex() {
+  var wk = weekKey();
+  var fallback = -1;
+  for (var i = 0; i < DATA.PAGES.length; i++) {
+    var st = prog.pages[DATA.PAGES[i].id] || {};
+    if ((st.best || 0) >= 6 || st.mastered) continue;
+    if (st.wk !== wk) return i;
+    if (fallback < 0) fallback = i;
+  }
+  return fallback;
+}
+function startMission() {
+  var i = missionIndex();
+  if (i < 0) {
+    var lastReadIdx = 0;
+    DATA.PAGES.forEach(function (p, idx) { if (!p.math) lastReadIdx = idx; });
+    startRound(lastReadIdx, true, 5);
+  } else startRound(i, false, 5);
+}
 el('learnBack').onclick = renderHome;
 el('parentBack').onclick = renderHome;
 el('btnParent').onclick = renderParent;
 el('learnStart').onclick = function () { startRound(curPage, false); };
 el('btnReview').onclick = function () { startRound(DATA.PAGES.length - 1, true); };
-el('endAgain').onclick = function () { startRound(roundPage, roundReview); };
+el('btnMission').onclick = startMission;
+el('endAgain').onclick = function () {
+  var passed = round.length && roundScore >= Math.ceil(round.length * 0.6);
+  if (roundMission && passed) startMission();
+  else startRound(roundPage, roundReview, roundMission ? 5 : 0);
+};
 el('endHome').onclick = renderHome;
 el('btnGoal').onclick = function () {
   var opts = [2, 3, 4, 5];
@@ -650,6 +742,12 @@ el('btnGoal').onclick = function () {
   alert('היעד השבועי: ' + nxt + ' עמודים (לחיצה שוב משנה)');
 };
 renderHome();
+try {
+  if (new URLSearchParams(location.search).get('mission') === '1') {
+    history.replaceState(null, '', location.pathname);
+    startMission();
+  }
+} catch (e) {}
 </script>
 </body>
 </html>
