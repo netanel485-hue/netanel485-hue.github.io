@@ -189,8 +189,12 @@
 .h-learnbody strong{background:#fff3c4;border-radius:5px;padding:0 3px}
 .h-learnbody li{margin:4px 0}
 
-.kidbar{position:sticky;top:0;z-index:40;max-width:760px;margin:0 auto 8px;display:flex;gap:8px;align-items:center;justify-content:space-between;background:rgba(255,255,255,.96);border-radius:16px;padding:8px 12px;box-shadow:0 2px 10px rgba(30,60,110,.1);font-weight:800;font-size:16px}
-.kid-hero{min-height:calc(50vh - 52px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px 4px 8px}
+.kidbar{position:sticky;top:0;z-index:40;max-width:760px;margin:0 auto 8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;background:rgba(255,255,255,.96);border-radius:16px;padding:8px 12px;box-shadow:0 2px 10px rgba(30,60,110,.1);font-weight:800;font-size:16px}
+.whos{display:flex;gap:6px;width:100%}
+.who{flex:1;min-height:44px;border-radius:12px;border:2px solid #e3e7ef;background:#fff;font:inherit;font-weight:800;font-size:15px;color:#243056}
+.who.on{border-color:#4a7dff;background:#eef3ff}
+.kidstats{display:flex;gap:8px;width:100%;justify-content:space-between}
+.kid-hero{min-height:calc(50vh - 120px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px 4px 8px}
 .kid-av{font-size:68px;line-height:1}
 .kid-name{font-size:30px;font-weight:800;margin:2px 0}
 .mission-btn{display:block;width:100%;max-width:460px;border:none;border-radius:18px;padding:16px 14px;margin:10px auto 0;font-size:24px;font-weight:800;font-family:inherit;color:#fff;background:linear-gradient(135deg,#ff9f43,#e05252);cursor:pointer;min-height:64px;touch-action:manipulation;box-shadow:0 4px 14px rgba(224,82,82,.28)}
@@ -41366,6 +41370,7 @@ window.hubProfileBase='hub4ProgV1';
 const HUB_BASE='hub4ProgV1';
 const HUB_REG_KEY=HUB_BASE+':profiles';
 const HUB_KID={name:'איתי',emoji:'🐯',grade:'כיתה ד׳',hi:'איתי, מוכנים לסיבוב קצר?'};
+const HUB_OWNER='itai';
 const HUB_MATH='';
 let hubMiss={}; // topicId -> {qtext: {n,st,due,ld}} — Leitner: stage advances on successes on DIFFERENT days
 let hubLast=null; // {subj, book, topic}
@@ -41393,6 +41398,64 @@ function hubMigrateLegacy(){ // one-time: the old single key becomes the first p
     hubRegSave();
   }catch(e){}
 }
+const FAMILY_KEY='familyKidsV1';
+const FAMILY_SEED=[{id:'adi',name:'עדי',emoji:'🌸'},{id:'itai',name:'איתי',emoji:'🐯'},{id:'ariel',name:'אריאל',emoji:'🚀'}];
+function familyRead(){try{const r=JSON.parse(localStorage.getItem(FAMILY_KEY)||'null');if(r&&Array.isArray(r.list))return r;}catch(e){}return null;}
+function familySaveReg(reg){try{localStorage.setItem(FAMILY_KEY,JSON.stringify(reg));}catch(e){}}
+function familyLoad(prefer){
+  let reg=familyRead();
+  if(!reg)reg={v:1,active:prefer||'adi',list:FAMILY_SEED.map(k=>({id:k.id,name:k.name,emoji:k.emoji}))};
+  if(!Array.isArray(reg.list))reg.list=[];
+  for(const k of FAMILY_SEED){if(!reg.list.some(p=>p.id===k.id))reg.list.push({id:k.id,name:k.name,emoji:k.emoji});}
+  if(!reg.list.some(p=>p.id===reg.active))reg.active=(prefer&&reg.list.some(p=>p.id===prefer))?prefer:reg.list[0].id;
+  reg.v=1;familySaveReg(reg);return reg;
+}
+function familyKids(reg){
+  const out=[];
+  for(const k of FAMILY_SEED){const hit=reg.list.find(p=>p.id===k.id);out.push(hit||k);}
+  for(const p of reg.list){if(!FAMILY_SEED.some(k=>k.id===p.id))out.push(p);}
+  return out;
+}
+function familySwitchHtml(){
+  const reg=familyLoad(HUB_OWNER);
+  return '<div class="whos" role="group" aria-label="מי משחק">'+familyKids(reg).map(k=>'<button type="button" class="who'+(k.id===reg.active?' on':'')+'" onclick="familySwitch(\''+k.id+'\')">'+k.emoji+' '+hEsc(k.name)+'</button>').join('')+'</div>';
+}
+function familySwitch(id){
+  const reg=familyLoad(HUB_OWNER);
+  if(!reg.list.some(p=>p.id===id)||reg.active===id)return;
+  try{hubSave();}catch(e){}
+  reg.active=id;familySaveReg(reg);location.reload();
+}
+window.familySwitch=familySwitch;
+function hubEnsureFamilyProfile(kid){
+  let p=hubProfiles.find(x=>x.familyId===kid.id||x.id===kid.id);
+  if(!p)p=hubProfiles.find(x=>!x.familyId&&x.name===kid.name);
+  if(!p&&kid.id===HUB_OWNER){
+    const free=hubProfiles.filter(x=>!x.familyId);
+    if(free.length===1){
+      const n=free[0].name||'';
+      if(!n||n==='הפרופיל שלי'||n===kid.name||n===HUB_KID.name)p=free[0];
+    }
+  }
+  if(p){
+    if(!p.familyId)p.familyId=kid.id;
+    if(!p.name||p.name==='הפרופיל שלי'){p.name=kid.name;p.emoji=kid.emoji;}
+    return p;
+  }
+  p={id:kid.id,name:kid.name,emoji:kid.emoji,familyId:kid.id};
+  hubProfiles.push(p);
+  return p;
+}
+function hubBindFamily(){
+  const reg=familyLoad(HUB_OWNER);
+  const owner=reg.list.find(k=>k.id===HUB_OWNER);
+  if(owner)hubEnsureFamilyProfile(owner);
+  const active=reg.list.find(k=>k.id===reg.active)||owner;
+  const prof=hubEnsureFamilyProfile(active);
+  hubActiveId=prof.id;
+  hubRegSave();
+}
+function hubBootStorage(){hubRegLoad();hubMigrateLegacy();hubBindFamily();hubLoad();}
 function hubSave(){try{if(!hubActiveId)return;localStorage.setItem(hubProfileKey(hubActiveId),JSON.stringify({prog:hubProg,miss:hubMiss,last:hubLast,days:hubDays,dayQs:hubDayQs,bank:hubBank,goal:hubGoal,wk:hubWk}));}catch(e){}}
 function hubLoad(){try{if(!hubActiveId)return;const d=JSON.parse(localStorage.getItem(hubProfileKey(hubActiveId))||'null');if(d){for(const k in (d.prog||{}))hubProg[k]=d.prog[k];hubMiss=d.miss||{};hubLast=d.last||null;hubDays=d.days||{};hubDayQs=d.dayQs||{};if(d.bank)hubBank=d.bank;if(d.goal)hubGoal=d.goal;if(d.wk)hubWk=d.wk;
   for(const tid in hubMiss)for(const q in hubMiss[tid]){const v=hubMiss[tid][q];if(typeof v==='number')hubMiss[tid][q]={n:v,st:0,due:0,ld:''};}}}catch(e){}}
@@ -41505,22 +41568,14 @@ const HUB_EMOJIS=['😊','😎','🤩','🦁','🐯','🦊','🐼','🦄','⚽',
 let hubProfEmoji='😊';
 let hubProfMsg='';
 function hubProfilesInit(){
-  hubRegLoad();hubMigrateLegacy();
-  if(!hubActiveProfile()&&hubProfiles.length){hubActiveId=hubProfiles[0].id;hubRegSave();}
-  if(!hubActiveProfile() && /(?:\?|&)mission=1(?:&|$)/.test(location.search)){
-    const id=hubNewId();
-    hubProfiles.push({id:id,name:HUB_KID.name,emoji:HUB_KID.emoji});
-    hubActiveId=id;hubRegSave();
-  }
-  if(hubActiveProfile()){
-    hubLoad();hubRenderHome();
-    if(/(?:\?|&)mission=1(?:&|$)/.test(location.search)) hubStartDaily();
-  } else {hubRenderProfiles();hubShow('hubProfiles');}
+  if(!hubActiveId)hubBootStorage();
+  hubRenderHome();
+  if(/(?:\?|&)mission=1(?:&|$)/.test(location.search)) hubStartDaily();
   hubPaintBar();
 }
 function hubOpenProfiles(){hubSave();hubRenderProfiles();hubShow('hubProfiles');}
 function hubProfilesHome(){if(hubActiveProfile()){hubRenderHome();hubShow('hubHome');}else{hubRenderProfiles();hubShow('hubProfiles');}}
-function hubSelectProfile(id){const p=hubProfiles.find(x=>x.id===id);if(!p)return;hubActiveId=id;hubRegSave();location.reload();}
+function hubSelectProfile(id){const p=hubProfiles.find(x=>x.id===id);if(!p)return;if(p.familyId){const reg=familyLoad(HUB_OWNER);reg.active=p.familyId;familySaveReg(reg);}hubActiveId=id;hubRegSave();location.reload();}
 function hubSetProfEmoji(e){hubProfEmoji=e;hubRenderProfiles();}
 function hubCreateProfile(){
   const inp=hEl('hubProfName');const name=(inp?inp.value.trim():'');
@@ -41655,9 +41710,9 @@ function hubTodayQ(){ return hubDayQs[hubToday()]||0; }
 function hubBumpQ(){ const k=hubToday(); hubDayQs[k]=(hubDayQs[k]||0)+1; hubSave(); hubPaintBar(); }
 function hubPaintBar(){
   const bar=hEl('kidBar'); if(!bar) return;
-  const ap=hubActiveProfile();
-  const who=(ap?ap.emoji+' '+hEsc(ap.name):HUB_KID.emoji+' '+HUB_KID.name);
-  bar.innerHTML='<span>'+who+'</span><span>🪙 '+hubBank.coins+'</span><span>🔥 '+hubKidStreak()+'</span><span>רמה '+hubKidLevel()+'</span>';
+  const reg=familyLoad(HUB_OWNER);
+  const kid=familyKids(reg).find(k=>k.id===reg.active)||{emoji:HUB_KID.emoji,name:HUB_KID.name};
+  bar.innerHTML=familySwitchHtml()+'<div class="kidstats"><span>'+kid.emoji+' '+hEsc(kid.name)+'</span><span>🪙 '+hubBank.coins+'</span><span>🔥 '+hubKidStreak()+'</span><span>רמה '+hubKidLevel()+'</span></div>';
 }
 function hubRenderHome(){
   hubWkReset();
@@ -41666,9 +41721,11 @@ function hubRenderHome(){
   let dueTot=0;for(const s2 of HUB_SUBJECTS){if(!s2.books)continue;for(const b2 of s2.books)for(const t2 of b2.topics)dueTot+=hubDueCount(t2.id);}
   const dailies=hubDailyTopics();
   const hasCont=!!(hubLast&&hubFindTopic(hubLast.topic));
-  const ap=hubActiveProfile();
-  const whoName=ap?ap.name:HUB_KID.name;
-  const whoEmoji=ap?ap.emoji:HUB_KID.emoji;
+  const regKid=familyLoad(HUB_OWNER);
+  const kidNow=familyKids(regKid).find(k=>k.id===regKid.active);
+  const whoName=kidNow?kidNow.name:HUB_KID.name;
+  const whoEmoji=kidNow?kidNow.emoji:HUB_KID.emoji;
+  const hi=whoName===HUB_KID.name?HUB_KID.hi:('היי '+whoName+' · '+HUB_KID.grade);
   const mission=hubDailyTopic();
   const mf=hubFindTopic(mission.id);
   const mp=hubTopicProg(mission.id);
@@ -41678,7 +41735,7 @@ function hubRenderHome(){
   if(hero){
     hero.innerHTML='<div class="kid-av" aria-hidden="true">'+whoEmoji+'</div>'
       +'<div class="kid-name">'+hEsc(whoName)+'</div>'
-      +'<div class="mission-sub">'+hEsc(HUB_KID.hi)+'</div>'
+      +'<div class="mission-sub">'+hEsc(hi)+'</div>'
       +'<button class="mission-btn" type="button" onclick="hubStartDaily()">משימת היום</button>'
       +'<div class="mission-sub">'+hEsc(mf?mf.topic.emoji+' '+mf.topic.name:mission.name)+' · רמה '+mlvl+' · 5 שאלות</div>'
       +'<div class="dailybox"><div class="dlabel"><span>5 שאלות היום</span><span>'+Math.min(qn,5)+'/5'+(qn>=5?' ✓':'')+'</span></div>'
@@ -41687,6 +41744,7 @@ function hubRenderHome(){
   const slot=hEl('hubMathSlot');
   if(slot) slot.innerHTML=HUB_MATH?'<a class="mission-btn math-link" href="'+HUB_MATH+'">🧮 הכנה למבחן במתמטיקה</a>':'';
   let chips='';
+  const ap=hubActiveProfile();
   if(ap)chips+='<button class="btn" onclick="hubOpenProfiles()">'+ap.emoji+' '+hEsc(ap.name)+' ▾</button>';
   if(dueTot>0)chips+='<button class="btn" onclick="hubStartDue()">🔁 '+dueTot+' לחזרה</button>';
   if(hasCont){const f=hubFindTopic(hubLast.topic);chips+='<button class="btn" onclick="hubContinue()">▶️ המשך: '+hEsc(f.topic.name)+'</button>';}
@@ -42297,6 +42355,7 @@ window.hubOpenType=hubOpenType;window.hubNextTypeItem=hubNextTypeItem;window.hub
 window.hubShare=hubShare;window.hubCopyShare=hubCopyShare;
 window.hubSetGoal=hubSetGoal;window.hubGoalSwap=hubGoalSwap;window.hubGoalCancel=hubGoalCancel;window.hubReqReward=hubReqReward;window.hubApproveReq=hubApproveReq;window.hubOpenMap=hubOpenMap;window.hubMapGo=hubMapGo;window.hubOpenParent=hubOpenParent;window.hubShareWeek=hubShareWeek;window.hubCopyWeek=hubCopyWeek;
 window.hubOpenProfiles=hubOpenProfiles;window.hubProfilesHome=hubProfilesHome;window.hubSelectProfile=hubSelectProfile;window.hubSetProfEmoji=hubSetProfEmoji;window.hubCreateProfile=hubCreateProfile;window.hubRenameProfile=hubRenameProfile;window.hubDeleteProfile=hubDeleteProfile;window.hubExportProfile=hubExportProfile;window.hubImportPanel=hubImportPanel;window.hubImportProfile=hubImportProfile;window.hubCopyProfCode=hubCopyProfCode;
+hubBootStorage();
 document.addEventListener('DOMContentLoaded',function(){hubProfilesInit();});
 })();
 
