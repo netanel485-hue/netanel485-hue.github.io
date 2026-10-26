@@ -189,44 +189,15 @@
 .h-learnbody strong{background:#fff3c4;border-radius:5px;padding:0 3px}
 .h-learnbody li{margin:4px 0}
 
-.kidbar{position:sticky;top:0;z-index:40;max-width:760px;margin:0 auto 8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;background:rgba(255,255,255,.96);border-radius:16px;padding:8px 12px;box-shadow:0 2px 10px rgba(30,60,110,.1);font-weight:800;font-size:16px}
-.whos{display:flex;gap:6px;width:100%}
-.who{flex:1;min-height:44px;border-radius:12px;border:2px solid #e3e7ef;background:#fff;font:inherit;font-weight:800;font-size:15px;color:#243056}
-.who.on{border-color:#4a7dff;background:#eef3ff}
-.kidstats{display:flex;gap:8px;width:100%;justify-content:space-between;align-items:center}
-.switchbtn{border:none;background:transparent;color:#5a6a8a;font:inherit;font-weight:800;font-size:14px;min-height:44px;padding:4px 2px;cursor:pointer;text-decoration:underline}
-.familymenu{width:100%;background:#fff;border:2px solid #e3e7ef;border-radius:14px;padding:8px}
-.familymenu[hidden]{display:none}
-.familymenu .lbl{font-size:13px;color:#5a6a8a;margin-bottom:6px}
-.backmain{display:block;text-align:center;margin-top:8px;font-weight:800;min-height:44px;line-height:44px;color:#3a7bd5}
-.kid-hero{min-height:calc(50vh - 56px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px 4px 8px}
-.kid-av{font-size:68px;line-height:1}
-.kid-name{font-size:30px;font-weight:800;margin:2px 0}
-.mission-btn{display:block;width:100%;max-width:460px;border:none;border-radius:18px;padding:16px 14px;margin:10px auto 0;font-size:24px;font-weight:800;font-family:inherit;color:#fff;background:linear-gradient(135deg,#ff9f43,#e05252);cursor:pointer;min-height:64px;touch-action:manipulation;box-shadow:0 4px 14px rgba(224,82,82,.28)}
-a.mission-btn{text-decoration:none;text-align:center}
-.mission-btn.math-link{background:linear-gradient(135deg,#3a7bd5,#6a4fd0);font-size:18px;min-height:56px}
-.mission-sub{color:#5a6b7d;font-size:15px;margin-top:6px}
-.dailybox{width:100%;max-width:460px;margin-top:12px;text-align:right}
-.dlabel{display:flex;justify-content:space-between;font-weight:800;font-size:15px;margin-bottom:4px}
-.below-title{font-size:16px;margin:10px 2px 4px;color:#6a7b90;font-weight:800}
-.play-ribbon{background:#fff6e8;border:2px solid #ffc48a;border-radius:14px;padding:8px 12px;margin-top:8px;font-weight:800;text-align:center;font-size:16px}
-#hubCeleb{position:fixed;left:50%;top:24%;z-index:80;pointer-events:none;background:#fff;border-radius:24px;padding:14px 22px;font-size:30px;font-weight:800;box-shadow:0 10px 30px rgba(40,60,120,.25);opacity:0}
-#hubCeleb.pop{animation:hubceleb 1.05s ease-out forwards}
-@keyframes hubceleb{0%{opacity:0;transform:translate(-50%,-10%) scale(.55)}28%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}72%{opacity:1}100%{opacity:0;transform:translate(-50%,-110%) scale(1)}}
-
 </style>
 </head>
 <body>
 
-<div id="kidBar" class="kidbar"></div>
-<div id="hubCeleb" aria-live="polite"></div>
 <div id="hubHome" class="h-wrap">
-  <div id="hubHero" class="kid-hero"></div>
-  <div id="hubMathSlot"></div>
-  <div class="below-title">כל המקצועות</div>
-  <div id="hubGrid" class="h-grid"></div>
-  <div id="hubHomeMore"></div>
   <div class="h-head">
+    <div style="font-size:44px">🎒</div>
+    <h1>מרכז הלמידה — כיתה ד׳</h1>
+    <p>כל המקצועות, לפי ספרי הלימוד של בית הספר · אימונים, מבחנים והכנה כוללת</p>
     <button class="btn btn-ghost" onclick="hubShare()">📤 שיתוף</button>
     <div id="hubSharePanel" class="h-sharebox h-hidden">
       <input id="hubShareLink" readonly value="">
@@ -237,7 +208,8 @@ a.mission-btn{text-decoration:none;text-align:center}
       </div>
     </div>
   </div>
-  <div id="hubHomeTop" class="h-hidden"></div>
+  <div id="hubHomeTop"></div>
+  <div id="hubGrid" class="h-grid"></div>
 </div>
 
 <div id="hubProfiles" class="h-wrap h-hidden">
@@ -327,7 +299,6 @@ a.mission-btn{text-decoration:none;text-align:center}
   <div class="card" style="margin-top:10px">
     <div id="hubQuizTitle" style="font-size:20px;font-weight:800"></div>
     <div id="hubQuizMode" class="h-ssub" style="font-size:14px"></div>
-    <div id="hubMissionRibbon" class="play-ribbon h-hidden"></div>
     <div class="progress" style="margin-top:10px"><div class="bar"><div id="hubQBar" class="fill" style="width:0%"></div></div></div>
     <div style="display:flex;justify-content:space-between;margin-top:6px"><span id="hubQNum" class="qnum"></span><span id="hubScore" class="score"></span></div>
     <div id="hubQType" class="h-ssub" style="font-size:13px"></div>
@@ -366,10 +337,9 @@ a.mission-btn{text-decoration:none;text-align:center}
       <div id="hubEndNext"></div>
       <div id="hubEndFocus" style="margin-top:10px"></div>
     </div>
-    <div class="h-rowbtns" style="justify-content:center;flex-direction:column;align-items:stretch">
-      <button class="mission-btn h-hidden" id="hubRoundBtn" onclick="hubAnotherRound()">עוד סיבוב?</button>
-      <button class="btn" onclick="hubAgain()">נושא אחר</button>
-      <button class="btn" onclick="hubHomeFromEnd()">🏠 הבית</button>
+    <div class="h-rowbtns" style="justify-content:center">
+      <button class="btn btn-main" onclick="hubAgain()">🔁 סבב / נושא נוסף</button>
+      <button class="btn" onclick="hubHomeFromEnd()">🏠 כל המקצועות</button>
     </div>
   </div>
 </div>
@@ -31086,7 +31056,7 @@ const DATA_ENG = {
     {
      "lvl": 1,
      "type": "picture",
-     "q": "What is this? 🌻",
+     "q": "What is this? 🌳",
      "opts": [
       "family",
       "garden",
@@ -40398,7 +40368,7 @@ const DATA_ENG = {
     {
      "lvl": 5,
      "type": "true",
-     "q": "Which sentence is NOT true?",
+     "q": "Which sentence about Mimi is NOT true?",
      "opts": [
       "Pip sings in the morning.",
       "Pip sings at night.",
@@ -41042,7 +41012,7 @@ const DATA_ENG = {
     {
      "lvl": 8,
      "type": "true",
-     "q": "Which sentence about Sara's party is TRUE?",
+     "q": "Which sentence about Pip is TRUE?",
      "opts": [
       "Three friends came to the party.",
       "Mother gave cake and milk.",
@@ -41380,13 +41350,9 @@ const hubLastTest={}; // topicId -> Set of last test question texts
 window.hubProfileBase='hub4ProgV1';
 const HUB_BASE='hub4ProgV1';
 const HUB_REG_KEY=HUB_BASE+':profiles';
-const HUB_KID={name:'איתי',emoji:'🐯',grade:'כיתה ד׳',hi:'איתי, מוכנים לסיבוב קצר?'};
-const HUB_OWNER='itai';
-const HUB_MATH='';
 let hubMiss={}; // topicId -> {qtext: {n,st,due,ld}} — Leitner: stage advances on successes on DIFFERENT days
 let hubLast=null; // {subj, book, topic}
 let hubDays={}; // dateStr -> finished rounds that day
-let hubDayQs={}; // dateStr -> questions answered that day
 function hubToday(){return new Date().toISOString().slice(0,10);}
 function hubDayPlusMs(n){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+n);return d.getTime();}
 let hubProfiles=[]; // [{id,name,emoji}]
@@ -41397,7 +41363,7 @@ function hubMathKeyFor(pid){return 'mathProgV1:'+HUB_BASE+':'+pid;}
 function hubRegLoad(){try{const r=JSON.parse(localStorage.getItem(HUB_REG_KEY)||'null');if(r&&Array.isArray(r.list)){hubProfiles=r.list;hubActiveId=r.active||null;}}catch(e){}}
 function hubRegSave(){try{localStorage.setItem(HUB_REG_KEY,JSON.stringify({v:1,active:hubActiveId,list:hubProfiles}));}catch(e){}}
 function hubActiveProfile(){return hubProfiles.find(p=>p.id===hubActiveId)||null;}
-function hubResetState(){for(const k in hubProg)delete hubProg[k];for(const k in hubLastTest)delete hubLastTest[k];hubMiss={};hubLast=null;hubDays={};hubDayQs={};hubBank={coins:0,log:[],reqs:[]};hubGoal=null;hubWk=null;}
+function hubResetState(){for(const k in hubProg)delete hubProg[k];for(const k in hubLastTest)delete hubLastTest[k];hubMiss={};hubLast=null;hubDays={};hubBank={coins:0,log:[],reqs:[]};hubGoal=null;hubWk=null;}
 function hubMigrateLegacy(){ // one-time: the old single key becomes the first profile, nothing lost
   try{
     if(localStorage.getItem(HUB_REG_KEY))return;
@@ -41409,46 +41375,8 @@ function hubMigrateLegacy(){ // one-time: the old single key becomes the first p
     hubRegSave();
   }catch(e){}
 }
-function hubSlotHasLearning(data){
-  if(!data||typeof data!=='object'||Array.isArray(data))return false;
-  const coins=(data.bank&&data.bank.coins)||0;
-  if(coins)return true;
-  if(data.prog&&Object.keys(data.prog).length)return true;
-  if(data.days&&Object.keys(data.days).length)return true;
-  if(data.dayQs&&Object.keys(data.dayQs).length)return true;
-  if(data.miss&&Object.keys(data.miss).length)return true;
-  if(data.last||data.goal)return true;
-  if(data.wk&&(data.wk.rounds||data.wk.coins||data.wk.grads))return true;
-  return false;
-}
-function hubImportFamilySlots(){
-  // Existing per-child blobs stay on their keys. Only slots that already have learning join this grade's profile list. Empty shells leave the chooser; their keys stay.
-  const meta={adi:['עדי','🌸'],itai:['איתי','🐯'],ariel:['אריאל','🚀']};
-  let changed=false;
-  for(const id of ['adi','itai','ariel']){
-    let data=null;
-    try{data=JSON.parse(localStorage.getItem(hubProfileKey(id))||'null');}catch(e){}
-    if(!hubSlotHasLearning(data))continue;
-    if(hubProfiles.some(p=>p.id===id||p.familyId===id))continue;
-    hubProfiles.push({id:id,name:meta[id][0],emoji:meta[id][1],familyId:id});
-    changed=true;
-  }
-  const before=hubProfiles.length;
-  hubProfiles=hubProfiles.filter(p=>{
-    const fid=p.familyId||((p.id==='adi'||p.id==='itai'||p.id==='ariel')?p.id:'');
-    if(fid!=='adi'&&fid!=='itai'&&fid!=='ariel')return true;
-    let data=null;
-    try{data=JSON.parse(localStorage.getItem(hubProfileKey(p.id))||'null');}catch(e){}
-    return hubSlotHasLearning(data);
-  });
-  if(hubProfiles.length!==before)changed=true;
-  if(hubActiveId&&!hubProfiles.some(p=>p.id===hubActiveId)){hubActiveId=null;changed=true;}
-  if(changed)hubRegSave();
-}
-function hubBootStorage(){hubRegLoad();hubMigrateLegacy();hubImportFamilySlots();hubLoad();}
-function hubSkipKey(){return 'hubSkip:'+HUB_BASE;}
-function hubSave(){try{if(!hubActiveId)return;localStorage.setItem(hubProfileKey(hubActiveId),JSON.stringify({prog:hubProg,miss:hubMiss,last:hubLast,days:hubDays,dayQs:hubDayQs,bank:hubBank,goal:hubGoal,wk:hubWk}));}catch(e){}}
-function hubLoad(){try{if(!hubActiveId)return;const d=JSON.parse(localStorage.getItem(hubProfileKey(hubActiveId))||'null');if(d){for(const k in (d.prog||{}))hubProg[k]=d.prog[k];hubMiss=d.miss||{};hubLast=d.last||null;hubDays=d.days||{};hubDayQs=d.dayQs||{};if(d.bank)hubBank=d.bank;if(d.goal)hubGoal=d.goal;if(d.wk)hubWk=d.wk;
+function hubSave(){try{if(!hubActiveId)return;localStorage.setItem(hubProfileKey(hubActiveId),JSON.stringify({prog:hubProg,miss:hubMiss,last:hubLast,days:hubDays,bank:hubBank,goal:hubGoal,wk:hubWk}));}catch(e){}}
+function hubLoad(){try{if(!hubActiveId)return;const d=JSON.parse(localStorage.getItem(hubProfileKey(hubActiveId))||'null');if(d){for(const k in (d.prog||{}))hubProg[k]=d.prog[k];hubMiss=d.miss||{};hubLast=d.last||null;hubDays=d.days||{};if(d.bank)hubBank=d.bank;if(d.goal)hubGoal=d.goal;if(d.wk)hubWk=d.wk;
   for(const tid in hubMiss)for(const q in hubMiss[tid]){const v=hubMiss[tid][q];if(typeof v==='number')hubMiss[tid][q]={n:v,st:0,due:0,ld:''};}}}catch(e){}}
 
 // ---------- bank, weekly goal, parent view (v2.3) ----------
@@ -41558,32 +41486,23 @@ function hubRenderParent(){
 const HUB_EMOJIS=['😊','😎','🤩','🦁','🐯','🦊','🐼','🦄','⚽','🎸','🚀','🌸'];
 let hubProfEmoji='😊';
 let hubProfMsg='';
-function hubEnterProfile(id){
-  hubActiveId=id;hubRegSave();
-  try{sessionStorage.setItem(hubSkipKey(),'1');}catch(e){}
-  location.reload();
-}
 function hubProfilesInit(){
-  if(!hubActiveId)hubBootStorage();
-  let skip=false;
-  try{skip=sessionStorage.getItem(hubSkipKey())==='1';}catch(e){}
-  if(skip&&hubActiveProfile()){
-    try{sessionStorage.removeItem(hubSkipKey());}catch(e){}
-    hubRenderHome();
-    if(/(?:\?|&)mission=1(?:&|$)/.test(location.search)) hubStartDaily();
-    hubPaintBar();
-  }else{
-    hubRenderProfiles();hubShow('hubProfiles');hubPaintBar();
-  }
+  try{if(sessionStorage.getItem(HUB_BASE+':guest')){window.hubGuest=true;hubResetState();hubRenderHome();hubShow('hubHome');return;}}catch(e){}
+  hubRegLoad();hubMigrateLegacy();
+  if(!hubActiveProfile()&&hubProfiles.length){hubActiveId=hubProfiles[0].id;hubRegSave();}
+  if(hubActiveProfile()){hubLoad();hubRenderHome();}
+  else{hubRenderProfiles();hubShow('hubProfiles');}
 }
-function hubOpenProfiles(){hubSave();try{sessionStorage.removeItem(hubSkipKey());}catch(e){}hubRenderProfiles();hubShow('hubProfiles');}
+function hubOpenProfiles(){hubSave();hubRenderProfiles();hubShow('hubProfiles');}
 function hubProfilesHome(){if(hubActiveProfile()){hubRenderHome();hubShow('hubHome');}else{hubRenderProfiles();hubShow('hubProfiles');}}
-function hubSelectProfile(id){const p=hubProfiles.find(x=>x.id===id);if(!p)return;hubEnterProfile(id);}
+function hubSelectProfile(id){const p=hubProfiles.find(x=>x.id===id);if(!p)return;hubActiveId=id;hubRegSave();location.reload();}
+function hubEnterGuest(){try{sessionStorage.setItem(HUB_BASE+':guest','1');}catch(e){}location.reload();}
+function hubExitGuest(){try{sessionStorage.removeItem(HUB_BASE+':guest');}catch(e){}window.hubGuest=false;location.reload();}
 function hubSetProfEmoji(e){hubProfEmoji=e;hubRenderProfiles();}
 function hubCreateProfile(){
   const inp=hEl('hubProfName');const name=(inp?inp.value.trim():'');
   if(!name){if(inp)inp.focus();return;}
-  const id=hubNewId();hubProfiles.push({id:id,name:name.slice(0,20),emoji:hubProfEmoji});hubEnterProfile(id);
+  const id=hubNewId();hubProfiles.push({id:id,name:name.slice(0,20),emoji:hubProfEmoji});hubActiveId=id;hubRegSave();location.reload();
 }
 function hubRenderProfiles(){
   const body=hEl('hubProfilesBody');if(!body)return;
@@ -41599,12 +41518,13 @@ function hubRenderProfiles(){
   } else {
     html+='<div class="h-tip">עוד אין פרופילים במכשיר הזה. יוצרים את הראשון — כל ההתקדמות שלו תישמר בנפרד.</div>';
   }
+  html+='<div class="h-lab">או פשוט בלי פרופיל:</div>'
+    +'<div class="h-rowbtns"><button class="btn btn-ghost" onclick="hubEnterGuest()">🎭 כניסה כאורח</button></div>'
+    +'<div class="h-tip">מצב אורח לא יוצר פרופיל ולא שומר כלום — לא התקדמות, לא מטבעות ולא חשבון. גם רענון מאפס את ההתקדמות, ואף פרופיל קיים לא נפגע.</div>';
   html+='<div class="h-lab">פרופיל חדש:</div>'
     +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0">'+HUB_EMOJIS.map(e=>'<button class="btn'+(e===hubProfEmoji?' btn-main':'')+'" onclick="hubSetProfEmoji(\''+e+'\')">'+e+'</button>').join('')+'</div>'
     +'<input class="h-sel" id="hubProfName" maxlength="20" placeholder="שם הילד/ה...">'
-    +'<div class="h-rowbtns"><button class="btn btn-main" onclick="hubCreateProfile()">➕ יצירת פרופיל</button></div>'
-    +'<div class="h-rowbtns"><a class="btn" href="../">← לכל הכיתות</a></div>';
-  const head=document.querySelector('#hubProfiles h1'); if(head) head.textContent='פרופילים · '+HUB_KID.grade;
+    +'<div class="h-rowbtns"><button class="btn btn-main" onclick="hubCreateProfile()">➕ יצירת פרופיל</button></div>';
   body.innerHTML=html;
 }
 function hubB64enc(str){const bytes=new TextEncoder().encode(str);let bin='';const CH=32768;for(let i=0;i<bytes.length;i+=CH){bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+CH));}return btoa(bin);}
@@ -41656,7 +41576,7 @@ function hubDeleteProfile(id){
   hubProfiles=hubProfiles.filter(x=>x.id!==id);
   if(hubActiveId===id){hubActiveId=hubProfiles.length?hubProfiles[0].id:null;}
   hubRegSave();
-  if(hubActiveId){try{sessionStorage.setItem(hubSkipKey(),'1');}catch(e){}location.reload();}else{hubRenderParent();}
+  if(hubActiveId)location.reload();else{hubRenderParent();}
 }
 function hubMissCount(tid){const m=hubMiss[tid];return m?Object.keys(m).length:0;}
 function hubDueCount(tid){const m=hubMiss[tid];if(!m)return 0;const now=Date.now();let n=0;for(const q in m)if((m[q].due||0)<=now)n++;return n;}
@@ -41699,70 +41619,30 @@ function hubStartDue(){
   hubSubj=f.subj;hubBookIdx=f.bookIdx;hubRenderSubject();
   hEl('hubTopicSel').value=best.id;hubTopicChanged();hubStart('review');
 }
-function hubKidLevel(){
-  let m=0; for(const k in hubProg){ const v=(hubProg[k]&&hubProg[k].mastery)||0; if(v>m)m=v; }
-  return m;
-}
-function hubKidStreak(){
-  let n=0; const cursor=new Date();
-  const key=dt=>dt.toISOString().slice(0,10);
-  const played=dt=>(hubDays[key(dt)]>0)||((hubDayQs[key(dt)]||0)>0);
-  if(!played(cursor)) cursor.setUTCDate(cursor.getUTCDate()-1);
-  while(played(cursor)){ n++; cursor.setUTCDate(cursor.getUTCDate()-1); if(n>500) break; }
-  return n;
-}
-function hubTodayQ(){ return hubDayQs[hubToday()]||0; }
-function hubBumpQ(){ const k=hubToday(); hubDayQs[k]=(hubDayQs[k]||0)+1; hubSave(); hubPaintBar(); }
-function hubPaintBar(){
-  const bar=hEl('kidBar'); if(!bar) return;
-  const p=hubActiveProfile();
-  if(!p){bar.innerHTML='<div class="kidstats"><span>'+hEsc(HUB_KID.grade)+'</span><a class="switchbtn" href="../">← לכל הכיתות</a></div>';return;}
-  bar.innerHTML='<div class="kidstats"><span>'+p.emoji+' '+hEsc(p.name)+'</span><span>🪙 '+hubBank.coins+'</span><span>🔥 '+hubKidStreak()+'</span><span>רמה '+hubKidLevel()+'</span><button type="button" class="switchbtn" onclick="hubOpenProfiles()">החלפת פרופיל</button><a class="switchbtn" href="../">לכל הכיתות</a></div>';
-}
 function hubRenderHome(){
+  const cont=hEl('hubHomeTop');let th='';
   hubWkReset();
   const wd=hubWeekDays();const ad=hubActiveDays();const gi=hubGoalInfo();
   const dots=wd.map(x=>'<span class="h-wdot'+(x.n?' on':'')+(x.future?' fut':'')+'"></span>').join('');
   let dueTot=0;for(const s2 of HUB_SUBJECTS){if(!s2.books)continue;for(const b2 of s2.books)for(const t2 of b2.topics)dueTot+=hubDueCount(t2.id);}
   const dailies=hubDailyTopics();
   const hasCont=!!(hubLast&&hubFindTopic(hubLast.topic));
-  const whoP=hubActiveProfile();
-  const whoName=whoP?whoP.name:HUB_KID.grade;
-  const whoEmoji=whoP?whoP.emoji:'👤';
-  const hi=whoP?('היי '+whoP.name+' · '+HUB_KID.grade):HUB_KID.grade;
-  const mission=hubDailyTopic();
-  const mf=hubFindTopic(mission.id);
-  const mp=hubTopicProg(mission.id);
-  const mlvl=Math.min(8,(mp.mastery||0)+1);
-  const qn=hubTodayQ();
-  const hero=hEl('hubHero');
-  if(hero){
-    hero.innerHTML='<div class="kid-av" aria-hidden="true">'+whoEmoji+'</div>'
-      +'<div class="kid-name">'+hEsc(whoName)+'</div>'
-      +'<div class="mission-sub">'+hEsc(hi)+'</div>'
-      +'<button class="mission-btn" type="button" onclick="hubStartDaily()">משימת היום</button>'
-      +'<div class="mission-sub">'+hEsc(mf?mf.topic.emoji+' '+mf.topic.name:mission.name)+' · רמה '+mlvl+' · 5 שאלות</div>'
-      +'<div class="dailybox"><div class="dlabel"><span>5 שאלות היום</span><span>'+Math.min(qn,5)+'/5'+(qn>=5?' ✓':'')+'</span></div>'
-      +'<div class="h-goalbar"><div style="width:'+Math.min(100,Math.round(qn/5*100))+'%"></div></div></div>';
-  }
-  const slot=hEl('hubMathSlot');
-  if(slot) slot.innerHTML=HUB_MATH?'<a class="mission-btn math-link" href="'+HUB_MATH+'">🧮 הכנה למבחן במתמטיקה</a>':'';
+  // compact action chips only — no full-width suggestion rows on home (user feedback: visual clutter)
   let chips='';
   const ap=hubActiveProfile();
+  if(window.hubGuest)chips+='<button class="btn" onclick="hubExitGuest()">🎭 מצב אורח · סיום וחזרה</button>';
   if(ap)chips+='<button class="btn" onclick="hubOpenProfiles()">'+ap.emoji+' '+hEsc(ap.name)+' ▾</button>';
-  if(dueTot>0)chips+='<button class="btn" onclick="hubStartDue()">🔁 '+dueTot+' לחזרה</button>';
-  if(hasCont){const f=hubFindTopic(hubLast.topic);chips+='<button class="btn" onclick="hubContinue()">▶️ המשך: '+hEsc(f.topic.name)+'</button>';}
-  let more='<div class="h-bankcard">'
+  if(dueTot>0)chips+='<button class="btn" onclick="hubStartDue()">🔁 '+dueTot+' שאלות לחזרה היום</button>';
+  if(hasCont){const f=hubFindTopic(hubLast.topic);chips+='<button class="btn" onclick="hubContinue()">▶️ המשך מאיפה שהפסקת: '+hEsc(f.topic.name)+'</button>';}
+  th+='<div class="h-bankcard">'
     +'<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:18px;font-weight:800">🏦 בנק הידע שלי</span><span style="font-size:22px;font-weight:800">'+hubBank.coins+' 🪙</span></div>'
     +'<div style="margin-top:6px">השבוע: '+dots+' <span class="h-ssub">'+ad+' ימי למידה'+(ad>=4?' · הבונוס השבועי (+20) כבר נכנס ✔':' · עוד '+(4-ad)+' ימי למידה לבונוס +20')+'</span></div>'
     +((gi&&!hubGoalPick)?'<div style="margin-top:8px">🎯 היעד שלי השבוע: <b>'+hEsc(gi.g.label)+'</b><div class="h-goalbar"><div style="width:'+Math.min(100,Math.round(gi.cur/gi.g.target*100))+'%"></div></div><span class="h-ssub">'+Math.min(gi.cur,gi.g.target)+'/'+gi.g.target+(gi.done?' · הושג! 🎉':'')+'</span> <button class="btn" onclick="hubGoalSwap()">🔄 החלף יעד</button></div>'
        :'<div style="margin-top:8px"><span class="h-ssub">🎯 '+((hubGoal&&hubGoal.wk===hubWeekKey())?'בחירת יעד אחר:':'יעד לשבוע הזה:')+'</span> <span class="h-rowbtns" style="display:inline-flex;margin-top:0;vertical-align:middle">'+((hubGoal&&hubGoal.wk===hubWeekKey())?'<button class="btn" onclick="hubGoalCancel()">↩️ בלי שינוי</button>':'')+dailies.slice(0,1).map(dt=>'<button class="btn" onclick="hubSetGoal(\'topic\',\''+dt.id+'\')">לעלות רמה ב'+hEsc(dt.name)+'</button>').join('')+'<button class="btn" onclick="hubSetGoal(\'grads\')">15 שאלות שיבגירו</button><button class="btn" onclick="hubSetGoal(\'rounds\')">8 סבבים</button></span></div>')
-    +'<div class="h-rowbtns">'+chips+'<button class="btn" onclick="hubOpenMap()">🗺️ מפת ההתקדמות</button><button class="btn" onclick="hubOpenParent()">👨‍👧 מסך להורה</button><button class="btn" onclick="hubShareWeek()">📤 סיכום שבועי</button>'
-    +(hubBank.reqs.some(r=>r.st==='pending')?'<span class="h-ssub" style="align-self:center">🎁 בקשת הצ׳ופר ממתינה לאישור הורה</span>':(hubBank.coins>=50?'<button class="btn" onclick="hubReqReward()">🎁 בקש צ׳ופר (50 🪙)</button>':''))
+    +'<div class="h-rowbtns">'+chips+'<button class="btn" onclick="hubOpenMap()">🗺️ מפת ההתקדמות</button>'+(window.hubGuest?'':'<button class="btn" onclick="hubOpenParent()">👨‍👧 מסך להורה</button><button class="btn" onclick="hubShareWeek()">📤 סיכום שבועי</button>')+''
+    +(window.hubGuest?'':(hubBank.reqs.some(r=>r.st==='pending')?'<span class="h-ssub" style="align-self:center">🎁 בקשת הצ׳ופר ממתינה לאישור הורה</span>':(hubBank.coins>=50?'<button class="btn" onclick="hubReqReward()">🎁 בקש צ׳ופר (50 🪙)</button>':'')))
     +'</div></div>';
-  const moreEl=hEl('hubHomeMore'); if(moreEl) moreEl.innerHTML=more;
-  const cont=hEl('hubHomeTop'); if(cont) cont.innerHTML='';
-  hubPaintBar();
+  cont.innerHTML=th;
   const grid=hEl('hubGrid');let html='';
   for(const s of HUB_SUBJECTS){
     if(s.special==='math'){
@@ -41771,10 +41651,13 @@ function hubRenderHome(){
     }
     const books=s.books.length;
     const topics=s.books.reduce((n,b)=>n+b.topics.length,0);
-    html+='<button class="h-scard" style="border-top:6px solid '+(HUB_COLORS[s.id]||'#4a7dff')+'" onclick="hubOpenSubject(\''+s.id+'\')"><div class="h-semoji">'+s.emoji+'</div><div class="h-sname">'+hEsc(s.name)+'</div><div class="h-ssub">'+(books>1?books+' ספרים · ':'')+topics+' נושאים</div></button>';
+    const qs=s.books.reduce((n,b)=>n+b.topics.reduce((m,t)=>m+(t.questions?t.questions.length:0),0),0);
+    const qtxt=qs>0?qs.toLocaleString('he-IL')+' שאלות':'מאות שאלות מתחדשות';
+    html+='<button class="h-scard" style="border-top:6px solid '+(HUB_COLORS[s.id]||'#4a7dff')+'" onclick="hubOpenSubject(\''+s.id+'\')"><div class="h-semoji">'+s.emoji+'</div><div class="h-sname">'+hEsc(s.name)+'</div><div class="h-ssub">'+(books>1?books+' ספרים · ':'')+topics+' נושאים · '+qtxt+'</div></button>';
   }
   grid.innerHTML=html;
 }
+
 function hubContinue(){
   if(!hubLast)return;const f=hubFindTopic(hubLast.topic);if(!f)return;
   hubSubj=f.subj;hubBookIdx=f.bookIdx;hubRenderSubject();
@@ -41786,7 +41669,7 @@ function hubStartDaily(tid){
   hEl('hubTopicSel').value=t.id;hubTopicChanged();
   const p=hubTopicProg(t.id);
   hEl('hubLvlSel').value=String(Math.min(8,p.mastery+1));
-  hubStart('train',{n:5});
+  hubStart('train');
 }
 function hubOpenMath(){hubShow('mathWrap');}
 function hubCloseMath(){hubShow('hubHome');}
@@ -41920,7 +41803,7 @@ function hubLearnToTrain(){hubShow('hubSubject');hubStart('train');}
 function hubLearnToTest(){hubShow('hubSubject');hubStart('test');}
 // ---------- sessions ----------
 let hubS=null;
-function hubStart(mode, opt){
+function hubStart(mode){
   const t=hubCurTopic();if(!t)return;
   const lvl=parseInt(hEl('hubLvlSel').value,10)||1;
   let qs=[],label='',testTop=0;
@@ -41932,9 +41815,8 @@ function hubStart(mode, opt){
     label='חיזוק · '+qs.length+' שאלות ששווה לראות שוב';
     if(!qs.length)return;
   }else if(mode==='train'){
-    const n=(opt&&opt.n)||10;
-    qs=hubDraw(t,[lvl],n);
-    label=(opt&&opt.n)?('משימת היום · '+n+' שאלות · רמה '+lvl+' '+LV_NAMES[lvl]):('אימון · רמה '+lvl+' '+LV_NAMES[lvl]);
+    qs=hubDraw(t,[lvl],10);
+    label='אימון · רמה '+lvl+' '+LV_NAMES[lvl];
   }else if(mode==='mixed'){
     const m=hubTopicProg(t.id).mastery;const lo=Math.max(1,m),hi=Math.min(8,m+1);
     qs=hubDraw(t,[lo,hi],10);
@@ -41962,7 +41844,7 @@ function hubStart(mode, opt){
     hubS_prepTopics=topics;
   }
   if(!qs.length)return;
-  hubS={mode,topic:t,level:lvl,qs,idx:0,correct:0,selected:-1,checked:false,answers:[],testTop,_lastPsg:-1,_psgOpen:false,_spoke:-1,_c0:hubBank.coins,_mission:!!(opt&&opt.n)};
+  hubS={mode,topic:t,level:lvl,qs,idx:0,correct:0,selected:-1,checked:false,answers:[],testTop,_lastPsg:-1,_psgOpen:false,_spoke:-1,_c0:hubBank.coins};
   hEl('hubQuizTitle').textContent=(hubSubj.emoji+' '+t.name);
   hEl('hubQuizMode').textContent=label;
   hubShow('hubQuiz');hubRenderQ();
@@ -41986,12 +41868,6 @@ function hubRenderQ(){
   const S=hubS,q=S.qs[S.idx];
   S.selected=-1;S.checked=false;
   hEl('hubQNum').textContent='שאלה '+(S.idx+1)+' מתוך '+S.qs.length;
-  const rib=hEl('hubMissionRibbon');
-  if(rib){
-    if(S._mission){rib.classList.remove('h-hidden');rib.textContent='משימת היום · שאלה '+(S.idx+1)+' מתוך '+S.qs.length;}
-    else if(S.qs.length<=5){rib.classList.remove('h-hidden');rib.textContent='סיבוב קצר · שאלה '+(S.idx+1)+' מתוך '+S.qs.length;}
-    else rib.classList.add('h-hidden');
-  }
   hEl('hubQBar').style.width=Math.round(S.idx/S.qs.length*100)+'%';
   hEl('hubQType').textContent=(q._topic&&S.mode==='prep'?'📌 '+q._topic.name+' · ':'')+(q.type||'')+' · רמה '+q.lvl;
   const qt=hEl('hubQText');qt.textContent=q.q;qt.setAttribute('dir','auto');
@@ -42021,24 +41897,12 @@ function hubSelect(i,btn){
   const opts=hEl('hubOpts').children;
   for(let k=0;k<opts.length;k++)opts[k].classList.toggle('sel',k===i);
 }
-function hubCelebrate(streak){
-  const box=hEl('hubCeleb'); if(!box) return;
-  const words=['כל הכבוד!','יופי!','בול!','מצוין!','יפה מאוד!'];
-  box.textContent='⭐ '+words[(Math.random()*words.length)|0]+(streak>=3?' 🔥':'')+' 🪙';
-  box.classList.remove('pop'); void box.offsetWidth; box.classList.add('pop');
-  for(let i=0;i<6;i++){
-    const s=document.createElement('span'); s.className='h-burst'; s.textContent=i%2?'🪙':'⭐';
-    s.style.position='fixed'; s.style.zIndex='79'; s.style.left=(12+Math.random()*76)+'%'; s.style.top='46%';
-    document.body.appendChild(s); setTimeout(()=>{try{s.remove();}catch(e){}},1200);
-  }
-}
 function hubCheck(){
   const S=hubS;if(!S||S.selected<0||S.checked)return;
   const q=S.qs[S.idx];S.checked=true;
   const ok=S.selected===q.a;
-  if(ok){S.correct++;S.streak=(S.streak||0)+1;hubCelebrate(S.streak);}else S.streak=0;
+  if(ok){S.correct++;S.streak=(S.streak||0)+1;}else S.streak=0;
   S.answers.push({q,topic:q._topic||S.topic,ok,sel:S.selected});
-  hubBumpQ();
   if(!ok){if(S.mode==='review')hubReviewFail((q._topic||S.topic).id,q.q);else hubAddMiss((q._topic||S.topic).id,q.q);}
   if(ok&&S.mode==='review')hubReviewSuccess((q._topic||S.topic).id,q.q);
   const opts=hEl('hubOpts').children;
@@ -42165,24 +42029,12 @@ function hubFinish(){
   hEl('hubEndNext').innerHTML=nextHtml;
   if((hubDays[td]||0)>=3)hEl('hubEndTips').innerHTML+='<div class="h-tip">🌙 זהו הסבב ה־'+hubDays[td]+' היום — מנוחה ושינה עוזרות לזיכרון. אפשר לעצור כאן בכיף ולחזור מחר.</div>';
   const celeb=(S.mode!=='prep'&&hubTopicProg(S.topic.id)._leveledUp&&hubTopicProg(S.topic.id).mastery>=8)||an.score===100;
-  if(S._mission) hEl('hubEndTitle').textContent=an.score>=60?'סיימת את משימת היום!':'עוד קצת — אפשר עוד סיבוב קצר';
-  const rb=hEl('hubRoundBtn');
-  if(rb){
-    rb.classList.toggle('h-hidden', !(an.score>=60));
-    if(an.score>=60) rb.textContent='עוד סיבוב? · 5 שאלות';
-    const scoreEl=hEl('hubEndScore');
-    if(scoreEl&&scoreEl.parentNode) scoreEl.parentNode.insertBefore(rb, scoreEl.nextSibling);
-  }
   hubS=null;hubShow('hubEnd');
-  if(celeb||an.score>=60)hubBurst();
+  if(celeb)hubBurst();
 }
 function hubAgain(){
   if(hubSubj){hubRenderSubject();}
   hubShow('hubSubject');
-}
-function hubAnotherRound(){
-  if(!hubCurTopic()){hubStartDaily();return;}
-  hubStart('train',{n:5});
 }
 function hubHomeFromEnd(){hubShow('hubHome');}
 function hubShare(){
@@ -42372,7 +42224,7 @@ window.hubOpenMath=hubOpenMath;window.hubCloseMath=hubCloseMath;
 window.hubOpenSubject=hubOpenSubject;window.hubSetBook=hubSetBook;
 window.hubTopicChanged=hubTopicChanged;window.hubStart=hubStart;
 window.hubSelect=hubSelect;window.hubCheck=hubCheck;window.hubNext=hubNext;
-window.hubAgain=hubAgain;window.hubAnotherRound=hubAnotherRound;window.hubStartFocus=hubStartFocus;
+window.hubAgain=hubAgain;window.hubStartFocus=hubStartFocus;
 window.hubPickTopic=hubPickTopic;window.hubContinue=hubContinue;window.hubStartDaily=hubStartDaily;
 window.hubOpenLearn=hubOpenLearn;window.hubLearnNav=hubLearnNav;window.hubLearnToTrain=hubLearnToTrain;window.hubLearnToTest=hubLearnToTest;
 window.hubSpeakQ=hubSpeakQ;window.hubSpeak=hubSpeak;window.hubReportToggle=hubReportToggle;window.hubReportCopy=hubReportCopy;
@@ -42383,7 +42235,6 @@ window.hubOpenType=hubOpenType;window.hubNextTypeItem=hubNextTypeItem;window.hub
 window.hubShare=hubShare;window.hubCopyShare=hubCopyShare;
 window.hubSetGoal=hubSetGoal;window.hubGoalSwap=hubGoalSwap;window.hubGoalCancel=hubGoalCancel;window.hubReqReward=hubReqReward;window.hubApproveReq=hubApproveReq;window.hubOpenMap=hubOpenMap;window.hubMapGo=hubMapGo;window.hubOpenParent=hubOpenParent;window.hubShareWeek=hubShareWeek;window.hubCopyWeek=hubCopyWeek;
 window.hubOpenProfiles=hubOpenProfiles;window.hubProfilesHome=hubProfilesHome;window.hubSelectProfile=hubSelectProfile;window.hubSetProfEmoji=hubSetProfEmoji;window.hubCreateProfile=hubCreateProfile;window.hubRenameProfile=hubRenameProfile;window.hubDeleteProfile=hubDeleteProfile;window.hubExportProfile=hubExportProfile;window.hubImportPanel=hubImportPanel;window.hubImportProfile=hubImportProfile;window.hubCopyProfCode=hubCopyProfCode;
-hubBootStorage();
 document.addEventListener('DOMContentLoaded',function(){hubProfilesInit();});
 })();
 
@@ -43153,9 +43004,7 @@ function gaKind(cfg,kind){
   else if(type==='obtuse'){deg=rnd(95,175);label='קהה';range='גדולה מ־90° וקטנה מ־180°';}
   else{deg=180;label='שטוחה';range='בדיוק 180° — קו ישר';}
   const text=kind==='word'
-    ?(type==='straight'
-      ?`יש קו ישר, והזווית שעליו היא ${deg}°. איזו זווית זו?`
-      :`במשולש של ${pick(NAMES)} יש זווית שגודלה ${deg}°. איזו זווית זו?`)
+    ?`במשולש של ${pick(NAMES)} יש זווית שגודלה ${deg}°. איזו זווית זו?`
     :`זווית שגודלה ${deg}° היא זווית:`;
   const ans=label;
   const all=['חדה','ישרה','קהה','שטוחה'];
@@ -43277,7 +43126,7 @@ function gpSide(cfg,kind){
   let text,ans,explain,wrongs;
   if(mode==='sqP'){
     const a=rnd(3,12),P=4*a;
-    text=kind==='word'?`היקף של ריבוע הוא ${P} ס״מ. מה אורך הצלע של הריבוע?`:`היקפו של ריבוע הוא ${P} ס״מ. מה אורך צלעו?`;
+    text=kind==='word'?`היקף של ריבוע הוא ${P} ס״מ. מה אורך הצלע של הריבוע?`:`היקפו של ריבוע הוא ${P} מטר. מה אורך צלעו?`;
     ans=`${a} ס״מ`;
     wrongs=[`${a+1} ס״מ`,`${a-1>0?a-1:a+2} ס״מ`,`${P/2} ס״מ`,`${a+2} ס״מ`];
     explain=`לריבוע 4 צלעות שוות, ולכן מחלקים את ההיקף ב־4: ${P} ÷ 4 = ${a} ס״מ.`;
@@ -44079,6 +43928,7 @@ function mathProfKey(){
   return 'mathProgV1:solo';
 }
 function loadS(){
+  if(window.hubGuest)return;
   try{
     const k=mathProfKey();if(mathLoadedFor===k)return;
     const raw=localStorage.getItem(k);if(!raw)return;
@@ -44089,6 +43939,7 @@ function loadS(){
   }catch(e){}
 }
 function saveS(){
+  if(window.hubGuest)return;
   try{const k=mathProfKey();localStorage.setItem(k,JSON.stringify(PROG));mathLoadedFor=k;}catch(e){}
 }
 function shuffled(n){const a=[];for(let i=0;i<n;i++)a.push(i);for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}return a;}
