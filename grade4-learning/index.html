@@ -189,15 +189,31 @@
 .h-learnbody strong{background:#fff3c4;border-radius:5px;padding:0 3px}
 .h-learnbody li{margin:4px 0}
 
+.kidbar{position:sticky;top:0;z-index:30;display:flex;gap:10px;align-items:center;justify-content:space-between;background:#fff;border-bottom:2px solid #e3e7ef;padding:8px 12px;margin:-12px -12px 8px;font-weight:800;font-size:15px;box-shadow:0 2px 10px rgba(30,40,80,.06)}
+.kidbar .kb-goal{flex:1;min-width:90px;font-weight:700;font-size:13px;color:#334455}
+.kidbar .kb-bar{display:block;height:8px;background:#eef1f6;border-radius:99px;overflow:hidden;margin-top:3px}
+.kidbar .kb-bar>span{display:block;height:100%;background:#22a35a}
+.mission-cta{display:block;width:100%;text-align:right;background:linear-gradient(135deg,#3a7bd5,#6a4fd0);color:#fff;border:none;border-radius:20px;padding:18px 18px;font-family:inherit;cursor:pointer;margin-top:8px;box-shadow:0 6px 16px rgba(58,123,213,.28);min-height:88px}
+.mission-cta:active{transform:translateY(1px)}
+.mission-kicker{display:block;font-size:14px;font-weight:800;opacity:.92}
+.mission-title{display:block;font-size:26px;font-weight:900;margin-top:2px}
+.mission-sub{display:block;font-size:15px;font-weight:700;opacity:.95;margin-top:4px}
+.h-softline{margin-top:8px;color:#5b6472;font-size:14.5px}
+.mathprep{display:block;margin-top:10px;background:#efe7ff;border:2px solid #c4b5fd;border-radius:16px;padding:14px 16px;font-weight:800;font-size:17px;color:#4c1d95;text-decoration:none;min-height:52px}
+.subj-more{margin-top:12px;background:#fff;border:2px dashed #d5e2f2;border-radius:16px;padding:8px 12px}
+.subj-more summary{font-weight:800;font-size:17px;cursor:pointer;padding:10px 2px;min-height:48px}
+.mission-inline{font-size:18px;min-height:56px}
+
 </style>
 </head>
 <body>
+<div id="kidBar" class="kidbar" aria-live="polite"></div>
 
 <div id="hubHome" class="h-wrap">
   <div class="h-head">
-    <div style="font-size:44px">🎒</div>
-    <h1>מרכז הלמידה — כיתה ד׳</h1>
-    <p>כל המקצועות, לפי ספרי הלימוד של בית הספר · אימונים, מבחנים והכנה כוללת</p>
+    <div style="font-size:44px">🦊</div>
+    <h1>המרכז של איתי</h1>
+    <p>משימה קצרה ביום — וכל המקצועות, אם בא לך לבחור</p>
     <button class="btn btn-ghost" onclick="hubShare()">📤 שיתוף</button>
     <div id="hubSharePanel" class="h-sharebox h-hidden">
       <input id="hubShareLink" readonly value="">
@@ -270,7 +286,12 @@
     </select>
     <div id="hubLvlHint" class="h-ssub" style="font-size:13px;margin-top:4px"></div>
     <div class="h-rowbtns">
-      <button class="btn btn-main" id="hubLearnBtn" onclick="hubOpenLearn()">📖 לימוד — קודם לומדים</button>
+      <button class="btn btn-main mission-inline" onclick="hubStart('daily')">🌟 5 שאלות עכשיו</button>
+      <button class="btn" id="hubLearnBtn" onclick="hubOpenLearn()">📖 קודם לומדים</button>
+    </div>
+    <details class="subj-more">
+      <summary>עוד דרכים לשחק בנושא</summary>
+    <div class="h-rowbtns">
       <button class="btn" onclick="hubOpenCards()">🃏 כרטיסיות</button>
       <button class="btn h-hidden" id="hubReviewBtn" onclick="hubStart('review')">🔁 חזרה על טעויות</button>
       <button class="btn h-hidden" id="hubMatchBtn" onclick="hubOpenMatch()">🧩 התאמת זוגות</button>
@@ -278,15 +299,16 @@
       <button class="btn h-hidden" id="hubTypeBtn" onclick="hubOpenType()">⌨️ הקלדה חופשית</button>
     </div>
     <div class="h-rowbtns">
-      <button class="btn btn-main" onclick="hubStart('train')">▶️ התחלת אימון (10 שאלות)</button>
+      <button class="btn" onclick="hubStart('train')">▶️ אימון ארוך (10 שאלות)</button>
       <button class="btn" onclick="hubStart('mixed')">🔀 סבב מעורב</button>
-      <button class="btn" onclick="hubStart('test')">📝 מבחן — שאלות מאתגרות</button>
+      <button class="btn" onclick="hubStart('test')">📝 אתגר — כשבא לך</button>
     </div>
-    <div class="h-lab">🎓 הכנה כוללת — כל החומר מתחילת השנה:</div>
+    <div class="h-lab">🎓 הכנה רחבה — כל החומר מתחילת השנה:</div>
     <select id="hubPrepUpTo" class="h-sel"></select>
     <div class="h-rowbtns">
-      <button class="btn" onclick="hubStart('prep')">📚 התחלת הכנה כוללת (15 שאלות)</button>
+      <button class="btn" onclick="hubStart('prep')">📚 הכנה רחבה (15 שאלות)</button>
     </div>
+    </details>
     <div class="parents" style="margin-top:14px">
       <div style="font-weight:800">👨‍👩‍👧 להורים — טיפים לנושא הנבחר</div>
       <div id="hubTopicTips"></div>
@@ -338,8 +360,9 @@
       <div id="hubEndFocus" style="margin-top:10px"></div>
     </div>
     <div class="h-rowbtns" style="justify-content:center">
-      <button class="btn btn-main" onclick="hubAgain()">🔁 סבב / נושא נוסף</button>
-      <button class="btn" onclick="hubHomeFromEnd()">🏠 כל המקצועות</button>
+      <button class="btn btn-main" id="hubEndAgain" onclick="hubAnotherRound()">🔁 עוד סיבוב?</button>
+      <button class="btn" onclick="hubAgain()">📚 בחירת נושא</button>
+      <button class="btn" onclick="hubHomeFromEnd()">🏠 הביתה</button>
     </div>
   </div>
 </div>
@@ -41350,9 +41373,11 @@ const hubLastTest={}; // topicId -> Set of last test question texts
 window.hubProfileBase='hub4ProgV1';
 const HUB_BASE='hub4ProgV1';
 const HUB_REG_KEY=HUB_BASE+':profiles';
+const HUB_FACE={name:'איתי',prep:false,collapseGrid:true};
 let hubMiss={}; // topicId -> {qtext: {n,st,due,ld}} — Leitner: stage advances on successes on DIFFERENT days
 let hubLast=null; // {subj, book, topic}
 let hubDays={}; // dateStr -> finished rounds that day
+let hubQDay={d:'',n:0};
 function hubToday(){return new Date().toISOString().slice(0,10);}
 function hubDayPlusMs(n){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+n);return d.getTime();}
 let hubProfiles=[]; // [{id,name,emoji}]
@@ -41363,7 +41388,7 @@ function hubMathKeyFor(pid){return 'mathProgV1:'+HUB_BASE+':'+pid;}
 function hubRegLoad(){try{const r=JSON.parse(localStorage.getItem(HUB_REG_KEY)||'null');if(r&&Array.isArray(r.list)){hubProfiles=r.list;hubActiveId=r.active||null;}}catch(e){}}
 function hubRegSave(){try{localStorage.setItem(HUB_REG_KEY,JSON.stringify({v:1,active:hubActiveId,list:hubProfiles}));}catch(e){}}
 function hubActiveProfile(){return hubProfiles.find(p=>p.id===hubActiveId)||null;}
-function hubResetState(){for(const k in hubProg)delete hubProg[k];for(const k in hubLastTest)delete hubLastTest[k];hubMiss={};hubLast=null;hubDays={};hubBank={coins:0,log:[],reqs:[]};hubGoal=null;hubWk=null;}
+function hubResetState(){for(const k in hubProg)delete hubProg[k];for(const k in hubLastTest)delete hubLastTest[k];hubMiss={};hubLast=null;hubDays={};hubBank={coins:0,log:[],reqs:[]};hubGoal=null;hubWk=null;hubQDay={d:'',n:0};}
 function hubMigrateLegacy(){ // one-time: the old single key becomes the first profile, nothing lost
   try{
     if(localStorage.getItem(HUB_REG_KEY))return;
@@ -41375,8 +41400,8 @@ function hubMigrateLegacy(){ // one-time: the old single key becomes the first p
     hubRegSave();
   }catch(e){}
 }
-function hubSave(){try{if(!hubActiveId)return;localStorage.setItem(hubProfileKey(hubActiveId),JSON.stringify({prog:hubProg,miss:hubMiss,last:hubLast,days:hubDays,bank:hubBank,goal:hubGoal,wk:hubWk}));}catch(e){}}
-function hubLoad(){try{if(!hubActiveId)return;const d=JSON.parse(localStorage.getItem(hubProfileKey(hubActiveId))||'null');if(d){for(const k in (d.prog||{}))hubProg[k]=d.prog[k];hubMiss=d.miss||{};hubLast=d.last||null;hubDays=d.days||{};if(d.bank)hubBank=d.bank;if(d.goal)hubGoal=d.goal;if(d.wk)hubWk=d.wk;
+function hubSave(){try{if(!hubActiveId)return;localStorage.setItem(hubProfileKey(hubActiveId),JSON.stringify({prog:hubProg,miss:hubMiss,last:hubLast,days:hubDays,bank:hubBank,goal:hubGoal,wk:hubWk,qday:hubQDay}));}catch(e){}}
+function hubLoad(){try{if(!hubActiveId)return;const d=JSON.parse(localStorage.getItem(hubProfileKey(hubActiveId))||'null');if(d){for(const k in (d.prog||{}))hubProg[k]=d.prog[k];hubMiss=d.miss||{};hubLast=d.last||null;hubDays=d.days||{};if(d.bank)hubBank=d.bank;if(d.goal)hubGoal=d.goal;if(d.wk)hubWk=d.wk;if(d.qday)hubQDay=d.qday;
   for(const tid in hubMiss)for(const q in hubMiss[tid]){const v=hubMiss[tid][q];if(typeof v==='number')hubMiss[tid][q]={n:v,st:0,due:0,ld:''};}}}catch(e){}}
 
 // ---------- bank, weekly goal, parent view (v2.3) ----------
@@ -41463,6 +41488,7 @@ function hubRenderParent(){
   const gi=hubGoalInfo();
   const reqs=hubBank.reqs.map((r,i)=>'<div class="h-typerow"><span>🎁 בקשת צ׳ופר · '+r.d+'</span>'+(r.st==='pending'?'<button class="btn" onclick="hubApproveReq('+i+')">✔ אישור ומימוש (50 מטבעות)</button>':'<span>✔ מומש</span>')+'</div>').join('');
   const log=hubBank.log.slice(0,8).map(l=>'<div class="h-typerow"><span>'+hEsc(l.why)+'</span><span>+'+l.amt+' 🪙</span></div>').join('');
+  let qtot=0;for(const s of HUB_SUBJECTS){if(!s.books)continue;for(const b of s.books)for(const t of b.topics)qtot+=(t.questions?t.questions.length:0);}
   hEl('hubParentBody').innerHTML=
     '<div class="h-lab">פרופילים במכשיר הזה</div>'+profRows
     +'<div class="h-rowbtns"><button class="btn" onclick="hubOpenProfiles()">👤 החלפת פרופיל / פרופיל חדש</button><button class="btn" onclick="hubImportPanel()">📥 ייבוא פרופיל מקוד</button></div>'
@@ -41480,7 +41506,7 @@ function hubRenderParent(){
     +'<div class="h-next">💬 לדבר עליו: '+(talk?('בנושא "'+hEsc(talk)+'" היו השבוע '+mx+' טעויות — שווה לשאול מה היה שם קשה, בלי לחץ.'):'לא נרשמו השבוע טעויות בנושא מסוים.')+'</div>'
     +(reqs?'<div class="h-lab">בקשות צ׳ופר</div>'+reqs:'')
     +(log?'<div class="h-lab">תנועות אחרונות בבנק</div>'+log:'')
-    +'<div class="h-ssub" style="margin-top:10px">המידע נשמר במכשיר הזה בלבד. הילד רואה בדיוק את אותם נתונים — אין מעקב נסתר.</div>';
+    +'<div class="h-ssub" style="margin-top:10px">'+qtot.toLocaleString('he-IL')+' שאלות במאגרי המקצועות (בלי חשבון). במסך של הילד מופיע רק היעד היומי. המידע נשמר במכשיר הזה בלבד. הילד רואה בדיוק את אותם נתונים — אין מעקב נסתר.</div>';
 }
 // ---------- profiles: picker, switch, parent management, transfer code ----------
 const HUB_EMOJIS=['😊','😎','🤩','🦁','🐯','🦊','🐼','🦄','⚽','🎸','🚀','🌸'];
@@ -41489,7 +41515,7 @@ let hubProfMsg='';
 function hubProfilesInit(){
   hubRegLoad();hubMigrateLegacy();
   if(!hubActiveProfile()&&hubProfiles.length){hubActiveId=hubProfiles[0].id;hubRegSave();}
-  if(hubActiveProfile()){hubLoad();hubRenderHome();}
+  if(hubActiveProfile()){hubLoad();hubRenderHome();hubMaybeAutoMission();}
   else{hubRenderProfiles();hubShow('hubProfiles');}
 }
 function hubOpenProfiles(){hubSave();hubRenderProfiles();hubShow('hubProfiles');}
@@ -41589,6 +41615,7 @@ function hubShow(view){
   for(const v of ['hubHome','hubSubject','hubQuiz','hubEnd','hubLearn','hubCards','hubMatch','hubDict','hubType','mathWrap','hubMap','hubParent','hubProfiles'])hEl(v).classList.add('h-hidden');
   hEl(view).classList.remove('h-hidden');
   window.scrollTo(0,0);
+  hubRenderKidBar();
 }
 function hubFindTopic(tid){
   for(const s of HUB_SUBJECTS){if(!s.books)continue;for(let bi=0;bi<s.books.length;bi++){const t=s.books[bi].topics.find(x=>x.id===tid);if(t)return{subj:s,bookIdx:bi,topic:t};}}
@@ -41613,44 +41640,118 @@ function hubStartDue(){
   hubSubj=f.subj;hubBookIdx=f.bookIdx;hubRenderSubject();
   hEl('hubTopicSel').value=best.id;hubTopicChanged();hubStart('review');
 }
+function hubRenderKidBar(){
+  const bar=hEl('kidBar'); if(!bar) return;
+  const td=hubToday();
+  const n=(hubQDay&&hubQDay.d===td)?hubQDay.n:0;
+  const goal=5;
+  const pct=Math.min(100,Math.round(100*Math.min(n,goal)/goal));
+  let maxM=0;
+  for(const s of HUB_SUBJECTS){
+    if(!s.books) continue;
+    for(const b of s.books) for(const t of b.topics){ const m=(hubTopicProg(t.id).mastery)||0; if(m>maxM) maxM=m; }
+  }
+  bar.innerHTML='<span>🔥 '+hubActiveDays()+'</span>'
+    +'<span class="kb-goal">5 שאלות היום · '+Math.min(n,goal)+'/'+goal
+    +'<span class="kb-bar"><span style="width:'+pct+'%"></span></span></span>'
+    +'<span>⭐ '+maxM+'</span>'
+    +'<span>'+((hubBank&&hubBank.coins)||0)+' 🪙</span>';
+}
+function hubNoteQ(){
+  const td=hubToday();
+  if(!hubQDay||hubQDay.d!==td) hubQDay={d:td,n:0};
+  hubQDay.n++;
+  hubSave();
+  hubRenderKidBar();
+}
+function hubMaybeAutoMission(){
+  try{
+    const q=new URLSearchParams(location.search);
+    if(q.get('mission')==='1'){
+      history.replaceState(null,'',location.pathname+location.hash);
+      hubStartDaily();
+    }
+  }catch(e){}
+}
+let hubEndCtx=null;
+function hubAnotherRound(){
+  const ctx=hubEndCtx;
+  let tid=ctx&&ctx.topicId;
+  if(ctx&&ctx.score>=80&&tid){
+    const f=hubFindTopic(tid);
+    if(f){
+      const topics=f.subj.books[f.bookIdx].topics;
+      const ix=topics.findIndex(t=>t.id===tid);
+      const nxt=topics.slice(ix+1).find(t=>hubTopicProg(t.id).mastery<8)||topics.find(t=>t.id!==tid&&hubTopicProg(t.id).mastery<8);
+      if(nxt) tid=nxt.id;
+    }
+  }
+  if(tid) hubStartDaily(tid); else hubStartDaily();
+}
 function hubRenderHome(){
-  const cont=hEl('hubHomeTop');let th='';
+  const cont=hEl('hubHomeTop');
   hubWkReset();
-  const wd=hubWeekDays();const ad=hubActiveDays();const gi=hubGoalInfo();
-  const dots=wd.map(x=>'<span class="h-wdot'+(x.n?' on':'')+(x.future?' fut':'')+'"></span>').join('');
-  let dueTot=0;for(const s2 of HUB_SUBJECTS){if(!s2.books)continue;for(const b2 of s2.books)for(const t2 of b2.topics)dueTot+=hubDueCount(t2.id);}
   const dailies=hubDailyTopics();
+  const main=dailies[0];
+  const mp=hubTopicProg(main.id);
+  const td=hubToday();
+  const n=(hubQDay&&hubQDay.d===td)?hubQDay.n:0;
+  const goal=5;
+  const gi=hubGoalInfo();
+  const ad=hubActiveDays();
+  let dueTot=0;for(const s2 of HUB_SUBJECTS){if(!s2.books)continue;for(const b2 of s2.books)for(const t2 of b2.topics)dueTot+=hubDueCount(t2.id);}
   const hasCont=!!(hubLast&&hubFindTopic(hubLast.topic));
-  // compact action chips only — no full-width suggestion rows on home (user feedback: visual clutter)
   let chips='';
   const ap=hubActiveProfile();
-  if(ap)chips+='<button class="btn" onclick="hubOpenProfiles()">'+ap.emoji+' '+hEsc(ap.name)+' ▾</button>';
-  if(dueTot>0)chips+='<button class="btn" onclick="hubStartDue()">🔁 '+dueTot+' שאלות לחזרה היום</button>';
-  if(hasCont){const f=hubFindTopic(hubLast.topic);chips+='<button class="btn" onclick="hubContinue()">▶️ המשך מאיפה שהפסקת: '+hEsc(f.topic.name)+'</button>';}
-  th+='<div class="h-bankcard">'
-    +'<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:18px;font-weight:800">🏦 בנק הידע שלי</span><span style="font-size:22px;font-weight:800">'+hubBank.coins+' 🪙</span></div>'
-    +'<div style="margin-top:6px">השבוע: '+dots+' <span class="h-ssub">'+ad+' ימי למידה'+(ad>=4?' · הבונוס השבועי (+20) כבר נכנס ✔':' · עוד '+(4-ad)+' ימי למידה לבונוס +20')+'</span></div>'
-    +((gi&&!hubGoalPick)?'<div style="margin-top:8px">🎯 היעד שלי השבוע: <b>'+hEsc(gi.g.label)+'</b><div class="h-goalbar"><div style="width:'+Math.min(100,Math.round(gi.cur/gi.g.target*100))+'%"></div></div><span class="h-ssub">'+Math.min(gi.cur,gi.g.target)+'/'+gi.g.target+(gi.done?' · הושג! 🎉':'')+'</span> <button class="btn" onclick="hubGoalSwap()">🔄 החלף יעד</button></div>'
-       :'<div style="margin-top:8px"><span class="h-ssub">🎯 '+((hubGoal&&hubGoal.wk===hubWeekKey())?'בחירת יעד אחר:':'יעד לשבוע הזה:')+'</span> <span class="h-rowbtns" style="display:inline-flex;margin-top:0;vertical-align:middle">'+((hubGoal&&hubGoal.wk===hubWeekKey())?'<button class="btn" onclick="hubGoalCancel()">↩️ בלי שינוי</button>':'')+dailies.slice(0,1).map(dt=>'<button class="btn" onclick="hubSetGoal(\'topic\',\''+dt.id+'\')">לעלות רמה ב'+hEsc(dt.name)+'</button>').join('')+'<button class="btn" onclick="hubSetGoal(\'grads\')">15 שאלות שיבגירו</button><button class="btn" onclick="hubSetGoal(\'rounds\')">8 סבבים</button></span></div>')
-    +'<div class="h-rowbtns">'+chips+'<button class="btn" onclick="hubOpenMap()">🗺️ מפת ההתקדמות</button><button class="btn" onclick="hubOpenParent()">👨‍👧 מסך להורה</button><button class="btn" onclick="hubShareWeek()">📤 סיכום שבועי</button>'
-    +(hubBank.reqs.some(r=>r.st==='pending')?'<span class="h-ssub" style="align-self:center">🎁 בקשת הצ׳ופר ממתינה לאישור הורה</span>':(hubBank.coins>=50?'<button class="btn" onclick="hubReqReward()">🎁 בקש צ׳ופר (50 🪙)</button>':''))
-    +'</div></div>';
+  if(ap)chips+='<button class="btn" onclick="hubOpenProfiles()">'+ap.emoji+' '+hEsc(ap.name)+'</button>';
+  if(dueTot>0)chips+='<button class="btn" onclick="hubStartDue()">🔁 '+dueTot+' לחזרה</button>';
+  if(hasCont){const f=hubFindTopic(hubLast.topic);chips+='<button class="btn" onclick="hubContinue()">▶️ '+hEsc(f.topic.name)+'</button>';}
+  let th='<button class="mission-cta" onclick="hubStartDaily(\''+main.id+'\')">'
+    +'<span class="mission-kicker">'+(n>=goal?'עוד סיבוב להיום':'משימת היום')+'</span>'
+    +'<span class="mission-title">'+main.emoji+' '+hEsc(main.name)+'</span>'
+    +'<span class="mission-sub">5 שאלות קצרות · רמה '+(mp.mastery||0)+' · היום '+Math.min(n,goal)+'/'+goal+'</span>'
+    +'</button>';
+  th+='<div class="h-softline">🔥 '+ad+' ימי למידה השבוע'
+    +(gi&&!hubGoalPick?' · 🎯 '+hEsc(gi.g.label)+' '+Math.min(gi.cur,gi.g.target)+'/'+gi.g.target:'')
+    +(n>=goal?' · יעד היום הושג':'')
+    +'</div>';
+  if(hubGoalPick||!gi){
+    th+='<div class="h-softline">יעד שבועי: '
+      +'<button class="btn" onclick="hubSetGoal(\'topic\',\''+main.id+'\')">לעלות רמה</button> '
+      +'<button class="btn" onclick="hubSetGoal(\'grads\')">15 שאלות שיבגירו</button> '
+      +'<button class="btn" onclick="hubSetGoal(\'rounds\')">8 סבבים</button>'
+      +(hubGoalPick?' <button class="btn" onclick="hubGoalCancel()">בלי שינוי</button>':'')
+      +'</div>';
+  }else if(gi){
+    th+='<div class="h-softline"><button class="btn" onclick="hubGoalSwap()">🔄 החלף יעד</button></div>';
+  }
+  th+='<div class="h-rowbtns">'+chips
+    +'<button class="btn" onclick="hubOpenMap()">🗺️ מפת ההתקדמות</button>'
+    +'<button class="btn" onclick="hubOpenParent()">👨‍👧 להורה</button>'
+    +'<button class="btn" onclick="hubShareWeek()">📤 שבוע</button>'
+    +(hubBank.reqs.some(r=>r.st==='pending')?'<span class="h-ssub" style="align-self:center">🎁 בקשת צ׳ופר ממתינה</span>':(hubBank.coins>=50?'<button class="btn" onclick="hubReqReward()">🎁 צ׳ופר</button>':''))
+    +'</div>';
+  if(HUB_FACE.prep) th+='<a class="mathprep" href="../math-test-prep/">🧮 הכנה למבחן בחשבון — מסלול השבוע</a>';
   cont.innerHTML=th;
-  const grid=hEl('hubGrid');let html='';
+  const grid=hEl('hubGrid');
+  let cards='';
   for(const s of HUB_SUBJECTS){
     if(s.special==='math'){
-      html+='<button class="h-scard" style="border-top:6px solid '+HUB_COLORS.math+'" onclick="hubOpenMath()"><div class="h-semoji">🔢</div><div class="h-sname">חשבון</div><div class="h-ssub">'+hEsc(s.sub)+'</div></button>';
+      cards+='<button class="h-scard" style="border-top:6px solid '+HUB_COLORS.math+'" onclick="hubOpenMath()"><div class="h-semoji">🔢</div><div class="h-sname">חשבון</div><div class="h-ssub">'+hEsc(s.sub)+'</div></button>';
       continue;
     }
-    const books=s.books.length;
-    const topics=s.books.reduce((n,b)=>n+b.topics.length,0);
-    const qs=s.books.reduce((n,b)=>n+b.topics.reduce((m,t)=>m+(t.questions?t.questions.length:0),0),0);
-    const qtxt=qs>0?qs.toLocaleString('he-IL')+' שאלות':'מאות שאלות מתחדשות';
-    html+='<button class="h-scard" style="border-top:6px solid '+(HUB_COLORS[s.id]||'#4a7dff')+'" onclick="hubOpenSubject(\''+s.id+'\')"><div class="h-semoji">'+s.emoji+'</div><div class="h-sname">'+hEsc(s.name)+'</div><div class="h-ssub">'+(books>1?books+' ספרים · ':'')+topics+' נושאים · '+qtxt+'</div></button>';
+    const topics=s.books.reduce((k,b)=>k+b.topics.length,0);
+    cards+='<button class="h-scard" style="border-top:6px solid '+(HUB_COLORS[s.id]||'#4a7dff')+'" onclick="hubOpenSubject(\''+s.id+'\')"><div class="h-semoji">'+s.emoji+'</div><div class="h-sname">'+hEsc(s.name)+'</div><div class="h-ssub">'+topics+' נושאים קצרים</div></button>';
   }
-  grid.innerHTML=html;
+  if(HUB_FACE.collapseGrid){
+    grid.className='';
+    grid.innerHTML='<details class="subj-more"><summary>כל המקצועות — לבחירה חופשית</summary><div class="h-grid">'+cards+'</div></details>';
+  }else{
+    grid.className='h-grid';
+    grid.innerHTML=cards;
+  }
+  hubRenderKidBar();
 }
-
 function hubContinue(){
   if(!hubLast)return;const f=hubFindTopic(hubLast.topic);if(!f)return;
   hubSubj=f.subj;hubBookIdx=f.bookIdx;hubRenderSubject();
@@ -41662,10 +41763,10 @@ function hubStartDaily(tid){
   hEl('hubTopicSel').value=t.id;hubTopicChanged();
   const p=hubTopicProg(t.id);
   hEl('hubLvlSel').value=String(Math.min(8,p.mastery+1));
-  hubStart('train');
+  hubStart('daily');
 }
 function hubOpenMath(){hubShow('mathWrap');}
-function hubCloseMath(){hubShow('hubHome');}
+function hubCloseMath(){hubRenderHome();hubShow('hubHome');}
 function hubOpenSubject(id){
   hubSubj=HUB_SUBJECTS.find(s=>s.id===id);hubBookIdx=0;
   hubRenderSubject();hubShow('hubSubject');
@@ -41807,9 +41908,10 @@ function hubStart(mode){
     qs=qs.slice(0,10);
     label='חיזוק · '+qs.length+' שאלות ששווה לראות שוב';
     if(!qs.length)return;
-  }else if(mode==='train'){
-    qs=hubDraw(t,[lvl],10);
-    label='אימון · רמה '+lvl+' '+LV_NAMES[lvl];
+  }else if(mode==='daily'||mode==='train'){
+    const nQ=mode==='daily'?5:10;
+    qs=hubDraw(t,[lvl],nQ);
+    label=mode==='daily'?'משימת היום · 5 שאלות קצרות':'אימון · רמה '+lvl+' '+LV_NAMES[lvl];
   }else if(mode==='mixed'){
     const m=hubTopicProg(t.id).mastery;const lo=Math.max(1,m),hi=Math.min(8,m+1);
     qs=hubDraw(t,[lo,hi],10);
@@ -41895,6 +41997,7 @@ function hubCheck(){
   const q=S.qs[S.idx];S.checked=true;
   const ok=S.selected===q.a;
   if(ok){S.correct++;S.streak=(S.streak||0)+1;}else S.streak=0;
+  hubNoteQ();
   S.answers.push({q,topic:q._topic||S.topic,ok,sel:S.selected});
   if(!ok){if(S.mode==='review')hubReviewFail((q._topic||S.topic).id,q.q);else hubAddMiss((q._topic||S.topic).id,q.q);}
   if(ok&&S.mode==='review')hubReviewSuccess((q._topic||S.topic).id,q.q);
@@ -41919,7 +42022,7 @@ function hubNext(){
   else hubFinish();
 }
 function hubMaybeAdapt(){
-  const S=hubS;if(!S||(S.mode!=='train'&&S.mode!=='focus'))return;
+  const S=hubS;if(!S||(S.mode!=='train'&&S.mode!=='daily'&&S.mode!=='focus'))return;
   const done=S.answers;if(done.length<3)return;
   const last3=done.slice(-3),last5=done.slice(-5);
   const remaining=S.qs.length-(S.idx+1);if(remaining<2)return;
@@ -41960,6 +42063,8 @@ function hubAnalyze(S){
 }
 function hubFinish(){
   const S=hubS;const an=hubAnalyze(S);
+  hubEndCtx={topicId:(S.topic&&S.topic.id)||null,score:an.score,mode:S.mode};
+  const againBtn=hEl('hubEndAgain'); if(againBtn) againBtn.textContent=an.score>=80?'🔁 עוד סיבוב? הנושא הבא':'🔁 עוד סיבוב?';
   const td=hubToday();hubDays[td]=(hubDays[td]||0)+1;
   hubWkReset();hubWk.rounds++;
   for(const a of S.answers)if(!a.ok){const nm=S.mode==='prep'?(a.topic?a.topic.name:''):S.topic.name;if(nm)hubWk.missTop[nm]=(hubWk.missTop[nm]||0)+1;}
@@ -41975,7 +42080,7 @@ function hubFinish(){
     const p=hubTopicProg(S.topic.id);
     p.rounds++;p.correct+=S.correct;p.total+=S.qs.length;
     const prevMastery=p.mastery;
-    if(S.mode==='train'){
+    if(S.mode==='train'||S.mode==='daily'){
       const need=S.level>=7?80:70;
       if(an.score>=need){
         if(p._streakLvl===S.level)p._streak=(p._streak||0)+1;else{p._streakLvl=S.level;p._streak=1;}
@@ -42009,9 +42114,9 @@ function hubFinish(){
     const nxt=topics.slice(ix+1).find(t=>hubTopicProg(t.id).mastery<8)||topics.find(t=>hubTopicProg(t.id).mastery<8);
     if(an.score>=80&&nxt&&nxt.id!==S.topic.id)nextHtml='<div class="h-next">👉 הצעד הבא המומלץ: <b>'+nxt.emoji+' '+hEsc(nxt.name)+'</b></div>';
     else if(an.score>=80)nextHtml='<div class="h-next">👉 הצעד הבא: לעלות רמה ב«'+hEsc(S.topic.name)+'» או לנסות מבחן!</div>';
-    else nextHtml='<div class="h-next">👉 הצעד הבא: סבב נוסף ב«'+hEsc(S.topic.name)+'»'+(S.mode==='train'?' ברמה '+Math.max(1,S.level-(an.score<50?1:0)):'')+' — בקצב רגוע.</div>';
+    else nextHtml='<div class="h-next">👉 הצעד הבא: סבב נוסף ב«'+hEsc(S.topic.name)+'»'+(S.mode==='train'||S.mode==='daily'?' ברמה '+Math.max(1,S.level-(an.score<50?1:0)):'')+' — בקצב רגוע.</div>';
   }
-  hEl('hubEndTitle').textContent=S.mode==='test'?'סיימת את המבחן!':(S.mode==='prep'?'סיימת את ההכנה הכוללת!':'סיימת את הסבב!');
+  hEl('hubEndTitle').textContent=S.mode==='daily'?'כל הכבוד! סיימת את הסיבוב':(S.mode==='test'?'סיימת את המבחן!':(S.mode==='prep'?'סיימת את ההכנה הכוללת!':'סיימת את הסבב!'));
   hEl('hubEndScore').textContent=S.correct+' מתוך '+S.qs.length+' נכון'+(S.mode==='test'?' ('+an.score+'%)':'');
   hEl('hubEndEmoji').textContent=an.score===100?'🏆':an.score>=80?'🎉':an.score>=60?'💪':'🌱';
   hEl('hubEndTypes').innerHTML=rows||'';
@@ -42029,7 +42134,7 @@ function hubAgain(){
   if(hubSubj){hubRenderSubject();}
   hubShow('hubSubject');
 }
-function hubHomeFromEnd(){hubShow('hubHome');}
+function hubHomeFromEnd(){hubRenderHome();hubShow('hubHome');}
 function hubShare(){
   const url='https://netanel485-hue.github.io/grade4-learning/';
   if(navigator.share){navigator.share({title:'מרכז הלמידה — כיתה ד׳',text:'מרכז למידה אינטראקטיבי לכל מקצועות כיתה ד׳',url}).catch(()=>hubSharePanel(url));}
@@ -42218,7 +42323,7 @@ window.hubOpenSubject=hubOpenSubject;window.hubSetBook=hubSetBook;
 window.hubTopicChanged=hubTopicChanged;window.hubStart=hubStart;
 window.hubSelect=hubSelect;window.hubCheck=hubCheck;window.hubNext=hubNext;
 window.hubAgain=hubAgain;window.hubStartFocus=hubStartFocus;
-window.hubPickTopic=hubPickTopic;window.hubContinue=hubContinue;window.hubStartDaily=hubStartDaily;
+window.hubPickTopic=hubPickTopic;window.hubContinue=hubContinue;window.hubStartDaily=hubStartDaily;window.hubAnotherRound=hubAnotherRound;
 window.hubOpenLearn=hubOpenLearn;window.hubLearnNav=hubLearnNav;window.hubLearnToTrain=hubLearnToTrain;window.hubLearnToTest=hubLearnToTest;
 window.hubSpeakQ=hubSpeakQ;window.hubSpeak=hubSpeak;window.hubReportToggle=hubReportToggle;window.hubReportCopy=hubReportCopy;
 window.hubOpenCards=hubOpenCards;window.hubFlipCard=hubFlipCard;window.hubMarkCard=hubMarkCard;window.hubCardWhy=hubCardWhy;

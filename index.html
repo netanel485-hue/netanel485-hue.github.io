@@ -5,23 +5,104 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>מרכזי הלמידה — משפחת עמיחי</title>
 <style>
-body{font-family:'Segoe UI',Arial,sans-serif;background:#eef3ff;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center}
-.wrap{max-width:520px;width:92%;text-align:center;padding:32px 0}
-h1{font-size:30px;margin:0 0 6px;color:#1c2b4a}
-p{color:#5a6a8a;margin:0 0 26px}
-a.card{display:block;background:#fff;border-radius:20px;padding:26px 20px;margin:14px 0;text-decoration:none;color:#1c2b4a;box-shadow:0 4px 18px rgba(40,70,140,.12);border-top:8px solid #4a7dff;font-size:24px;font-weight:800}
-a.card small{display:block;font-size:15px;font-weight:400;color:#5a6a8a;margin-top:6px}
-a.card.g4{border-top-color:#18a058}
-a.card.g1{border-top-color:#ff6b9d}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#eef3ff;margin:0;min-height:100vh;color:#1c2b4a}
+.wrap{max-width:520px;margin:0 auto;width:92%;text-align:center;padding:28px 0 40px}
+h1{font-size:30px;margin:8px 0 6px}
+p.lead{color:#5a6a8a;margin:0 0 18px}
+.card{background:#fff;border-radius:24px;padding:8px 8px 14px;margin:14px 0;box-shadow:0 4px 18px rgba(40,70,140,.12);border-top:8px solid #4a7dff;text-align:center}
+.card.g1{border-top-color:#ff6b9d}
+.card.g4{border-top-color:#18a058}
+a.pick{display:flex;flex-direction:column;align-items:center;text-decoration:none;color:#1c2b4a;padding:8px 8px 0;min-height:44px}
+a.pick .av{width:112px;height:112px;display:block}
+a.pick .who{font-size:28px;font-weight:900;margin-top:2px}
+a.pick .grade{font-size:16px;font-weight:600;color:#5a6a8a}
+a.go{display:flex;align-items:center;justify-content:center;background:#4a7dff;color:#fff;border-radius:16px;padding:14px 12px;font-size:22px;font-weight:900;text-decoration:none;min-height:56px;margin:10px 12px 2px;box-shadow:0 4px 0 rgba(30,50,120,.18)}
+a.go:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(30,50,120,.18)}
+.card.g1 a.go{background:#ff6b9d}
+.card.g4 a.go{background:#18a058}
+a.more,a.prep{display:inline-flex;align-items:center;justify-content:center;color:#3a4a6a;font-size:16px;font-weight:700;text-decoration:none;min-height:48px;padding:8px 12px}
+a.prep{display:flex;margin:4px 12px 0;background:#efe7ff;border-radius:14px;color:#4c1d95}
+.foot{margin-top:8px}
+.foot a{color:#3a4a6a;font-weight:800}
 </style>
 </head>
 <body>
 <div class="wrap">
 <h1>📚 מרכזי הלמידה</h1>
-<p>בחרו את מרכז הלמידה שלכם</p>
-<a class="card g1" href="grade1-learning/">כיתה א׳<small>מרכז הלמידה של עדי</small></a>
-<a class="card" href="grade6-learning/">כיתה ו׳<small>מרכז הלמידה של אריאל</small></a>
-<a class="card g4" href="grade4-learning/">כיתה ד׳<small>מרכז הלמידה של איתי</small></a>
+<p class="lead">בוחרים לפי התמונה — ואז משימה קצרה אחת</p>
+
+<article class="card g1">
+  <a class="pick" href="grade1-learning/">
+    <svg class="av" viewBox="0 0 120 120" aria-hidden="true">
+      <circle cx="60" cy="64" r="46" fill="#ffe4f0"/>
+      <ellipse cx="28" cy="58" rx="14" ry="22" fill="#ff6b9d"/>
+      <ellipse cx="92" cy="58" rx="14" ry="22" fill="#ff6b9d"/>
+      <circle cx="28" cy="78" r="7" fill="#ff8fb5"/>
+      <circle cx="92" cy="78" r="7" fill="#ff8fb5"/>
+      <circle cx="60" cy="62" r="28" fill="#ffd8b8"/>
+      <circle cx="50" cy="58" r="3.2" fill="#3a2a4a"/>
+      <circle cx="70" cy="58" r="3.2" fill="#3a2a4a"/>
+      <path d="M52 70 Q60 78 68 70" fill="none" stroke="#e45b86" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="46" cy="66" r="4" fill="#ffb3c9" opacity=".9"/>
+      <circle cx="74" cy="66" r="4" fill="#ffb3c9" opacity=".9"/>
+      <path d="M78 28 Q90 18 96 32" fill="none" stroke="#18a058" stroke-width="3"/>
+      <circle cx="96" cy="34" r="7" fill="#ff6b9d"/>
+      <circle cx="96" cy="34" r="3" fill="#ffd23a"/>
+    </svg>
+    <span class="who">עדי</span>
+    <span class="grade">כיתה א׳ · קריאה וחשבון</span>
+  </a>
+  <a class="go" href="grade1-learning/?mission=1">🌟 משימת היום</a>
+  <a class="more" href="grade1-learning/">כל העמודים</a>
+</article>
+
+<article class="card g4">
+  <a class="pick" href="grade4-learning/">
+    <svg class="av" viewBox="0 0 120 120" aria-hidden="true">
+      <circle cx="60" cy="66" r="46" fill="#e5f8ee"/>
+      <path d="M32 58 Q40 28 60 30 Q80 28 88 58 Q78 40 60 42 Q42 40 32 58Z" fill="#6b3e26"/>
+      <circle cx="60" cy="64" r="28" fill="#ffd2a8"/>
+      <circle cx="50" cy="60" r="3.2" fill="#2c2416"/>
+      <circle cx="70" cy="60" r="3.2" fill="#2c2416"/>
+      <path d="M52 72 Q60 80 68 72" fill="none" stroke="#d4652f" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="44" cy="68" r="3.5" fill="#f0a070"/>
+      <circle cx="76" cy="68" r="3.5" fill="#f0a070"/>
+      <rect x="40" y="92" width="40" height="16" rx="8" fill="#18a058"/>
+      <circle cx="92" cy="96" r="10" fill="#fff" stroke="#1c2b4a" stroke-width="2"/>
+      <path d="M92 88 v16 M84 96 h16" stroke="#1c2b4a" stroke-width="1.6"/>
+    </svg>
+    <span class="who">איתי</span>
+    <span class="grade">כיתה ד׳ · כל המקצועות</span>
+  </a>
+  <a class="go" href="grade4-learning/?mission=1">🌟 משימת היום</a>
+  <a class="more" href="grade4-learning/">כל המקצועות</a>
+</article>
+
+<article class="card g6">
+  <a class="pick" href="grade6-learning/">
+    <svg class="av" viewBox="0 0 120 120" aria-hidden="true">
+      <circle cx="60" cy="66" r="46" fill="#ece7ff"/>
+      <path d="M34 52 Q46 24 60 26 Q74 24 86 52 Q74 38 60 40 Q46 38 34 52Z" fill="#2a2118"/>
+      <circle cx="60" cy="64" r="28" fill="#f3c9a0"/>
+      <circle cx="50" cy="62" r="3" fill="#241c16"/>
+      <circle cx="70" cy="62" r="3" fill="#241c16"/>
+      <path d="M42 60 h16" fill="none" stroke="#3a3358" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M62 60 h16" fill="none" stroke="#3a3358" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M58 60 h4" stroke="#3a3358" stroke-width="2.4"/>
+      <path d="M52 74 Q60 80 68 74" fill="none" stroke="#c46a3a" stroke-width="3" stroke-linecap="round"/>
+      <rect x="42" y="92" width="36" height="16" rx="8" fill="#5b4dc7"/>
+      <path d="M86 30 l3 7 7 1 -5 5 1 7 -6 -4 -6 4 1 -7 -5 -5 7 -1z" fill="#ffb800"/>
+    </svg>
+    <span class="who">אריאל</span>
+    <span class="grade">כיתה ו׳ · משחקים קצרים</span>
+  </a>
+  <a class="go" href="grade6-learning/?mission=1">🌟 משימת היום</a>
+  <a class="prep" href="math-test-prep/">🧮 הכנה למבחן בחשבון</a>
+  <a class="more" href="grade6-learning/">כל המקצועות</a>
+</article>
+
+<p class="foot"><a href="math-test-prep/">מסלול השבוע בחשבון — לאריאל</a></p>
 </div>
 </body>
 </html>

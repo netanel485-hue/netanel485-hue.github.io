@@ -115,6 +115,15 @@
   .tourbtn { display:block; width:100%; border:none; border-radius:16px; padding:18px; cursor:pointer; font-family:inherit;
             background:linear-gradient(135deg,#3a7bd5,#6a4fd0); color:#fff; font-size:clamp(17px,4.8vw,21px); font-weight:800;
             box-shadow:0 3px 12px rgba(58,123,213,.3); touch-action:manipulation; margin-bottom:10px; }
+  .missionbtn { display:block; width:100%; border:none; border-radius:16px; padding:18px; cursor:pointer; font-family:inherit;
+            background:linear-gradient(135deg,#ffb800,#ff8a00); color:#3a2a00; font-size:clamp(18px,5vw,22px); font-weight:800;
+            box-shadow:0 3px 12px rgba(255,160,0,.35); touch-action:manipulation; min-height:56px; }
+  .kidbar{position:sticky;top:0;z-index:20;display:flex;gap:8px;align-items:center;justify-content:space-between;
+            background:#fff;border-radius:14px;padding:8px 12px;margin:0 0 10px;font-weight:800;font-size:14px;
+            box-shadow:0 2px 10px rgba(30,60,110,.08)}
+  .kidbar .kb-mid{flex:1;font-weight:700;font-size:13px;color:#345;text-align:center}
+  .kidbar .kb-bar{display:block;height:8px;background:#eef1f6;border-radius:99px;overflow:hidden;margin-top:3px}
+  .kidbar .kb-bar>span{display:block;height:100%;background:#43b581}
   .opt svg { max-width:100%; height:auto; }
   .qfig { text-align:center; margin:8px 0; }
   .legend { display:flex; flex-wrap:wrap; gap:8px 16px; justify-content:center; font-size:15px; margin-top:6px; }
@@ -154,19 +163,22 @@
 </head>
 <body>
 <div class="wrap">
+  <div id="kidBar" class="kidbar" aria-live="polite"></div>
   <header>
-    <h1>🧮 ערכת חזרה למבחן במתמטיקה — כיתה ו׳</h1>
-    <p>הכנה למבחן של אריאל · לפי ערכת החזרה של בית הספר · גאומטריה, חישוב, בעיות מילוליות והעשרה</p>
+    <h1>🧮 חשבון לקראת המבחן — אריאל</h1>
+    <p>מסלול שבוע אחד, וגם סיבוב קצר של 5 שאלות כשבא לך</p>
+    <p style="margin-top:8px"><a href="../grade6-learning/" style="color:#fff;font-weight:800">← המרכז של אריאל</a></p>
     <button class="sharebtn" onclick="shareApp()">📤 שיתוף</button>
   </header>
 
   <div id="topicPane">
     <div class="card center">
       <div class="intro-emoji">🎯</div>
-      <h2 style="margin:8px 0">שלום אריאל! מתכוננים למבחן ביחד</h2>
-      <p style="margin:0;color:#5a6b7d">בכל נושא יש <b>📖 למידה</b> קצרה, <b>🏋️ אימון רמות</b> עם כוכבים ו<b>📝 מבחן</b> של 10 שאלות.<br>
-      בכל נושא מחכות לך <b>150 שאלות</b> — ובסך הכול <b id="totalBankLbl">3,150</b> שאלות בערכה!</p>
+      <h2 style="margin:8px 0">שלום אריאל! סיבוב קצר?</h2>
+      <p style="margin:0 0 12px;color:#5a6b7d">מספיקות <b>5 שאלות היום</b>. מסלול השבוע נשאר הדרך הראשית — צעד אחד ביום.</p>
+      <button class="missionbtn" onclick="startShortRound(true)">🌟 5 שאלות עכשיו</button>
     </div>
+    <button class="planbtn" onclick="openPlan()">📅 מסלול "מוכן למבחן בשבוע" — צעד אחד ביום</button>
     <div class="card">
       <div class="meterwrap">
         <div class="meterbox">
@@ -175,13 +187,12 @@
           <div class="mv" id="readyLbl">עוד לא התחיל האבחון — התחילו את מסלול השבוע כדי למדוד מוכנות</div>
         </div>
         <div class="meterbox">
-          <div class="mt">🗂️ כיסוי המאגרים</div>
+          <div class="mt">🌱 צעדים שעשית</div>
           <div class="bigbar blue"><div id="coverFill" style="width:0%"></div></div>
-          <div class="mv" id="coverLbl">ענית נכון על 0 מתוך 3,150 שאלות המאגר</div>
+          <div class="mv" id="coverLbl">עוד לא התחלנו — 5 שאלות היום זה התחלה מצוינת</div>
         </div>
       </div>
     </div>
-    <button class="planbtn" onclick="openPlan()">📅 מסלול "מוכן למבחן בשבוע" — הדרך המובנית למבחן!</button>
     <button class="tourbtn" onclick="startTour()">🧭 סיור בחומר — שאלה מכל נושא, בסבבים מעורבבים</button>
     <div id="partsHost"></div>
     <div style="margin:18px 0 6px">
@@ -193,6 +204,7 @@
       <div>
         הערכה בנויה לפי ערכת החזרה של בית הספר (35 סוגי שאלות, 4 חלקים). בכל אחד מ־21 הנושאים יש מאגר של <b>150 שאלות קבועות</b> —
         האימונים והמבחנים שואבים מהמאגר <b>בלי חזרות</b> עד שהוא מתרוקן, בדיוק כמו בהאב המשפחתי.
+        <p>עומק המאגר (להורים): <b id="totalBankLbl">3,150</b> שאלות קבועות. אריאל רואה במסך הבית רק «5 שאלות היום», לא את הגודל המלא.</p>
         <b>מסלול "מוכן למבחן בשבוע"</b> הוא הדרך המומלצת: אבחון פתיחה, ואז שיעור מובנה אחד ביום (~20–25 דקות) הבנוי על פי מדעי הלמידה —
         חזרה מרווחת (Leitner), למידה מעורבבת בין נושאים, ודוגמאות שצעדיהן נמוגים בהדרגה.
         נושא נחשב "שולט" 🟢 רק אם עבר מבחן יציאה וגם בדיקה חוזרת ביום אחר. כל טעות חוזרת שוב ושוב עד שנענתה נכון בשני ימים נפרדים.
@@ -217,7 +229,7 @@
         <div class="intro-emoji">🎮</div>
         <h2 style="margin:8px 0">ברוכים הבאים לאימון!</h2>
         <div class="intro-list">
-          <div>✏️ עונים על שאלה אחת בכל פעם — מתוך מאגר של <b>150 שאלות</b>, בלי חזרות!</div>
+          <div>✏️ עונים על שאלה אחת בכל פעם — שאלות מגוונות, בלי אותה שאלה פעמיים</div>
           <div>💡 נתקעתם? לחצו על <b>רמז</b> — זה לא נחשב טעות</div>
           <div>⭐ כל תשובה נכונה = <b>כוכב</b>! <b>5 כוכבים</b> מעלים אותך רמה</div>
           <div>🔥 <b>3 נכונות ברצף</b> = עליית רמה מיידית! 🚀</div>
@@ -245,7 +257,7 @@
         <p class="msg">סיימת את כל 3 הרמות בנושא הזה! 🎉</p>
         <p id="masteryStats" style="font-size:17px"></p>
         <button class="btn btn-new" onclick="showTest()">עכשיו למבחן! 📝</button>
-        <div style="margin-top:10px"><button class="btn-ghost" onclick="restartTrain()">🔄 עוד אימון</button></div>
+        <div style="margin-top:10px"><button class="btn btn-new" onclick="startShortRound()">🔁 עוד סיבוב?</button></div>
       </div>
     </div>
     <div id="testPane" style="display:none">
@@ -261,6 +273,7 @@
         <div class="msg" id="scoreMsg"></div>
         <div id="scoreDetail" style="margin-top:8px"></div>
         <div style="margin-top:12px">
+          <button class="btn btn-new" onclick="startShortRound()">🔁 עוד סיבוב?</button>
           <button class="btn btn-new" onclick="showTest()">📝 מבחן חדש</button>
           <button class="btn-ghost" onclick="showTopics()">← לכל הנושאים</button>
         </div>
@@ -1963,6 +1976,8 @@ let store = loadStore();
 function saveStore(){ try { localStorage.setItem(LS_KEY, JSON.stringify(store)); } catch(e){} }
 function recordAnswer(tid, idx, correct){
   const today = epochDay();
+  if(!store.qday || store.qday.d!==today) store.qday={d:today,n:0};
+  store.qday.n++;
   if(!store.seen[tid]) store.seen[tid]=[];
   if(!store.seen[tid].includes(idx)) store.seen[tid].push(idx);
   if(!store.leitner[tid]) store.leitner[tid]={};
@@ -1985,6 +2000,7 @@ function recordAnswer(tid, idx, correct){
   }
   store.leitner[tid][idx]=L;
   saveStore();
+  renderKidBar();
 }
 function coverageCount(){ return TOPICS.reduce((s,t)=> s+((store.correct[t.id]||[]).length), 0); }
 function greenCount(){
@@ -1995,7 +2011,10 @@ function readinessPct(){ return Math.round(100*greenCount()/TOPICS.length); }
 function updateMeters(){
   const cov = coverageCount();
   $("coverFill").style.width = (100*cov/TOTAL_BANK)+"%";
-  $("coverLbl").textContent = `ענית נכון על ${fmtN(cov)} מתוך ${fmtN(TOTAL_BANK)} שאלות המאגר`;
+  $("coverLbl").textContent = cov
+    ? `כבר נענו נכון ${fmtN(cov)} שאלות — כל אחת צעד קטן`
+    : `עוד לא התחלנו — 5 שאלות היום זה התחלה מצוינת`;
+  renderKidBar();
   if(store.plan){
     $("readyFill").style.width = readinessPct()+"%";
     $("readyLbl").textContent = `${greenCount()} מתוך ${TOPICS.length} נושאים במצב "שולט" 🟢 · יום ${planDayNumber()} מתוך ${store.plan.totalDays} במסלול`;
@@ -2090,8 +2109,8 @@ function renderHome(){
      const done=(store.correct[t.id]||[]).length;
      const b=document.createElement("button"); b.className="tcard";
      b.innerHTML=`<div class="em">${t.emoji}</div><div class="nm">${t.name}${topicStatusIcon(t.id)}</div><div class="ds">${t.desc}</div>`+
-       `<div class="ct">🗂️ ${BANKS[t.id].length} שאלות · ✓ ענית נכון על ${done}</div>`+
-       `<div class="pbar"><div style="width:${Math.round(100*done/BANKS[t.id].length)}%"></div></div>`;
+       `<div class="ct">${done? "✓ "+done+" נכונות" : "עוד לא שיחקנו כאן"}</div>`+
+       `<div class="pbar"><div style="width:${Math.min(100, Math.round(100*done/10))}%"></div></div>`;
      b.onclick=()=>openTopic(t.id); grid.appendChild(b);
    });
    sec.appendChild(grid);
@@ -2146,11 +2165,14 @@ function updateTrainStatus(){ const st=trainState; if(!st)return;
  $("tStars").innerHTML=""; for(let i=0;i<5;i++){ const sp=document.createElement("span"); sp.className="st"+(i<st.stars?" on":""); sp.textContent="★"; sp.style.fontSize="26px"; $("tStars").appendChild(sp); }
  $("tDots").innerHTML=""; for(let i=0;i<3;i++){ const d=document.createElement("span"); d.className="dot"+(i<st.streak?" on":""); $("tDots").appendChild(d); }
  $("tProgStars").textContent="⭐".repeat(st.stars)+"☆".repeat(5-st.stars);
- $("tTotal").textContent=`ענית על ${st.total} שאלות · ${st.correct} נכונות · מהמאגר של ${BANKS[curTopic.id].length} שאלות`;
+ $("tTotal").textContent= st.cap
+   ? `סיבוב קצר · ${st.total} מתוך ${st.cap} · ${st.correct} נכונות`
+   : `ענית על ${st.total} שאלות · ${st.correct} נכונות`;
 }
 function nextTrainQ(){ const st=trainState; if(!st) return;
  const d=drawFromBank(curTopic.id, st.level); st.cur=d.q; st.curRef=d;
  $("tNext").style.display="none";
+ updateTrainStatus();
  mountQuestion($("tQ"), d.q, {tag:`שאלה · רמה ${st.level} · מהמאגר`}, (firstTry, finalCorrect)=>{
    st.total++;
    if(finalCorrect){ st.correct++; st.stars++; st.streak = firstTry? st.streak+1 : 0; }
@@ -2161,6 +2183,13 @@ function nextTrainQ(){ const st=trainState; if(!st) return;
    else if(st.stars>=5){ if(st.level<3){ st.level++; st.stars=0; leveled=true; } else { updateTrainStatus(); mastery(); return; } }
    updateTrainStatus();
    if(leveled) showCeleb("🚀",`עלית לרמה ${st.level}! כל הכבוד, אריאל!`);
+   if(st.cap && st.total>=st.cap){
+     $("tNext").style.display="none";
+     const end=document.createElement("div"); end.className="card center";
+     end.innerHTML=`<div style="font-size:42px">🎉</div><h3 style="margin:6px 0">עוד סיבוב?</h3><p>סיימת 5 שאלות. אפשר עוד חמש, או לחזור.</p><button class="btn btn-main" onclick="startShortRound()">🔁 עוד 5 שאלות</button> <button class="btn-ghost" onclick="showTopics()">🏠 הביתה</button>`;
+     $("tQ").appendChild(end);
+     return;
+   }
    $("tNext").style.display="";
  });
 }
@@ -2673,8 +2702,8 @@ function finishSession(){
     <div style="font-size:44px">🎉</div>
     <h3 style="margin:6px 0">שיעור יום ${day} הושלם!</h3>
     <div style="text-align:right;line-height:1.9">${lines.length? lines.join("<br>") : "עבדת יפה היום! כל הכבוד."}</div>
-    <div style="margin-top:10px">🏆 מוכנות: <b>${readinessPct()}%</b> (${greenCount()}/${TOPICS.length} נושאים 🟢) · כיסוי מאגרים: ${Math.round(100*coverageCount()/TOTAL_BANK)}% · טעויות פתוחות למחזור: ${unres}</div>
-    <div style="margin-top:14px"><button class="btn btn-main" onclick="renderPlanHome()">🗓️ חזרה לתוכנית</button> <button class="btn-ghost" onclick="showTopics()">← לעמוד הבית</button></div>
+    <div style="margin-top:10px">🏆 מוכנות: <b>${readinessPct()}%</b> (${greenCount()}/${TOPICS.length} נושאים 🟢) · טעויות פתוחות למחזור: ${unres}</div>
+    <div style="margin-top:14px"><button class="btn btn-new" onclick="startShortRound(true)">🔁 עוד סיבוב? 5 שאלות</button> <button class="btn btn-main" onclick="renderPlanHome()">🗓️ חזרה לתוכנית</button> <button class="btn-ghost" onclick="showTopics()">← לעמוד הבית</button></div>
   </div>`;
   sess=null;
   updateMeters();
@@ -2682,6 +2711,35 @@ function finishSession(){
 }
 
 /* ================= INIT ================= */
+function renderKidBar(){
+  const bar=$("kidBar"); if(!bar) return;
+  const today=epochDay();
+  const n=(store.qday && store.qday.d===today) ? store.qday.n : 0;
+  const pct=Math.min(100, Math.round(100*Math.min(n,5)/5));
+  const day = store.plan ? ("יום "+planDayNumber()) : "מסלול השבוע";
+  bar.innerHTML=`<span>🔥 ${day}</span><span class="kb-mid">5 שאלות היום · ${Math.min(n,5)}/5<span class="kb-bar"><span style="width:${pct}%"></span></span></span><span>🟢 ${greenCount()}</span>`;
+}
+function pickMissionTopic(){
+  if(store.plan && store.plan.topicState){
+    const red=TOPICS.find(t=>store.plan.topicState[t.id] && store.plan.topicState[t.id].status==="red");
+    if(red) return red;
+    const open=TOPICS.find(t=>store.plan.topicState[t.id] && store.plan.topicState[t.id].status!=="green");
+    if(open) return open;
+  }
+  let best=TOPICS[0], bestN=1e9;
+  TOPICS.forEach(t=>{ const n=(store.correct[t.id]||[]).length; if(n<bestN){ bestN=n; best=t; } });
+  return best;
+}
+function startShortRound(fromHome){
+  const t = fromHome===true ? pickMissionTopic() : (curTopic || pickMissionTopic());
+  curTopic = TOPIC_BY_ID[t.id] || t;
+  hideAllPanes();
+  $("mainPane").style.display="";
+  $("curTopicName").textContent = curTopic.emoji+" "+curTopic.name;
+  trainState={level:1,stars:0,streak:0,total:0,correct:0,cur:null,curRef:null,cap:5};
+  showTrain();
+  window.scrollTo({top:0});
+}
 $("totalBankLbl").textContent = fmtN(TOTAL_BANK);
 renderHome();
 </script>
