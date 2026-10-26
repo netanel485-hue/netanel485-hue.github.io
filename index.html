@@ -5,23 +5,153 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>מרכזי הלמידה — משפחת עמיחי</title>
 <style>
-body{font-family:'Segoe UI',Arial,sans-serif;background:#eef3ff;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center}
-.wrap{max-width:520px;width:92%;text-align:center;padding:32px 0}
-h1{font-size:30px;margin:0 0 6px;color:#1c2b4a}
-p{color:#5a6a8a;margin:0 0 26px}
-a.card{display:block;background:#fff;border-radius:20px;padding:26px 20px;margin:14px 0;text-decoration:none;color:#1c2b4a;box-shadow:0 4px 18px rgba(40,70,140,.12);border-top:8px solid #4a7dff;font-size:24px;font-weight:800}
-a.card small{display:block;font-size:15px;font-weight:400;color:#5a6a8a;margin-top:6px}
-a.card.g4{border-top-color:#18a058}
-a.card.g1{border-top-color:#ff6b9d}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#eef3ff;color:#1c2b4a}
+.wrap{max-width:520px;margin:0 auto;padding:12px 14px 48px}
+.hero{min-height:54vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+h1{font-size:22px;margin:0 0 12px;font-weight:800}
+.kids{display:flex;gap:10px;width:100%;justify-content:center}
+.kid{flex:1;max-width:150px;background:#fff;border:3px solid #e4e9f5;border-radius:22px;padding:10px 6px 12px;cursor:pointer;font-family:inherit;color:inherit;min-height:132px;touch-action:manipulation}
+.kid.on{border-color:#4a7dff;box-shadow:0 6px 16px rgba(74,125,255,.18)}
+.kid svg{width:72px;height:72px;display:block;margin:0 auto}
+.kid .nm{display:block;font-size:18px;font-weight:800;margin-top:2px}
+.kid .gr{display:block;font-size:13px;color:#5a6a8a;font-weight:700}
+.stats{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0 4px;font-weight:800;font-size:16px}
+.chip{background:#fff;border-radius:999px;padding:6px 12px;box-shadow:0 2px 8px rgba(40,70,140,.08)}
+.mission{display:block;width:100%;max-width:420px;margin:10px 0 0;border:none;border-radius:20px;padding:16px 12px;min-height:64px;font-size:24px;font-weight:800;font-family:inherit;color:#fff;background:linear-gradient(135deg,#ff8a3d,#ef4d6a);cursor:pointer;touch-action:manipulation;box-shadow:0 5px 0 #d4534a}
+.mission:active{transform:translateY(3px);box-shadow:0 2px 0 #d4534a}
+.sub{color:#5a6a8a;font-size:15px;margin:8px 0 0;font-weight:700}
+.daily{width:100%;max-width:420px;margin-top:12px;text-align:right}
+.drow{display:flex;justify-content:space-between;font-weight:800;font-size:15px;margin-bottom:4px}
+.bar{height:12px;background:#d9e3f8;border-radius:99px;overflow:hidden}
+.bar>div{height:100%;background:#22a35a;width:0%;transition:width .3s}
+.below{margin-top:8px}
+.below h2{font-size:16px;color:#6a7b96;margin:18px 0 8px}
+a.card{display:block;background:#fff;border-radius:16px;padding:14px 16px;margin:8px 0;text-decoration:none;color:#1c2b4a;font-weight:800;font-size:17px;min-height:52px;box-shadow:0 2px 10px rgba(40,70,140,.08)}
+a.card small{display:block;font-weight:600;color:#5a6a8a;font-size:13px;margin-top:2px}
+a.card.math{border-right:6px solid #6a4fd0}
+.note{color:#6a7b96;font-size:14px;line-height:1.5}
 </style>
 </head>
 <body>
 <div class="wrap">
-<h1>📚 מרכזי הלמידה</h1>
-<p>בחרו את מרכז הלמידה שלכם</p>
-<a class="card g1" href="grade1-learning/">כיתה א׳<small>מרכז הלמידה של עדי</small></a>
-<a class="card" href="grade6-learning/">כיתה ו׳<small>מרכז הלמידה של אריאל</small></a>
-<a class="card g4" href="grade4-learning/">כיתה ד׳<small>מרכז הלמידה של איתי</small></a>
+  <div class="hero">
+    <h1>מרכזי הלמידה</h1>
+    <div class="kids" id="kids"></div>
+    <div class="stats" id="stats"></div>
+    <button class="mission" id="missionBtn" type="button">משימת היום</button>
+    <div class="sub" id="missionSub">5 שאלות קצרות</div>
+    <div class="daily">
+      <div class="drow"><span>5 שאלות היום</span><span id="dailyLbl">0/5</span></div>
+      <div class="bar"><div id="dailyFill"></div></div>
+    </div>
+  </div>
+  <div class="below">
+    <h2>לאריאל — הכנה למבחן</h2>
+    <a class="card math" href="math-test-prep/?mission=1">🧮 משימת מתמטיקה<small>המסלול השבועי למבחן של אריאל</small></a>
+    <h2>כל המרכזים</h2>
+    <a class="card" href="grade1-learning/">🌸 המרכז של עדי<small>כיתה א׳ · כל העמודים</small></a>
+    <a class="card" href="grade4-learning/">🐯 המרכז של איתי<small>כיתה ד׳ · כל המקצועות</small></a>
+    <a class="card" href="grade6-learning/">🚀 המרכז של אריאל<small>כיתה ו׳ · כל המקצועות</small></a>
+    <a class="card math" href="math-test-prep/">🧮 ערכת המתמטיקה<small>כיתה ו׳ · מסלול «מוכן למבחן בשבוע»</small></a>
+    <p class="note">המטבעות, הרצף והכוכבים נשמרים במכשיר הזה. מסכי ההורים נמצאים בתוך כל מרכז.</p>
+  </div>
 </div>
+<script>
+var KIDS = [
+  {id:'adi', name:'עדי', grade:'כיתה א׳', short:'א׳', href:'grade1-learning/?mission=1', home:'grade1-learning/'},
+  {id:'itai', name:'איתי', grade:'כיתה ד׳', short:'ד׳', href:'grade4-learning/?mission=1', home:'grade4-learning/'},
+  {id:'ariel', name:'אריאל', grade:'כיתה ו׳', short:'ו׳', href:'grade6-learning/?mission=1', home:'grade6-learning/'}
+];
+var selected = 'adi';
+
+function parse(key){ try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch (e) { return null; } }
+function iso(d){ return d.toISOString().slice(0, 10); }
+function localKey(d){ return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate(); }
+function streakLocal(has){
+  var n = 0, d = new Date(); d.setHours(12,0,0,0);
+  if (!has(localKey(d))) d.setDate(d.getDate()-1);
+  while (has(localKey(d))) { n++; d.setDate(d.getDate()-1); if (n > 400) break; }
+  return n;
+}
+function streakIso(has){
+  var n = 0, d = new Date();
+  if (!has(iso(d))) d.setUTCDate(d.getUTCDate()-1);
+  while (has(iso(d))) { n++; d.setUTCDate(d.getUTCDate()-1); if (n > 400) break; }
+  return n;
+}
+function profileOf(base){
+  var reg = parse(base + ':profiles');
+  if (reg && reg.list && reg.list.length) {
+    var id = reg.active || reg.list[0].id;
+    return parse(base + ':' + id);
+  }
+  return parse(base);
+}
+function g1(){
+  var p = parse('hub1ProgV1') || {};
+  var days = p.days || {}, qs = p.dayQs || {};
+  var stars = 0;
+  Object.keys(p.pages || {}).forEach(function (k) {
+    var st = p.pages[k] || {};
+    if (st.mastered || (st.best || 0) >= 4) stars++;
+  });
+  return {
+    coins: p.bank || 0,
+    streak: streakLocal(function (k) { return !!(days[k] || qs[k]); }),
+    level: stars,
+    levelWord: '⭐ ' + stars,
+    today: qs[localKey(new Date())] || 0
+  };
+}
+function gHub(base){
+  var p = profileOf(base) || {};
+  var days = p.days || {}, qs = p.dayQs || {}, prog = p.prog || {};
+  var level = 0;
+  Object.keys(prog).forEach(function (k) { if (prog[k] && prog[k].mastery > level) level = prog[k].mastery; });
+  return {
+    coins: (p.bank && p.bank.coins) || 0,
+    streak: streakIso(function (k) { return !!((days[k] || 0) > 0 || (qs[k] || 0) > 0); }),
+    level: level,
+    levelWord: 'רמה ' + level,
+    today: qs[iso(new Date())] || 0
+  };
+}
+function statsFor(id){
+  if (id === 'adi') return g1();
+  if (id === 'itai') return gHub('hub4ProgV1');
+  return gHub('hubProgV1');
+}
+function face(id){
+  if (id === 'adi') return '<svg viewBox="0 0 72 72" aria-hidden="true"><circle cx="36" cy="36" r="34" fill="#ffe4f0"/><circle cx="36" cy="40" r="18" fill="#ffd7b5"/><path d="M18 38c2-16 34-16 36 0" fill="#5a3318"/><circle cx="30" cy="40" r="2" fill="#333"/><circle cx="42" cy="40" r="2" fill="#333"/><path d="M32 46c2 2 6 2 8 0" stroke="#c46" stroke-width="1.6" fill="none"/><circle cx="50" cy="22" r="6" fill="#ff6b9d"/></svg>';
+  if (id === 'itai') return '<svg viewBox="0 0 72 72" aria-hidden="true"><circle cx="36" cy="36" r="34" fill="#e5f8ec"/><circle cx="36" cy="42" r="18" fill="#f3c7a2"/><path d="M20 36c1-14 31-16 34 2" fill="#3d6b45"/><rect x="22" y="24" width="28" height="8" rx="3" fill="#18a058"/><circle cx="30" cy="42" r="2" fill="#333"/><circle cx="42" cy="42" r="2" fill="#333"/><path d="M32 48c2 2 6 2 8 0" stroke="#a65" stroke-width="1.6" fill="none"/></svg>';
+  return '<svg viewBox="0 0 72 72" aria-hidden="true"><circle cx="36" cy="36" r="34" fill="#e7eeff"/><circle cx="36" cy="42" r="18" fill="#f0c09a"/><path d="M20 34c2-14 32-14 34 2v6H20z" fill="#243356"/><circle cx="29" cy="42" r="5" fill="none" stroke="#4a7dff" stroke-width="2"/><circle cx="43" cy="42" r="5" fill="none" stroke="#4a7dff" stroke-width="2"/><path d="M34 42h4" stroke="#4a7dff" stroke-width="2"/><path d="M33 50c2 2 5 2 7 0" stroke="#a65" stroke-width="1.6" fill="none"/></svg>';
+}
+function render(){
+  var host = document.getElementById('kids');
+  host.innerHTML = '';
+  KIDS.forEach(function (k) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'kid' + (k.id === selected ? ' on' : '');
+    b.setAttribute('aria-pressed', k.id === selected ? 'true' : 'false');
+    b.innerHTML = face(k.id) + '<span class="nm">' + k.name + '</span><span class="gr">' + k.short + '</span>';
+    b.onclick = function () { selected = k.id; render(); };
+    host.appendChild(b);
+  });
+  var kid = KIDS.filter(function (k) { return k.id === selected; })[0];
+  var st = statsFor(selected);
+  document.getElementById('stats').innerHTML =
+    '<span class="chip">🪙 ' + st.coins + '</span>' +
+    '<span class="chip">🔥 ' + st.streak + '</span>' +
+    '<span class="chip">' + st.levelWord + '</span>';
+  var q = st.today || 0;
+  document.getElementById('dailyLbl').textContent = Math.min(q, 5) + '/5' + (q >= 5 ? ' ✓' : '');
+  document.getElementById('dailyFill').style.width = Math.min(100, Math.round(q / 5 * 100)) + '%';
+  document.getElementById('missionSub').textContent = kid.name + ' · ' + kid.grade + ' · 5 שאלות קצרות';
+  document.getElementById('missionBtn').onclick = function () { location.href = kid.href; };
+}
+render();
+</script>
 </body>
 </html>

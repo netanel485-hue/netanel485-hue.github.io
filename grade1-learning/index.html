@@ -74,20 +74,45 @@ table.ptable td,table.ptable th{border-bottom:1px solid #eee;padding:7px 4px;tex
 .eq{font-size:42px;font-weight:800;text-align:center;margin:8px 0;direction:ltr}
 .gone{filter:grayscale(1);opacity:.35}
 .shpbtn{display:inline-flex;flex-direction:column;align-items:center;gap:2px;margin:4px}
+.kidbar{position:sticky;top:0;z-index:15;display:flex;justify-content:space-between;gap:8px;align-items:center;background:#fff;border-radius:16px;padding:8px 12px;margin-bottom:8px;font-weight:800;box-shadow:0 3px 12px rgba(80,40,90,.08)}
+.hero{min-height:calc(50vh - 48px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.hero svg{width:88px;height:88px}
+.missub{color:#8a86b8;font-size:15px;margin:4px 0 0;font-weight:700}
+.daily{width:100%;max-width:460px;margin-top:6px}
+.drow{display:flex;justify-content:space-between;font-weight:800;font-size:15px;margin-bottom:4px}
+.sectionh{font-size:18px;font-weight:800;color:#7c5cbf;margin:22px 0 8px}
+.sndvis{text-align:center;margin:4px 0}
+#celeb{position:fixed;left:50%;top:28%;z-index:30;pointer-events:none;background:#fff;border-radius:24px;padding:12px 20px;font-size:28px;font-weight:800;box-shadow:0 10px 30px rgba(80,40,90,.2);opacity:0}
+#celeb.pop{animation:celebpop .95s ease-out forwards}
+@keyframes celebpop{0%{opacity:0;transform:translate(-50%,-10%) scale(.6)}30%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-90%) scale(1)}}
+.floater{position:fixed;top:46%;z-index:29;font-size:30px;pointer-events:none;animation:floatup 1s ease-out forwards}
+@keyframes floatup{to{transform:translateY(-190px) rotate(18deg);opacity:0}}
+.opt.right{animation:popin .35s ease-out}
+@keyframes popin{from{transform:scale(.92)}to{transform:scale(1)}}
 </style>
 </head>
 <body>
+<div id="celeb"></div>
 <div class="wrap">
+  <div class="kidbar" id="g1bar"></div>
   <!-- HOME -->
   <div id="screen-home">
-    <h1>🌸 המרכז של עדי 🌸</h1>
-    <p class="sub">לומדים לקרוא עם "צלילים מספרים"</p>
-    <div class="bank">
-      <div><div class="coins">🪙 <span id="bankCoins">0</span></div><div class="note">מטבעות בבנק הידע</div></div>
-      <div class="goal"><div id="goalText"></div><div class="dots" id="weekDots"></div></div>
+    <div class="hero">
+      <svg viewBox="0 0 72 72" aria-hidden="true"><circle cx="36" cy="36" r="34" fill="#ffe4f0"/><circle cx="36" cy="40" r="18" fill="#ffd7b5"/><path d="M18 38c2-16 34-16 36 0" fill="#5a3318"/><circle cx="30" cy="40" r="2" fill="#333"/><circle cx="42" cy="40" r="2" fill="#333"/><path d="M32 46c2 2 6 2 8 0" stroke="#c46" stroke-width="1.6" fill="none"/><circle cx="50" cy="22" r="6" fill="#ff6b9d"/></svg>
+      <h1>עדי</h1>
+      <div class="missub">כיתה א׳</div>
+      <button class="bigbtn" id="btnMission">משימת היום</button>
+      <div class="missub" id="missionLabel"></div>
+      <div class="daily">
+        <div class="drow"><span>5 שאלות היום</span><span id="dailyCount">0/5</span></div>
+        <div class="prog"><div id="dailyFill" style="width:0%"></div></div>
+      </div>
     </div>
+    <div class="sectionh">כל העמודים והמשחקים</div>
     <button class="bigbtn purple" id="btnReview">🔀 חזרה על הכול</button>
     <div id="booklets"></div>
+    <div class="note" id="goalText" style="text-align:center;margin-top:8px"></div>
+    <div class="dots" id="weekDots" style="justify-content:center"></div>
     <button class="bigbtn ghost" id="btnGoal">🎯 היעד השבועי שלי</button>
     <button class="bigbtn ghost" id="btnParent">👨‍👩‍👧 מסך הורים</button>
   </div>
@@ -113,7 +138,7 @@ table.ptable td,table.ptable th{border-bottom:1px solid #eee;padding:7px 4px;tex
       <div class="stars" id="endStars"></div>
       <div class="msg" id="endMsg"></div>
       <div id="endCoins" style="font-size:19px"></div>
-      <button class="bigbtn" id="endAgain">🔁 עוד פעם</button>
+      <button class="bigbtn" id="endAgain">עוד סיבוב?</button>
       <button class="bigbtn purple" id="endHome">🏠 הביתה</button>
     </div>
   </div>
@@ -221,11 +246,79 @@ function cumVowels(pageIdx) {
 }
 
 /* ================= home ================= */
+function todayQs() { return (prog.dayQs && prog.dayQs[todayKey()]) || 0; }
+function bumpToday() {
+  if (!prog.dayQs) prog.dayQs = {};
+  var k = todayKey();
+  prog.dayQs[k] = (prog.dayQs[k] || 0) + 1;
+  save();
+  paintBar();
+}
+function g1Streak() {
+  var n = 0, d = new Date(); d.setHours(12,0,0,0);
+  function key(dt) { return dt.getFullYear() + '-' + (dt.getMonth()+1) + '-' + dt.getDate(); }
+  function played(dt) { return !!(prog.days[key(dt)] || (prog.dayQs && prog.dayQs[key(dt)])); }
+  if (!played(d)) d.setDate(d.getDate()-1);
+  while (played(d)) { n++; d.setDate(d.getDate()-1); if (n > 400) break; }
+  return n;
+}
+function starCount() {
+  var n = 0;
+  Object.keys(prog.pages).forEach(function (k) {
+    var st = prog.pages[k] || {};
+    if (String(k).indexOf('rev|') === 0) return;
+    if (st.mastered || (st.best || 0) >= 4) n++;
+  });
+  return n;
+}
+function paintBar() {
+  var q = todayQs();
+  el('g1bar').innerHTML = '<span>🌸 עדי</span><span>🪙 ' + prog.bank + '</span><span>🔥 ' + g1Streak() + '</span><span>⭐ ' + starCount() + '</span>';
+  if (el('dailyCount')) {
+    el('dailyCount').textContent = Math.min(q, 5) + '/5' + (q >= 5 ? ' ✓' : '');
+    el('dailyFill').style.width = Math.min(100, Math.round(q / 5 * 100)) + '%';
+  }
+}
+function recommendIdx() {
+  for (var i = 0; i < DATA.PAGES.length; i++) {
+    var st = prog.pages[DATA.PAGES[i].id] || {};
+    if (!st.mastered) return i;
+  }
+  return -1;
+}
+function missionTitle() {
+  var i = recommendIdx();
+  if (i < 0) return 'חזרה קצרה · 5 שאלות';
+  return DATA.PAGES[i].title + ' · 5 שאלות';
+}
+function startMission() {
+  var i = recommendIdx();
+  if (i < 0) startRound(DATA.PAGES.length - 1, true, 5);
+  else startRound(i, false, 5);
+}
+var PRAISE_TXT = ['כל הכבוד!', 'יופי!', 'מצוין!', 'אלופה!', 'יפה מאוד!'];
+function celebrate() {
+  var box = el('celeb');
+  box.textContent = '⭐ ' + PRAISE_TXT[Math.floor(Math.random() * PRAISE_TXT.length)] + ' 🪙';
+  box.classList.remove('pop');
+  void box.offsetWidth;
+  box.classList.add('pop');
+  for (var i = 0; i < 6; i++) {
+    var s = document.createElement('div');
+    s.className = 'floater';
+    s.textContent = i % 2 ? '🪙' : '⭐';
+    s.style.left = (18 + Math.random() * 64) + '%';
+    s.style.animationDelay = (i * 0.04) + 's';
+    document.body.appendChild(s);
+    (function (n) { setTimeout(function () { if (n.parentNode) n.parentNode.removeChild(n); }, 1100); })(s);
+  }
+}
 function renderHome() {
-  el('bankCoins').textContent = prog.bank;
+  paintBar();
   var wk = weekKey(); var donePages = 0;
   Object.keys(prog.pages).forEach(function (k) { if (prog.pages[k].wk === wk) donePages++; });
-  el('goalText').innerHTML = 'היעד: ' + prog.goalPages + ' עמודים השבוע<br>סיימתי: ' + donePages + ' 📄';
+  el('goalText').innerHTML = 'היעד: ' + prog.goalPages + ' עמודים השבוע · סיימתי: ' + donePages + ' 📄';
+  if (el('missionLabel')) el('missionLabel').textContent = missionTitle();
   var dots = el('weekDots'); dots.innerHTML = '';
   var s = new Date(); s.setDate(s.getDate() - s.getDay());
   for (var i = 0; i < 7; i++) { var d = new Date(s); d.setDate(s.getDate() + i); var k = d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate(); var dv = document.createElement('div'); dv.className = 'dot' + (prog.days[k] ? ' on' : ''); dots.appendChild(dv); }
@@ -361,7 +454,8 @@ function genMathQuestions(pg) {
   }
   function qHear(maxN) {
     var n = ri(1, maxN);
-    push({inst: 'min|hear', seq: ['min|hear', 'num|' + n], promptHtml: '<span class="spk">🔊</span>', options: numOpts(n, maxN), correct: String(n), optClass: 'small', itemKey: 'M:hear:' + n});
+    var hearEmoji = EM[ri(0, EM.length - 1)];
+    push({inst: 'min|hear', seq: ['min|hear', 'num|' + n], promptHtml: objs(hearEmoji, n), options: numOpts(n, maxN), correct: String(n), optClass: 'small', itemKey: 'M:hear:' + n});
   }
   function qNext() {
     var n = ri(4, 19);
@@ -392,7 +486,7 @@ function genMathQuestions(pg) {
     var t = SHAPES[ri(0, SHAPES.length - 1)];
     var pool = SHAPES.filter(function (s) { return s[0] !== t[0]; });
     var opts = shuffle([t].concat(pickN(pool, 3))).map(function (s) { return s[1]; });
-    push({inst: 'min|shape', seq: ['min|shape', 'shp|' + t[0]], promptHtml: '<span class="spk">🔊</span>', options: opts, correct: t[1], optClass: 'emoji', itemKey: 'M:shp:' + t[0]});
+    push({inst: 'min|shape', seq: ['min|shape', 'shp|' + t[0]], promptHtml: '<div style="font-size:34px;font-weight:800">' + t[3] + '</div>', options: opts, correct: t[1], optClass: 'emoji', itemKey: 'M:shp:' + t[0]});
   }
   var guard = 0;
   if (pg.math === 'count') { while (qs.length < 8 && guard++ < 40) qCount(10); }
@@ -424,7 +518,12 @@ function genQuestions(pageIdx) {
     var opts;
     if (letters.length >= 3) opts = letterOpts(L, Math.min(4, letters.length));
     else { var all = Object.keys(DATA.NAMES).filter(function (x) { return x !== L; }); opts = shuffle([L].concat(pickN(all, 3))); }
-    return {type: 'snd', inst: 'inst|snd', audio: syllable(L, v), promptHtml: '<span class="spk">🔊</span>', options: opts, correct: L, itemKey: 'L:' + L};
+    var syl = syllable(L, v);
+    var nm = (DATA.NAMES && DATA.NAMES[L]) ? DATA.NAMES[L] : L;
+    var picW = null;
+    for (var wi = 0; wi < DATA.WORDS.length; wi++) { if (baseOf(DATA.WORDS[wi].p.charAt(0)) === L) { picW = DATA.WORDS[wi]; break; } }
+    var pic = picW ? '<div class="emoji" style="font-size:64px">' + picW.e + '</div>' : '';
+    return {type: 'snd', inst: 'inst|snd', audio: syl, promptHtml: '<div class="sndvis"><div class="learnletter" style="font-size:84px">' + syl + '</div>' + pic + '<div class="note">האות ' + nm + '</div></div>', options: opts, correct: L, itemKey: 'L:' + L};
   }
   function qFirst() {
     var w = target(words); if (!w) return null;
@@ -435,7 +534,7 @@ function genQuestions(pageIdx) {
     var w = target(words.length > 6 && newWords.length ? newWords.concat(words) : words); if (!w) return null;
     var pool = words.filter(function (x) { return x.p !== w.p; });
     var opts = shuffle([w].concat(pickN(pool, 2)));
-    return {type: 'hearword', inst: 'inst|hearword', audio: w.p, promptHtml: '<span class="spk">🔊</span>', options: opts.map(function (x) { return x.n; }), correct: w.n, itemKey: 'W:' + w.p};
+    return {type: 'hearword', inst: 'inst|hearword', audio: w.p, promptHtml: '<div class="emoji">' + w.e + '</div><div class="note">אפשר גם לפי התמונה</div>', options: opts.map(function (x) { return x.n; }), correct: w.n, itemKey: 'W:' + w.p};
   }
   function qReadEmoji() {
     var w = target(words); if (!w) return null;
@@ -501,12 +600,13 @@ function genQuestions(pageIdx) {
 }
 
 /* ================= quiz runner ================= */
-var round = [], roundIdx = 0, roundScore = 0, roundPage = -1, roundReview = false, firstTry = true;
-function startRound(pageIdx, review) {
-  roundPage = pageIdx; roundReview = !!review;
+var round = [], roundIdx = 0, roundScore = 0, roundPage = -1, roundReview = false, firstTry = true, roundLimit = 0;
+function startRound(pageIdx, review, limit) {
+  roundPage = pageIdx; roundReview = !!review; roundLimit = limit || 0;
   var lastReadIdx = 0;
   DATA.PAGES.forEach(function (p, i) { if (!p.math) lastReadIdx = i; });
   round = review ? genQuestions(lastReadIdx) : genQuestions(pageIdx);
+  if (limit && round.length > limit) round = round.slice(0, limit);
   roundIdx = 0; roundScore = 0;
   show('screen-quiz'); renderQ();
 }
@@ -514,8 +614,9 @@ function renderQ() {
   var q = round[roundIdx];
   el('qProg').style.width = (roundIdx / round.length * 100) + '%';
   firstTry = true;
-  var instText = {'inst|snd':'הקשיבי לצליל — איזו אות זו?','inst|first':'באיזו אות המילה מתחילה?','inst|hearword':'הקשיבי — מצאי את המילה','inst|reademoji':'קראי את המילה — מה היא אומרת?','inst|emojiword':'מה רואים בתמונה?','inst|missing':'איזו אות חסרה?','inst|build':'בני את המילה מהאותיות','inst|sent':'הקשיבי למשפט','min|count':'כמה יש כאן?','min|hear':'איזה מספר שמעת?','min|see':'איזה מספר זה?','min|add':'כמה יש ביחד?','min|sub':'כמה נשאר?','min|bigger':'איזה מספר גדול יותר?','min|more':'איפה יש יותר?','min|shape':'איזו צורה שמעת?','min|next':'איזה מספר בא אחרי?'}[q.inst] || '';
-  el('qInst').innerHTML = instText + ' <span class="spk" id="qSpk" style="width:44px;height:44px;font-size:20px;line-height:38px">🔊</span>';
+  var instText = {'inst|snd':'איזו אות זו?','inst|first':'באיזו אות המילה מתחילה?','inst|hearword':'מצאי את המילה','inst|reademoji':'קראי את המילה — מה היא אומרת?','inst|emojiword':'מה רואים בתמונה?','inst|missing':'איזו אות חסרה?','inst|build':'בני את המילה מהאותיות','inst|sent':'הקשיבי למשפט — ורואים גם על המסך','min|count':'כמה יש כאן?','min|hear':'איזה מספר זה?','min|see':'איזה מספר זה?','min|add':'כמה יש ביחד?','min|sub':'כמה נשאר?','min|bigger':'איזה מספר גדול יותר?','min|more':'איפה יש יותר?','min|shape':'איזו צורה זו?','min|next':'איזה מספר בא אחרי?'}[q.inst] || '';
+  var seeNote = (q.type === 'snd' || q.type === 'hearword' || q.inst === 'min|hear' || q.inst === 'min|shape' || q.inst === 'inst|sent') ? '<div class="note">רואים על המסך — לא חייבים רמקול</div>' : '';
+  el('qInst').innerHTML = instText + ' <span class="spk" id="qSpk" style="width:44px;height:44px;font-size:20px;line-height:38px">🔊</span>' + seeNote;
   el('qPrompt').innerHTML = q.promptHtml;
   el('qSpk').onclick = function () { speakSeq(q.seq || [q.inst, q.audio, q.audio2]); };
   var body = el('qBody'); body.innerHTML = '';
@@ -539,8 +640,10 @@ function answer(q, chosen, btn, grid) {
     btn.classList.add('right');
     Array.prototype.forEach.call(grid.children, function (c) { c.disabled = true; });
     if (firstTry) { roundScore++; recordItem(q, true); } else recordItem(q, false);
+    bumpToday();
     praise();
-    setTimeout(nextQ, 1200);
+    celebrate();
+    setTimeout(nextQ, 1100);
   } else {
     btn.classList.add('wrong'); btn.disabled = true;
     if (firstTry) { firstTry = false; }
@@ -565,7 +668,8 @@ function renderBuild(q, body) {
         pos++;
         if (pos === word.length) {
           if (firstTry) { roundScore++; recordItem(q, true); } else recordItem(q, false);
-          praise(); setTimeout(nextQ, 1300);
+          bumpToday();
+          praise(); celebrate(); setTimeout(nextQ, 1100);
         }
       } else {
         t.classList.add('wrong'); firstTry = false;
@@ -602,6 +706,7 @@ function finishRound() {
   el('endStars').textContent = stars;
   el('endMsg').textContent = msg + ' (' + score + ' מתוך ' + total + ')';
   el('endCoins').textContent = coinMsg;
+  el('endAgain').textContent = score >= Math.ceil(total / 2) ? 'עוד סיבוב?' : 'ננסה שוב?';
   speak(score >= 6 ? 'praise|0' : 'praise|3');
   show('screen-end');
 }
@@ -639,8 +744,9 @@ el('learnBack').onclick = renderHome;
 el('parentBack').onclick = renderHome;
 el('btnParent').onclick = renderParent;
 el('learnStart').onclick = function () { startRound(curPage, false); };
-el('btnReview').onclick = function () { startRound(DATA.PAGES.length - 1, true); };
-el('endAgain').onclick = function () { startRound(roundPage, roundReview); };
+el('btnMission').onclick = startMission;
+el('btnReview').onclick = function () { startRound(DATA.PAGES.length - 1, true, 5); };
+el('endAgain').onclick = function () { startRound(roundPage, roundReview, roundLimit || undefined); };
 el('endHome').onclick = renderHome;
 el('btnGoal').onclick = function () {
   var opts = [2, 3, 4, 5];
@@ -650,6 +756,7 @@ el('btnGoal').onclick = function () {
   alert('היעד השבועי: ' + nxt + ' עמודים (לחיצה שוב משנה)');
 };
 renderHome();
+if (/[?&]mission=1(?:&|$)/.test(location.search)) startMission();
 </script>
 </body>
 </html>
