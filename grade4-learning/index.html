@@ -209,12 +209,17 @@ a.mission-btn{text-decoration:none;text-align:center}
 .dailybox{width:100%;max-width:460px;margin-top:12px;text-align:right}
 .dlabel{display:flex;justify-content:space-between;font-weight:800;font-size:15px;margin-bottom:4px}
 .below-title{font-size:16px;margin:10px 2px 4px;color:#6a7b90;font-weight:800}
+.play-ribbon{background:#fff6e8;border:2px solid #ffc48a;border-radius:14px;padding:8px 12px;margin-top:8px;font-weight:800;text-align:center;font-size:16px}
+#hubCeleb{position:fixed;left:50%;top:24%;z-index:80;pointer-events:none;background:#fff;border-radius:24px;padding:14px 22px;font-size:30px;font-weight:800;box-shadow:0 10px 30px rgba(40,60,120,.25);opacity:0}
+#hubCeleb.pop{animation:hubceleb 1.05s ease-out forwards}
+@keyframes hubceleb{0%{opacity:0;transform:translate(-50%,-10%) scale(.55)}28%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}72%{opacity:1}100%{opacity:0;transform:translate(-50%,-110%) scale(1)}}
 
 </style>
 </head>
 <body>
 
 <div id="kidBar" class="kidbar"></div>
+<div id="hubCeleb" aria-live="polite"></div>
 <div id="hubHome" class="h-wrap">
   <div id="hubHero" class="kid-hero"></div>
   <div id="hubMathSlot"></div>
@@ -322,6 +327,7 @@ a.mission-btn{text-decoration:none;text-align:center}
   <div class="card" style="margin-top:10px">
     <div id="hubQuizTitle" style="font-size:20px;font-weight:800"></div>
     <div id="hubQuizMode" class="h-ssub" style="font-size:14px"></div>
+    <div id="hubMissionRibbon" class="play-ribbon h-hidden"></div>
     <div class="progress" style="margin-top:10px"><div class="bar"><div id="hubQBar" class="fill" style="width:0%"></div></div></div>
     <div style="display:flex;justify-content:space-between;margin-top:6px"><span id="hubQNum" class="qnum"></span><span id="hubScore" class="score"></span></div>
     <div id="hubQType" class="h-ssub" style="font-size:13px"></div>
@@ -41403,67 +41409,44 @@ function hubMigrateLegacy(){ // one-time: the old single key becomes the first p
     hubRegSave();
   }catch(e){}
 }
-const FAMILY_KEY='familyKidsV1';
-const FAMILY_SEED=[{id:'adi',name:'עדי',emoji:'🌸'},{id:'itai',name:'איתי',emoji:'🐯'},{id:'ariel',name:'אריאל',emoji:'🚀'}];
-function familyRead(){try{const r=JSON.parse(localStorage.getItem(FAMILY_KEY)||'null');if(r&&Array.isArray(r.list))return r;}catch(e){}return null;}
-function familySaveReg(reg){try{localStorage.setItem(FAMILY_KEY,JSON.stringify(reg));}catch(e){}}
-function familyLoad(prefer){
-  let reg=familyRead();
-  if(!reg)reg={v:1,active:prefer||'adi',list:FAMILY_SEED.map(k=>({id:k.id,name:k.name,emoji:k.emoji}))};
-  if(!Array.isArray(reg.list))reg.list=[];
-  for(const k of FAMILY_SEED){if(!reg.list.some(p=>p.id===k.id))reg.list.push({id:k.id,name:k.name,emoji:k.emoji});}
-  if(!reg.list.some(p=>p.id===reg.active))reg.active=(prefer&&reg.list.some(p=>p.id===prefer))?prefer:reg.list[0].id;
-  reg.v=1;familySaveReg(reg);return reg;
+function hubSlotHasLearning(data){
+  if(!data||typeof data!=='object'||Array.isArray(data))return false;
+  const coins=(data.bank&&data.bank.coins)||0;
+  if(coins)return true;
+  if(data.prog&&Object.keys(data.prog).length)return true;
+  if(data.days&&Object.keys(data.days).length)return true;
+  if(data.dayQs&&Object.keys(data.dayQs).length)return true;
+  if(data.miss&&Object.keys(data.miss).length)return true;
+  if(data.last||data.goal)return true;
+  if(data.wk&&(data.wk.rounds||data.wk.coins||data.wk.grads))return true;
+  return false;
 }
-function familyKids(reg){
-  const out=[];
-  for(const k of FAMILY_SEED){const hit=reg.list.find(p=>p.id===k.id);out.push(hit||k);}
-  for(const p of reg.list){if(!FAMILY_SEED.some(k=>k.id===p.id))out.push(p);}
-  return out;
-}
-function familyMenuHtml(){
-  const reg=familyLoad(HUB_OWNER);
-  const kids=familyKids(reg).map(k=>'<button type="button" class="who'+(k.id===reg.active?' on':'')+'" onclick="familySwitch(\''+k.id+'\')">'+k.emoji+' '+hEsc(k.name)+'</button>').join('');
-  return '<div id="familyMenu" class="familymenu" hidden><div class="lbl">מי משחק?</div><div class="whos">'+kids+'</div><a class="backmain" href="../">← לכל הכיתות</a></div>';
-}
-function familyMenuToggle(){const m=document.getElementById('familyMenu'); if(m) m.hidden=!m.hidden;}
-window.familyMenuToggle=familyMenuToggle;
-function familySwitch(id){
-  const reg=familyLoad(HUB_OWNER);
-  if(!reg.list.some(p=>p.id===id)||reg.active===id)return;
-  try{hubSave();}catch(e){}
-  reg.active=id;familySaveReg(reg);location.reload();
-}
-window.familySwitch=familySwitch;
-function hubEnsureFamilyProfile(kid){
-  let p=hubProfiles.find(x=>x.familyId===kid.id||x.id===kid.id);
-  if(!p)p=hubProfiles.find(x=>!x.familyId&&x.name===kid.name);
-  if(!p&&kid.id===HUB_OWNER){
-    const free=hubProfiles.filter(x=>!x.familyId);
-    if(free.length===1){
-      const n=free[0].name||'';
-      if(!n||n==='הפרופיל שלי'||n===kid.name||n===HUB_KID.name)p=free[0];
-    }
+function hubImportFamilySlots(){
+  // Existing per-child blobs stay on their keys. Only slots that already have learning join this grade's profile list. Empty shells leave the chooser; their keys stay.
+  const meta={adi:['עדי','🌸'],itai:['איתי','🐯'],ariel:['אריאל','🚀']};
+  let changed=false;
+  for(const id of ['adi','itai','ariel']){
+    let data=null;
+    try{data=JSON.parse(localStorage.getItem(hubProfileKey(id))||'null');}catch(e){}
+    if(!hubSlotHasLearning(data))continue;
+    if(hubProfiles.some(p=>p.id===id||p.familyId===id))continue;
+    hubProfiles.push({id:id,name:meta[id][0],emoji:meta[id][1],familyId:id});
+    changed=true;
   }
-  if(p){
-    if(!p.familyId)p.familyId=kid.id;
-    if(!p.name||p.name==='הפרופיל שלי'){p.name=kid.name;p.emoji=kid.emoji;}
-    return p;
-  }
-  p={id:kid.id,name:kid.name,emoji:kid.emoji,familyId:kid.id};
-  hubProfiles.push(p);
-  return p;
+  const before=hubProfiles.length;
+  hubProfiles=hubProfiles.filter(p=>{
+    const fid=p.familyId||((p.id==='adi'||p.id==='itai'||p.id==='ariel')?p.id:'');
+    if(fid!=='adi'&&fid!=='itai'&&fid!=='ariel')return true;
+    let data=null;
+    try{data=JSON.parse(localStorage.getItem(hubProfileKey(p.id))||'null');}catch(e){}
+    return hubSlotHasLearning(data);
+  });
+  if(hubProfiles.length!==before)changed=true;
+  if(hubActiveId&&!hubProfiles.some(p=>p.id===hubActiveId)){hubActiveId=null;changed=true;}
+  if(changed)hubRegSave();
 }
-function hubBindFamily(){
-  const reg=familyLoad(HUB_OWNER);
-  const owner=reg.list.find(k=>k.id===HUB_OWNER);
-  if(owner)hubEnsureFamilyProfile(owner);
-  const active=reg.list.find(k=>k.id===reg.active)||owner;
-  const prof=hubEnsureFamilyProfile(active);
-  hubActiveId=prof.id;
-  hubRegSave();
-}
-function hubBootStorage(){hubRegLoad();hubMigrateLegacy();hubBindFamily();hubLoad();}
+function hubBootStorage(){hubRegLoad();hubMigrateLegacy();hubImportFamilySlots();hubLoad();}
+function hubSkipKey(){return 'hubSkip:'+HUB_BASE;}
 function hubSave(){try{if(!hubActiveId)return;localStorage.setItem(hubProfileKey(hubActiveId),JSON.stringify({prog:hubProg,miss:hubMiss,last:hubLast,days:hubDays,dayQs:hubDayQs,bank:hubBank,goal:hubGoal,wk:hubWk}));}catch(e){}}
 function hubLoad(){try{if(!hubActiveId)return;const d=JSON.parse(localStorage.getItem(hubProfileKey(hubActiveId))||'null');if(d){for(const k in (d.prog||{}))hubProg[k]=d.prog[k];hubMiss=d.miss||{};hubLast=d.last||null;hubDays=d.days||{};hubDayQs=d.dayQs||{};if(d.bank)hubBank=d.bank;if(d.goal)hubGoal=d.goal;if(d.wk)hubWk=d.wk;
   for(const tid in hubMiss)for(const q in hubMiss[tid]){const v=hubMiss[tid][q];if(typeof v==='number')hubMiss[tid][q]={n:v,st:0,due:0,ld:''};}}}catch(e){}}
@@ -41575,20 +41558,32 @@ function hubRenderParent(){
 const HUB_EMOJIS=['😊','😎','🤩','🦁','🐯','🦊','🐼','🦄','⚽','🎸','🚀','🌸'];
 let hubProfEmoji='😊';
 let hubProfMsg='';
+function hubEnterProfile(id){
+  hubActiveId=id;hubRegSave();
+  try{sessionStorage.setItem(hubSkipKey(),'1');}catch(e){}
+  location.reload();
+}
 function hubProfilesInit(){
   if(!hubActiveId)hubBootStorage();
-  hubRenderHome();
-  if(/(?:\?|&)mission=1(?:&|$)/.test(location.search)) hubStartDaily();
-  hubPaintBar();
+  let skip=false;
+  try{skip=sessionStorage.getItem(hubSkipKey())==='1';}catch(e){}
+  if(skip&&hubActiveProfile()){
+    try{sessionStorage.removeItem(hubSkipKey());}catch(e){}
+    hubRenderHome();
+    if(/(?:\?|&)mission=1(?:&|$)/.test(location.search)) hubStartDaily();
+    hubPaintBar();
+  }else{
+    hubRenderProfiles();hubShow('hubProfiles');hubPaintBar();
+  }
 }
-function hubOpenProfiles(){hubSave();hubRenderProfiles();hubShow('hubProfiles');}
+function hubOpenProfiles(){hubSave();try{sessionStorage.removeItem(hubSkipKey());}catch(e){}hubRenderProfiles();hubShow('hubProfiles');}
 function hubProfilesHome(){if(hubActiveProfile()){hubRenderHome();hubShow('hubHome');}else{hubRenderProfiles();hubShow('hubProfiles');}}
-function hubSelectProfile(id){const p=hubProfiles.find(x=>x.id===id);if(!p)return;if(p.familyId){const reg=familyLoad(HUB_OWNER);reg.active=p.familyId;familySaveReg(reg);}hubActiveId=id;hubRegSave();location.reload();}
+function hubSelectProfile(id){const p=hubProfiles.find(x=>x.id===id);if(!p)return;hubEnterProfile(id);}
 function hubSetProfEmoji(e){hubProfEmoji=e;hubRenderProfiles();}
 function hubCreateProfile(){
   const inp=hEl('hubProfName');const name=(inp?inp.value.trim():'');
   if(!name){if(inp)inp.focus();return;}
-  const id=hubNewId();hubProfiles.push({id:id,name:name.slice(0,20),emoji:hubProfEmoji});hubActiveId=id;hubRegSave();location.reload();
+  const id=hubNewId();hubProfiles.push({id:id,name:name.slice(0,20),emoji:hubProfEmoji});hubEnterProfile(id);
 }
 function hubRenderProfiles(){
   const body=hEl('hubProfilesBody');if(!body)return;
@@ -41607,7 +41602,9 @@ function hubRenderProfiles(){
   html+='<div class="h-lab">פרופיל חדש:</div>'
     +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0">'+HUB_EMOJIS.map(e=>'<button class="btn'+(e===hubProfEmoji?' btn-main':'')+'" onclick="hubSetProfEmoji(\''+e+'\')">'+e+'</button>').join('')+'</div>'
     +'<input class="h-sel" id="hubProfName" maxlength="20" placeholder="שם הילד/ה...">'
-    +'<div class="h-rowbtns"><button class="btn btn-main" onclick="hubCreateProfile()">➕ יצירת פרופיל</button></div>';
+    +'<div class="h-rowbtns"><button class="btn btn-main" onclick="hubCreateProfile()">➕ יצירת פרופיל</button></div>'
+    +'<div class="h-rowbtns"><a class="btn" href="../">← לכל הכיתות</a></div>';
+  const head=document.querySelector('#hubProfiles h1'); if(head) head.textContent='פרופילים · '+HUB_KID.grade;
   body.innerHTML=html;
 }
 function hubB64enc(str){const bytes=new TextEncoder().encode(str);let bin='';const CH=32768;for(let i=0;i<bytes.length;i+=CH){bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+CH));}return btoa(bin);}
@@ -41659,7 +41656,7 @@ function hubDeleteProfile(id){
   hubProfiles=hubProfiles.filter(x=>x.id!==id);
   if(hubActiveId===id){hubActiveId=hubProfiles.length?hubProfiles[0].id:null;}
   hubRegSave();
-  if(hubActiveId)location.reload();else{hubRenderParent();}
+  if(hubActiveId){try{sessionStorage.setItem(hubSkipKey(),'1');}catch(e){}location.reload();}else{hubRenderParent();}
 }
 function hubMissCount(tid){const m=hubMiss[tid];return m?Object.keys(m).length:0;}
 function hubDueCount(tid){const m=hubMiss[tid];if(!m)return 0;const now=Date.now();let n=0;for(const q in m)if((m[q].due||0)<=now)n++;return n;}
@@ -41718,9 +41715,9 @@ function hubTodayQ(){ return hubDayQs[hubToday()]||0; }
 function hubBumpQ(){ const k=hubToday(); hubDayQs[k]=(hubDayQs[k]||0)+1; hubSave(); hubPaintBar(); }
 function hubPaintBar(){
   const bar=hEl('kidBar'); if(!bar) return;
-  const reg=familyLoad(HUB_OWNER);
-  const kid=familyKids(reg).find(k=>k.id===reg.active)||{emoji:HUB_KID.emoji,name:HUB_KID.name};
-  bar.innerHTML='<div class="kidstats"><span>'+kid.emoji+' '+hEsc(kid.name)+'</span><span>🪙 '+hubBank.coins+'</span><span>🔥 '+hubKidStreak()+'</span><span>רמה '+hubKidLevel()+'</span><button type="button" class="switchbtn" onclick="familyMenuToggle()">החלף משתמש</button></div>'+familyMenuHtml();
+  const p=hubActiveProfile();
+  if(!p){bar.innerHTML='<div class="kidstats"><span>'+hEsc(HUB_KID.grade)+'</span><a class="switchbtn" href="../">← לכל הכיתות</a></div>';return;}
+  bar.innerHTML='<div class="kidstats"><span>'+p.emoji+' '+hEsc(p.name)+'</span><span>🪙 '+hubBank.coins+'</span><span>🔥 '+hubKidStreak()+'</span><span>רמה '+hubKidLevel()+'</span><button type="button" class="switchbtn" onclick="hubOpenProfiles()">החלפת פרופיל</button><a class="switchbtn" href="../">לכל הכיתות</a></div>';
 }
 function hubRenderHome(){
   hubWkReset();
@@ -41729,11 +41726,10 @@ function hubRenderHome(){
   let dueTot=0;for(const s2 of HUB_SUBJECTS){if(!s2.books)continue;for(const b2 of s2.books)for(const t2 of b2.topics)dueTot+=hubDueCount(t2.id);}
   const dailies=hubDailyTopics();
   const hasCont=!!(hubLast&&hubFindTopic(hubLast.topic));
-  const regKid=familyLoad(HUB_OWNER);
-  const kidNow=familyKids(regKid).find(k=>k.id===regKid.active);
-  const whoName=kidNow?kidNow.name:HUB_KID.name;
-  const whoEmoji=kidNow?kidNow.emoji:HUB_KID.emoji;
-  const hi=whoName===HUB_KID.name?HUB_KID.hi:('היי '+whoName+' · '+HUB_KID.grade);
+  const whoP=hubActiveProfile();
+  const whoName=whoP?whoP.name:HUB_KID.grade;
+  const whoEmoji=whoP?whoP.emoji:'👤';
+  const hi=whoP?('היי '+whoP.name+' · '+HUB_KID.grade):HUB_KID.grade;
   const mission=hubDailyTopic();
   const mf=hubFindTopic(mission.id);
   const mp=hubTopicProg(mission.id);
@@ -41990,6 +41986,12 @@ function hubRenderQ(){
   const S=hubS,q=S.qs[S.idx];
   S.selected=-1;S.checked=false;
   hEl('hubQNum').textContent='שאלה '+(S.idx+1)+' מתוך '+S.qs.length;
+  const rib=hEl('hubMissionRibbon');
+  if(rib){
+    if(S._mission){rib.classList.remove('h-hidden');rib.textContent='משימת היום · שאלה '+(S.idx+1)+' מתוך '+S.qs.length;}
+    else if(S.qs.length<=5){rib.classList.remove('h-hidden');rib.textContent='סיבוב קצר · שאלה '+(S.idx+1)+' מתוך '+S.qs.length;}
+    else rib.classList.add('h-hidden');
+  }
   hEl('hubQBar').style.width=Math.round(S.idx/S.qs.length*100)+'%';
   hEl('hubQType').textContent=(q._topic&&S.mode==='prep'?'📌 '+q._topic.name+' · ':'')+(q.type||'')+' · רמה '+q.lvl;
   const qt=hEl('hubQText');qt.textContent=q.q;qt.setAttribute('dir','auto');
@@ -42019,11 +42021,22 @@ function hubSelect(i,btn){
   const opts=hEl('hubOpts').children;
   for(let k=0;k<opts.length;k++)opts[k].classList.toggle('sel',k===i);
 }
+function hubCelebrate(streak){
+  const box=hEl('hubCeleb'); if(!box) return;
+  const words=['כל הכבוד!','יופי!','בול!','מצוין!','יפה מאוד!'];
+  box.textContent='⭐ '+words[(Math.random()*words.length)|0]+(streak>=3?' 🔥':'')+' 🪙';
+  box.classList.remove('pop'); void box.offsetWidth; box.classList.add('pop');
+  for(let i=0;i<6;i++){
+    const s=document.createElement('span'); s.className='h-burst'; s.textContent=i%2?'🪙':'⭐';
+    s.style.position='fixed'; s.style.zIndex='79'; s.style.left=(12+Math.random()*76)+'%'; s.style.top='46%';
+    document.body.appendChild(s); setTimeout(()=>{try{s.remove();}catch(e){}},1200);
+  }
+}
 function hubCheck(){
   const S=hubS;if(!S||S.selected<0||S.checked)return;
   const q=S.qs[S.idx];S.checked=true;
   const ok=S.selected===q.a;
-  if(ok){S.correct++;S.streak=(S.streak||0)+1;}else S.streak=0;
+  if(ok){S.correct++;S.streak=(S.streak||0)+1;hubCelebrate(S.streak);}else S.streak=0;
   S.answers.push({q,topic:q._topic||S.topic,ok,sel:S.selected});
   hubBumpQ();
   if(!ok){if(S.mode==='review')hubReviewFail((q._topic||S.topic).id,q.q);else hubAddMiss((q._topic||S.topic).id,q.q);}
@@ -42152,9 +42165,16 @@ function hubFinish(){
   hEl('hubEndNext').innerHTML=nextHtml;
   if((hubDays[td]||0)>=3)hEl('hubEndTips').innerHTML+='<div class="h-tip">🌙 זהו הסבב ה־'+hubDays[td]+' היום — מנוחה ושינה עוזרות לזיכרון. אפשר לעצור כאן בכיף ולחזור מחר.</div>';
   const celeb=(S.mode!=='prep'&&hubTopicProg(S.topic.id)._leveledUp&&hubTopicProg(S.topic.id).mastery>=8)||an.score===100;
-  const rb=hEl('hubRoundBtn'); if(rb) rb.classList.toggle('h-hidden', !(an.score>=60));
+  if(S._mission) hEl('hubEndTitle').textContent=an.score>=60?'סיימת את משימת היום!':'עוד קצת — אפשר עוד סיבוב קצר';
+  const rb=hEl('hubRoundBtn');
+  if(rb){
+    rb.classList.toggle('h-hidden', !(an.score>=60));
+    if(an.score>=60) rb.textContent='עוד סיבוב? · 5 שאלות';
+    const scoreEl=hEl('hubEndScore');
+    if(scoreEl&&scoreEl.parentNode) scoreEl.parentNode.insertBefore(rb, scoreEl.nextSibling);
+  }
   hubS=null;hubShow('hubEnd');
-  if(celeb)hubBurst();
+  if(celeb||an.score>=60)hubBurst();
 }
 function hubAgain(){
   if(hubSubj){hubRenderSubject();}

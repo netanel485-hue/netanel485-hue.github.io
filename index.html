@@ -3,18 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>מרכזי הלמידה — משפחת עמיחי</title>
+<title>מרכזי הלמידה</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#eef3ff;color:#1c2b4a}
 .wrap{max-width:520px;margin:0 auto;padding:16px 14px 48px}
 h1{font-size:26px;margin:8px 0 4px;font-weight:800;text-align:center}
 .lead{text-align:center;color:#5a6a8a;font-weight:700;margin:0 0 14px}
-.who-label{font-weight:800;margin:0 0 6px}
-.whos{display:flex;gap:6px}
-.who{flex:1;min-height:48px;border-radius:14px;border:2px solid #d5def2;background:#fff;font:inherit;font-weight:800;font-size:16px;color:#1c2b4a}
-.who.on{border-color:#4a7dff;background:#eef3ff}
-.now{text-align:center;font-weight:800;margin:8px 0 16px;color:#3a4d73}
 .grades{display:flex;flex-direction:column;gap:10px}
 a.grade{display:block;background:#fff;border-radius:18px;padding:14px 16px;text-decoration:none;color:#1c2b4a;min-height:84px;box-shadow:0 3px 12px rgba(40,70,140,.08);border-right:8px solid #7c5cbf}
 a.grade .nm{display:block;font-size:22px;font-weight:800}
@@ -29,51 +24,13 @@ a.grade.math{border-right-color:#6a4fd0}
 <div class="wrap">
   <h1>מרכזי הלמידה</h1>
   <p class="lead">בוחרים כיתה, ונכנסים לאתר שלה</p>
-  <div class="who-label">מי משחק במכשיר?</div>
-  <div class="whos" id="whos"></div>
-  <div class="now" id="whoNow"></div>
   <div class="grades">
-    <a class="grade" href="grade1-learning/"><span class="nm">כיתה א׳</span><small>עדי · האתר של כיתה א׳</small></a>
-    <a class="grade g4" href="grade4-learning/"><span class="nm">כיתה ד׳</span><small>איתי · האתר של כיתה ד׳</small></a>
-    <a class="grade g6" href="grade6-learning/"><span class="nm">כיתה ו׳</span><small>אריאל · האתר של כיתה ו׳</small></a>
-    <a class="grade math" href="math-test-prep/"><span class="nm">מתמטיקה · כיתה ו׳</span><small>אריאל · מסלול השבוע למבחן</small></a>
+    <a class="grade" href="grade1-learning/"><span class="nm">כיתה א׳</span><small>קריאה, אותיות ומשחקים</small></a>
+    <a class="grade g4" href="grade4-learning/"><span class="nm">כיתה ד׳</span><small>מרכז הלמידה</small></a>
+    <a class="grade g6" href="grade6-learning/"><span class="nm">כיתה ו׳</span><small>מרכז הלמידה</small></a>
+    <a class="grade math" href="math-test-prep/"><span class="nm">מתמטיקה</span><small>כיתה ו׳ · מסלול השבוע למבחן</small></a>
   </div>
-  <p class="note">כל כיתה נשארת אתר נפרד, עם משימת היום בתוכו. המטבעות, הרצף וההתקדמות נשמרים בנפרד לכל ילד במכשיר הזה.</p>
+  <p class="note">בכל כיתה בוחרים או יוצרים פרופיל. המטבעות, הרצף וההתקדמות נשמרים לפרופיל הזה במכשיר, בנפרד משאר הפרופילים.</p>
 </div>
-<script>
-var FAMILY_KEY = 'familyKidsV1';
-var FAMILY_SEED = [{id:'adi', name:'עדי', emoji:'🌸'},{id:'itai', name:'איתי', emoji:'🐯'},{id:'ariel', name:'אריאל', emoji:'🚀'}];
-function familyRead(){ try { var r = JSON.parse(localStorage.getItem(FAMILY_KEY) || 'null'); if (r && Array.isArray(r.list)) return r; } catch (e) {} return null; }
-function familySaveReg(reg){ try { localStorage.setItem(FAMILY_KEY, JSON.stringify(reg)); } catch (e) {} }
-function familyLoad(){
-  var reg = familyRead();
-  if (!reg) reg = {v:1, active:'adi', list:FAMILY_SEED.map(function (k) { return {id:k.id, name:k.name, emoji:k.emoji}; })};
-  if (!Array.isArray(reg.list)) reg.list = [];
-  FAMILY_SEED.forEach(function (k) { if (!reg.list.some(function (p) { return p.id === k.id; })) reg.list.push({id:k.id, name:k.name, emoji:k.emoji}); });
-  if (!reg.list.some(function (p) { return p.id === reg.active; })) reg.active = 'adi';
-  reg.v = 1; familySaveReg(reg); return reg;
-}
-function familyKids(reg){
-  var out = [];
-  FAMILY_SEED.forEach(function (k) { var hit = reg.list.filter(function (p) { return p.id === k.id; })[0]; out.push(hit || k); });
-  reg.list.forEach(function (p) { if (!FAMILY_SEED.some(function (k) { return k.id === p.id; })) out.push(p); });
-  return out;
-}
-function familySwitch(id){
-  var reg = familyLoad();
-  if (!reg.list.some(function (p) { return p.id === id; })) return;
-  reg.active = id; familySaveReg(reg); render();
-}
-function render(){
-  var reg = familyLoad();
-  var kids = familyKids(reg);
-  var active = kids.filter(function (k) { return k.id === reg.active; })[0];
-  document.getElementById('whos').innerHTML = kids.map(function (k) {
-    return '<button type="button" class="who' + (k.id === reg.active ? ' on' : '') + '" onclick="familySwitch(\'' + k.id + '\')">' + k.emoji + ' ' + k.name + '</button>';
-  }).join('');
-  document.getElementById('whoNow').textContent = 'עכשיו משחק: ' + active.emoji + ' ' + active.name;
-}
-render();
-</script>
 </body>
 </html>
