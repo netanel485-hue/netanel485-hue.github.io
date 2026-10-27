@@ -2115,8 +2115,22 @@ function uniqWrongs(ans,cands){const out=[],seen=new Set([ans]);for(const w of c
 // BIDI FIX: isolate every math fragment LTR so "2 ÷ 3" never renders as "3 ÷ 2" inside RTL Hebrew.
 // Applied at render time only — logic strings stay plain so answer comparison is unaffected.
 const _NUM='(?:\\d+(?:\\.\\d+)?|___)';
-const MATH_RE=new RegExp('((?:'+_NUM+'\\s+)?'+_NUM+'\\/'+_NUM+'(?:\\s*[÷×+\\-*/=\\u2013]\\s*'+_NUM+')*|'+_NUM+'(?:\\s*[÷×+\\-*/=\\u2013]\\s*'+_NUM+')+)','g');
-function mathHtml(s){return String(s).replace(MATH_RE,"<bdi class='m'>$1</bdi>");}
+const _ATOM='\\u0001\\d+\\u0002';
+const _NUMA='(?:'+_NUM+'|'+_ATOM+')';
+const _OP='[÷×+\\-*/=\\u2013]';
+const _MIX='(?:'+_NUM+'\\s+'+_ATOM+'|(?:'+_NUM+'\\s+)?'+_NUM+'\\/'+_NUM+'|'+_NUMA+')';
+const MATH_RE=new RegExp('('+_MIX+'(?:\\s*'+_OP+'\\s*'+_MIX+')*)','g');
+// BIDI FIX 2: stacked-fraction markup (<span class="frac">) is first swapped for
+// placeholder atoms, so a mixed number and its whole expression land in ONE LTR
+// isolate instead of rendering reversed ("1 3/4 x 4" showed as "4 x 3/4 1").
+function mathHtml(s){
+  s=String(s);
+  const atoms=[];
+  s=s.replace(/<span class="frac">[\s\S]*?<\/span><\/span>/g,mm=>{atoms.push(mm);return '\u0001'+(atoms.length-1)+'\u0002';});
+  s=s.replace(MATH_RE,"<bdi class='m'>$1</bdi>");
+  s=s.replace(/\u0001(\d+)\u0002/g,(m,i)=>atoms[+i]);
+  return s;
+}
 
 // --- topic 1: השבר כמנת חילוק ---
 function tDivAsFrac(cfg,kind){
