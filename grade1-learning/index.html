@@ -19,6 +19,18 @@ h1{font-size:30px;text-align:center;margin:8px 0 2px}
 .dot{width:14px;height:14px;border-radius:50%;background:#fff6; border:2px solid #fff}
 .dot.on{background:#7c5cbf;border-color:#7c5cbf}
 .booklet{font-size:22px;font-weight:800;margin:18px 0 8px;color:var(--purple)}
+.tabs{display:flex;gap:12px;margin:14px 0 4px}
+.tabbtn{flex:1;border:4px solid #e7e2ff;border-radius:22px;padding:14px 6px;font-size:24px;font-weight:800;cursor:pointer;background:#fff;color:var(--ink);box-shadow:0 4px 0 #d9d2ff}
+.tabbtn .emo{font-size:44px;display:block;line-height:1.1}
+.tabbtn:active{transform:translateY(2px);box-shadow:0 2px 0 #d9d2ff}
+#tabHe.active{background:#d9f7e8;border-color:var(--good);box-shadow:0 4px 0 #1e9e55}
+#tabMath.active{background:#ffe9c7;border-color:#ff9f1c;box-shadow:0 4px 0 #e07f00}
+.motiv{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0 2px}
+.motiv .chip{background:#fff;border:3px solid #ffe1ee;border-radius:999px;padding:6px 12px;font-size:16px;font-weight:800}
+.motiv .chip.fire{border-color:#ffb800;background:#fff8e1}
+.focusbox{background:#fffbe6;border:3px solid #ffd166;border-radius:18px;padding:10px 10px 12px;margin:14px 0}
+.focushead{font-size:20px;font-weight:800;text-align:center;margin-bottom:8px}
+.celeb{font-size:24px;font-weight:800;text-align:center;margin:10px 0}
 .pages{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px}
 .page-btn{background:var(--card);border:3px solid #e7e2ff;border-radius:18px;padding:12px 6px;text-align:center;cursor:pointer;box-shadow:0 3px 8px rgba(60,50,140,.08)}
 .page-btn:active{transform:scale(.97)}
@@ -86,7 +98,12 @@ table.ptable td,table.ptable th{border-bottom:1px solid #eee;padding:7px 4px;tex
       <div><div class="coins">🪙 <span id="bankCoins">0</span></div><div class="note">מטבעות בבנק הידע</div></div>
       <div class="goal"><div id="goalText"></div><div class="dots" id="weekDots"></div></div>
     </div>
+    <div class="motiv" id="motivRow"></div>
     <button class="bigbtn purple" id="btnReview">🔀 חזרה על הכול</button>
+    <div class="tabs" id="homeTabs">
+      <button class="tabbtn" id="tabHe"><span class="emo">📖</span><span>עברית</span></button>
+      <button class="tabbtn" id="tabMath"><span class="emo">🔢</span><span>חשבון</span></button>
+    </div>
     <div id="booklets"></div>
     <button class="bigbtn ghost" id="btnGoal">🎯 היעד השבועי שלי</button>
     <button class="bigbtn ghost" id="btnParent">👨‍👩‍👧 מסך הורים</button>
@@ -114,6 +131,7 @@ table.ptable td,table.ptable th{border-bottom:1px solid #eee;padding:7px 4px;tex
       <div class="stars" id="endStars"></div>
       <div class="msg" id="endMsg"></div>
       <div id="endCoins" style="font-size:19px"></div>
+      <div class="celeb" id="endCeleb"></div>
       <button class="bigbtn" id="endAgain">🔁 עוד פעם</button>
       <button class="bigbtn purple" id="endHome">🏠 הביתה</button>
     </div>
@@ -134,7 +152,7 @@ var AUDIO = {"חם": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjY
 <script>
 /* ================= state ================= */
 var LS_KEY = 'hub1ProgV1';
-var prog = {pages:{}, items:{}, bank:0, log:[], days:{}, goalPages:3, requests:[], weekBonus:{}};
+var prog = {pages:{}, items:{}, bank:0, log:[], days:{}, goalPages:3, requests:[], weekBonus:{}, celebrated:{}};
 try { var saved = localStorage.getItem(LS_KEY); if (saved) prog = Object.assign(prog, JSON.parse(saved)); } catch(e) {}
 function save() { try { localStorage.setItem(LS_KEY, JSON.stringify(prog)); } catch(e) {} }
 function todayKey() { var d = new Date(); return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate(); }
@@ -221,9 +239,109 @@ function cumVowels(pageIdx) {
   return out;
 }
 
+/* ================= home tabs ================= */
+var curTab = 'he';
+function setTab(t) {
+  curTab = t;
+  var host = el('booklets');
+  Array.prototype.forEach.call(host.querySelectorAll('[data-tab]'), function (n) {
+    n.style.display = (n.getAttribute('data-tab') === t) ? '' : 'none';
+  });
+  el('tabHe').classList.toggle('active', t === 'he');
+  el('tabMath').classList.toggle('active', t === 'math');
+}
+
+/* ================= motivators (derived from prog, additive only) ================= */
+function starsForBest(best) { return best === undefined ? 0 : best >= 8 ? 3 : best >= 6 ? 2 : best >= 4 ? 1 : 0; }
+function totalStars() {
+  var n = 0;
+  DATA.PAGES.forEach(function (p) { n += starsForBest((prog.pages[p.id] || {}).best); });
+  return n;
+}
+function dayStreak() {
+  var d = new Date(), n = 0;
+  if (!prog.days[todayKey()]) d.setDate(d.getDate() - 1);
+  while (prog.days[d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate()]) { n++; d.setDate(d.getDate() - 1); }
+  return n;
+}
+function bookletDone(bk) {
+  var pages = DATA.PAGES.filter(function (p) { return p.booklet === bk; });
+  return pages.length > 0 && pages.every(function (p) { return (prog.pages[p.id] || {}).mastered; });
+}
+var STAR_MILESTONES = [10, 25, 50, 100];
+function reachedMilestones() {
+  var out = [];
+  var s = totalStars();
+  STAR_MILESTONES.forEach(function (m) { if (s >= m) out.push({key: 'stars' + m, label: '⭐ ' + m + ' כוכבים!'}); });
+  if (bookletDone('א')) out.push({key: 'bookA', label: '🏆 חוברת א׳ הושלמה!'});
+  if (bookletDone('ב')) out.push({key: 'bookB', label: '🏆 חוברת ב׳ הושלמה!'});
+  if (bookletDone('M')) out.push({key: 'bookM', label: '🏆 כל משחקי החשבון הושלמו!'});
+  return out;
+}
+function celebrateNew() {
+  if (!prog.celebrated) prog.celebrated = {};
+  var fresh = reachedMilestones().filter(function (m) { return !prog.celebrated[m.key]; });
+  if (!fresh.length) return '';
+  fresh.forEach(function (m) { prog.celebrated[m.key] = 1; });
+  save();
+  return '🎉 מזל טוב! 🎉<br>' + fresh.map(function (m) { return m.label; }).join('<br>');
+}
+function renderMotiv() {
+  var st = dayStreak(), s = totalStars();
+  var html = st === 0
+    ? '<span class="chip fire">🔥 מתחילים רצף חדש!</span>'
+    : '<span class="chip fire">🔥 רצף של ' + st + (st === 1 ? ' יום' : ' ימים') + '</span>';
+  html += '<span class="chip">⭐ ' + s + ' כוכבים</span>';
+  if (bookletDone('א')) html += '<span class="chip">🏆 חוברת א׳</span>';
+  if (bookletDone('ב')) html += '<span class="chip">🏆 חוברת ב׳</span>';
+  if (bookletDone('M')) html += '<span class="chip">🏆 חשבון</span>';
+  el('motivRow').innerHTML = html;
+}
+
+/* ================= focus (class progress, separate key) ================= */
+var FOCUS_KEY = 'hub1FocusV1';
+var focus = { he: [], math: [] };
+try { var _sf = localStorage.getItem(FOCUS_KEY); if (_sf) { var _pf = JSON.parse(_sf); if (Array.isArray(_pf.he)) focus.he = _pf.he; if (Array.isArray(_pf.math)) focus.math = _pf.math; } } catch (e) {}
+function saveFocus() { try { localStorage.setItem(FOCUS_KEY, JSON.stringify(focus)); } catch (e) {} }
+function defaultFocus() { return { he: ['א1', 'ב1'], math: ['m0'] }; }
+function currentFocus() {
+  var d = defaultFocus();
+  return { he: focus.he.length ? focus.he : d.he, math: focus.math.length ? focus.math : d.math };
+}
+function setFocusSelection(heIds, mathIds) { focus.he = heIds; focus.math = mathIds; saveFocus(); }
+function pageIndexById(id) { for (var i = 0; i < DATA.PAGES.length; i++) if (DATA.PAGES[i].id === id) return i; return -1; }
+function renderFocus(host) {
+  var foc = currentFocus();
+  [['he', foc.he], ['math', foc.math]].forEach(function (pair) {
+    var tab = pair[0], ids = pair[1];
+    var box = document.createElement('div'); box.className = 'focusbox'; box.setAttribute('data-tab', tab);
+    var head = document.createElement('div'); head.className = 'focushead'; head.textContent = '🌟 לומדים עכשיו בכיתה';
+    box.appendChild(head);
+    var grid = document.createElement('div'); grid.className = 'pages';
+    ids.forEach(function (id) {
+      var idx = pageIndexById(id); if (idx < 0) return;
+      var pg = DATA.PAGES[idx];
+      if (tab === 'he' && pg.booklet === 'M') return;
+      if (tab === 'math' && pg.booklet !== 'M') return;
+      var st = prog.pages[pg.id] || {};
+      var b = document.createElement('div');
+      b.className = 'page-btn' + (st.best >= 6 ? ' done' : '');
+      var stars = st.best === undefined ? '' : (st.best >= 8 ? '⭐⭐⭐' : st.best >= 6 ? '⭐⭐' : st.best >= 4 ? '⭐' : '🌱');
+      b.innerHTML = pg.math
+        ? '<span class="big">' + pg.icon + '</span><span class="ttl">' + pg.title + '</span><span class="stars">' + stars + '</span>'
+        : '<span class="big">' + pg.icon + '</span><span class="ttl">עמוד ' + pg.page + '<br>' + pg.title + '</span><span class="stars">' + stars + '</span>';
+      b.onclick = (function (i) { return function () { openLearn(i); }; })(idx);
+      grid.appendChild(b);
+    });
+    box.appendChild(grid);
+    host.appendChild(box);
+  });
+}
+
 /* ================= home ================= */
 function renderHome() {
   el('bankCoins').textContent = prog.bank;
+  renderMotiv();
   var wk = weekKey(); var donePages = 0;
   Object.keys(prog.pages).forEach(function (k) { if (prog.pages[k].wk === wk) donePages++; });
   el('goalText').innerHTML = 'היעד: ' + prog.goalPages + ' עמודים השבוע<br>סיימתי: ' + donePages + ' 📄';
@@ -231,13 +349,15 @@ function renderHome() {
   var s = new Date(); s.setDate(s.getDate() - s.getDay());
   for (var i = 0; i < 7; i++) { var d = new Date(s); d.setDate(s.getDate() + i); var k = d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate(); var dv = document.createElement('div'); dv.className = 'dot' + (prog.days[k] ? ' on' : ''); dots.appendChild(dv); }
   var host = el('booklets'); host.innerHTML = '';
+  renderFocus(host);
   var curBooklet = '';
   DATA.PAGES.forEach(function (pg, idx) {
     if (pg.booklet !== curBooklet) {
       curBooklet = pg.booklet;
       var h = document.createElement('div'); h.className = 'booklet'; h.textContent = {'א': '📗 חוברת א׳', 'ב': '📘 חוברת ב׳', 'M': '🔢 חשבון — משחקים'}[curBooklet] || curBooklet;
+      h.setAttribute('data-tab', curBooklet === 'M' ? 'math' : 'he');
       host.appendChild(h);
-      var grid = document.createElement('div'); grid.className = 'pages'; grid.id = 'grid-' + curBooklet; host.appendChild(grid);
+      var grid = document.createElement('div'); grid.className = 'pages'; grid.id = 'grid-' + curBooklet; grid.setAttribute('data-tab', curBooklet === 'M' ? 'math' : 'he'); host.appendChild(grid);
     }
     var st = prog.pages[pg.id] || {};
     var b = document.createElement('div');
@@ -250,6 +370,7 @@ function renderHome() {
     el('grid-' + curBooklet).appendChild(b);
   });
   show('screen-home');
+  setTab(curTab);
 }
 
 /* ================= learn ================= */
@@ -757,6 +878,7 @@ function finishRound() {
   el('endStars').textContent = stars;
   el('endMsg').textContent = msg + ' (' + score + ' מתוך ' + total + ')';
   el('endCoins').textContent = coinMsg;
+  el('endCeleb').innerHTML = celebrateNew();
   speak(score >= 6 ? 'praise|0' : 'praise|3');
   show('screen-end');
 }
@@ -770,6 +892,21 @@ function renderParent() {
     var done = pages.filter(function (p) { return (prog.pages[p.id] || {}).mastered; }).length;
     html += '<h3>חוברת ' + bk + '׳ — ' + done + '/' + pages.length + ' עמודים הושלמו</h3><div class="bar"><div style="width:' + (pages.length ? done / pages.length * 100 : 0) + '%"></div></div>';
   });
+  var foc = currentFocus();
+  html += '<h3>🌟 לומדים עכשיו בכיתה — בחירת הורה</h3><p class="note">בחרי עמודים למיקוד — הם יופיעו בראש הטאב המתאים בדף הבית.</p>';
+  [['א', 'חוברת א׳'], ['ב', 'חוברת ב׳'], ['M', 'חשבון']].forEach(function (g) {
+    var bk = g[0];
+    var list = DATA.PAGES.filter(function (p) { return p.booklet === bk; });
+    var tab = bk === 'M' ? 'math' : 'he';
+    var picked = tab === 'he' ? foc.he : foc.math;
+    html += '<div><b>' + g[1] + ':</b><br>';
+    list.forEach(function (p) {
+      var label = p.math ? p.title : (p.page ? 'עמוד ' + p.page + ' — ' + p.title : p.title);
+      html += '<label style="display:inline-block;margin:3px 8px 3px 0"><input type="checkbox" data-focus="' + tab + '" value="' + p.id + '"' + (picked.indexOf(p.id) >= 0 ? ' checked' : '') + '> ' + label + '</label>';
+    });
+    html += '</div>';
+  });
+  html += '<p><button id="focusSave">💾 שמירת מיקוד</button> <button id="focusReset">↩ ברירת מחדל</button> <span id="focusMsg"></span></p>';
   var weak = Object.keys(prog.items).filter(function (k) { return prog.items[k].wrong >= 2; }).sort(function (a, b) { return prog.items[b].wrong - prog.items[a].wrong; }).slice(0, 8);
   html += '<h3>כדאי לחזק</h3>';
   html += weak.length ? '<p>' + weak.map(function (k) { return k.replace('L:', 'האות ').replace('W:', 'המילה ').replace('Y:', 'ההברה ') + ' (' + prog.items[k].wrong + ' טעויות)'; }).join('<br>') + '</p>' : '<p>אין פריטים חלשים כרגע 🌟</p>';
@@ -786,6 +923,15 @@ function renderParent() {
       if (prog.bank >= 50) { addCoins(-50, 'צ׳ופר: ' + prog.requests[i].name); prog.requests.splice(i, 1); save(); renderParent(); renderHome(); }
     };
   });
+  el('focusSave').onclick = function () {
+    var he = [], math = [];
+    Array.prototype.forEach.call(body.querySelectorAll('[data-focus]'), function (cb) {
+      if (cb.checked) (cb.getAttribute('data-focus') === 'he' ? he : math).push(cb.value);
+    });
+    setFocusSelection(he, math);
+    el('focusMsg').textContent = 'נשמר ✓';
+  };
+  el('focusReset').onclick = function () { setFocusSelection([], []); renderParent(); };
   show('screen-parent');
 }
 
@@ -796,6 +942,8 @@ el('parentBack').onclick = renderHome;
 el('btnParent').onclick = renderParent;
 el('learnStart').onclick = function () { startRound(curPage, false); };
 el('btnReview').onclick = function () { startRound(DATA.PAGES.length - 1, true); };
+el('tabHe').onclick = function () { setTab('he'); };
+el('tabMath').onclick = function () { setTab('math'); };
 el('endAgain').onclick = function () { startRound(roundPage, roundReview); };
 el('endHome').onclick = renderHome;
 el('btnGoal').onclick = function () {
