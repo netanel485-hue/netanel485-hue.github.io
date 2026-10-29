@@ -396,9 +396,11 @@ function openLearn(idx) {
       mhtml += '<div class="eq">10, 20, __, 40, 50</div><div style="text-align:center;font-size:19px">משלימים בעשרות!</div>';
     } else {
       var hi = (pg.math === 'nums20' || pg.math === 'mix20' || pg.math === 'compare' || pg.math === 'add20' || pg.math === 'sub20') ? 20 : (pg.math === 'hear100' || pg.math === 'next100' || pg.math === 'compare100') ? 100 : 10;
-      mhtml += '<div style="text-align:center;font-size:20px">הקישי על מספר ושמעי איך קוראים לו:</div><div class="sylrow">';
-      for (var n = 1; n <= hi; n++) mhtml += '<button class="syl" data-num="' + n + '">' + n + '</button>';
-      mhtml += '</div>';
+      if (hi === 100) {
+        mhtml += '<div style="text-align:center;font-size:20px">הקישי על מספר ושמעי איך קוראים לו:</div><div class="sylrow">';
+        for (var n = 1; n <= hi; n++) mhtml += '<button class="syl" data-num="' + n + '">' + n + '</button>';
+        mhtml += '</div>';
+      }
       if (pg.math === 'add10' || pg.math === 'mix20') mhtml += '<div class="eq">🍎🍎 + 🍎 = 3</div><div style="text-align:center;font-size:19px">סופרים הכול ביחד!</div>';
       if (pg.math === 'sub10') mhtml += '<div class="eq">🍎🍎🍎 − 🍎 = 2</div><div style="text-align:center;font-size:19px">לוקחים חלק — וסופרים כמה נשאר!</div>';
       if (pg.math === 'count' || pg.math === 'nums20') mhtml += '<div class="objs">🍓🍓🍓🍓🍓</div><div style="text-align:center;font-size:19px">סופרים אחד־אחד, לאט ובקול!</div>';
