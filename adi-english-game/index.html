@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<!--
+  ADI'S ENGLISH GAME — Version 1
+  For Adi, grade 1, English-speakers class. Built from her school pages only:
+  letters a, c, s, t, p; words a, at, cat, tat, tac, sat, pat, pac, cap;
+  sentences "A cat." and "A cat sat."; S/T/C/P beginning words listed below.
+  No external resources: no network, no login, no external images, scripts or
+  fonts. Emoji only. Audio uses the built-in speechSynthesis voice (English).
+  Letter "sounds" in v1 are spoken by speechSynthesis plus an example word
+  (a-apple, c-cat, s-sun, t-tiger, p-pig); recorded phonics audio is a
+  possible future upgrade, not part of v1.
+
+  EXPERT PEDAGOGY CHECKLIST (follow this when adding content):
+  1. Letter sounds before letter names.
+  2. Blending (sounding out) before whole-word memorization.
+  3. Short sessions: few items per activity, always stoppable.
+  4. Immediate positive feedback; never punish slowness or mistakes.
+  5. Spiral review: every level after Level 1 starts with items from earlier levels.
+  6. Speaking aloud on EVERY item ("Say it!" + hear-it button + optional mic).
+  7. Mastery-gated levels: a level unlocks only when the previous level is complete.
+  8. No timers, no failure states, retry with encouragement.
+
+  PERSISTENCE CONTRACT (hard requirement — never break this):
+  - All progress lives in localStorage under ONE versioned key: adiEngGameV1.
+  - Stored shape: { version: 1, done: { activityId: true, ... } }.
+  - Stars are derived from completed activity ids, never stored separately.
+  - Content updates are ADDITIVE FOREVER: new levels/activities get NEW ids.
+    Never rename, remove, or reuse an existing id. Never clear storage.
+  - Loading tolerates missing, corrupt, or future keys: unknown ids are
+    ignored, missing activities default to unplayed (0 stars).
+  - Because of this, progress survives adding new pages/levels later.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adi's English Game</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: system-ui, "Segoe UI", Arial, sans-serif; background: #FFF7E6; color: #222; margin: 0; padding: 0 12px 40px; text-align: center; }
+  header { padding: 18px 8px 4px; }
+  h1 { font-size: 2em; margin: 0; }
+  .total { font-size: 1.3em; margin: 6px 0 14px; }
+  .card { background: #fff; border-radius: 22px; box-shadow: 0 3px 10px rgba(0,0,0,.12); max-width: 620px; margin: 14px auto; padding: 18px; }
+  .card.locked { opacity: .55; }
+  .card h2 { margin: 4px 0 8px; font-size: 1.5em; }
+  .stars { font-size: 1.2em; }
+  button { font-family: inherit; font-size: 1.35em; padding: 14px 20px; margin: 6px; border-radius: 18px; border: 3px solid #ddd; background: #fff; cursor: pointer; }
+  button:hover { border-color: #FFB703; }
+  button:disabled { opacity: .45; cursor: default; }
+  .big { font-size: 2.2em; }
+  .choice { min-width: 74px; font-size: 1.8em; font-weight: bold; }
+  .green { background: #D9F99D; border-color: #65A30D; }
+  .blue { background: #DBEAFE; border-color: #2563EB; }
+  .pink { background: #FCE7F3; border-color: #DB2777; }
+  .msg { font-size: 1.5em; margin: 14px 0; min-height: 1.6em; }
+  .pic { font-size: 4.5em; line-height: 1.2; }
+  .wordtile { font-size: 2.6em; font-weight: bold; background: #FEF3C7; border-radius: 18px; display: inline-block; padding: 12px 26px; margin: 8px; }
+  .row { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 10px 0; flex-wrap: wrap; }
+  .row .w { font-size: 1.7em; font-weight: bold; min-width: 90px; }
+  .row.done .w { color: #65A30D; text-decoration: line-through; }
+  .parents { max-width: 620px; margin: 22px auto; background: #EFF6FF; border-radius: 18px; padding: 14px 18px; text-align: right; direction: rtl; font-size: 1em; line-height: 1.7; }
+  .parents summary { cursor: pointer; font-weight: bold; font-size: 1.1em; }
+  .small { font-size: .95em; color: #555; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🌟 Adi's English Game 🌟</h1>
+  <div class="total" id="totalStars"></div>
+</header>
+<main id="app"></main>
+
+<script>
+'use strict';
+
+/* ---------- Content: ONLY Adi's school material (v1) ---------- */
+var STORE_KEY = 'adiEngGameV1';
+var LETTERS = ['a', 'c', 's', 't', 'p'];
+var LETTER_WORD = { a: 'apple', c: 'cat', s: 'sun', t: 'tiger', p: 'pig' };
+var WORDS = ['a', 'at', 'cat', 'tat', 'tac', 'sat', 'pat', 'pac', 'cap'];
+var SENTENCES = ['A cat.', 'A cat sat.'];
+var S_WORDS = ['sun', 'sock', 'saw', 'soap', 'sink', 'seven', 'sandwich', 'snake', 'star', 'soup', 'sunflowers', 'soccer', 'shoes', 'shell', 'shovel', 'sand', 'scooter', 'slide', 'swings', 'seesaw', 'sandbox'];
+var T_WORDS = ['tape', 'toothbrush', 'turtle', 'tiger', 'top'];
+var C_WORDS = ['cat', 'cap'];
+var P_WORDS = ['pig', 'pot', 'pen', 'pin', 'puzzle'];
+var PIC = { sun: '☀️', sock: '🧦', saw: '🪚', soap: '🧼', seven: '7️⃣', sandwich: '🥪', snake: '🐍', star: '⭐', soup: '🍜', sunflowers: '🌻', soccer: '⚽', shoes: '👟', shell: '🐚', sand: '🏖️', scooter: '🛴', slide: '🛝', turtle: '🐢', tiger: '🐯', toothbrush: '🪥', cat: '🐱', cap: '🧢', pig: '🐷', pot: '🍲', pen: '🖊️', pin: '📌', puzzle: '🧩', apple: '🍎' };
+var CHEERS = ['Great job! 🌟', 'Awesome! 🎉', 'You did it! 👏', 'Super star! ⭐', 'Wonderful! 🌈', 'Amazing! 🥳'];
+var TRY_AGAIN = ['Try again! You can do it! 💪', 'Almost! Listen again 👂', 'Good try! Listen once more 🎧'];
+
+/* ---------- Persistence (contract: see header comment) ---------- */
+function loadProgress() {
+  try {
+    var raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return { version: 1, done: {} };
+    var p = JSON.parse(raw);
+    if (!p || typeof p !== 'object') return { version: 1, done: {} };
+    if (!p.done || typeof p.done !== 'object') p.done = {};
+    return p;
+  } catch (e) { return { version: 1, done: {} }; }
+}
+var progress = loadProgress();
+function saveProgress() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify({ version: 1, done: progress.done })); } catch (e) {}
+}
+function isDone(id) { return !!progress.done[id]; }
+function markDone(id) { progress.done[id] = true; saveProgress(); }
+function levelStars(level) { var n = 0; for (var i = 0; i < level.activities.length; i++) { if (isDone(level.activities[i].id)) n++; } return n; }
+function totalStars() { var n = 0; for (var i = 0; i < LEVELS.length; i++) n += levelStars(LEVELS[i]); return n; }
+function totalActivities() { var n = 0; for (var i = 0; i < LEVELS.length; i++) n += LEVELS[i].activities.length; return n; }
+function isLevelUnlocked(i) {
+  if (i === 0) return true;
+  var prev = LEVELS[i - 1];
+  for (var j = 0; j < prev.activities.length; j++) { if (!isDone(prev.activities[j].id)) return false; }
+  return true;
+}
+
+/* ---------- Helpers ---------- */
+function shuffle(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+  return a;
+}
+function pick(arr, n) { return shuffle(arr).slice(0, n); }
+function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+function speak(text, rate) {
+  try {
+    speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US'; u.rate = rate || 0.85;
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+function speakSeq(sounds, i) {
+  i = i || 0;
+  if (i >= sounds.length) return;
+  try {
+    var u = new SpeechSynthesisUtterance(sounds[i]);
+    u.lang = 'en-US'; u.rate = 0.7;
+    u.onend = function () { setTimeout(function () { speakSeq(sounds, i + 1); }, 200); };
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+function cheer() { return CHEERS[Math.floor(Math.random() * CHEERS.length)]; }
+function tryAgain() { return TRY_AGAIN[Math.floor(Math.random() * TRY_AGAIN.length)]; }
+
+/* ---------- Microphone (optional, graceful fallback) ---------- */
+var micRec = null, micUrl = null;
+function micSupported() {
+  try { return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder); } catch (e) { return false; }
+}
+function micButtonsHTML() {
+  if (!micSupported()) return '';
+  return '<span id="micBox"><button id="recBtn" onclick="micRecord()">🎤 Record me</button> <button id="playBtn" onclick="micPlay()" disabled>▶️ Hear me</button></span>';
+}
+function micRecord() {
+  try {
+    if (micRec && micRec.state === 'recording') { micRec.stop(); return; }
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+      var chunks = [];
+      micRec = new MediaRecorder(stream);
+      micRec.ondataavailable = function (e) { if (e.data.size) chunks.push(e.data); };
+      micRec.onstop = function () {
+        micUrl = URL.createObjectURL(new Blob(chunks, { type: 'audio/webm' }));
+        var pb = document.getElementById('playBtn'); if (pb) pb.disabled = false;
+        var rb = document.getElementById('recBtn'); if (rb) rb.textContent = '🎤 Record again';
+        stream.getTracks().forEach(function (t) { t.stop(); });
+      };
+      micRec.start();
+      var rb = document.getElementById('recBtn'); if (rb) rb.textContent = '⏹ Stop';
+    }).catch(function () { var b = document.getElementById('micBox'); if (b) b.style.display = 'none'; });
+  } catch (e) { var b = document.getElementById('micBox'); if (b) b.style.display = 'none'; }
+}
+function micPlay() { if (micUrl) { try { new Audio(micUrl).play(); } catch (e) {} } }
+function stopMic() { try { if (micRec && micRec.state === 'recording') micRec.stop(); } catch (e) {} }
+
+/* ---------- Step builders ---------- */
+function letterTapStep(letter) {
+  return { kind: 'tap', audio: letter, audioKind: 'letter', choices: shuffle(LETTERS), answer: letter, sayText: letter };
+}
+function wordTapStep(word, pool) {
+  var others = pick(pool.filter(function (w) { return w !== word; }), 2);
+  return { kind: 'tap', audio: word, audioKind: 'word', choices: shuffle([word].concat(others)), answer: word, sayText: word };
+}
+function sayStep(text) { return { kind: 'say', text: text, audio: text }; }
+function buildStep(word) {
+  var others = pick(WORDS.filter(function (w) { return w !== word; }), 2);
+  return { kind: 'build', word: word, sounds: word.split(''), choices: shuffle([word].concat(others)) };
+}
+function picTapStep(word) {
+  return { kind: 'pic', pic: word, audio: word, choices: shuffle(['s', 't', 'c', 'p']), answer: word.charAt(0), sayText: word };
+}
+function reviewSteps(levelIdx) {
+  if (levelIdx === 0) return [];
+  if (levelIdx === 1) return pick(LETTERS, 2).map(letterTapStep);
+  if (levelIdx === 2) return [letterTapStep(pick(LETTERS, 1)[0]), wordTapStep(pick(WORDS, 1)[0], WORDS)];
+  return pick(WORDS, 2).map(function (w) { return wordTapStep(w, WORDS); });
+}
+
+/* ---------- Levels and activities (ids are permanent — see contract) ---------- */
+var LEVELS = [
+  { name: 'Hear the Letter', icon: '🔤', activities: [
+    { id: 'l1_hear_tap', name: 'Hear & Tap', icon: '👂', build: function () { return LETTERS.map(letterTapStep); } },
+    { id: 'l1_say_letters', name: 'Say the Letters', icon: '🎤', build: function () { return LETTERS.map(sayStep); } }
+  ]},
+  { name: 'Blend It!', icon: '🧩', activities: [
+    { id: 'l2_listen_build', name: 'Listen & Build', icon: '👂', build: function () { return shuffle(WORDS).map(buildStep); } },
+    { id: 'l2_read_words', name: 'Read the Words', icon: '📖', build: function () { return shuffle(WORDS).map(sayStep); } }
+  ]},
+  { name: 'Starts With...?', icon: '🎯', activities: [
+    { id: 'l3_s_words', name: 'S Words', icon: '☀️', build: function () { return shuffle(['sun', 'sock', 'saw', 'soap', 'snake', 'star', 'sandwich', 'soup', 'sunflowers', 'soccer']).map(picTapStep); } },
+    { id: 'l3_tcp_words', name: 'T, C and P Words', icon: '🐯', build: function () { return shuffle(T_WORDS.concat(C_WORDS).concat(P_WORDS)).map(picTapStep); } }
+  ]},
+  { name: 'Read It Fast!', icon: '⚡', activities: [
+    { id: 'l4_round_1', name: 'Round 1', icon: '1️⃣', build: function () { return [{ kind: 'checklist', words: shuffle(WORDS) }]; } },
+    { id: 'l4_round_2', name: 'Round 2', icon: '2️⃣', build: function () { return [{ kind: 'checklist', words: shuffle(WORDS) }]; } },
+    { id: 'l4_round_3', name: 'Round 3', icon: '3️⃣', build: function () { return [{ kind: 'checklist', words: shuffle(WORDS) }]; } }
+  ]},
+  { name: 'Read a Sentence!', icon: '📖', activities: [
+    { id: 'l5_sentence_cat', name: 'A cat.', icon: '🐱', build: function () { return [sayStep('A cat.')]; } },
+    { id: 'l5_sentence_cat_sat', name: 'A cat sat.', icon: '🐱', build: function () { return [sayStep('A cat sat.')]; } }
+  ]}
+];
+var PARENTS_HE = [
+  ['Level 1 — Hear the Letter', 'האזנה לצלילי האותיות a, c, s, t, p וזיהוין, ואמירת הצליל בקול.'],
+  ['Level 2 — Blend It!', 'הרכבת מילים מצלילים (blending): שומעים צליל־צליל ובונים את המילה, ואז קוראים אותה בקול.'],
+  ['Level 3 — Starts With...?', 'התאמת מילים ותמונות לצליל הפותח: s, t, c, p.'],
+  ['Level 4 — Read It Fast!', 'קריאת מילות דפי הקריאה מהר ובביטחון — 3 סיבובים, כמו בדפי בית הספר (כל מילה נקראת 3 פעמים בסך הכול).'],
+  ['Level 5 — Read a Sentence!', 'קריאת משפטים שלמים בקול: "A cat." ו־"A cat sat.".']
+];
+
+/* ---------- Runner ---------- */
+var current = null;
+function app() { return document.getElementById('app'); }
+function setTotal() { document.getElementById('totalStars').textContent = '⭐ ' + totalStars() + ' / ' + totalActivities() + ' stars'; }
+
+function goMap() {
+  try { speechSynthesis.cancel(); } catch (e) {}
+  stopMic();
+  setTotal();
+  var html = '';
+  for (var li = 0; li < LEVELS.length; li++) {
+    var lv = LEVELS[li];
+    var unlocked = isLevelUnlocked(li);
+    var stars = levelStars(lv);
+    html += '<div class="card' + (unlocked ? '' : ' locked') + '">';
+    html += '<h2>' + lv.icon + ' Level ' + (li + 1) + ': ' + lv.name + (unlocked ? '' : ' 🔒') + '</h2>';
+    html += '<div class="stars">' + '⭐'.repeat(stars) + '☆'.repeat(lv.activities.length - stars) + ' (' + stars + '/' + lv.activities.length + ')</div>';
+    if (!unlocked) { html += '<p class="small">Finish Level ' + li + ' to unlock! 🔒</p>'; }
+    for (var ai = 0; ai < lv.activities.length; ai++) {
+      var act = lv.activities[ai];
+      var done = isDone(act.id);
+      html += '<div><button ' + (unlocked ? '' : 'disabled') + ' onclick="startActivity(' + li + ',' + ai + ')">' + act.icon + ' ' + act.name + (done ? ' ✅' : '') + '</button></div>';
+    }
+    html += '</div>';
+  }
+  html += '<div class="parents"><details><summary>להורים 👨‍👩‍👧 — מה לומדים בכל שלב, וההתקדמות של עדי</summary>';
+  for (var pi = 0; pi < PARENTS_HE.length; pi++) {
+    html += '<p><b>' + PARENTS_HE[pi][0] + '</b> — ' + PARENTS_HE[pi][1] + ' כוכבים: ' + levelStars(LEVELS[pi]) + '/' + LEVELS[pi].activities.length + '</p>';
+  }
+  html += '<p><b>סך הכול: ' + totalStars() + ' / ' + totalActivities() + ' כוכבים.</b></p>';
+  html += '<p class="small">ההתקדמות נשמרת במכשיר הזה בלבד. כשנוסיף דפים, מילים ורמות חדשות, ההתקדמות לא תתאפס: כל פעילות חדשה מקבלת מזהה חדש, והישנות נשארות בדיוק כמו שהיו. המשחק עובד בלי אינטרנט ובלי התחברות.</p>';
+  html += '</details></div>';
+  app().innerHTML = html;
+}
+
+function startActivity(li, ai) {
+  if (!isLevelUnlocked(li)) return;
+  var act = LEVELS[li].activities[ai];
+  current = { li: li, act: act, steps: reviewSteps(li).concat(act.build()), idx: 0, checked: {} };
+  renderStep();
+}
+
+function sayPhaseHTML(text) {
+  return '<div class="msg">🎤 Say it! <span class="big">' + esc(text) + '</span></div>' +
+    '<div><button onclick="speak(\'' + text.replace(/'/g, '') + '\')">🔊 Hear it</button> ' + micButtonsHTML() + '</div>' +
+    '<div><button class="green" onclick="nextStep()">I said it! ➡️</button></div>';
+}
+
+function renderStep() {
+  try { speechSynthesis.cancel(); } catch (e) {}
+  stopMic();
+  setTotal();
+  var st = current.steps[current.idx];
+  var n = current.steps.length;
+  var html = '<div class="card"><div class="small">Level ' + (current.li + 1) + ' • ' + current.act.name + ' • ' + (current.idx + 1) + '/' + n + '</div>';
+  if (st.kind === 'tap') {
+    html += '<div class="msg">👂 Listen! Tap the right one.</div>';
+    html += '<div><button class="blue" onclick="speak(\'' + st.audio + '\')">🔊 Hear it</button>';
+    if (st.audioKind === 'letter') html += ' <button onclick="speak(\'' + LETTER_WORD[st.audio] + '\')">💡 Hear a word</button>';
+    html += '</div><div id="fb" class="msg"></div><div>';
+    for (var i = 0; i < st.choices.length; i++) {
+      html += '<button class="choice" onclick="tapAnswer(\'' + st.choices[i] + '\')">' + st.choices[i] + '</button>';
+    }
+    html += '</div>';
+  } else if (st.kind === 'say') {
+    html += '<div class="msg">Look and say:</div><div class="big">' + esc(st.text) + '</div>';
+    html += '<div><button class="blue" onclick="speak(\'' + st.audio + '\')">🔊 Hear it</button> ' + micButtonsHTML() + '</div>';
+    html += '<div class="msg">🎤 Say it out loud!</div>';
+    html += '<div><button class="green" onclick="nextStep()">I said it! ➡️</button></div>';
+  } else if (st.kind === 'build') {
+    html += '<div class="msg">👂 Hear the sounds, then tap the word!</div>';
+    html += '<div><button class="blue" onclick="playSounds()">🔊 Hear the sounds</button></div><div id="fb" class="msg"></div><div>';
+    for (var j = 0; j < st.choices.length; j++) {
+      html += '<button class="choice" onclick="tapAnswer(\'' + st.choices[j] + '\')">' + st.choices[j] + '</button>';
+    }
+    html += '</div>';
+  } else if (st.kind === 'pic') {
+    html += '<div class="msg">What sound does it start with?</div>';
+    if (PIC[st.pic]) html += '<div class="pic">' + PIC[st.pic] + '</div>';
+    else html += '<div><span class="wordtile">' + esc(st.pic) + '</span></div>';
+    html += '<div><button class="blue" onclick="speak(\'' + st.audio + '\')">🔊 Hear the word</button></div><div id="fb" class="msg"></div><div>';
+    for (var k = 0; k < st.choices.length; k++) {
+      html += '<button class="choice" onclick="tapAnswer(\'' + st.choices[k] + '\')">' + st.choices[k] + '</button>';
+    }
+    html += '</div>';
+  } else if (st.kind === 'checklist') {
+    html += '<div class="msg">📖 Read every word out loud! Tap "I read it!" for each one.</div>';
+    for (var m = 0; m < st.words.length; m++) {
+      var w = st.words[m];
+      html += '<div class="row" id="row-' + m + '"><span class="w">' + esc(w) + '</span>' +
+        '<button onclick="speak(\'' + w + '\')">🔊</button>' +
+        '<button onclick="checkWord(' + m + ',this)">🎤 I read it!</button></div>';
+    }
+    html += '<div id="fb" class="msg"></div><div><button class="green" id="doneBtn" onclick="finishChecklist()" disabled>All done! ⭐</button></div>';
+  }
+  html += '<div><button onclick="goMap()">🗺️ Back to map</button></div></div>';
+  app().innerHTML = html;
+  var st2 = current.steps[current.idx];
+  if (st2.kind === 'tap' || st2.kind === 'pic') speak(st2.audio);
+  else if (st2.kind === 'build') playSounds();
+  else if (st2.kind === 'say') speak(st2.audio);
+}
+
+function playSounds() {
+  var st = current.steps[current.idx];
+  if (st && st.kind === 'build') speakSeq(st.sounds, 0);
+}
+function tapAnswer(choice) {
+  var st = current.steps[current.idx];
+  var fb = document.getElementById('fb');
+  if (choice === st.answer) {
+    app().innerHTML = '<div class="card"><div class="msg">' + cheer() + '</div>' + sayPhaseHTML(st.sayText) +
+      '<div><button onclick="goMap()">🗺️ Back to map</button></div></div>';
+  } else {
+    if (fb) fb.textContent = tryAgain();
+    speak(st.audio);
+  }
+}
+function checkWord(m, btn) {
+  current.checked[m] = true;
+  var row = document.getElementById('row-' + m);
+  if (row) row.className = 'row done';
+  if (btn) btn.disabled = true;
+  var st = current.steps[current.idx];
+  var all = true;
+  for (var i = 0; i < st.words.length; i++) { if (!current.checked[i]) all = false; }
+  if (all) {
+    var fb = document.getElementById('fb'); if (fb) fb.textContent = cheer();
+    var db = document.getElementById('doneBtn'); if (db) db.disabled = false;
+  }
+}
+function finishChecklist() { nextStep(); }
+function nextStep() {
+  try { speechSynthesis.cancel(); } catch (e) {}
+  stopMic();
+  current.idx++;
+  if (current.idx >= current.steps.length) finishActivity();
+  else renderStep();
+}
+function finishActivity() {
+  markDone(current.act.id);
+  setTotal();
+  var li = current.li;
+  var lv = LEVELS[li];
+  var nextBtn = '';
+  for (var ai = 0; ai < lv.activities.length; ai++) {
+    if (!isDone(lv.activities[ai].id)) { nextBtn = '<button class="green" onclick="startActivity(' + li + ',' + ai + ')">➡️ Next activity: ' + lv.activities[ai].name + '</button>'; break; }
+  }
+  app().innerHTML = '<div class="card"><div class="pic">🎉</div><div class="msg">You did it! You earned a star! ⭐</div>' +
+    '<div class="total">⭐ ' + totalStars() + ' / ' + totalActivities() + ' stars</div>' +
+    '<div>' + nextBtn + ' <button onclick="goMap()">🗺️ Back to map</button></div></div>';
+}
+
+goMap();
+</script>
+</body>
+</html>
