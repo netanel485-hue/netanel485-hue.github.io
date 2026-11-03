@@ -439,7 +439,7 @@
 <div class="wrap">
   <header>
     <h1>🧮 ערכת לימוד חשבון — כיתה ד׳</h1>
-    <p>שבילים פלוס 10, 11 ו־12 · גאומטריה ושברים · מאות שאלות בכל נושא · אימון רמות, מבחנים והכנה כוללת</p>
+    <p>שבילים פלוס 10, 11 ו־12 · גאומטריה, שברים והכנה למבחנים · מאות שאלות בכל נושא · אימון רמות, מבחנים והכנה כוללת</p>
     <button class="sharebtn" onclick="shareApp()">📤 שיתוף</button>
   </header>
 
@@ -451,6 +451,7 @@
       <button class="tab" id="book12" onclick="setBooklet(12)">📙 חוברת 12 <span class="bkspan" id="bkSpan12"></span></button>
       <button class="tab" id="bookgeo" onclick="setBooklet('geo')">📐 גאומטריה <span class="bkspan" id="bkSpangeo"></span></button>
       <button class="tab" id="bookfrac" onclick="setBooklet('frac')">🍕 שברים <span class="bkspan" id="bkSpanfrac"></span></button>
+      <button class="tab" id="booktestprep" onclick="setBooklet('testprep')">🎯 הכנה למבחנים <span class="bkspan" id="bkSpantestprep"></span></button>
     </div>
     <div class="tabs">
       <button class="tab active" id="modeTopics" onclick="setMode('topics')">📚 לפי נושאים</button>
@@ -41244,7 +41245,7 @@ const HUB_VOCAB_BANKS = {
 // ---------- registry ----------
 function naviBooks(){return [{id:'navi-1',emoji:'🗺️',name:'נביא',book:'יהושע־שופטים (רש"י ומצודות)',topics:DATA_NAVI.topics}];}
 const HUB_SUBJECTS=[
- {id:'math', emoji:'🔢', name:'חשבון', special:'math', sub:'שבילים פלוס · גאומטריה · שברים'},
+ {id:'math', emoji:'🔢', name:'חשבון', special:'math', sub:'שבילים פלוס · גאומטריה · שברים · הכנה למבחנים'},
  {id:'torah', emoji:'📜', name:'תורה', books:[DATA_TORAH]},
  {id:'navi', emoji:'🗺️', name:'נביא', books:naviBooks()},
  {id:'mishna', emoji:'📚', name:'משנה', books:[DATA_MISHNA]},
@@ -41436,7 +41437,7 @@ function hubOpenMap(){hubRenderMap();hubShow('hubMap');}
 function hubRenderMap(){
   let html='';
   for(const s of HUB_SUBJECTS){
-    if(s.special==='math'){html+='<div class="h-mapsec"><div class="h-maphead" style="border-color:'+HUB_COLORS.math+'">🔢 חשבון</div><div class="h-mapnote">ההתקדמות בחשבון מתנהלת בתוך ערכת החשבון עצמה (שבילים פלוס 10 · 11 · 12 + גאומטריה ושברים).</div></div>';continue;}
+    if(s.special==='math'){html+='<div class="h-mapsec"><div class="h-maphead" style="border-color:'+HUB_COLORS.math+'">🔢 חשבון</div><div class="h-mapnote">ההתקדמות בחשבון מתנהלת בתוך ערכת החשבון עצמה (שבילים פלוס 10 · 11 · 12 + גאומטריה, שברים והכנה למבחנים).</div></div>';continue;}
     html+='<div class="h-mapsec"><div class="h-maphead" style="border-color:'+(HUB_COLORS[s.id]||'#4a7dff')+'">'+s.emoji+' '+hEsc(s.name)+'</div>';
     for(const b of s.books)for(const t of b.topics){
       const p=hubTopicProg(t.id);
@@ -43554,6 +43555,296 @@ const PAGE_MAP_FRAC={
   frline:[30,42],    // ישר המספרים והשוואה
   fraddsub:[43,56]   // חיבור וחיסור שברים
 };
+// ================= test prep: הכנה למבחנים (added 2026-11-03) =================
+// Focused prep for a specific test. Each test = one topic in TOPICS_TESTPREP.
+// Rules followed here (same as the rest of the math kit):
+// - options/answers are PLAIN strings (the UI compares button textContent to answer).
+// - NO optLabel() mixed numbers ("1 ו־1/6") in options/answers: improper values
+//   are written as raw a/b strings, wholes as Hebrew phrases. mathHtml() at render
+//   time wraps every a/b fragment in an LTR isolate.
+// - every wrong option is checked: different string AND different numeric value
+//   from the answer (a child must never be marked wrong for a mathematically
+//   equal answer, e.g. 3/6 vs 1/2, or 5/15 vs 1/3).
+
+// ---------- shared helpers for the test-prep generators ----------
+function tpSameVal(n1,d1,n2,d2){return n1*d2===n2*d1;}
+// pick up to 3 wrong fractions (as "n/d" strings) from [n,d] candidates:
+// distinct string, distinct value, valid (n>=1, d>=1); numerator-nudge fallback.
+function tpPickWrongs(ansN,ansD,cands){
+  const out=[],picked=[],seen=new Set([ansN+'/'+ansD]);
+  const clash=(n,d)=>picked.some(p=>tpSameVal(n,d,p[0],p[1]));
+  for(const pr of cands){
+    if(out.length>=3)break;
+    const n=pr[0],d=pr[1];
+    if(!Number.isFinite(n)||!Number.isFinite(d)||n<1||d<1)continue;
+    const s=n+'/'+d;
+    if(seen.has(s)||tpSameVal(n,d,ansN,ansD)||clash(n,d))continue;
+    seen.add(s);picked.push([n,d]);out.push(s);
+  }
+  let k=1;
+  while(out.length<3&&k<=20){
+    for(const pr of [[ansN+k,ansD],[ansN-k,ansD],[ansN,ansD+k],[ansN,ansD-k]]){
+      if(out.length>=3)break;
+      const n=pr[0],d=pr[1];
+      if(n<1||d<1)continue;
+      const s=n+'/'+d;
+      if(seen.has(s)||tpSameVal(n,d,ansN,ansD)||clash(n,d))continue;
+      seen.add(s);picked.push([n,d]);out.push(s);
+    }
+    k++;
+  }
+  return out;
+}
+function tpPickWordWrongs(ansA,ansB,cands){
+  const out=[],picked=[],seen=new Set([tpWordForm(ansA,ansB)]);
+  const clash=(a,b)=>picked.some(p=>a*p[1]===p[0]*b);
+  for(const pr of cands){
+    if(out.length>=3)break;
+    const a=pr[0],b=pr[1];
+    if(!Number.isFinite(a)||!Number.isFinite(b))continue;
+    if([3,4,5,6,9].indexOf(b)<0||a<1||a>tpMaxA(b))continue;
+    const s=tpWordForm(a,b);
+    if(seen.has(s)||a*ansB===ansA*b||clash(a,b))continue;
+    seen.add(s);picked.push([a,b]);out.push(s);
+  }
+  let k=1;
+  while(out.length<3&&k<=20){
+    for(const pr of [[ansA+k,ansB],[ansA-k,ansB]]){
+      if(out.length>=3)break;
+      const a=pr[0],b=pr[1];
+      if([3,4,5,6,9].indexOf(b)<0||a<1||a>tpMaxA(b))continue;
+      const s=tpWordForm(a,b);
+      if(seen.has(s)||a*ansB===ansA*b||clash(a,b))continue;
+      seen.add(s);picked.push([a,b]);out.push(s);
+    }
+    k++;
+  }
+  return out;
+}
+
+// ---------- Hebrew fraction word forms (verified against the test sheets) ----------
+// 3: שליש / שלישים (masculine numerals) · 4: רבע / רבעים (masculine)
+// 5: חמישית / חמישיות · 6: שישית / שישיות · 9: תשיעית / תשיעיות (feminine)
+const TP_NUM_MASC={2:'שני',3:'שלושה',4:'ארבעה',5:'חמישה',6:'שישה'};
+const TP_NUM_FEM={2:'שתי',3:'שלוש',4:'ארבע',5:'חמש',6:'שש',7:'שבע',8:'שמונה',9:'תשע'};
+function tpMaxA(b){return b===3?6:b;}
+function tpWordForm(a,b){
+  if(b===3)return a===1?'שליש':TP_NUM_MASC[a]+' שלישים';
+  if(b===4)return a===1?'רבע':TP_NUM_MASC[a]+' רבעים';
+  if(b===5)return a===1?'חמישית':TP_NUM_FEM[a]+' חמישיות';
+  if(b===6)return a===1?'שישית':TP_NUM_FEM[a]+' שישיות';
+  if(b===9)return a===1?'תשיעית':TP_NUM_FEM[a]+' תשיעיות';
+  return '';
+}
+// whole pizzas + slices as a Hebrew phrase (no mixed-number strings).
+function tpFmtWhole(w,r){
+  if(w===0)return r===1?'פרוסה אחת, בלי פיצה שלמה':r+' פרוסות, בלי פיצה שלמה';
+  if(r===0)return w===1?'פיצה שלמה אחת':w+' פיצות שלמות';
+  if(w===1)return r===1?'פיצה שלמה אחת ופרוסה אחת':'פיצה שלמה אחת ו־'+r+' פרוסות';
+  return r===1?w+' פיצות שלמות ופרוסה אחת':w+' פיצות שלמות ו־'+r+' פרוסות';
+}
+
+// ---------- 1. שברים במילים (number <-> words, thirds/sixths/fifths/ninths/quarters) ----------
+function tpWords(cfg,kind){
+  const b=pick([3,4,5,6,9]);
+  const a=rnd(1,tpMaxA(b));
+  const word=tpWordForm(a,b);
+  if(kind==='word'){
+    // words -> number (the matching exercise from the test sheet)
+    const ans=a+'/'+b;
+    const others=[3,4,5,6,9].filter(x=>x!==b&&a<=tpMaxA(x));
+    const cross=others.length?[[a,pick(others)]]:[];
+    const wrongs=tpPickWrongs(a,b,[[a-1,b],[a+1,b],[a-2,b],[a+2,b],[a-3,b],[a+3,b]].concat(cross));
+    const text='איזה שבר מתאים לביטוי "'+word+'"?';
+    return{text,options:makeOptions(ans,wrongs),answer:ans,
+      explain:'"'+word+'" פירושו '+a+' חלקים מתוך '+b+' חלקים שווים — לכן השבר הוא '+a+'/'+b+'.'};
+  }
+  // number -> words; sometimes with the circle picture from the test sheet
+  let text='כתבו במילים את השבר '+a+'/'+b+'.',viz='';
+  if(a<=b&&b<=8&&Math.random()<0.5){
+    viz=_circViz(a,b);
+    text='העיגול מחולק ל־'+b+' חלקים שווים. כתבו במילים את השבר שמתאר את החלק הצבוע.';
+  }
+  const others=[3,4,5,6,9].filter(x=>x!==b&&a<=tpMaxA(x));
+  const cross=others.length?[[a,pick(others)]]:[];
+  const wrongs=tpPickWordWrongs(a,b,[[a-1,b],[a+1,b],[a-2,b],[a+2,b],[a-3,b],[a+3,b]].concat(cross));
+  return{text,viz,options:makeOptions(word,wrongs),answer:word,
+    explain:'המונה '+a+' אומר כמה חלקים נלקחו, והמכנה '+b+' אומר לכמה חלקים שווים חולק השלם — במילים: "'+word+'".'};
+}
+
+// ---------- 2. מכנים 9 ו־15 (the test's denominators, never in the fractions booklet) ----------
+function tpDen915(cfg,kind){
+  const b=pick([9,15]);
+  const otherB=b===9?15:9;
+  if(kind==='word'){
+    const v=rnd(0,3);
+    if(v===0){
+      const a=rnd(1,b-1);
+      const text=pick([
+        'חילקו פיצה ל־'+b+' חלקים שווים, ו־'+a+' מהם נאכלו. איזה שבר מציין את החלק שנאכל?',
+        'חפיסת שוקולד מחולקת ל־'+b+' קוביות שוות, ו־'+a+' מהן נאכלו. איזה שבר מציין את החלק שנאכל?',
+        'עוגה חולקה ל־'+b+' פרוסות שוות. '+pick(NAMES)+' אכל '+a+' פרוסות. איזה שבר מהעוגה הוא אכל?']);
+      const ans=a+'/'+b;
+      return{text,options:makeOptions(ans,tpPickWrongs(a,b,[[a-1,b],[a+1,b],[a-2,b],[a+2,b],[b-a,b],[a,otherB]])),answer:ans,
+        explain:'השלם חולק ל־'+b+' חלקים שווים, ו־'+a+' מהם הם החלק המדובר — לכן השבר הוא '+a+'/'+b+'.'};
+    }
+    if(v===1){
+      const a=rnd(1,b-1),r=b-a;
+      const text=pick([
+        'מפיצה שחולקה ל־'+b+' חלקים שווים, נאכלו '+a+' חלקים. איזה שבר מהפיצה נשאר?',
+        'מיכל מים חולק ל־'+b+' חלקים שווים בשנתות. השתמשו ב־'+a+' חלקים. איזה שבר מהמיכל נשאר מלא?']);
+      const ans=r+'/'+b;
+      return{text,options:makeOptions(ans,tpPickWrongs(r,b,[[a,b],[r-1,b],[r+1,b],[r,otherB]])),answer:ans,
+        explain:'מתוך '+b+' חלקים נלקחו '+a+', ולכן נשארו '+b+' - '+a+' = '+r+' חלקים: השבר שנשאר הוא '+r+'/'+b+'.'};
+    }
+    const per=b/3;
+    if(v===2){
+      const color=pick(['כחול','צהוב','אדום']);
+      const text='מלבן מחולק ל־'+b+' משבצות שוות. '+per+' משבצות צבועות בכחול, '+per+' בצהוב ו־'+per+' באדום. איזה חלק מהמלבן צבוע ב'+color+'?';
+      const ans=per+'/'+b;
+      return{text,options:makeOptions(ans,tpPickWrongs(per,b,[[3,b],[2*per,b],[1,b],[per,otherB]])),answer:ans,
+        explain:'בכל צבע יש '+per+' משבצות מתוך '+b+' משבצות בסך הכל — לכן החלק הוא '+per+'/'+b+'.'};
+    }
+    const text='מלבן מחולק ל־'+b+' משבצות שוות. '+per+' משבצות צבועות בכחול ו־'+per+' בצהוב. שאר המשבצות לא צבועות. איזה חלק מהמלבן לא צבוע?';
+    const ans=per+'/'+b;
+    return{text,options:makeOptions(ans,tpPickWrongs(per,b,[[2*per,b],[1,b],[per,otherB],[3,b]])),answer:ans,
+      explain:'צבועות '+2*per+' משבצות מתוך '+b+', ולכן לא צבועות '+b+' - '+2*per+' = '+per+' משבצות: החלק הלא צבוע הוא '+per+'/'+b+'.'};
+  }
+  // dry: bare exercises
+  const v=rnd(0,3);
+  if(v===0){
+    const a=rnd(1,b-1);
+    const text='כתבו את השבר המתאים: '+a+' מתוך '+b+' חלקים שווים.';
+    const ans=a+'/'+b;
+    return{text,options:makeOptions(ans,tpPickWrongs(a,b,[[a-1,b],[a+1,b],[a-2,b],[a+2,b],[b-a,b],[a,otherB]])),answer:ans,
+      explain:'כותבים את מספר החלקים שנלקחו ('+a+') מעל הקו, ואת מספר כל החלקים ('+b+') מתחת לקו: '+a+'/'+b+'.'};
+  }
+  if(v===1){
+    const a=rnd(1,b-1),r=b-a;
+    const text='מתוך '+b+' חלקים שווים נלקחו '+a+'. איזה שבר נשאר?';
+    const ans=r+'/'+b;
+    return{text,options:makeOptions(ans,tpPickWrongs(r,b,[[a,b],[r-1,b],[r+1,b],[r,otherB]])),answer:ans,
+      explain:'נשארו '+b+' - '+a+' = '+r+' חלקים מתוך '+b+' — השבר שנשאר הוא '+r+'/'+b+'.'};
+  }
+  if(v===2){
+    const a=rnd(1,b-2),c=rnd(1,b-a-1);
+    const s=a+c;
+    const text='חשבו: '+a+'/'+b+' + '+c+'/'+b+' = ?';
+    const ans=s+'/'+b;
+    return{text,options:makeOptions(ans,tpPickWrongs(s,b,[[s-1,b],[s+1,b],[a,b],[c,b],[s,otherB]])),answer:ans,
+      explain:'כשהמכנים שווים, מחברים רק את המונים: '+a+' + '+c+' = '+s+', והמכנה נשאר '+b+' — התוצאה '+s+'/'+b+'.'};
+  }
+  const a=rnd(2,b-1),c=rnd(1,a-1);
+  const text='חשבו: '+a+'/'+b+' - '+c+'/'+b+' = ?';
+  const ans=(a-c)+'/'+b;
+  return{text,options:makeOptions(ans,tpPickWrongs(a-c,b,[[a+c,b],[a-c-1,b],[a-c+1,b],[c,b],[a,b]])),answer:ans,
+    explain:'כשהמכנים שווים, מחסרים רק את המונים: '+a+' - '+c+' = '+(a-c)+', והמכנה נשאר '+b+' — התוצאה '+(a-c)+'/'+b+'.'};
+}
+
+// ---------- 3. שברים גדולים מ־1 ושלמים (the pizza orders: 7/6, 12/6, 5/6) ----------
+function tpImproper(cfg,kind){
+  if(kind==='word'){
+    if(Math.random()<0.5){
+      const a=pick([5,6,7,8,11,12,13]);
+      const w=Math.floor(a/6),r=a%6;
+      const ans=tpFmtWhole(w,r);
+      const wrongs=[];
+      for(const ap of [a-1,a+1,a+2,a-6,a+6,a-2]){
+        if(wrongs.length>=3)break;
+        if(ap<1||ap===a)continue;
+        const s=tpFmtWhole(Math.floor(ap/6),ap%6);
+        if(s!==ans&&wrongs.indexOf(s)<0)wrongs.push(s);
+      }
+      const text='פיצה נחתכת ל־6 פרוסות שוות. הזמינו '+a+'/6 פיצה. כמה פיצות שלמות ופרוסות צריך לתת?';
+      let expl;
+      if(w===0)expl='פחות מפיצה שלמה: '+a+' פרוסות הן פחות מ־6, ולכן אין פיצה שלמה — רק '+a+' פרוסות.';
+      else if(r===0)expl='כל 6 פרוסות הן פיצה שלמה אחת. '+a+' פרוסות הן בדיוק '+w+' פיצות שלמות.';
+      else expl='כל 6 פרוסות הן פיצה שלמה אחת. '+a+' פרוסות = '+w+' פיצות שלמות ונשארות '+r+' פרוסות.';
+      return{text,options:makeOptions(ans,wrongs),answer:ans,explain:expl};
+    }
+    const b=6;
+    let a=rnd(1,12),c=rnd(1,12);
+    if(a===c)c=a===12?11:a+1;
+    const big=Math.max(a,c),small=Math.min(a,c);
+    const text='שתי פיצות זהות נחתכו ל־6 פרוסות כל אחת. דנה אכלה '+a+' פרוסות ונועם אכל '+c+' פרוסות. מי אכל יותר? (כתבו את השבר)';
+    const ans=big+'/'+b;
+    const wrongs=['השברים שווים'].concat(tpPickWrongs(big,b,[[small,b],[big-1,b],[big+1,b],[big,3]]));
+    return{text,options:makeOptions(ans,wrongs),answer:ans,
+      explain:'שתי הפיצות חולקו לאותו מספר פרוסות, ולכן משווים רק את מספר הפרוסות: '+big+' גדול מ־'+small+' — השבר הגדול יותר הוא '+big+'/6.'};
+  }
+  // dry
+  const v=cfg.s>=4?rnd(0,3):rnd(0,2);
+  if(v===0){
+    let w=rnd(0,2),r=rnd(0,5);
+    if(w===0&&r===0)r=3;
+    const t=w*6+r;
+    const text='כתבו כשבר: '+tpFmtWhole(w,r)+' (כל פיצה נחתכת ל־6 פרוסות).';
+    const ans=t+'/6';
+    return{text,options:makeOptions(ans,tpPickWrongs(t,6,[[t-1,6],[t+1,6],[r,6],[6,t],[t,3]])),answer:ans,
+      explain:'פיצה שלמה אחת היא 6/6. '+w+' פיצות שלמות הן '+(w*6)+'/6, ועוד '+r+' פרוסות — בסך הכל '+t+'/6.'};
+  }
+  if(v===1){
+    const b=6;
+    let a=rnd(1,12),c=rnd(1,12);
+    if(a===c)c=a===12?11:a+1;
+    const big=Math.max(a,c),small=Math.min(a,c);
+    const text='איזה שבר גדול יותר: '+a+'/'+b+' או '+c+'/'+b+'?';
+    const ans=big+'/'+b;
+    const wrongs=['השברים שווים'].concat(tpPickWrongs(big,b,[[small,b],[big-1,b],[big+1,b],[big,3]]));
+    return{text,options:makeOptions(ans,wrongs),answer:ans,
+      explain:'המכנים שווים, ולכן השבר עם המונה הגדול יותר גדול יותר: '+big+'/6 גדול מ־'+small+'/6.'};
+  }
+  if(v===2){
+    const pr=pick([[4,3,2],[5,3,2],[7,6,2],[5,4,2],[4,3,3],[7,3,2],[5,2,3]]);
+    const a=pr[0],b=pr[1],k=pr[2],A=a*k,B=b*k;
+    const text='איזה שבר שווה ל־'+A+'/'+B+'?';
+    const ans=a+'/'+b;
+    return{text,options:makeOptions(ans,tpPickWrongs(a,b,[[b,a],[A,b],[a+1,b],[A+1,B]])),answer:ans,
+      explain:'מרחיבים את '+a+'/'+b+' ב־'+k+': כופלים מונה ומכנה ב־'+k+' ומקבלים '+(a*k)+'/'+(b*k)+' — לכן שני השברים שווים.'};
+  }
+  // wholes -> improper (levels 5+)
+  const w=rnd(2,3),b=pick([3,4,8]);
+  const text='כתבו כשבר: '+w+' שלמים, כשכל שלם מחולק ל־'+b+' חלקים שווים.';
+  const ans=(w*b)+'/'+b;
+  return{text,options:makeOptions(ans,tpPickWrongs(w*b,b,[[w*b-1,b],[w*b+1,b],[w,b],[w*b,b===3?4:3]])),answer:ans,
+    explain:'כל שלם הוא '+b+'/'+b+'. '+w+' שלמים הם '+w+' × '+b+' = '+(w*b)+' חלקים — השבר הוא '+(w*b)+'/'+b+'.'};
+}
+
+// ---------- 4. חיבור במכנים שונים (1/6 + 2/3 — the test's two-colour exercise) ----------
+function tpDiffDen(cfg,kind){
+  const pairs=cfg.s<=2?[[6,3],[6,2],[12,6]]:cfg.s<=4?[[6,3],[6,2],[8,4],[12,6],[12,3]]:[[6,3],[6,2],[8,4],[8,2],[12,6],[12,4],[12,3],[10,5],[9,3],[15,5],[15,3]];
+  const pr=pick(pairs),B=pr[0],b=pr[1],k=B/b;
+  const c=rnd(1,b-1);
+  const a=rnd(1,B-c*k-1);
+  const sum=a+c*k,rem=B-sum;
+  const conv='קודם הופכים את '+c+'/'+b+' לשבר עם מכנה '+B+': כופלים מונה ומכנה ב־'+k+' ומקבלים '+(c*k)+'/'+B+'. עכשיו שני השברים באותו מכנה.';
+  if(kind==='word'){
+    if(Math.random()<0.5){
+      const text='צבעו '+a+'/'+B+' מהמלבן בעיפרון ו־'+c+'/'+b+' מהמלבן בעט. איזה חלק מהמלבן נשאר לא צבוע?';
+      const ans=rem+'/'+B;
+      return{text,options:makeOptions(ans,tpPickWrongs(rem,B,[[sum,B],[rem+1,B],[rem-1,B],[a,B],[c,B]])),answer:ans,
+        explain:conv+' '+a+'/'+B+' + '+(c*k)+'/'+B+' = '+sum+'/'+B+' צבוע. מהשלם נשאר '+B+'/'+B+' פחות '+sum+'/'+B+' = '+rem+'/'+B+'.'};
+    }
+    const text=pick(NAMES)+' צבע '+a+'/'+B+' מהדף בצבע אחד ו־'+c+'/'+b+' מהדף בצבע אחר. איזה חלק מהדף צבוע בסך הכל?';
+    const ans=sum+'/'+B;
+    return{text,options:makeOptions(ans,tpPickWrongs(sum,B,[[rem,B],[sum+1,B],[sum-1,B],[a+c,B]])),answer:ans,
+      explain:conv+' '+a+'/'+B+' + '+(c*k)+'/'+B+' = '+sum+'/'+B+' צבוע בסך הכל.'};
+  }
+  const text='חשבו: '+a+'/'+B+' + '+c+'/'+b+' = ?';
+  const ans=sum+'/'+B;
+  return{text,options:makeOptions(ans,tpPickWrongs(sum,B,[[a+c,B+b],[a+c,B],[sum+1,B],[sum-1,B],[rem,B]])),answer:ans,
+    explain:conv+' '+a+'/'+B+' + '+(c*k)+'/'+B+' = '+sum+'/'+B+'.'};
+}
+
+// ================= topics: test prep (הכנה למבחנים) =================
+const TOPICS_TESTPREP=[
+  {id:'tpFracNov8',emoji:'🎯',name:'מבחן שברים · 8/11',desc:'שברים במילים · מכנים 9 ו־15 · שברים גדולים מ־1 · חיבור במכנים שונים',
+   gens:[tpWords,tpDen915,tpImproper,tpDiffDen],cfg:GEN_CFG,perSlot:12},
+];
+const PAGE_MAP_TESTPREP={
+  tpFracNov8:[1,1], // הכנה למבחנים לא ממופה לעמודי חוברת — משבצת יחידה (ראו spanText)
+};
+// ================= end test prep =================
 
 // ================= booklets / page-range / cumulative =================
 // מיפוי נושאים לטווח עמודים בחוברת שבילים פלוס 16 — הנושאים נפרסים על פני כל החוברת לפי סדר הלימוד.
@@ -43564,7 +43855,8 @@ const BOOKLETS={
   11:{label:'שבילים פלוס 11',topics:TOPICS11,pageMap:PAGE_MAP11},
   12:{label:'שבילים פלוס 12',topics:TOPICS12,pageMap:PAGE_MAP12},
   geo:{label:'גאומטריה',topics:TOPICS_GEO,pageMap:PAGE_MAP_GEO},
-  frac:{label:'שברים',topics:TOPICS_FRAC,pageMap:PAGE_MAP_FRAC}
+  frac:{label:'שברים',topics:TOPICS_FRAC,pageMap:PAGE_MAP_FRAC},
+  testprep:{label:'הכנה למבחנים',topics:TOPICS_TESTPREP,pageMap:PAGE_MAP_TESTPREP,spanText:'לפי מבחן'}
 };
 // Each booklet's page span is DERIVED from its own topic->page map (single source
 // of truth): validation, input limits and every label in the UI follow the map.
@@ -43618,7 +43910,7 @@ let landingMode='topics';
 function syncBookletChrome(){
   for(const k of Object.keys(BOOKLETS)){
     const b=BOOKLETS[k],el=document.getElementById('bkSpan'+k);
-    if(el)el.textContent=`(עמ׳ ${b.minPage}–${b.maxPage})`;
+    if(el)el.textContent=b.spanText?`(${b.spanText})`:`(עמ׳ ${b.minPage}–${b.maxPage})`;
   }
   const bk=BOOKLETS[curBooklet];
   const hint=`טווח העמודים בחוברת: ${bk.minPage}–${bk.maxPage}`;
