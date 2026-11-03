@@ -17,6 +17,8 @@
   header h1 { margin: 0 0 6px; font-size: clamp(20px, 5.6vw, 27px); }
   header p { margin: 0; opacity: .92; font-size: clamp(13px, 3.6vw, 15px); }
   .tabs { display: flex; gap: 10px; margin: 14px 0; }
+.tabs.booktabs { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.tabs.booktabs .tab { flex: 0 0 auto; }
   .tab { flex: 1; min-height: 60px; border-radius: 14px; border: 2px solid #d5e2f2; background: #fff;
          font-size: clamp(15px, 4vw, 17px); font-weight: 700; cursor: pointer; color: #1c2b3a;
          touch-action: manipulation; padding: 10px 6px; font-family: inherit; }
@@ -445,7 +447,7 @@
 
   <!-- ============ TOPIC PICKER ============ -->
   <div id="topicPane">
-    <div class="tabs" style="margin-top:14px">
+    <div class="tabs booktabs" style="margin-top:14px">
       <button class="tab active" id="book10" onclick="setBooklet(10)">📘 חוברת 10 <span class="bkspan" id="bkSpan10"></span></button>
       <button class="tab" id="book11" onclick="setBooklet(11)">📗 חוברת 11 <span class="bkspan" id="bkSpan11"></span></button>
       <button class="tab" id="book12" onclick="setBooklet(12)">📙 חוברת 12 <span class="bkspan" id="bkSpan12"></span></button>
@@ -41629,20 +41631,16 @@ function hubRenderHome(){
   const dailies=hubDailyTopics();
   const hasCont=!!(hubLast&&hubFindTopic(hubLast.topic));
   // compact action chips only — no full-width suggestion rows on home (user feedback: visual clutter)
+  // 2026-11-03: home bank card removed (user: irrelevant/long); level-up goal option removed with it — chips row only.
   let chips='';
   const ap=hubActiveProfile();
   if(window.hubGuest)chips+='<button class="btn" onclick="hubExitGuest()">🎭 מצב אורח · סיום וחזרה</button>';
   if(ap)chips+='<button class="btn" onclick="hubOpenProfiles()">'+ap.emoji+' '+hEsc(ap.name)+' ▾</button>';
   if(dueTot>0)chips+='<button class="btn" onclick="hubStartDue()">🔁 '+dueTot+' שאלות לחזרה היום</button>';
   if(hasCont){const f=hubFindTopic(hubLast.topic);chips+='<button class="btn" onclick="hubContinue()">▶️ המשך מאיפה שהפסקת: '+hEsc(f.topic.name)+'</button>';}
-  th+='<div class="h-bankcard">'
-    +'<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:18px;font-weight:800">🏦 בנק הידע שלי</span><span style="font-size:22px;font-weight:800">'+hubBank.coins+' 🪙</span></div>'
-    +'<div style="margin-top:6px">השבוע: '+dots+' <span class="h-ssub">'+ad+' ימי למידה'+(ad>=4?' · הבונוס השבועי (+20) כבר נכנס ✔':' · עוד '+(4-ad)+' ימי למידה לבונוס +20')+'</span></div>'
-    +((gi&&!hubGoalPick)?'<div style="margin-top:8px">🎯 היעד שלי השבוע: <b>'+hEsc(gi.g.label)+'</b><div class="h-goalbar"><div style="width:'+Math.min(100,Math.round(gi.cur/gi.g.target*100))+'%"></div></div><span class="h-ssub">'+Math.min(gi.cur,gi.g.target)+'/'+gi.g.target+(gi.done?' · הושג! 🎉':'')+'</span> <button class="btn" onclick="hubGoalSwap()">🔄 החלף יעד</button></div>'
-       :'<div style="margin-top:8px"><span class="h-ssub">🎯 '+((hubGoal&&hubGoal.wk===hubWeekKey())?'בחירת יעד אחר:':'יעד לשבוע הזה:')+'</span> <span class="h-rowbtns" style="display:inline-flex;margin-top:0;vertical-align:middle">'+((hubGoal&&hubGoal.wk===hubWeekKey())?'<button class="btn" onclick="hubGoalCancel()">↩️ בלי שינוי</button>':'')+dailies.slice(0,1).map(dt=>'<button class="btn" onclick="hubSetGoal(\'topic\',\''+dt.id+'\')">לעלות רמה ב'+hEsc(dt.name)+'</button>').join('')+'<button class="btn" onclick="hubSetGoal(\'grads\')">15 שאלות שיבגירו</button><button class="btn" onclick="hubSetGoal(\'rounds\')">8 סבבים</button></span></div>')
-    +'<div class="h-rowbtns">'+chips+'<button class="btn" onclick="hubOpenMap()">🗺️ מפת ההתקדמות</button>'+(window.hubGuest?'':'<button class="btn" onclick="hubOpenParent()">👨‍👧 מסך להורה</button><button class="btn" onclick="hubShareWeek()">📤 סיכום שבועי</button>')+''
+  th+='<div class="h-rowbtns">'+chips+'<button class="btn" onclick="hubOpenMap()">🗺️ מפת ההתקדמות</button>'+(window.hubGuest?'':'<button class="btn" onclick="hubOpenParent()">👨‍👧 מסך להורה</button><button class="btn" onclick="hubShareWeek()">📤 סיכום שבועי</button>')+''
     +(window.hubGuest?'':(hubBank.reqs.some(r=>r.st==='pending')?'<span class="h-ssub" style="align-self:center">🎁 בקשת הצ׳ופר ממתינה לאישור הורה</span>':(hubBank.coins>=50?'<button class="btn" onclick="hubReqReward()">🎁 בקש צ׳ופר (50 🪙)</button>':'')))
-    +'</div></div>';
+    +'</div>';
   cont.innerHTML=th;
   const grid=hEl('hubGrid');let html='';
   for(const s of HUB_SUBJECTS){
@@ -43625,7 +43623,7 @@ function tpPickWordWrongs(ansA,ansB,cands){
 // ---------- Hebrew fraction word forms (verified against the test sheets) ----------
 // 3: שליש / שלישים (masculine numerals) · 4: רבע / רבעים (masculine)
 // 5: חמישית / חמישיות · 6: שישית / שישיות · 9: תשיעית / תשיעיות (feminine)
-const TP_NUM_MASC={2:'שני',3:'שלושה',4:'ארבעה',5:'חמישה',6:'שישה'};
+const TP_NUM_MASC={2:'שני',3:'שלושה',4:'ארבעה',5:'חמישה',6:'שישה',7:'שבעה',8:'שמונה',9:'תשעה'};
 const TP_NUM_FEM={2:'שתי',3:'שלוש',4:'ארבע',5:'חמש',6:'שש',7:'שבע',8:'שמונה',9:'תשע'};
 function tpMaxA(b){return b===3?6:b;}
 function tpWordForm(a,b){
@@ -43648,7 +43646,9 @@ function tpFmtWhole(w,r){
 function tpWords(cfg,kind){
   const b=pick([3,4,5,6,9]);
   const a=rnd(1,tpMaxA(b));
-  const word=tpWordForm(a,b);
+  let word=tpWordForm(a,b);
+  // the test sheet also writes ninths as "ארבעה חלקי תשע" — same value, other wording
+  if(kind==='word'&&b===9&&a>=2&&Math.random()<0.5)word=TP_NUM_MASC[a]+' חלקי תשע';
   if(kind==='word'){
     // words -> number (the matching exercise from the test sheet)
     const ans=a+'/'+b;
@@ -43711,7 +43711,7 @@ function tpDen915(cfg,kind){
       explain:'צבועות '+2*per+' משבצות מתוך '+b+', ולכן לא צבועות '+b+' - '+2*per+' = '+per+' משבצות: החלק הלא צבוע הוא '+per+'/'+b+'.'};
   }
   // dry: bare exercises
-  const v=rnd(0,3);
+  const v=rnd(0,4);
   if(v===0){
     const a=rnd(1,b-1);
     const text='כתבו את השבר המתאים: '+a+' מתוך '+b+' חלקים שווים.';
@@ -43733,6 +43733,13 @@ function tpDen915(cfg,kind){
     const ans=s+'/'+b;
     return{text,options:makeOptions(ans,tpPickWrongs(s,b,[[s-1,b],[s+1,b],[a,b],[c,b],[s,otherB]])),answer:ans,
       explain:'כשהמכנים שווים, מחברים רק את המונים: '+a+' + '+c+' = '+s+', והמכנה נשאר '+b+' — התוצאה '+s+'/'+b+'.'};
+  }
+  if(v===4){
+    const a=rnd(1,b-1),c=b-a;
+    const text='חשבו: '+a+'/'+b+' + '+c+'/'+b+' = ?';
+    const ans=b+'/'+b;
+    return{text,options:makeOptions(ans,tpPickWrongs(b,b,[[b-1,b],[a,b],[c,b],[b,otherB]])),answer:ans,
+      explain:'כשהמכנים שווים, מחברים רק את המונים: '+a+' + '+c+' = '+b+', והמכנה נשאר '+b+' — התוצאה '+b+'/'+b+', כלומר שלם אחד.'};
   }
   const a=rnd(2,b-1),c=rnd(1,a-1);
   const text='חשבו: '+a+'/'+b+' - '+c+'/'+b+' = ?';
@@ -43758,7 +43765,7 @@ function tpImproper(cfg,kind){
       const text='פיצה נחתכת ל־6 פרוסות שוות. הזמינו '+a+'/6 פיצה. כמה פיצות שלמות ופרוסות צריך לתת?';
       let expl;
       if(w===0)expl='פחות מפיצה שלמה: '+a+' פרוסות הן פחות מ־6, ולכן אין פיצה שלמה — רק '+a+' פרוסות.';
-      else if(r===0)expl='כל 6 פרוסות הן פיצה שלמה אחת. '+a+' פרוסות הן בדיוק '+w+' פיצות שלמות.';
+      else if(r===0)expl=w===1?'כל 6 פרוסות הן פיצה שלמה אחת — בדיוק פיצה שלמה אחת.':'כל 6 פרוסות הן פיצה שלמה אחת. '+a+' פרוסות הן בדיוק '+w+' פיצות שלמות.';
       else expl='כל 6 פרוסות הן פיצה שלמה אחת. '+a+' פרוסות = '+w+' פיצות שלמות ונשארות '+r+' פרוסות.';
       return{text,options:makeOptions(ans,wrongs),answer:ans,explain:expl};
     }
@@ -43773,7 +43780,7 @@ function tpImproper(cfg,kind){
       explain:'שתי הפיצות חולקו לאותו מספר פרוסות, ולכן משווים רק את מספר הפרוסות: '+big+' גדול מ־'+small+' — השבר הגדול יותר הוא '+big+'/6.'};
   }
   // dry
-  const v=cfg.s>=4?rnd(0,3):rnd(0,2);
+  const v=cfg.s>=4?rnd(0,4):rnd(0,3);
   if(v===0){
     let w=rnd(0,2),r=rnd(0,5);
     if(w===0&&r===0)r=3;
@@ -43781,7 +43788,7 @@ function tpImproper(cfg,kind){
     const text='כתבו כשבר: '+tpFmtWhole(w,r)+' (כל פיצה נחתכת ל־6 פרוסות).';
     const ans=t+'/6';
     return{text,options:makeOptions(ans,tpPickWrongs(t,6,[[t-1,6],[t+1,6],[r,6],[6,t],[t,3]])),answer:ans,
-      explain:'פיצה שלמה אחת היא 6/6. '+w+' פיצות שלמות הן '+(w*6)+'/6, ועוד '+r+' פרוסות — בסך הכל '+t+'/6.'};
+      explain:(w===0?'פחות מפיצה שלמה: '+r+' פרוסות הן פחות מ־6 — בסך הכל '+t+'/6.':r===0?(w===1?'פיצה שלמה אחת היא 6/6.':'כל פיצה שלמה היא 6/6, ולכן '+w+' פיצות שלמות הן '+(w*6)+'/6.')+' בסך הכל '+t+'/6.':'כל פיצה שלמה היא 6/6. '+(w===1?'פיצה שלמה אחת היא 6/6, ועוד '+r+' פרוסות':w+' פיצות שלמות הן '+(w*6)+'/6, ועוד '+r+' פרוסות')+' — בסך הכל '+t+'/6.')};
   }
   if(v===1){
     const b=6;
@@ -43801,6 +43808,13 @@ function tpImproper(cfg,kind){
     const ans=a+'/'+b;
     return{text,options:makeOptions(ans,tpPickWrongs(a,b,[[b,a],[A,b],[a+1,b],[A+1,B]])),answer:ans,
       explain:'מרחיבים את '+a+'/'+b+' ב־'+k+': כופלים מונה ומכנה ב־'+k+' ומקבלים '+(a*k)+'/'+(b*k)+' — לכן שני השברים שווים.'};
+  }
+  if(v===3){
+    const b=pick([3,4,6,8]);
+    const text='שלם אחד חולק ל־'+b+' חלקים שווים, ולקחו את כולם. איזה שבר מתאר את החלק שנלקח?';
+    const ans=b+'/'+b;
+    return{text,options:makeOptions(ans,tpPickWrongs(b,b,[[b-1,b],[1,b],[b,b+1],[b,3]])),answer:ans,
+      explain:'לקחו את כל '+b+' חלקים מתוך '+b+' — השבר הוא '+b+'/'+b+', כלומר שלם אחד.'};
   }
   // wholes -> improper (levels 5+)
   const w=rnd(2,3),b=pick([3,4,8]);
@@ -44265,18 +44279,19 @@ function nextTrainQ(){
   const q=drawQ(S.level);tCurrent=q;lvlCount[S.level]++;
   document.getElementById('tNext').style.display='none';
   const box=document.getElementById('tQ'),L=LEVELS[S.level];
-  box.innerHTML=`<div class="card"><div class="qnum">${L.e} רמה ${S.level+1}: ${L.n} · שאלה ${lvlCount[S.level]} ברמה</div>`+
-    `<div class="qtext">${mathHtml(q.text)}</div>${mathHtml(q.viz||'')}`+
-    `<div class="opts">${q.options.map(o=>`<button type="button" class="opt">${mathHtml(o)}</button>`).join('')}</div>`+
-    `<div class="explain" id="tExp"></div></div>`;
-  const btns=box.querySelectorAll('.opt');
-  btns.forEach(b=>b.addEventListener('click',()=>onTrainAnswer(b)));
+  const qhead=`<div class="qnum">${L.e} רמה ${S.level+1}: ${L.n} · שאלה ${lvlCount[S.level]} ברמה</div><div class="qtext">${mathHtml(q.text)}</div>${mathHtml(q.viz||'')}`;
+    box.innerHTML=`<div class="card">${qhead}`+
+      `<div class="opts">${q.options.map(o=>`<button type="button" class="opt">${mathHtml(o)}</button>`).join('')}</div>`+
+      `<div class="explain" id="tExp"></div></div>`;
+    const btns=box.querySelectorAll('.opt');
+    btns.forEach(b=>b.addEventListener('click',()=>onTrainAnswer(b)));
   renderStatus();
 }
 function onTrainAnswer(btn){
   if(tLocked)return;tLocked=true;
-  const q=tCurrent,val=btn.textContent;
-  const ok=(val===q.answer);
+  finishTrainAnswer(btn.textContent===tCurrent.answer,tCurrent,btn);
+}
+function finishTrainAnswer(ok,q,btn){
   S.answered++;
   const box=document.getElementById('tQ');
   const btns=box.querySelectorAll('.opt');
@@ -44284,7 +44299,7 @@ function onTrainAnswer(btn){
   const e=document.getElementById('tExp');e.style.display='block';
   if(ok){
     S.correct++;S.streak++;S.stars++;
-    btn.classList.add('right');
+    if(btn)btn.classList.add('right');
     if(S.streak>=3||S.stars>=5){
       const fast=S.streak>=3;
       S.streak=0;S.stars=0;
@@ -44306,7 +44321,7 @@ function onTrainAnswer(btn){
     e.innerHTML=`✅ <b>${pick(PRAISE)}</b>${extra}<br>${mathHtml(q.explain)}`;
   }else{
     S.streak=0;
-    btn.classList.add('wrong');
+    if(btn)btn.classList.add('wrong');
     e.innerHTML=`❌ <b>${pick(OOPS)}</b> התשובה הנכונה: <b>${mathHtml(q.answer)}</b>.<br>${mathHtml(q.explain)}`;
   }
   saveS();renderStatus();
