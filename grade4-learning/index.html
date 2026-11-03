@@ -32,6 +32,17 @@
   .frac .bot { display: block; padding: 0 5px; font-size: .92em; }
   .viz { margin: 10px 0 4px; }
   .vizcap { font-size: 14px; color: #5a6b7d; }
+  .tpgrid { display: flex; flex-wrap: wrap; gap: 6px; direction: ltr; margin: 14px auto 8px; justify-content: center; }
+  .tpcell { width: 40px; height: 40px; border: 2px solid #5a6b7d; background: #fff; border-radius: 6px; cursor: pointer; padding: 0; touch-action: manipulation; }
+  .tpcell.on-blue { background: #4a90d9; border-color: #4a90d9; }
+  .tpcell.on-red { background: #e05252; border-color: #e05252; }
+  .tpcell:disabled { cursor: default; }
+  .tppick { display: flex; gap: 10px; justify-content: center; margin: 10px 0 4px; }
+  .tppickbtn { border: 2px solid #d5e2f2; background: #f8fbff; border-radius: 10px; padding: 8px 16px; font-size: 17px; font-family: inherit; cursor: pointer; }
+  .tppickbtn.sel { border-color: #3a7bd5; background: #e3efff; font-weight: 700; }
+  .tppickbtn:disabled { cursor: default; opacity: .7; }
+  .tpcount { text-align: center; font-size: 16px; font-weight: 700; color: #1c2b3a; margin: 6px 0 10px; }
+  #tpCheck { display: block; margin: 4px auto 0; }
   .opts { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 12px; }
   @media (min-width: 640px) { .opts { grid-template-columns: 1fr 1fr; } }
   .opt { min-height: 56px; border: 2px solid #d5e2f2; background: #f8fbff; border-radius: 12px; padding: 12px;
@@ -43858,10 +43869,40 @@ function tpDiffDen(cfg,kind){
     explain:conv+' '+a+'/'+B+' + '+(c*k)+'/'+B+' = '+sum+'/'+B+'.'};
 }
 
+// ---------- 5. צביעה אינטראקטיבית (the test's colour-the-cells exercises) ----------
+// Returns a WIDGET question (no multiple-choice options): the training renderer
+// draws a clickable cell grid; tpWidgetOk() (pure, verifier-tested) grades it.
+// Widget questions never enter the summary test: 'tpColor' is in TEST_EXCLUDE.
+function tpWidgetOk(w,painted){
+  const counts={};
+  for(const p of painted)if(p)counts[p]=(counts[p]||0)+1;
+  return w.parts.every(pt=>(counts[pt.color]||0)===pt.need);
+}
+function tpColorCols(b){return b<=6?b:b===9?3:b===12?4:5;}
+function tpColor(cfg,kind){
+  if(kind==='word'){
+    // two-colour expansion exercise: 1/6 + 2/3 on a 6-cell grid, etc.
+    const pairs=cfg.s<=2?[[6,3],[6,2],[12,6]]:cfg.s<=4?[[6,3],[6,2],[8,4],[12,6],[12,3]]:[[6,3],[6,2],[8,4],[8,2],[12,6],[12,4],[12,3],[10,5],[9,3],[15,5],[15,3]];
+    const pr=pick(pairs),B=pr[0],b=pr[1],k=B/b;
+    const c=rnd(1,b-1);
+    const a=rnd(1,B-c*k-1);
+    const red=c*k,sum=a+red,rem=B-sum;
+    const text='לפניך מלבן המחולק ל־'+B+' משבצות שוות. צבעו '+a+'/'+B+' מהמלבן בכחול ו־'+c+'/'+b+' מהמלבן באדום. לחצו על משבצת כדי לצבוע אותה, ולחצו שוב כדי למחוק.';
+    const answer=a+'/'+B+' בכחול ו־'+red+'/'+B+' באדום';
+    const explain='קודם הופכים את '+c+'/'+b+' לשבר עם מכנה '+B+': כופלים מונה ומכנה ב־'+k+' ומקבלים '+red+'/'+B+'. לכן צריך '+a+' משבצות כחולות ו־'+red+' אדומות — בסך הכל '+sum+'/'+B+' צבוע, ונשאר '+rem+'/'+B+' לא צבוע.';
+    return{text,widget:{cells:B,cols:tpColorCols(B),parts:[{color:'blue',label:'כחול',need:a},{color:'red',label:'אדום',need:red}]},options:[],answer,explain};
+  }
+  const B=cfg.s<=2?pick([3,4,6]):cfg.s<=4?pick([3,4,5,6,9]):pick([3,4,5,6,9,12,15]);
+  const a=rnd(1,B-1);
+  const text='לפניך מלבן המחולק ל־'+B+' משבצות שוות. צבעו '+a+'/'+B+' מהמלבן. לחצו על משבצת כדי לצבוע אותה, ולחצו שוב כדי למחוק.';
+  return{text,widget:{cells:B,cols:tpColorCols(B),parts:[{color:'blue',label:'כחול',need:a}]},options:[],answer:a+'/'+B,
+    explain:'צריך לצבוע '+a+' משבצות מתוך '+B+' — זה בדיוק השבר '+a+'/'+B+'.'};
+}
+
 // ================= topics: test prep (הכנה למבחנים) =================
 const TOPICS_TESTPREP=[
-  {id:'tpFracNov8',emoji:'🎯',name:'מבחן שברים · 8/11',desc:'שברים במילים · מכנים 9 ו־15 · שברים גדולים מ־1 · חיבור במכנים שונים',
-   gens:[tpWords,tpDen915,tpImproper,tpDiffDen],cfg:GEN_CFG,perSlot:12},
+  {id:'tpFracNov8',emoji:'🎯',name:'מבחן שברים · 8/11',desc:'שברים במילים · מכנים 9 ו־15 · שברים גדולים מ־1 · חיבור במכנים שונים · צביעה אינטראקטיבית',
+   gens:[tpWords,tpDen915,tpImproper,tpDiffDen,tpColor],cfg:GEN_CFG,perSlot:12},
 ];
 const PAGE_MAP_TESTPREP={
   tpFracNov8:[1,1], // הכנה למבחנים לא ממופה לעמודי חוברת — משבצת יחידה (ראו spanText)
@@ -44288,12 +44329,53 @@ function nextTrainQ(){
   document.getElementById('tNext').style.display='none';
   const box=document.getElementById('tQ'),L=LEVELS[S.level];
   const qhead=`<div class="qnum">${L.e} רמה ${S.level+1}: ${L.n} · שאלה ${lvlCount[S.level]} ברמה</div><div class="qtext">${dispMath(q.text,q)}</div>${dispMath(q.viz||'',q)}`;
+  if(q.widget){renderTpWidget(box,qhead,q);}
+  else{
     box.innerHTML=`<div class="card">${qhead}`+
       `<div class="opts">${q.options.map(o=>`<button type="button" class="opt" data-v="${attrEsc(o)}">${dispMath(o,q)}</button>`).join('')}</div>`+
       `<div class="explain" id="tExp"></div></div>`;
     const btns=box.querySelectorAll('.opt');
     btns.forEach(b=>b.addEventListener('click',()=>onTrainAnswer(b)));
+  }
   renderStatus();
+}
+let tpPaint=[];
+function renderTpWidget(box,qhead,q){
+  const w=q.widget;
+  tpPaint=new Array(w.cells).fill(null);
+  const picker=w.parts.length>1?`<div class="tppick">${w.parts.map((p,i)=>`<button type="button" class="tppickbtn${i===0?' sel':''}" data-c="${p.color}">🖍️ ${p.label}</button>`).join('')}</div>`:'';
+  let cells='';
+  for(let i=0;i<w.cells;i++)cells+=`<button type="button" class="tpcell" data-i="${i}" aria-label="משבצת ${i+1}"></button>`;
+  box.innerHTML=`<div class="card">${qhead}${picker}<div class="tpgrid" style="width:${w.cols*46}px">${cells}</div><div class="tpcount" id="tpCount"></div><button type="button" class="btn btn-main" id="tpCheck">בדיקה ✓</button><div class="explain" id="tExp"></div></div>`;
+  let sel=w.parts[0].color;
+  const countEl=document.getElementById('tpCount');
+  const refresh=()=>{
+    const c={};for(const p of tpPaint)if(p)c[p]=(c[p]||0)+1;
+    countEl.textContent=w.parts.length>1
+      ?`כחול: ${c.blue||0} · אדום: ${c.red||0}`
+      :`צבעת ${c.blue||0} מתוך ${w.cells} משבצות`;
+  };
+  box.querySelectorAll('.tppickbtn').forEach(b=>b.addEventListener('click',()=>{
+    sel=b.dataset.c;
+    box.querySelectorAll('.tppickbtn').forEach(x=>x.classList.toggle('sel',x===b));
+  }));
+  box.querySelectorAll('.tpcell').forEach(cell=>cell.addEventListener('click',()=>{
+    const i=+cell.dataset.i,cur=tpPaint[i];
+    const next=w.parts.length===1?(cur?null:'blue'):(cur===sel?null:sel);
+    tpPaint[i]=next;
+    cell.classList.remove('on-blue','on-red');
+    if(next)cell.classList.add('on-'+next);
+    refresh();
+  }));
+  document.getElementById('tpCheck').addEventListener('click',onWidgetCheck);
+  refresh();
+}
+function onWidgetCheck(){
+  if(tLocked)return;tLocked=true;
+  const q=tCurrent;
+  const box=document.getElementById('tQ');
+  box.querySelectorAll('.tpcell,.tppickbtn,#tpCheck').forEach(x=>x.disabled=true);
+  finishTrainAnswer(tpWidgetOk(q.widget,tpPaint),q,null);
 }
 function onTrainAnswer(btn){
   if(tLocked)return;tLocked=true;
@@ -44395,7 +44477,7 @@ function resetProgress(){
 
 // ================= classic test mode: 10 HARD questions (top levels only) =================
 let questions=[], chosen=[];
-const TEST_EXCLUDE=new Set(['tMissingValue','dcMissing','avMissingValue']); // no unknowns in tests (his rule)
+const TEST_EXCLUDE=new Set(['tMissingValue','dcMissing','avMissingValue','tpColor']); // no unknowns in tests (his rule)
 const lastTestKeys={}; // topicId -> qkeys of the previous test (never repeat a test)
 function newTest(){
   const bank=curBank();
