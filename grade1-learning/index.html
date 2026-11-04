@@ -25,6 +25,8 @@ h1{font-size:30px;text-align:center;margin:8px 0 2px}
 .tabbtn:active{transform:translateY(2px);box-shadow:0 2px 0 #d9d2ff}
 #tabHe.active{background:#d9f7e8;border-color:var(--good);box-shadow:0 4px 0 #1e9e55}
 #tabMath.active{background:#ffe9c7;border-color:#ff9f1c;box-shadow:0 4px 0 #e07f00}
+#tabEng.active{background:#e0e7ff;border-color:#6366f1;box-shadow:0 4px 0 #4338ca}
+.engcard{background:#eef2ff;border:3px solid #c7d2fe;border-radius:22px;padding:20px 14px;text-align:center;margin:12px 0}
 .motiv{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0 2px}
 .motiv .chip{background:#fff;border:3px solid #ffe1ee;border-radius:999px;padding:6px 12px;font-size:16px;font-weight:800}
 .motiv .chip.fire{border-color:#ffb800;background:#fff8e1}
@@ -103,6 +105,7 @@ table.ptable td,table.ptable th{border-bottom:1px solid #eee;padding:7px 4px;tex
     <div class="tabs" id="homeTabs">
       <button class="tabbtn" id="tabHe"><span class="emo">📖</span><span>עברית</span></button>
       <button class="tabbtn" id="tabMath"><span class="emo">🔢</span><span>חשבון</span></button>
+      <button class="tabbtn" id="tabEng"><span class="emo">🔤</span><span>אנגלית</span></button>
     </div>
     <div id="booklets"></div>
     <button class="bigbtn ghost" id="btnGoal">🎯 היעד השבועי שלי</button>
@@ -249,6 +252,7 @@ function setTab(t) {
   });
   el('tabHe').classList.toggle('active', t === 'he');
   el('tabMath').classList.toggle('active', t === 'math');
+  el('tabEng').classList.toggle('active', t === 'eng');
 }
 
 /* ================= motivators (derived from prog, additive only) ================= */
@@ -339,6 +343,31 @@ function renderFocus(host) {
 }
 
 /* ================= home ================= */
+/* ================= english game tab (additive only; the game lives on its own page) ================= */
+var ENG_GAME_URL = 'https://netanel485-hue.github.io/adi-english-game/';
+function engStars() {
+  try {
+    var raw = localStorage.getItem('adiEngGameV1');
+    if (!raw) return 0;
+    var p = JSON.parse(raw);
+    if (!p || !p.done || typeof p.done !== 'object') return 0;
+    return Object.keys(p.done).length;
+  } catch (e) { return 0; }
+}
+function renderEng(host) {
+  var h = document.createElement('div'); h.className = 'booklet'; h.textContent = '🔤 אנגלית';
+  h.setAttribute('data-tab', 'eng'); host.appendChild(h);
+  var wrap = document.createElement('div'); wrap.setAttribute('data-tab', 'eng');
+  var n = engStars();
+  var line = n > 0 ? '⭐ ' + n + ' כוכבים באנגלית — כל הכבוד!' : 'בואי נתחיל לשחק באנגלית! 🎉';
+  wrap.innerHTML = '<div class="engcard"><div style="font-size:52px;line-height:1.1">🌟</div>'
+    + '<div style="font-size:22px;font-weight:800">משחק האנגלית של עדי</div>'
+    + '<div style="font-size:17px;margin:8px 0">' + line + '</div>'
+    + '<div style="font-size:15px;color:#555">אותיות, מילים ומשפטים מהחוברת שלך — קוראים ואומרים בקול</div>'
+    + '<a class="bigbtn purple" style="text-decoration:none;text-align:center;box-sizing:border-box" target="_blank" rel="noopener" href="' + ENG_GAME_URL + '">▶️ לשחק באנגלית</a>'
+    + '<div style="font-size:13px;color:#777;margin-top:4px">המשחק נפתח בלשונית חדשה — כל הכוכבים שלך נשמרים</div></div>';
+  host.appendChild(wrap);
+}
 function renderHome() {
   el('bankCoins').textContent = prog.bank;
   renderMotiv();
@@ -369,6 +398,7 @@ function renderHome() {
     b.onclick = (function (i) { return function () { openLearn(i); }; })(idx);
     el('grid-' + curBooklet).appendChild(b);
   });
+  try { renderEng(host); } catch (e) {}
   show('screen-home');
   setTab(curTab);
 }
@@ -946,6 +976,7 @@ el('learnStart').onclick = function () { startRound(curPage, false); };
 el('btnReview').onclick = function () { startRound(DATA.PAGES.length - 1, true); };
 el('tabHe').onclick = function () { setTab('he'); };
 el('tabMath').onclick = function () { setTab('math'); };
+el('tabEng').onclick = function () { setTab('eng'); };
 el('endAgain').onclick = function () { startRound(roundPage, roundReview); };
 el('endHome').onclick = renderHome;
 el('btnGoal').onclick = function () {
