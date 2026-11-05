@@ -251,14 +251,77 @@ footer{padding:28px 0 44px;color:var(--muted);font-size:.92rem}
   td:first-child{font-weight:800;color:var(--ink)}
 }
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important}}
+/* ===== App navigation: home hub + one chapter per screen ===== */
+.appbar{position:sticky;top:0;z-index:80;background:var(--surface);border-bottom:1px solid var(--border);box-shadow:0 2px 14px rgba(28,25,23,.07)}
+.appbar-in{max-width:1180px;margin:0 auto;padding:8px 20px;display:flex;align-items:center;gap:8px}
+.ab-btn{border:1.5px solid var(--border2);background:var(--surface);color:var(--ink);border-radius:999px;padding:8px 14px;font-weight:800;font-size:.92rem;display:inline-flex;gap:6px;align-items:center;white-space:nowrap}
+.ab-btn:hover{border-color:var(--accent);color:var(--accent-strong)}
+.ab-btn:disabled{opacity:.35;cursor:default}
+.ab-btn:disabled:hover{border-color:var(--border2);color:var(--ink)}
+.ab-title{flex:1;text-align:center;font-weight:800;font-size:1rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 4px}
+body[data-view="home"] .ab-home,body[data-view="home"] .ab-navbtn{display:none}
+body[data-view="home"] .hero{display:block}
+body[data-view="chapter"] .hero{display:none}
+body[data-view="home"] .sidebar{display:none}
+body[data-view="home"] .layout{grid-template-columns:1fr}
+body[data-view="home"] main .chapter,body[data-view="home"] main .final{display:none}
+body[data-view="chapter"] #homeView{display:none}
+body[data-view="chapter"] main .chapter{display:none}
+body[data-view="chapter"] main .chapter.active{display:block}
+body[data-view="chapter"] main .final{display:none}
+body[data-view="chapter"] main .final.active{display:block}
+body.nav-open .sidebar{display:block!important;position:fixed;top:62px;inset-inline:14px;z-index:95;max-height:74vh;overflow:auto;width:min(340px,calc(100vw - 28px))}
+@media (max-width:900px){
+  body[data-view="chapter"] .sidebar{display:none}
+  .ab-title{font-size:.92rem}
+  .ab-btn{padding:8px 11px;font-size:.88rem}
+}
+/* Home hub */
+#homeView{padding-top:4px}
+#homeView h2{font-size:clamp(1.5rem,3vw,2rem);margin:0 0 6px;letter-spacing:-.01em}
+#homeView .hub-lead{color:var(--ink2);margin:0 0 20px;max-width:640px}
+.hub{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.hub-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:20px;box-shadow:var(--shadow);cursor:pointer;transition:border-color .15s ease}
+.hub-card:hover{border-color:var(--accent)}
+.hub-card:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.hub-top{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.hub-badge{flex:0 0 44px;height:44px;border-radius:13px;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-size:1.05rem;font-weight:900}
+.hub-card h3{margin:0;font-size:1.18rem;line-height:1.3}
+.hub-card p{margin:0 0 12px;color:var(--ink2);font-size:.96rem;line-height:1.6}
+.hub-links{display:flex;gap:6px;flex-wrap:wrap}
+.hub-links a{background:var(--bg2);border:1px solid var(--border);border-radius:999px;padding:5px 12px;font-size:.85rem;font-weight:700;color:var(--ink2);text-decoration:none}
+.hub-links a:hover{background:var(--accent-soft);color:var(--accent-ink);border-color:var(--accent)}
+.hub-go{display:inline-block;margin-top:14px;font-weight:800;color:var(--accent-strong)}
+@media (max-width:700px){.hub{grid-template-columns:1fr}}
+/* Prev / next at the bottom of each chapter */
+.ch-nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;padding-top:18px;border-top:1px dashed var(--border2)}
+.ch-nav button{flex:1 1 200px;border:1.5px solid var(--border2);background:var(--surface2);color:var(--ink);border-radius:14px;padding:12px 16px;font-weight:800;text-align:right;line-height:1.4}
+.ch-nav button small{display:block;font-weight:700;color:var(--muted);font-size:.8rem;margin-bottom:2px}
+.ch-nav button:hover{border-color:var(--accent);color:var(--accent-strong)}
+.ch-nav button.home-btn{flex:0 1 auto;text-align:center}
+@media print{
+  .appbar,.ch-nav,.hub-links,.hub-go{display:none!important}
+  body[data-view] main .chapter,body[data-view] main .final,body[data-view] #homeView{display:block!important}
+  body[data-view] .hero{display:block!important}
+}
 </style>
 </head>
-<body>
+<body data-view="home">
+
+<nav class="appbar" aria-label="ניווט במדריך">
+  <div class="appbar-in">
+    <button class="ab-btn" id="abMenu" type="button" aria-label="פתיחת תוכן המדריך">☰ פרקים</button>
+    <button class="ab-btn ab-home" id="abHome" type="button">⌂ בית המדריך</button>
+    <span class="ab-title" id="abTitle">בית המדריך</span>
+    <button class="ab-btn ab-navbtn" id="abPrev" type="button">הקודם</button>
+    <button class="ab-btn ab-navbtn" id="abNext" type="button">הבא</button>
+  </div>
+</nav>
 
 <header class="hero">
   <div class="wrap">
     <div class="hero-top">
-      <span class="pill">מדריך וידאו למתחילים · <b>יניב יעקובוביץ</b></span>
+      <span class="pill">מדריך וידאו למתחילים · <b>מהדורה מורחבת בעברית</b></span>
       <span class="pill">10 שלבים · מההתקנה ועד אתר חי</span>
       <span class="pill">Mac או Windows · בלי רקע בקוד</span>
     </div>
@@ -283,7 +346,7 @@ footer{padding:28px 0 44px;color:var(--muted);font-size:.92rem}
     </div>
 
     <div class="how">
-      <div class="how-card"><b>📺 לוחצים על סרטון</b><p>בכל שלב יש סרטון הדגמה קצר של יניב — לוחצים והוא מתנגן ישר בתוך הדף, בלי לצאת מהמדריך.</p></div>
+      <div class="how-card"><b>📺 לוחצים על סרטון</b><p>בכל שלב יש סרטון הדגמה קצר — לוחצים והוא מתנגן ישר בתוך הדף, בלי לצאת מהמדריך.</p></div>
       <div class="how-card"><b>📋 מעתיקים פרומפט</b><p>מדביקים אצלכם ב־Claude Code ורואים את אותה התוצאה, צעד אחר צעד.</p></div>
       <div class="how-card"><b>✓ מסמנים שסיימתם</b><p>עוברים שלב־שלב לפי הסדר. בסוף — אתר אמיתי שעולה לאוויר.</p></div>
     </div>
@@ -317,10 +380,76 @@ footer{padding:28px 0 44px;color:var(--muted);font-size:.92rem}
       <li><a href="#tips"><span class="n">★</span>טיפים מהשטח</a></li>
       <li><a href="#glossary"><span class="n">א</span>מילון מושגים מורחב</a></li>
     </ul>
-    <div class="src">מבוסס על המדריך של יניב יעקובוביץ׳ באתר Verve — <a href="https://www.verve-pm.com/claude-code-guide/" target="_blank" rel="noopener">verve-pm.com/claude-code-guide</a> — שם תמצאו גם את סרטוני ההדגמה לכל שלב.</div>
+    <div class="src">המדריך הזה ממשיך ומרחיב רעיון ומבנה של מדריך באתר Verve — <a href="https://www.verve-pm.com/claude-code-guide/" target="_blank" rel="noopener">verve-pm.com/claude-code-guide</a> — שם תמצאו גם את סרטוני ההדגמה לכל שלב.</div>
   </aside>
 
   <main>
+    <!-- Home hub: pick a topic, each opens on its own screen -->
+    <section id="homeView">
+      <h2>מה לומדים היום?</h2>
+      <p class="hub-lead">בחרו נושא — כל פרק נפתח במסך משלו, ובתחתית כל פרק מחכים כפתורי מעבר לפרק הבא. מתחילים מאפס? לכו על “המסלול המלא” לפי הסדר.</p>
+      <div class="hub">
+        <article class="hub-card" data-goto="ch1" tabindex="0" role="link" aria-label="כניסה למסלול המלא — 10 השלבים">
+          <div class="hub-top"><span class="hub-badge">1–10</span><h3>המסלול המלא — 10 השלבים</h3></div>
+          <p>לומדים לפי הסדר, מההתקנה ועד אתר חי: מה זה Claude Code, תיקיית עבודה, CLAUDE.md, הרשאות ומצב Plan, סקילים, סוכנים, מוח שני וחיבורים.</p>
+          <div class="hub-links">
+            <a href="#ch1">שלב 1 · מה זה Claude Code</a>
+            <a href="#ch5">שלב 5 · הרשאות ו־Plan</a>
+            <a href="#ch10">שלב 10 · בונים אתר</a>
+            <a href="#publish">בונוס · GitHub Pages</a>
+          </div>
+          <span class="hub-go">מתחילים בשלב 1 ←</span>
+        </article>
+        <article class="hub-card" data-goto="usecases" tabindex="0" role="link" aria-label="כניסה לפרק מה אפשר לעשות">
+          <div class="hub-top"><span class="hub-badge">◆</span><h3>מה אפשר לעשות?</h3></div>
+          <p>עשרות שימושים אמיתיים — מסמכים, מחקר, סידור קבצים, אוטומציות ובניית כלים — עם סינון לפי נושא ורמת קושי, כדי למצוא מהר מה רלוונטי אליכם.</p>
+          <div class="hub-links">
+            <a href="#usecases">כל השימושים</a>
+            <a href="#roles">שימושים לפי תפקיד</a>
+          </div>
+          <span class="hub-go">למפת השימושים ←</span>
+        </article>
+        <article class="hub-card" data-goto="roles" tabindex="0" role="link" aria-label="כניסה לפרק לפי תפקיד">
+          <div class="hub-top"><span class="hub-badge">👤</span><h3>לפי תפקיד</h3></div>
+          <p>בוחרים את התפקיד שלכם — מהנדס מכונות ומוצר, סמנכ״ל שיווק של מכללה, מנהל פרויקטים, מורה, מנהל משרד או בעל עסק — ומקבלים שימושים ופרומפטים מותאמים, צעד־צעד.</p>
+          <div class="hub-links">
+            <a href="#roles">בחירת תפקיד</a>
+          </div>
+          <span class="hub-go">לשימושים לתפקיד שלי ←</span>
+        </article>
+        <article class="hub-card" data-goto="commands" tabindex="0" role="link" aria-label="כניסה לכלים המעשיים">
+          <div class="hub-top"><span class="hub-badge">✎</span><h3>כלים מעשיים</h3></div>
+          <p>טבלת הפקודות החשובות — סלאש וטרמינל — עם חיפוש חי, ומעבדת פרומפטים אינטראקטיבית שבונה לכם פרומפט מנצח בלחיצות, מוכן להעתקה.</p>
+          <div class="hub-links">
+            <a href="#commands">הפקודות החשובות</a>
+            <a href="#promptlab">מעבדת פרומפטים</a>
+          </div>
+          <span class="hub-go">לכלים ←</span>
+        </article>
+        <article class="hub-card" data-goto="advanced" tabindex="0" role="link" aria-label="כניסה לפרקים המתקדמים">
+          <div class="hub-top"><span class="hub-badge">⚡</span><h3>מתקדם ושיטת עבודה</h3></div>
+          <p>פקודות מותאמות, Hooks, סוכני־משנה והרצות מהטרמינל; שיטת עבודה מומלצת צעד־צעד מהרעיון ועד התוצר; ומסלול לימוד מסודר — 4 שבועות או יום מרוכז אחד.</p>
+          <div class="hub-links">
+            <a href="#advanced">פרק מתקדם</a>
+            <a href="#workflow">שיטת עבודה</a>
+            <a href="#path">מסלול לימוד</a>
+          </div>
+          <span class="hub-go">לפרק המתקדם ←</span>
+        </article>
+        <article class="hub-card" data-goto="quiz" tabindex="0" role="link" aria-label="כניסה לבדיקה עצמית ועזרה">
+          <div class="hub-top"><span class="hub-badge">✓</span><h3>בדיקה עצמית ועזרה</h3></div>
+          <p>מבחן אינטראקטיבי של 8 שאלות עם ציון והסברים, פתרון תקלות ושאלות נפוצות, טיפים מהשטח — ומילון מושגים מלא עם חיפוש חי.</p>
+          <div class="hub-links">
+            <a href="#quiz">המבחן העצמי</a>
+            <a href="#troubleshoot">פתרון תקלות</a>
+            <a href="#tips">טיפים מהשטח</a>
+            <a href="#glossary">מילון מושגים</a>
+          </div>
+          <span class="hub-go">למבחן העצמי ←</span>
+        </article>
+      </div>
+    </section>
+
     <!-- 1 -->
     <section class="chapter" id="ch1">
       <div class="chapter-head"><div class="num">1</div><div><h2>מה זה בכלל Claude Code</h2><p class="sub">שלושה מוצרים, מנוי אחד, ומה ההבדל ביניהם</p></div></div>
@@ -1546,19 +1675,19 @@ claude doctor               # diagnose installation</div></div>
       <p id="noResults" style="display:none;color:var(--muted)">לא נמצא מושג כזה — נסו מילה אחרת.</p>
     </section>
 
-    <section class="final">
+    <section class="final" id="final">
       <h2>זהו, אתם מוכנים 🎉</h2>
       <p>סיימתם את 10 השלבים: התקנה, תיקיית עבודה, CLAUDE.md, הרשאות ו־Plan, סקילים, סוכנים, מוח שני, חיבורים — ואתר חי באוויר. ויש לכם גם: מפת שימושים מלאה, טבלאות פקודות, מעבדת פרומפטים, פרק מתקדם ושיטת עבודה מסודרת.</p>
       <p><strong>הצעד הבא המומלץ:</strong> בחרו משימה אחת אמיתית מהשבוע הקרוב, ועבדו עליה בדיוק לפי שיטת העבודה בפרק ↻. הצלחה אחת אמיתית שווה יותר מעשרה סרטונים.</p>
       <p><strong>רוצים לבדוק את עצמכם?</strong> עברו על <a href="#quiz">המבחן העצמי</a> — 8 שאלות שמכסות את כל העקרונות. <strong>ורוצים אתר עם קישור קבוע משלכם?</strong> פרק <a href="#publish">הפרסום ב־GitHub Pages</a> מראה איך עושים את זה בחינם, בדיוק כמו אתרי הלימוד והשיתוף.</p>
-      <p>רוצים להעמיק עם הסרטונים המקוריים, או ללמוד בקבוצה / בארגון? המדריך המלא של יניב יעקובוביץ׳ מחכה לכם ב־<a href="https://www.verve-pm.com/claude-code-guide/" target="_blank" rel="noopener">verve-pm.com/claude-code-guide</a>.</p>
+      <p>רוצים להעמיק עם הסרטונים המקוריים? המדריך המקורי מחכה לכם ב־<a href="https://www.verve-pm.com/claude-code-guide/" target="_blank" rel="noopener">verve-pm.com/claude-code-guide</a>.</p>
     </section>
   </main>
 </div>
 
 <button id="toTop" type="button" aria-label="חזרה לראש הדף" title="חזרה למעלה">↑</button>
 
-<footer><div class="wrap">מדריך Claude Code למתחילים · מבוסס על המדריך של יניב יעקובוביץ׳ (Verve) · כל הפרומפטים במדריך מוכנים להעתקה ושימוש אישי</div></footer>
+<footer><div class="wrap">מדריך Claude Code למתחילים · מהדורה מורחבת בעברית, בהשראת מדריך Verve · כל הפרומפטים במדריך מוכנים להעתקה ושימוש אישי</div></footer>
 
 <script>
 (function(){
@@ -1797,6 +1926,117 @@ claude doctor               # diagnose installation</div></div>
       });
     });
   }
+
+  // ===== App router: home hub + one chapter per screen =====
+  var ORDER = [];
+  document.querySelectorAll('#sideNav a').forEach(function(a){
+    var id = a.getAttribute('href').slice(1);
+    var title = '';
+    a.childNodes.forEach(function(n){ if(n.nodeType === 3) title += n.textContent; });
+    ORDER.push({id:id, title:title.trim()});
+  });
+  ORDER.push({id:'final', title:'סיום — הצעדים הבאים'});
+  var orderIds = ORDER.map(function(o){ return o.id; });
+  var currentId = null;
+  var abTitle = document.getElementById('abTitle');
+  var abPrev = document.getElementById('abPrev');
+  var abNext = document.getElementById('abNext');
+
+  function setHash(id){
+    try{
+      if(id) history.replaceState(null, '', '#' + id);
+      else history.replaceState(null, '', location.pathname + location.search);
+    }catch(e){}
+  }
+  function goHome(){
+    currentId = null;
+    document.body.setAttribute('data-view', 'home');
+    document.body.classList.remove('nav-open');
+    document.querySelectorAll('main .chapter, main .final').forEach(function(s){ s.classList.remove('active'); });
+    document.querySelectorAll('#sideNav a').forEach(function(a){ a.classList.remove('active'); });
+    abTitle.textContent = 'בית המדריך';
+    setHash(null);
+    window.scrollTo(0, 0);
+  }
+  function go(id){
+    var sec = document.getElementById(id);
+    if(!sec || orderIds.indexOf(id) === -1){ goHome(); return; }
+    currentId = id;
+    document.body.setAttribute('data-view', 'chapter');
+    document.body.classList.remove('nav-open');
+    document.querySelectorAll('main .chapter, main .final').forEach(function(s){ s.classList.toggle('active', s === sec); });
+    var idx = orderIds.indexOf(id);
+    abTitle.textContent = ORDER[idx].title;
+    abPrev.disabled = idx <= 0;
+    abNext.disabled = idx >= ORDER.length - 1;
+    document.querySelectorAll('#sideNav a').forEach(function(a){
+      a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+    });
+    setHash(id);
+    window.scrollTo(0, 0);
+  }
+  function step(dir){
+    if(!currentId) return;
+    var idx = orderIds.indexOf(currentId) + dir;
+    if(idx >= 0 && idx < ORDER.length) go(ORDER[idx].id);
+  }
+  if(abPrev) abPrev.addEventListener('click', function(){ step(-1); });
+  if(abNext) abNext.addEventListener('click', function(){ step(1); });
+  var abHome = document.getElementById('abHome');
+  if(abHome) abHome.addEventListener('click', goHome);
+  var abMenu = document.getElementById('abMenu');
+  if(abMenu) abMenu.addEventListener('click', function(){ document.body.classList.toggle('nav-open'); });
+
+  // Bottom prev/next + home buttons inside every chapter
+  ORDER.forEach(function(item, idx){
+    var sec = document.getElementById(item.id);
+    if(!sec) return;
+    var nav = document.createElement('div');
+    nav.className = 'ch-nav';
+    var html = '';
+    if(idx > 0) html += '<button type="button" data-goto="' + ORDER[idx-1].id + '"><small>הפרק הקודם</small>' + ORDER[idx-1].title + '</button>';
+    html += '<button type="button" class="home-btn" data-goto="__home">⌂ בית המדריך</button>';
+    if(idx < ORDER.length - 1) html += '<button type="button" data-goto="' + ORDER[idx+1].id + '"><small>הפרק הבא</small>' + ORDER[idx+1].title + '</button>';
+    nav.innerHTML = html;
+    sec.appendChild(nav);
+  });
+  document.querySelectorAll('.ch-nav button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var t = b.getAttribute('data-goto');
+      if(t === '__home') goHome(); else go(t);
+    });
+  });
+
+  // Hub cards: whole card navigates, inner links jump straight to a chapter
+  document.querySelectorAll('.hub-card').forEach(function(card){
+    function open(){ go(card.getAttribute('data-goto')); }
+    card.addEventListener('click', function(e){
+      if(e.target.closest && e.target.closest('a')) return;
+      open();
+    });
+    card.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); open(); }
+    });
+  });
+
+  // All in-page anchor links route between screens instead of scrolling
+  document.addEventListener('click', function(e){
+    var a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+    if(!a) return;
+    var id = a.getAttribute('href').slice(1);
+    if(!id) return;
+    if(orderIds.indexOf(id) !== -1){ e.preventDefault(); go(id); }
+  });
+  window.addEventListener('hashchange', function(){
+    var id = location.hash.slice(1);
+    if(id && orderIds.indexOf(id) !== -1 && id !== currentId) go(id);
+    if(!id && currentId) goHome();
+  });
+  // Deep link on load: #ch5 opens chapter 5 directly
+  (function(){
+    var id = location.hash.slice(1);
+    if(id && orderIds.indexOf(id) !== -1) go(id); else goHome();
+  })();
 
   // Back to top
   var toTop = document.getElementById('toTop');
