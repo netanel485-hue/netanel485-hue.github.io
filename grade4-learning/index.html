@@ -41522,7 +41522,7 @@ function hubRenderMap(){
     html+='<div class="h-mapsec"><div class="h-maphead" style="border-color:'+(HUB_COLORS[s.id]||'#4a7dff')+'">'+s.emoji+' '+hEsc(s.name)+'</div>';
     for(const b of s.books)for(const t of b.topics){
       const p=hubTopicProg(t.id);
-      html+='<button class="h-maprow" onclick="hubMapGo(\''+t.id+'\')"><span>'+t.emoji+' '+hEsc(t.name)+'</span><span>'+hStars(p.mastery)+'</span><span class="h-mapst">'+(p.mastery>=8?'👑 הושלם':p.mastery?'רמה '+p.mastery+' מתוך 8':'לא התחיל')+'</span></button>';
+      html+='<button class="h-maprow" onclick="hubMapGo(\''+t.id+'\')"><span>'+t.emoji+' '+hEsc(t.name)+'</span><span>'+hStars(p.mastery)+'</span><span class="h-mapst">'+(p.mastery>=8?'👑 הושלם':p.mastery?'רמה '+(p.mastery+1)+' מתוך 8':'לא התחיל')+'</span></button>';
     }
     html+='</div>';
   }
@@ -41549,7 +41549,7 @@ function hubRenderParent(){
     for(const b of s.books||[])for(const t of b.topics){
       const p=hubProg[t.id];if(!p||(!p.rounds&&!p.mastery))continue;
       const acc=p.total?Math.round(p.correct/p.total*100):0;
-      progRows+='<div class="h-typerow"><span>'+t.emoji+' '+hEsc(t.name)+'</span><span>רמה '+p.mastery+'/8 · '+p.rounds+' סבבים · '+acc+'% נכון</span></div>';
+      progRows+='<div class="h-typerow"><span>'+t.emoji+' '+hEsc(t.name)+'</span><span>רמה '+Math.min(8,p.mastery+1)+'/8 · '+p.rounds+' סבבים · '+acc+'% נכון</span></div>';
     }
   }
   const mdP=hubMathProgress();
@@ -41790,7 +41790,7 @@ function hubRenderSubject(){
   const sel=hEl('hubTopicSel');
   sel.innerHTML=b.topics.map(t=>{
     const p=hubTopicProg(t.id);
-    return '<option value="'+t.id+'">'+t.emoji+' '+hEsc(t.name)+(p.mastery?' · הגעת לרמה '+p.mastery:'')+'</option>';
+    return '<option value="'+t.id+'">'+t.emoji+' '+hEsc(t.name)+(p.mastery?' · הגעת לרמה '+Math.min(8,p.mastery+1):'')+'</option>';
   }).join('');
   hEl('hubTopicGrid').innerHTML=b.topics.map(t=>{
     const p=hubTopicProg(t.id);const mc=hubMissCount(t.id);const dc=hubDueCount(t.id);
@@ -42016,10 +42016,10 @@ function hubCheck(){
       const p=hubTopicProg(S.topic.id);
       if(p.mastery<8){
         p.mastery=Math.min(8,p.mastery+1);
-        hubAward(15,'עליית שליטה · '+S.topic.name+' לרמה '+p.mastery);
-        hubWkReset();hubWk.mastery.push(S.topic.name+' — רמה '+p.mastery);
+        hubAward(15,'עליית שליטה · '+S.topic.name+' לרמה '+(p.mastery+1));
+        hubWkReset();hubWk.mastery.push(S.topic.name+' — רמה '+(p.mastery+1));
         S._leveledUp=true;
-        S.level=Math.min(8,Math.max(S.level,p.mastery));
+        S.level=Math.min(8,Math.max(S.level,p.mastery+1));hEl('hubQuizMode').textContent='אימון · רמה '+S.level+' '+LV_NAMES[S.level];
         // החלפת זנב הסבב לרמה החדשה (כמו hubMaybeAdapt): שאלות שנותרו מהרמה החדשה
         const remaining=S.qs.length-(S.idx+1);
         if(remaining>0){
@@ -42048,7 +42048,7 @@ function hubCheck(){
   hEl('hubQFb').innerHTML='<div class="fb '+(ok?'good':'bad')+'">'+(ok?PRAISE[(Math.random()*PRAISE.length)|0]+streakTxt:'❌ לא בדיוק — התשובה הנכונה מסומנת בירוק.')+'</div>'+(q.exp?'<div class="explain">💡 '+hEsc(q.exp)+'</div>':'');
   if(S._justLeveledUp==='fast'||S._justLeveledUp==='stars'){
     const pm=hubTopicProg(S.topic.id).mastery;
-    hEl('hubQFb').innerHTML+='<div class="fb good">🎉 עלית לרמה '+pm+'! '+(S._justLeveledUp==='fast'?'רצף של 3 נכונות! 🔥':'אספת 5 כוכבים! ⭐')+'</div>';
+    hEl('hubQFb').innerHTML+='<div class="fb good">🎉 עלית לרמה '+(pm+1)+'! '+(S._justLeveledUp==='fast'?'רצף של 3 נכונות! 🔥':'אספת 5 כוכבים! ⭐')+'</div>';
   }
   else if(S._justLeveledUp==='max'){
     hEl('hubQFb').innerHTML+='<div class="fb good">👑 כבר בשיא הרמות — ממשיכים להתאמן!</div>';
@@ -42122,7 +42122,7 @@ function hubFinish(){
     const prevMastery=p.mastery;
     if(S.mode==='test'&&an.score>=80)p.mastery=Math.max(p.mastery,Math.min(8,S.testTop||8));
     p._leveledUp=!!S._leveledUp||p.mastery>prevMastery;
-    if(p.mastery>prevMastery){hubAward(15*(p.mastery-prevMastery),'עליית שליטה · '+S.topic.name+' לרמה '+p.mastery);hubWk.mastery.push(S.topic.name+' — רמה '+p.mastery);}
+    if(p.mastery>prevMastery){hubAward(15*(p.mastery-prevMastery),'עליית שליטה · '+S.topic.name+' לרמה '+(p.mastery+1));hubWk.mastery.push(S.topic.name+' — רמה '+(p.mastery+1));}
   }
   hubSave(); // שמירת ההתקדמות שנרשמה בסיום הסבב (סבבים/שליטה/קיצור מבחן) — אחרת היא נשמרת רק בקליק הבא על נושא
   hubFocusCtx=null;
@@ -42154,7 +42154,7 @@ function hubFinish(){
   hEl('hubEndScore').textContent=S.correct+' מתוך '+S.qs.length+' נכון'+(S.mode==='test'?' ('+an.score+'%)':'');
   hEl('hubEndEmoji').textContent=an.score===100?'🏆':an.score>=80?'🎉':an.score>=60?'💪':'🌱';
   hEl('hubEndTypes').innerHTML=rows||'';
-  const lvlUp=(S.mode!=='prep'&&hubTopicProg(S.topic.id)._leveledUp)?'<div class="h-tip" style="background:#e4f8e9;border-color:#9fd8ae">🎉 עלית לרמה '+hubTopicProg(S.topic.id).mastery+' בנושא הזה!</div>':'';
+  const lvlUp=(S.mode!=='prep'&&hubTopicProg(S.topic.id)._leveledUp)?'<div class="h-tip" style="background:#e4f8e9;border-color:#9fd8ae">🎉 עלית לרמה '+(hubTopicProg(S.topic.id).mastery+1)+' בנושא הזה!</div>':'';
   const bankDelta=hubBank.coins-(S._c0||0);
   const bankLine=bankDelta>0?'<div class="h-tip" style="background:#e8fbef;border-color:#9fd8ae">🏦 +'+bankDelta+' מטבעות ידע נכנסו לבנק! היתרה עכשיו: '+hubBank.coins+' מטבעות</div>':'';
   hEl('hubEndTips').innerHTML=lvlUp+bankLine+an.tips.map(t=>'<div class="h-tip">💡 '+hEsc(t)+'</div>').join('')+(an.strong?'<div class="h-tip">⭐ חזק במיוחד: "'+hEsc(an.strong.type)+'" — כל התשובות נכונות!</div>':'');
