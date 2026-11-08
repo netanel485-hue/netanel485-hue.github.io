@@ -1,0 +1,1854 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>מתמטיקה — כיתה ב׳ · שבילים פלוס 4</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { overflow-x: hidden; }
+  body { font-family: "Segoe UI", Arial, sans-serif; background: #f0f6ff; color: #1c2b3a; margin: 0; padding: 12px; font-size: 16px; }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  header { background: linear-gradient(135deg, #3a7bd5, #6a4fd0); color: #fff; border-radius: 18px; padding: 20px 18px; text-align: center; }
+  header h1 { margin: 0 0 6px; font-size: clamp(20px, 5.6vw, 27px); }
+  header p { margin: 0; opacity: .92; font-size: clamp(13px, 3.6vw, 15px); }
+  .tabs { display: flex; gap: 10px; margin: 14px 0; }
+  .tab { flex: 1; min-height: 60px; border-radius: 14px; border: 2px solid #d5e2f2; background: #fff;
+         font-size: clamp(15px, 4vw, 17px); font-weight: 700; cursor: pointer; color: #1c2b3a;
+         touch-action: manipulation; padding: 10px 6px; font-family: inherit; }
+  .tab.active { background: linear-gradient(135deg, #3a7bd5, #6a4fd0); color: #fff; border-color: transparent; }
+  .card { background: #fff; border-radius: 16px; padding: 18px; box-shadow: 0 2px 10px rgba(30,60,110,.08); margin-bottom: 14px; }
+  .qnum { color: #6a4fd0; font-weight: 700; font-size: 13px; margin-bottom: 6px; }
+  .qtext { font-size: clamp(17px, 4.6vw, 20px); line-height: 1.6; margin-bottom: 8px; }
+  .frac { display: inline-block; vertical-align: middle; text-align: center; margin: 0 3px; unicode-bidi: isolate; }
+  .m { direction: ltr; unicode-bidi: isolate; white-space: nowrap; }
+  .frac .top { display: block; border-bottom: 2px solid #1c2b3a; padding: 0 5px; font-size: .92em; }
+  .frac .bot { display: block; padding: 0 5px; font-size: .92em; }
+  .viz { margin: 10px 0 4px; }
+  .vizcap { font-size: 14px; color: #5a6b7d; }
+  .opts { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 12px; }
+  @media (min-width: 640px) { .opts { grid-template-columns: 1fr 1fr; } }
+  .opt { min-height: 56px; border: 2px solid #d5e2f2; background: #f8fbff; border-radius: 12px; padding: 12px;
+         font-size: 19px; cursor: pointer; text-align: center; transition: all .15s;
+         display: flex; align-items: center; justify-content: center;
+         font-family: inherit; color: inherit; width: 100%; touch-action: manipulation; }
+  .opt:hover { border-color: #3a7bd5; }
+  .opt.sel { border-color: #3a7bd5; background: #e3efff; font-weight: 700; }
+  .opt.right { border-color: #43b581; background: #e2f6ec; font-weight: 700; }
+  .opt.wrong { border-color: #e05252; background: #fdecec; }
+  .opt:disabled { cursor: default; opacity: 1; }
+  .btn { display: inline-block; border: none; border-radius: 12px; padding: 13px 26px; font-size: 17px;
+         font-weight: 700; cursor: pointer; min-height: 52px; touch-action: manipulation; font-family: inherit; }
+  .btn-main { background: #3a7bd5; color: #fff; }
+  .btn-main:disabled { background: #b9cbe2; cursor: not-allowed; }
+  .btn-new { background: #43b581; color: #fff; }
+  .center { text-align: center; }
+  .explain { display: none; margin-top: 12px; background: #fff8e1; border: 1px solid #ffe082;
+             border-radius: 10px; padding: 10px 14px; font-size: 16px; line-height: 1.55; }
+  .score { font-size: 44px; font-weight: 800; }
+  .msg { font-size: 19px; margin: 6px 0 2px; }
+  details.parents { background: #eef7ee; border: 1px solid #c8e6c9; border-radius: 14px;
+                    padding: 14px 18px; margin-top: 18px; font-size: 15.5px; line-height: 1.65; }
+  details.parents summary { font-weight: 700; cursor: pointer; font-size: 16.5px; }
+  .bar { display: flex; justify-content: space-between; align-items: center; margin: 14px 2px 8px; font-size: 15px; font-weight: 600; }
+  .progress { height: 12px; background: #dbe7f7; border-radius: 99px; overflow: hidden; margin-bottom: 16px; }
+  .progress > div { height: 100%; background: #43b581; width: 0%; transition: width .3s; }
+  .t-status { background: linear-gradient(135deg, #f2f7ff, #f6f0ff); }
+  .st { font-size: 22px; color: #d5e2f2; }
+  .st.on { color: #ffb400; }
+  .dots { display: inline-flex; gap: 8px; direction: ltr; vertical-align: middle; }
+  .dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #ff9f43; background: #fff; display: inline-block; }
+  .dot.on { background: #ff9f43; }
+  .streakrow { display: flex; align-items: center; gap: 10px; justify-content: center; margin-top: 8px;
+               font-weight: 700; font-size: 16px; flex-wrap: wrap; }
+  .celebrate { position: fixed; inset: 0; background: rgba(20,30,60,.55); z-index: 50;
+               display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .celeb-box { background: #fff; border-radius: 20px; padding: 28px 32px; text-align: center;
+               font-size: clamp(20px, 5.4vw, 25px); font-weight: 800; max-width: 92vw; animation: pop .35s; }
+  @keyframes pop { from { transform: scale(.6); } to { transform: scale(1); } }
+  .intro-emoji { font-size: 44px; }
+  .intro-list { text-align: right; font-size: clamp(16px, 4.4vw, 18px); line-height: 2.05; margin: 12px 0 18px; }
+  .sharebtn { margin-top: 10px; background: rgba(255,255,255,.22); color: #fff; border: 2px solid rgba(255,255,255,.65);
+    border-radius: 99px; padding: 10px 22px; font-size: 16px; font-weight: 700; cursor: pointer;
+    touch-action: manipulation; font-family: inherit; -webkit-tap-highlight-color: transparent; }
+  .sharebtn:active { background: rgba(255,255,255,.35); }
+  .tgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 6px 0 14px; }
+  @media (min-width: 640px) { .tgrid { grid-template-columns: 1fr 1fr 1fr; } }
+  .tcard { background: #fff; border: 2px solid #d5e2f2; border-radius: 16px; padding: 18px 10px;
+           text-align: center; cursor: pointer; font-family: inherit; color: inherit;
+           touch-action: manipulation; min-height: 120px; }
+  .tcard:hover { border-color: #3a7bd5; }
+  .tcard .em { font-size: 40px; }
+  .tcard .nm { font-weight: 800; font-size: clamp(15px, 4vw, 17px); margin: 6px 0 2px; }
+  .tcard .ds { font-size: 13px; color: #5a6b7d; line-height: 1.4; }
+  .tcard .ct { font-size: 12px; color: #6a4fd0; font-weight: 700; margin-top: 6px; }
+  .tcard .pbar { height: 8px; background: #e6eefb; border-radius: 99px; overflow: hidden; margin-top: 8px; }
+  .tcard .pbar > div { height: 100%; background: #43b581; }
+  .tcard .rzmini { font-size: 15px; margin-top: 4px; }
+  .topicbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 14px 2px; }
+  .topicbar .tn { font-weight: 800; font-size: clamp(16px, 4.4vw, 19px); }
+  .btn-ghost { background: #fff; border: 2px solid #d5e2f2; color: #1c2b3a; border-radius: 12px;
+               padding: 10px 16px; font-weight: 700; cursor: pointer; font-family: inherit;
+               font-size: 15px; touch-action: manipulation; min-height: 48px; }
+  .parthead { display:flex; align-items:center; gap:10px; margin:20px 2px 10px; }
+  .parthead .pem { font-size:30px; }
+  .parthead .pt { font-weight:800; font-size:clamp(18px,5vw,22px); }
+  .parthead .pd { font-size:13.5px; color:#5a6b7d; }
+  .ramzor { background:#fff; border:2px solid #d5e2f2; border-radius:14px; padding:12px 14px; margin:10px 0 4px; }
+  .ramzor .rt { font-weight:800; font-size:15.5px; margin-bottom:8px; }
+  .ramzor .rrow { display:flex; gap:8px; flex-wrap:wrap; }
+  .rz { flex:1; min-width:100px; border:2px solid #d5e2f2; background:#f8fbff; border-radius:12px; padding:10px 6px;
+        font-family:inherit; font-size:14.5px; font-weight:700; cursor:pointer; color:inherit; touch-action:manipulation; min-height:48px; }
+  .rz.sel-g { border-color:#43b581; background:#e2f6ec; }
+  .rz.sel-y { border-color:#ffb400; background:#fff6dd; }
+  .rz.sel-r { border-color:#e05252; background:#fdecec; }
+  .learncard { border-right:6px solid #6a4fd0; }
+  .learncard h3 { margin:0 0 8px; font-size:19px; }
+  .learncard .lx { font-size:16.5px; line-height:1.7; }
+  .learncard .ex { background:#f2f7ff; border-radius:10px; padding:10px 14px; margin-top:10px; font-size:16px; line-height:1.65; }
+  .bigbtn { display:block; width:100%; border:none; border-radius:16px; padding:20px; cursor:pointer; font-family:inherit;
+            background:linear-gradient(135deg,#ff9f43,#e05252); color:#fff; font-size:clamp(18px,5vw,22px); font-weight:800;
+            box-shadow:0 3px 12px rgba(224,82,82,.25); touch-action:manipulation; margin-bottom:10px; }
+  .planbtn { display:block; width:100%; border:none; border-radius:16px; padding:20px; cursor:pointer; font-family:inherit;
+            background:linear-gradient(135deg,#43b581,#2b7a5b); color:#fff; font-size:clamp(18px,5vw,22px); font-weight:800;
+            box-shadow:0 3px 12px rgba(67,181,129,.3); touch-action:manipulation; margin-bottom:10px; }
+  .tourbtn { display:block; width:100%; border:none; border-radius:16px; padding:18px; cursor:pointer; font-family:inherit;
+            background:linear-gradient(135deg,#3a7bd5,#6a4fd0); color:#fff; font-size:clamp(17px,4.8vw,21px); font-weight:800;
+            box-shadow:0 3px 12px rgba(58,123,213,.3); touch-action:manipulation; margin-bottom:10px; }
+  .opt svg { max-width:100%; height:auto; }
+  .qfig { text-align:center; margin:8px 0; }
+  .legend { display:flex; flex-wrap:wrap; gap:8px 16px; justify-content:center; font-size:15px; margin-top:6px; }
+  .swatch { display:inline-block; width:14px; height:14px; border-radius:3px; vertical-align:-2px; margin-left:5px; }
+  .breakdown { text-align:right; font-size:16px; line-height:1.9; }
+  .hintbtn { background:#fff3cd; border:2px solid #ffca28; color:#7a5b00; border-radius:12px; padding:9px 18px;
+             font-weight:700; cursor:pointer; font-family:inherit; font-size:15px; touch-action:manipulation; min-height:44px; }
+  .hintbox { display:none; margin-top:10px; background:#fff8e1; border:1px dashed #e0a800; border-radius:10px;
+             padding:10px 14px; font-size:16px; line-height:1.55; }
+  .stepsbox { display:none; margin-top:12px; background:#eef7ee; border:1px solid #a5d6a7; border-radius:10px;
+             padding:10px 14px; font-size:16px; line-height:1.6; }
+  .stepsbox .stt { font-weight:800; margin-bottom:4px; }
+  .stepsbox ol { margin:4px 0 0; padding-right:20px; }
+  .stepsbox li { margin-bottom:3px; }
+  .step1box { display:none; margin-top:12px; background:#fff8e1; border:1px solid #ffe082; border-radius:10px;
+             padding:10px 14px; font-size:16px; line-height:1.55; }
+  .qtools { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; align-items:center; }
+  .meterwrap { display:flex; gap:14px; flex-wrap:wrap; }
+  .meterbox { flex:1; min-width:200px; }
+  .meterbox .mt { font-weight:800; font-size:15.5px; margin-bottom:6px; }
+  .bigbar { height:18px; background:#e6eefb; border-radius:99px; overflow:hidden; }
+  .bigbar > div { height:100%; background:linear-gradient(90deg,#43b581,#2b7a5b); transition:width .4s; }
+  .bigbar.blue > div { background:linear-gradient(90deg,#3a7bd5,#6a4fd0); }
+  .meterbox .mv { font-size:14px; color:#5a6b7d; margin-top:4px; }
+  .daycard { border:2px solid #d5e2f2; border-radius:14px; padding:12px 14px; margin-bottom:10px; background:#fff; }
+  .daycard.today { border-color:#43b581; background:#f2fbf5; }
+  .daycard.done { opacity:.75; }
+  .daycard .dt { font-weight:800; font-size:16.5px; }
+  .daycard .dd { font-size:14.5px; color:#5a6b7d; line-height:1.6; }
+  .dateinput { font-size:18px; padding:10px; border:2px solid #d5e2f2; border-radius:12px; font-family:inherit; }
+  .parentpanel { background:#eef7ee; border:1px solid #c8e6c9; border-radius:14px; padding:14px 18px; font-size:15.5px; line-height:1.7; margin-top:14px; }
+  .sessbar { display:flex; justify-content:space-between; align-items:center; font-size:15px; font-weight:700; margin:10px 2px 8px; }
+  .blocktag { display:inline-block; background:#e3efff; color:#2b5ea7; border-radius:99px; padding:3px 12px; font-size:13.5px; font-weight:700; }
+  .fadeSteps { background:#f2f7ff; border-radius:10px; padding:10px 14px; margin-top:10px; font-size:16px; line-height:1.6; }
+  .minicheck { border-right:6px solid #ffb400; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🧮 מתמטיקה — כיתה ב׳ · שבילים פלוס 4</h1>
+    <p>ערכת תרגול לאורי · לפי ספר שבילים פלוס 4 · מספרים עד 100, חיבור וחיסור</p>
+    <button class="sharebtn" onclick="shareApp()">📤 שיתוף</button>
+  </header>
+
+  <div id="topicPane">
+    <div class="card center">
+      <div class="intro-emoji">🎯</div>
+      <h2 style="margin:8px 0">שלום אורי! מתרגלים מתמטיקה ביחד</h2>
+      <p style="margin:0;color:#5a6b7d">בכל נושא יש <b>📖 למידה</b> קצרה, <b>🏋️ אימון רמות</b> עם כוכבים ו<b>📝 מבחן</b> של 10 שאלות.<br>
+      בכל נושא מחכות לך <b>150 שאלות</b> — ובסך הכול <b id="totalBankLbl">1,800</b> שאלות בערכה!</p>
+    </div>
+    <div class="card">
+      <div class="meterwrap">
+        <div class="meterbox">
+          <div class="mt">🏆 מד מוכנות</div>
+          <div class="bigbar"><div id="readyFill" style="width:0%"></div></div>
+          <div class="mv" id="readyLbl">עוד לא התחיל האבחון — התחילי את מסלול השבוע כדי למדוד מוכנות</div>
+        </div>
+        <div class="meterbox">
+          <div class="mt">🗂️ כיסוי המאגרים</div>
+          <div class="bigbar blue"><div id="coverFill" style="width:0%"></div></div>
+          <div class="mv" id="coverLbl">ענית נכון על 0 מתוך 1,800 שאלות המאגר</div>
+        </div>
+      </div>
+    </div>
+    <button class="planbtn" onclick="openPlan()">📅 מסלול השבוע — מתקדמים צעד־צעד!</button>
+    <button class="tourbtn" onclick="startTour()">🧭 סיור בחומר — שאלה מכל נושא, בסבבים מעורבבים</button>
+    <div id="partsHost"></div>
+    <div style="margin:18px 0 6px">
+      <button class="bigbtn" onclick="startMock()">🎓 מבחן מסכם — כמו מבחן אמיתי!</button>
+      <p class="center" style="color:#5a6b7d;font-size:14.5px;margin:8px 0 0">12 שאלות מכל ארבעת החלקים, עם ציון ופירוט לפי חלקים</p>
+    </div>
+    <details class="parents">
+      <summary>👨‍👩‍👦 להורים — איך עובדת הערכה?</summary>
+      <div>
+        הערכה בנויה לפי ספר <b>שבילים פלוס 4</b> (הספר הראשון של כיתה ב׳) — לפי היקף תחילת השנה הסטנדרטי: מספרים עד 100, חיבור וחיסור עד 100 בלי ועם המרה, בעיות מילוליות, סדרות ואומדן. כשתגיע תמונת תוכן העניינים המדויקת של הספר, הנושאים יותאמו אליה.
+        בכל אחד מ־12 הנושאים יש מאגר של <b>150 שאלות</b> — <b>1,800 שאלות</b> בסך הכול, מחוללות אוטומטית (לא רשימה קבועה). בכל נושא: 📖 למידה קצרה עם דוגמאות, 🏋️ אימון ב־3 רמות (5 כוכבים מעלים רמה, 3 נכונות ברצף מעלות מיד), 📝 מבחן של 10 שאלות עם ניסיון חוזר אחד ופתרון מודרך.
+        <b>מסלול השבוע</b> הוא הדרך המומלצת: אבחון פתיחה של 12 שאלות, ואז שיעור מובנה אחד ביום (~20–25 דקות) הבנוי על פי מדעי הלמידה — חזרה מרווחת, למידה מעורבבת בין נושאים, ודוגמאות שצעדיהן נמוגים בהדרגה.
+        נושא נחשב "שולט" 🟢 רק אם עבר מבחן יציאה וגם בדיקה חוזרת ביום אחר. כל טעות חוזרת שוב ושוב עד שנענתה נכון בשני ימים נפרדים.
+        ההתקדמות נשמרת במכשיר עצמו — אין צורך בהתחברות, ואין שיתוף נתונים. אין בערכה כפל, חילוק, שברים או מספרים שליליים — רק מה שבהיקף הספר.
+      </div>
+    </details>
+  </div>
+
+  <div id="mainPane" style="display:none">
+    <div class="topicbar">
+      <button class="btn-ghost" onclick="showTopics()">← לכל הנושאים</button>
+      <div class="tn" id="curTopicName"></div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" id="tabLearn" onclick="showLearn()">📖 למידה</button>
+      <button class="tab" id="tabTrain" onclick="showTrain()">🏋️ אימון רמות</button>
+      <button class="tab" id="tabTest" onclick="showTest()">📝 מבחן</button>
+    </div>
+    <div id="learnPane"></div>
+    <div id="trainPane" style="display:none">
+      <div id="tIntro" class="card center">
+        <div class="intro-emoji">🎮</div>
+        <h2 style="margin:8px 0">ברוכים הבאים לאימון!</h2>
+        <div class="intro-list">
+          <div>✏️ עונים על שאלה אחת בכל פעם — מתוך מאגר של <b>150 שאלות</b>, בלי חזרות!</div>
+          <div>💡 נתקעתם? לחצו על <b>רמז</b> — זה לא נחשב טעות</div>
+          <div>⭐ כל תשובה נכונה = <b>כוכב</b>! <b>5 כוכבים</b> מעלים אותך רמה</div>
+          <div>🔥 <b>3 נכונות ברצף</b> = עליית רמה מיידית! 🚀</div>
+          <div>💚 טעות? רואים את הצעד הראשון ומנסים שוב פעם אחת</div>
+          <div>🏆 יש <b>3 רמות</b> — מהקל לקשה ביותר!</div>
+        </div>
+        <button class="btn btn-new" onclick="acceptIntro()">הבנתי, מתחילים! 🎉</button>
+      </div>
+      <div id="tMain" style="display:none">
+        <div class="card t-status center">
+          <div id="tLevel" style="font-size:18px"></div>
+          <div id="tStars" style="margin:4px 0"></div>
+          <div class="streakrow"><span>🔥 רצף נכונות:</span><span class="dots" id="tDots"></span></div>
+          <div class="streakrow"><span>⭐ כוכבים לרמה הבאה:</span><span id="tProgStars" style="font-size:17px;letter-spacing:2px"></span></div>
+          <div id="tTotal" style="margin-top:6px;color:#5a6b7d;font-size:14px"></div>
+        </div>
+        <div id="tQ"></div>
+        <div class="center">
+          <button class="btn btn-main" id="tNext" style="display:none" onclick="nextTrainQ()">הבא ➜</button>
+        </div>
+      </div>
+      <div id="tMastery" class="card center" style="display:none">
+        <div style="font-size:52px">🏆</div>
+        <h2 style="margin:8px 0">אלופת האלופות!</h2>
+        <p class="msg">סיימת את כל 3 הרמות בנושא הזה! 🎉</p>
+        <p id="masteryStats" style="font-size:17px"></p>
+        <button class="btn btn-new" onclick="showTest()">עכשיו למבחן! 📝</button>
+        <div style="margin-top:10px"><button class="btn-ghost" onclick="restartTrain()">🔄 עוד אימון</button></div>
+      </div>
+    </div>
+    <div id="testPane" style="display:none">
+      <div class="bar"><span id="counter"></span><span>כל שאלה: 10 נקודות</span></div>
+      <div class="progress"><div id="pfill"></div></div>
+      <div id="quiz"></div>
+      <div class="center" style="margin:14px 0">
+        <button class="btn btn-main" id="submitBtn" onclick="gradeTest()">סיימתי — בדוק ציון ✅</button>
+      </div>
+      <div id="result" class="card center" style="display:none">
+        <div style="font-size:40px">🎓</div>
+        <div class="score" id="scoreNum"></div>
+        <div class="msg" id="scoreMsg"></div>
+        <div id="scoreDetail" style="margin-top:8px"></div>
+        <div style="margin-top:12px">
+          <button class="btn btn-new" onclick="showTest()">📝 מבחן חדש</button>
+          <button class="btn-ghost" onclick="showTopics()">← לכל הנושאים</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tourPane" style="display:none">
+    <div class="topicbar">
+      <button class="btn-ghost" onclick="showTopics()">← לכל הנושאים</button>
+      <div class="tn">🧭 סיור בחומר</div>
+    </div>
+    <div class="bar"><span id="tourCounter"></span><span id="tourRoundLbl"></span></div>
+    <div class="progress"><div id="tourFill"></div></div>
+    <div id="tourQ"></div>
+    <div class="center" style="margin:12px 0">
+      <button class="btn btn-main" id="tourNext" style="display:none" onclick="nextTourQ()">לשאלה הבאה ➜</button>
+      <button class="btn-ghost" id="tourEnd" onclick="endTour()">🏁 סיום וסיכום הסיור</button>
+    </div>
+    <div id="tourSummary" class="card" style="display:none"></div>
+  </div>
+
+  <div id="planPane" style="display:none">
+    <div class="topicbar">
+      <button class="btn-ghost" onclick="showTopics()">← לכל הנושאים</button>
+      <div class="tn">📅 מסלול השבוע</div>
+    </div>
+    <div id="planHost"></div>
+  </div>
+
+  <div id="mockPane" style="display:none">
+    <div class="topicbar">
+      <button class="btn-ghost" onclick="showTopics()">← לכל הנושאים</button>
+      <div class="tn">🎓 מבחן מסכם — 12 שאלות מכל החלקים</div>
+    </div>
+    <div class="bar"><span id="mockCounter"></span><span>בהצלחה רבה, אורי!</span></div>
+    <div class="progress"><div id="mockFill"></div></div>
+    <div id="mockQuiz"></div>
+    <div class="center" style="margin:14px 0">
+      <button class="btn btn-main" id="mockSubmit" onclick="gradeMock()">סיימתי — בדוק ציון ✅</button>
+    </div>
+    <div id="mockResult" class="card center" style="display:none">
+      <div style="font-size:40px">🎓</div>
+      <div class="score" id="mockScoreNum"></div>
+      <div class="msg" id="mockScoreMsg"></div>
+      <div id="mockBreakdown" class="breakdown" style="margin-top:10px"></div>
+      <div style="margin-top:12px">
+        <button class="btn btn-new" onclick="startMock()">🎓 מבחן מסכם חדש</button>
+        <button class="btn-ghost" onclick="showTopics()">← לכל הנושאים</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="celebrate" class="celebrate" style="display:none">
+  <div class="celeb-box">
+    <div style="font-size:52px" id="celebEmoji">🎉</div>
+    <div id="celebText"></div>
+    <div><button class="btn btn-new" style="margin-top:14px" onclick="hideCeleb()">ממשיכים! 🚀</button></div>
+  </div>
+</div>
+<script>
+"use strict";
+/* ================================================================
+   מתמטיקה — כיתה ב׳ · שבילים פלוס 4 — מאגר 150 שאלות לכל נושא
+   ================================================================ */
+const $ = id => document.getElementById(id);
+
+/* ---------- seeded RNG (deterministic banks, identical every load) ---------- */
+let _seed = 1;
+function srand(s){ _seed = (s>>>0) || 1; }
+function rand(){
+  _seed |= 0; _seed = (_seed + 0x6D2B79F5) | 0;
+  let t = Math.imul(_seed ^ (_seed >>> 15), 1 | _seed);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+function rnd(a,b){ return a + Math.floor(rand()*(b-a+1)); }
+function pick(arr){ return arr[Math.floor(rand()*arr.length)]; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(rand()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ---------- question model ---------- */
+/* ---------- bidi safety: wrap pure-math runs in LTR isolates so expressions
+   never render reversed inside the RTL page. A run whose "=" chain does not
+   evaluate equal is left untouched (it is Hebrew prose with numbers). ---------- */
+function _mathVal(t){
+  t = t.replace(/×/g,"*").replace(/÷/g,"/").replace(/−/g,"-").replace(/,/g,"");
+  t = t.replace(/²/g,"**2").replace(/³/g,"**3");
+  if(!/^[\d\s+\-*/().%]+$/.test(t)) return null;
+  try { const v = Function('"use strict";return('+t+")")(); return (typeof v==="number" && isFinite(v))? v : null; } catch(e){ return null; }
+}
+function fixMath(s){
+  if(typeof s!=="string" || !s || s.indexOf("<svg")>=0) return s;
+  const atoms=[], vals=[];
+  s = s.replace(/<span class="frac"><span class="top">(-?[\d,]+)<\/span><span class="bot">(-?[\d,]+)<\/span><\/span>|<span class="m">([^<]*)<\/span>/g,
+    (mm, tn, td, mv)=>{ atoms.push(mm); vals.push(td!==undefined && td!==null ? parseFloat(tn.replace(/,/g,""))/parseFloat(td.replace(/,/g,"")) : parseFloat(String(mv).replace(/,/g,""))); return "\u0001"+(atoms.length-1)+"\u0002"; });
+  const tags=[];
+  s = s.replace(/<[^>]+>/g, mm=>{ tags.push(mm); return "\u0003"+(tags.length-1)+"\u0004"; });
+  const RUN = /[\d\u0001(\[_\u25a1\u2212-][\d\s+\-\u2212\u00d7\u00f7=<>\.,\/)\]\u00b2\u00b3%\u00b0_\u25a1\u0001\u0002\(\[]*/g;
+  s = s.replace(RUN, run=>{
+    let a=0, b=run.length;
+    while(a<b && /\s/.test(run[a])) a++;
+    while(b>a && /[\s+\-\u2212\u00d7\u00f7=<>\.,\/]/.test(run[b-1])) b--;
+    if(b-a<1) return run;
+    const core = run.slice(a,b);
+    if(!/[\d\u0001]/.test(core)) return run;
+    let ok = true;
+    if(core.indexOf("=")>=0){
+      const vs = core.split("=").map(p=> _mathVal(p.trim().replace(/\u0001(\d+)\u0002/g, (m,i)=>"("+(vals[+i]===undefined? "NaN" : vals[+i])+")")));
+      if(vs.every(v=>v!==null)) ok = vs.every(v=>Math.abs(v-vs[0])<1e-9);
+    }
+    if(!ok) return run;
+    return run.slice(0,a) + '<span class="m">' + core + '</span>' + run.slice(b);
+  });
+  s = s.replace(/\u0001(\d+)\u0002/g, (m,i)=>atoms[+i]);
+  s = s.replace(/\u0003(\d+)\u0004/g, (m,i)=>tags[+i]);
+  return s;
+}
+
+function Q(text, viz, opts, ans, why, meta, hint, steps){
+  return { text: fixMath(text), viz: viz||"", opts: (opts||[]).map(o=>fixMath(o)), ans: fixMath(ans), why: fixMath(why), meta: meta||{}, hint: fixMath(hint||""), steps: steps? steps.map(x=>fixMath(x)) : null };
+}
+function fracHTML(n, d){
+  if(d===1) return `<span class="m">${n}</span>`;
+  return `<span class="frac"><span class="top">${n}</span><span class="bot">${d}</span></span>`;
+}
+function mixedHTML(w, n, d){
+  if(n===0) return `<span class="m">${w}</span>`;
+  if(w===0) return fracHTML(n,d);
+  return `<span class="m">${w}</span>` + fracHTML(n,d);
+}
+function dispFrac(n, d){ const g=gcd(n,d); const nn=n/g, dd=d/g; return mixedHTML(Math.floor(nn/dd), nn%dd, dd); }
+function fracStr(n, d){ const g=gcd(Math.abs(n), Math.abs(d)); const nn=n/g, dd=d/g; return dd===1? String(nn) : nn+"/"+dd; }
+function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ [a,b]=[b,a%b]; } return a||1; }
+function fmtN(x){ return x.toLocaleString("en-US"); }
+const YESNO = ["נכון","לא נכון"];
+const TOPT = { t:"נכון", f:"לא נכון" };
+function makeOpts(correct, wrongs){
+  const seen = new Set([correct]); const ws=[];
+  for(const w of wrongs){ if(w!==correct && !seen.has(w)){ seen.add(w); ws.push(w); } if(ws.length>=3) break; }
+  while(ws.length<3){ const pad = correct+"׳".repeat(ws.length+1); if(!seen.has(pad)){ seen.add(pad); ws.push(pad); } }
+  return shuffle([correct, ...ws]);
+}
+function numOpts(ans, offs){
+  const ws=[]; const seen=new Set([ans]);
+  for(const o of offs){ const v=ans+o; if(o!==0 && !seen.has(v)){ seen.add(v); ws.push(fmtN(v)); } if(ws.length>=3) break; }
+  return makeOpts(fmtN(ans), ws);
+}
+function fracOpts(n, d){
+  const c=fracStr(n,d), cor=dispFrac(n,d);
+  const cands=[[n+1,d],[n,d+1],[Math.max(1,n-1),d],[n+2,d],[n,d+2],[n+1,d+1],[n,d*2]];
+  const seen=new Set([c]); const ws=[];
+  for(const [cn,cd] of cands){ const k=fracStr(cn,cd); if(!seen.has(k)){ seen.add(k); ws.push(dispFrac(cn,cd)); if(ws.length>=3) break; } }
+  return makeOpts(cor, ws);
+}
+function stripTags(s){ return String(s||"").replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim(); }
+function normKey(q){
+  /* uniqueness: question text + figure markup (SVG coordinates ARE the question) + answer */
+  return stripTags(q.text)+" | "+String(q.viz||"").replace(/\s+/g," ")+" | "+String(q.ans||"").replace(/\s+/g," ");
+}
+
+/* ================= GEOMETRY SVG HELPERS ================= */
+function gridBG(x0,x1,y0,y1){
+  let s="";
+  for(let x=x0;x<=x1;x++) s+=`<line x1="${x*20}" y1="0" x2="${x*20}" y2="${(y1-y0)*20}" stroke="#dbe7f7" stroke-width="1"/>`;
+  for(let y=y0;y<=y1;y++) s+=`<line x1="0" y1="${y*20}" x2="${(x1-x0)*20}" y2="${y*20}" stroke="#dbe7f7" stroke-width="1"/>`;
+  return s;
+}
+/* Triangle on a base from x=10 to x=190 (y=95), apex at (apexX,12).
+   Red dashed segment drops from apex to (footX,95). isH = it is a true height. */
+function triHeightSVG(apexX, footX, isH){
+  const ext = (footX<10 || footX>190) ?
+    `<line x1="${Math.min(10,footX)}" y1="95" x2="${Math.max(190,footX)}" y2="95" stroke="#1c2b3a" stroke-width="1.5" stroke-dasharray="3 4"/>` : "";
+  const mark = isH ? `<path d="M ${footX-9} 95 h 9 v -9" fill="none" stroke="#43b581" stroke-width="2"/>` : "";
+  return `<svg width="210" height="108" viewBox="0 0 210 108" xmlns="http://www.w3.org/2000/svg">`+ ext +
+    `<line x1="10" y1="95" x2="190" y2="95" stroke="#1c2b3a" stroke-width="2.5"/>`+
+    `<line x1="10" y1="95" x2="${apexX}" y2="12" stroke="#1c2b3a" stroke-width="2.5"/>`+
+    `<line x1="190" y1="95" x2="${apexX}" y2="12" stroke="#1c2b3a" stroke-width="2.5"/>`+
+    `<line x1="${apexX}" y1="12" x2="${footX}" y2="95" stroke="#e05252" stroke-width="3" stroke-dasharray="6 4"/>`+ mark + `</svg>`;
+}
+/* Quadrilateral from grid points (unit = 18px), y up */
+function quadGridSVG(pts, color){
+  const W=210,H=140;
+  const P=pts.map(([x,y])=>`${15+x*18},${125-y*18}`).join(" ");
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`+ gridBG(0,10,0,6) +
+    `<polygon points="${P}" fill="#e3efff" stroke="${color||"#3a7bd5"}" stroke-width="2.5"/></svg>`;
+}
+function quadSVG(pts, label){
+  const W=180,H=110;
+  const p=pts.map(([x,y])=>`${10+x*1.5},${100-y*1.0}`).join(" ");
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg"><polygon points="${p}" fill="#e3efff" stroke="#3a7bd5" stroke-width="2.5"/></svg><div>${label}</div>`;
+}
+function angleSVG(deg){
+  const r=70, cx=15, cy=85;
+  const a=deg*Math.PI/180;
+  const x2=cx+r*Math.cos(a), y2=cy-r*Math.sin(a);
+  return `<svg width="170" height="100" viewBox="0 0 170 100" xmlns="http://www.w3.org/2000/svg">`+
+    `<line x1="${cx}" y1="${cy}" x2="${cx+r}" y2="${cy}" stroke="#1c2b3a" stroke-width="3"/>`+
+    `<line x1="${cx}" y1="${cy}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#1c2b3a" stroke-width="3"/>`+
+    `<path d="M ${cx+26} ${cy} A 26 26 0 0 0 ${(cx+26*Math.cos(a)).toFixed(1)} ${(cy-26*Math.sin(a)).toFixed(1)}" fill="none" stroke="#e05252" stroke-width="2.5"/></svg>`;
+}
+
+/* ================= GRADE 2 — שבילים פלוס 4 ================= */
+/* היקף: תחילת כיתה ב׳ — מספרים עד 100, חיבור וחיסור עד 100 (בלי ועם המרה),
+   בעיות מילוליות, סדרות ואומדן. בלי שברים, בלי עשרוניים, בלי כפל וחילוק,
+   בלי מספרים שליליים. כל השאלות בעברית פשוטה, מספרים שלמים בלבד. */
+const G2_NAMES=[["נועה",1],["דנה",1],["מיכל",1],["תמר",1],["הילה",1],["אורי",1],["יואב",0],["אבי",0],["רוני",0],["ליאור",0]];
+function g2name(){ const p=pick(G2_NAMES); return {nm:p[0], f:p[1]===1}; }
+/* תשובות שגויות מספריות: רק מספרים שלמים 0–100, שונים מהתשובה וזה מזה */
+function wrongNums(ans, cands){
+  const ws=[]; const seen=new Set([ans]);
+  const pool=[...cands, ans+2, ans-2, ans+5, ans-5, ans+10, ans-10, ans+3, ans-3, ans+20, ans+1, ans-1, ans+4, ans-4];
+  for(const v of pool){ if(Number.isInteger(v) && v>=0 && v<=100 && !seen.has(v)){ seen.add(v); ws.push(String(v)); } if(ws.length>=3) break; }
+  while(ws.length<3){ const v=ans+7*(ws.length+1); if(v>=0 && v<=100 && !seen.has(v)){ seen.add(v); ws.push(String(v)); } else break; }
+  return ws;
+}
+function g2Opts(ans, cands){ return makeOpts(String(ans), wrongNums(ans, cands)); }
+/* שאלות נכון/לא נכון: 4 אפשרויות קריאות ומובחנות */
+function tfOpts(ans){ return makeOpts(ans, ["נכון","לא נכון","אולי","לפעמים"].filter(o=>o!==ans)); }
+/* מילים למספרים 0–100 (נקבה, כמו שכותבים מספרים בעברית) */
+const ONES_W=["אפס","אחת","שתיים","שלוש","ארבע","חמש","שש","שבע","שמונה","תשע","עשר"];
+const TEENS_W={11:"אחת־עשרה",12:"שתים־עשרה",13:"שלוש־עשרה",14:"ארבע־עשרה",15:"חמש־עשרה",16:"שש־עשרה",17:"שבע־עשרה",18:"שמונה־עשרה",19:"תשע־עשרה"};
+const TENS_W={10:"עשר",20:"עשרים",30:"שלושים",40:"ארבעים",50:"חמישים",60:"שישים",70:"שבעים",80:"שמונים",90:"תשעים",100:"מאה"};
+function numWord(n){
+  if(n<0||n>100) return String(n);
+  if(n<=10) return ONES_W[n];
+  if(n<20) return TEENS_W[n];
+  if(n===100) return "מאה";
+  const t=Math.floor(n/10)*10, o=n%10;
+  if(o===0) return TENS_W[t];
+  return TENS_W[t]+" ו"+ONES_W[o];
+}
+
+/* ---- g1: עשרות ויחידות ---- */
+function genTens(L){
+  const kind=rnd(1,5);
+  if(kind===1){
+    const n=rnd(11,99), t=Math.floor(n/10);
+    return Q(`במספר ${n}, כמה עשרות יש?`, "", g2Opts(t,[t+1,t-1,t+2]), String(t),
+      `במספר ${n} יש ${t} עשרות ו־${n%10} יחידות.`, {type:"tens"},
+      "ספרת העשרות היא הספרה השמאלית במספר דו־ספרתי.",
+      [`הספרה השמאלית ב־${n} היא ${t}`, `כלומר יש ${t} עשרות`, `ו־${n%10} יחידות`]);
+  }
+  if(kind===2){
+    const n=rnd(11,99), o=n%10;
+    return Q(`במספר ${n}, כמה יחידות יש?`, "", g2Opts(o,[o+1,o-1,o+2]), String(o),
+      `במספר ${n} יש ${Math.floor(n/10)} עשרות ו־${o} יחידות.`, {type:"ones"},
+      "ספרת היחידות היא הספרה הימנית במספר.",
+      [`הספרה הימנית ב־${n} היא ${o}`, `כלומר יש ${o} יחידות`]);
+  }
+  if(kind===3){
+    const t=rnd(1,9), o=rnd(0,9), n=t*10+o;
+    return Q(`איזה מספר זה: ${t} עשרות ו־${o} יחידות?`, "", g2Opts(n,[n+10,n-10,n+1,n-1]), String(n),
+      `${t} עשרות הן ${t*10}, ועוד ${o} יחידות — יחד ${n}.`, {type:"build"},
+      "כל עשרת שווה 10. כופלים את מספר העשרות ב־10 ומוסיפים את היחידות.",
+      [`${t} עשרות = ${t} × 10 = ${t*10}`, `מוסיפים ${o} יחידות`, `המספר הוא ${n}`]);
+  }
+  if(kind===4){
+    const t=rnd(1,9), o=rnd(1,9), n=t*10+o;
+    const ans=`${t} עשרות ו־${o} יחידות`;
+    const wrongs=new Set();
+    while(wrongs.size<3){ const tt=rnd(1,9), oo=rnd(0,9); if(!(tt===t&&oo===o)) wrongs.add(`${tt} עשרות ו־${oo} יחידות`); }
+    return Q(`פרקו את המספר ${n} לעשרות ויחידות:`, "", makeOpts(ans,[...wrongs]), ans,
+      `${n} = ${t} עשרות ו־${o} יחידות.`, {type:"decomp"},
+      "הספרה השמאלית אומרת כמה עשרות, והימנית כמה יחידות.",
+      [`הספרה השמאלית: ${t} — אלו העשרות`, `הספרה הימנית: ${o} — אלו היחידות`, `${n} = ${t} עשרות ו־${o} יחידות`]);
+  }
+  const n=rnd(11,99), w=numWord(n);
+  const wrongs=new Set();
+  while(wrongs.size<3){ const m=rnd(11,99); if(m!==n) wrongs.add(numWord(m)); }
+  return Q(`איך כותבים במילים את המספר ${n}?`, "", makeOpts(w,[...wrongs]), w,
+    `${n} כותבים "${w}".`, {type:"word"},
+    "קוראים קודם את העשרות ואחר כך את היחידות.",
+    [`העשרות ב־${n}: ${TENS_W[Math.floor(n/10)*10]}`, `היחידות: ${ONES_W[n%10]}`, `יחד: "${w}"`]);
+}
+
+/* ---- g2: משווים ומסדרים ---- */
+function genCompare(L){
+  const kind=rnd(1,6);
+  if(kind===1){
+    let a=rnd(10,99), b=rnd(10,99); if(a===b) b=a>=99?a-1:a+1;
+    const big=Math.max(a,b), small=Math.min(a,b);
+    return Q(`איזה מספר גדול יותר: ${a} או ${b}?`, "", g2Opts(big,[small,big+10,big+1]), String(big),
+      `${big} גדול יותר מ־${small} — משווים קודם את העשרות, ואם הן שוות — את היחידות.`, {type:"bigger"},
+      "משווים קודם את ספרת העשרות. מי שיש לו יותר עשרות — גדול יותר.",
+      [`מסתכלים על העשרות: ב־${a} יש ${Math.floor(a/10)}, וב־${b} יש ${Math.floor(b/10)}`, `${big} גדול יותר`, `לכן התשובה: ${big}`]);
+  }
+  if(kind===2){
+    let a=rnd(10,99), b=rnd(10,99); if(a===b) b=a>=99?a-1:a+1;
+    const big=Math.max(a,b), small=Math.min(a,b);
+    return Q(`איזה מספר קטן יותר: ${a} או ${b}?`, "", g2Opts(small,[big,small+10,small-5]), String(small),
+      `${small} קטן יותר מ־${big} — משווים קודם את העשרות, ואם הן שוות — את היחידות.`, {type:"smaller"},
+      "משווים קודם את ספרת העשרות. מי שיש לו פחות עשרות — קטן יותר.",
+      [`מסתכלים על העשרות: ב־${a} יש ${Math.floor(a/10)}, וב־${b} יש ${Math.floor(b/10)}`, `${small} קטן יותר`, `לכן התשובה: ${small}`]);
+  }
+  if(kind===3){
+    const vs=new Set(); while(vs.size<3) vs.add(rnd(10,99));
+    const arr=[...vs].sort((x,y)=>x-y);
+    const ans=arr.join(", ");
+    const wrongs=new Set();
+    while(wrongs.size<3){ const s=shuffle(arr).join(", "); if(s!==ans) wrongs.add(s); }
+    return Q(`סדרו את המספרים מהקטן לגדול: ${shuffle(arr).join(", ")}`, "", makeOpts(ans,[...wrongs]), ans,
+      `מהקטן לגדול: ${ans}.`, {type:"order"},
+      "משווים כל שני מספרים: קודם עשרות, ואם שוות — יחידות.",
+      [`הקטן ביותר הוא ${arr[0]}`, `אחריו ${arr[1]}`, `והגדול ביותר ${arr[2]} — לכן הסדר: ${ans}`]);
+  }
+  if(kind===4){
+    const a=rnd(10,97), b=a+2;
+    return Q(`איזה מספר נמצא בין ${a} לבין ${b}?`, "", g2Opts(a+1,[a,a+2,b+1,a-1]), String(a+1),
+      `בין ${a} ל־${b} נמצא ${a+1}.`, {type:"between"},
+      "המספר שבאמצע גדול ב־1 מהקטן וקטן ב־1 מהגדול.",
+      [`אחרי ${a} בא ${a+1}`, `ולפני ${b} בא ${a+1}`, `לכן המספר הוא ${a+1}`]);
+  }
+  if(kind===5){
+    if(rnd(0,1)){
+      const a=rnd(10,98);
+      return Q(`מה המספר שבא מיד אחרי ${a}?`, "", g2Opts(a+1,[a,a+2,a+10]), String(a+1),
+        `אחרי ${a} בא ${a+1}.`, {type:"after"},
+        "המספר הבא גדול ב־1.",
+        [`סופרים אחד קדימה מ־${a}`, `המספר הבא הוא ${a+1}`]);
+    }
+    const a=rnd(11,99);
+    return Q(`מה המספר שבא מיד לפני ${a}?`, "", g2Opts(a-1,[a,a-2,a-10]), String(a-1),
+      `לפני ${a} בא ${a-1}.`, {type:"before"},
+      "המספר הקודם קטן ב־1.",
+      [`סופרים אחד אחורה מ־${a}`, `המספר הקודם הוא ${a-1}`]);
+  }
+  const a=rnd(10,99); let b=rnd(10,99); if(a===b) b=a>=99?a-1:a+1;
+  const truth=a>b;
+  const ans=truth?"נכון":"לא נכון";
+  return Q(`נכון או לא נכון? ${a} גדול מ־${b}.`, "",
+    tfOpts(ans), ans,
+    truth? `${a} באמת גדול מ־${b} — נכון.` : `${a} קטן מ־${b} — לא נכון.`,
+    {type:"tf"},
+    "משווים את העשרות קודם, ואם הן שוות — את היחידות.",
+    [`משווים: ${a} מול ${b}`, truth?`${a} גדול יותר — המשפט נכון ✓`:`${a} קטן יותר — המשפט לא נכון ✗`]);
+}
+
+/* ---- g3: סופרים בקפיצות ---- */
+function genCount(L){
+  const kind=rnd(1,5);
+  const step=pick([2,5,10]);
+  if(kind===1){
+    let start;
+    if(step===2) start=rnd(0,40)*2; else if(step===5) start=rnd(0,8)*10; else start=rnd(0,6)*10;
+    const terms=[start, start+step, start+2*step, start+3*step];
+    const shown=terms.slice(0,3).join(", ")+", ____";
+    return Q(`השלימו את הסדרה: ${shown}`, "", g2Opts(terms[3],[terms[3]+step,terms[3]-step,terms[3]+1]), String(terms[3]),
+      `קופצים ב־${step} בכל פעם: ${terms.join(", ")}.`, {type:"seqNext"},
+      `בודקים בכמה קופצים בכל צעד — כאן ב־${step}.`,
+      [`ההפרש בין מספר למספר שאחריו הוא ${step}`, `אחרי ${terms[2]} בא ${terms[2]} + ${step} = ${terms[3]}`]);
+  }
+  if(kind===2){
+    let start;
+    if(step===2) start=rnd(0,35)*2; else if(step===5) start=rnd(0,7)*10; else start=rnd(0,5)*10;
+    const terms=[start, start+step, start+2*step, start+3*step, start+4*step];
+    const miss=rnd(1,3);
+    const shown=terms.map((t,i)=> i===miss? "____" : t).join(", ");
+    return Q(`איזה מספר חסר בסדרה? ${shown}`, "", g2Opts(terms[miss],[terms[miss]+step,terms[miss]-step,terms[miss]+1]), String(terms[miss]),
+      `קופצים ב־${step} בכל פעם, והמספר החסר הוא ${terms[miss]}.`, {type:"seqMiss"},
+      `מוצאים את הקפיצה (ההפרש בין שכנים) ומשלימים.`,
+      [`הקפיצה היא ${step}`, `המספר שלפני החסר הוא ${terms[miss-1]}`, `${terms[miss-1]} + ${step} = ${terms[miss]}`]);
+  }
+  if(kind===3){
+    const a=rnd(0,100-step);
+    return Q(`סופרים בקפיצות של ${step}. איזה מספר בא אחרי ${a}?`, "", g2Opts(a+step,[a+step+step,a-step,a+1]), String(a+step),
+      `בקפיצות של ${step}: אחרי ${a} בא ${a+step}.`, {type:"jumpNext"},
+      `מוסיפים את גודל הקפיצה למספר.`,
+      [`הקפיצה היא ${step}`, `${a} + ${step} = ${a+step}`]);
+  }
+  if(kind===4){
+    const tens=rnd(2,10);
+    return Q(`כמה עשרות יש במספר ${tens*10}?`, "", g2Opts(tens,[tens+1,tens-1,tens+2]), String(tens),
+      `ב־${tens*10} יש ${tens} עשרות.`, {type:"tensIn100"},
+      "כל 10 הם עשרת אחת. מחלקים את המספר ב־10.",
+      [`${tens*10} זה ${tens} פעמים 10`, `כלומר ${tens} עשרות`]);
+  }
+  const start=rnd(30,100);
+  const s0=Math.floor(start/10)*10;
+  const terms=[s0, s0-10, s0-20, s0-30];
+  const shown=terms.slice(0,3).join(", ")+", ____";
+  return Q(`סופרים אחורה בקפיצות של 10: ${shown}`, "", g2Opts(terms[3],[terms[3]+10,terms[3]-10,terms[3]+1]), String(terms[3]),
+    `אחורה בקפיצות של 10: ${terms.join(", ")}.`, {type:"back10"},
+    "בספירה אחורה מחסרים 10 בכל צעד.",
+    [`אחרי ${terms[2]} מחסרים 10`, `${terms[2]} − 10 = ${terms[3]}`]);
+}
+
+/* ---- g4: חיבור וחיסור בעשרות ---- */
+function genTensOps(L){
+  const kind=rnd(1,5);
+  if(kind===1){
+    const a=rnd(1,9)*10, b=rnd(1,9)*10;
+    if(a+b>100) return genTensOps(L);
+    return Q(`כמה זה ${a} + ${b}?`, "", g2Opts(a+b,[a+b+10,a+b-10,a-b>0?a-b:a+b+20]), String(a+b),
+      `${a} + ${b} = ${a+b} — מחברים את העשרות: ${a/10} + ${b/10} = ${(a+b)/10} עשרות.`, {type:"tensAdd"},
+      "מחברים רק את ספרת העשרות, והיחידות נשארות 0.",
+      [`${a/10} עשרות + ${b/10} עשרות = ${(a+b)/10} עשרות`, `${(a+b)/10} עשרות = ${a+b}`]);
+  }
+  if(kind===2){
+    const a=rnd(2,10)*10, b=rnd(1,9)*10;
+    if(b>=a) return genTensOps(L);
+    return Q(`כמה זה ${a} − ${b}?`, "", g2Opts(a-b,[a-b+10,a-b-10,a+b<=100?a+b:a-b+20]), String(a-b),
+      `${a} − ${b} = ${a-b} — מחסרים את העשרות: ${a/10} − ${b/10} = ${(a-b)/10} עשרות.`, {type:"tensSub"},
+      "מחסרים רק את ספרת העשרות, והיחידות נשארות 0.",
+      [`${a/10} עשרות − ${b/10} עשרות = ${(a-b)/10} עשרות`, `${(a-b)/10} עשרות = ${a-b}`]);
+  }
+  if(kind===3){
+    const at=rnd(1,8), bt=rnd(1,9-at), a=at*10, b=bt*10, c=a+b;
+    return Q(`מה המספר החסר? ${a} + ____ = ${c}`, "", g2Opts(b,[b+10,b-10,b+20]), String(b),
+      `${a} + ${b} = ${c} — המספר החסר הוא ${b}.`, {type:"tensMissAdd"},
+      "בודקים כמה חסר כדי להגיע לתוצאה: מחסרים את מה שיש מהתוצאה.",
+      [`${c} − ${a} = ${b}`, `לכן המספר החסר הוא ${b}`]);
+  }
+  if(kind===4){
+    const a=rnd(1,7)*10, b=rnd(1,7)*10, c=rnd(1,7)*10;
+    if(a+b+c>100) return genTensOps(L);
+    return Q(`כמה זה ${a} + ${b} + ${c}?`, "", g2Opts(a+b+c,[a+b+c+10,a+b+c-10,a+b]), String(a+b+c),
+      `${a} + ${b} + ${c} = ${a+b+c}.`, {type:"tensAdd3"},
+      "מחברים שניים בכל פעם, ואז מוסיפים את השלישי.",
+      [`${a} + ${b} = ${a+b}`, `${a+b} + ${c} = ${a+b+c}`]);
+  }
+  const t1=rnd(2,10), t2=rnd(2,10);
+  if(t1===t2) return genTensOps(L);
+  const a=rnd(1,t1-1), b=t1-a, c=rnd(1,t2-1), d=t2-c;
+  const s1=t1*10, s2=t2*10;
+  const big=Math.max(s1,s2), small=Math.min(s1,s2);
+  return Q(`איזו תוצאה גדולה יותר: ${a*10} + ${b*10} או ${c*10} + ${d*10}?`, "",
+    g2Opts(big,[small,big+10,big-10,big+20,big-20]), String(big),
+    `${a*10} + ${b*10} = ${s1}, ו־${c*10} + ${d*10} = ${s2} — התוצאה הגדולה היא ${big}.`, {type:"tensCompare"},
+    "מחשבים את שתי התוצאות ואז משווים.",
+    [`${a*10} + ${b*10} = ${s1}`, `${c*10} + ${d*10} = ${s2}`, `${big} גדול יותר`]);
+}
+
+/* ---- g5: חיבור בלי המרה ---- */
+function genAdd1(L){
+  const maxN = L===1? 50 : L===2? 80 : 99;
+  const kind=rnd(1,4);
+  if(kind===1){
+    let a=rnd(10,maxN), b=rnd(2,9);
+    if((a%10)+b>9 || a+b>100) return genAdd1(L);
+    return Q(`כמה זה ${a} + ${b}?`, "", g2Opts(a+b,[a+b+10,a+b-10,a+b+1]), String(a+b),
+      `${a} + ${b} = ${a+b} — העשרות נשארות ${Math.floor(a/10)}, והיחידות: ${a%10} + ${b} = ${(a%10)+b}.`, {type:"addNoCarry1"},
+      "מחברים יחידות ליחידות. אין המרה — העשרות לא משתנות.",
+      [`היחידות: ${a%10} + ${b} = ${(a%10)+b}`, `העשרות נשארות ${Math.floor(a/10)}`, `התוצאה: ${a+b}`]);
+  }
+  if(kind===2){
+    let a=rnd(10,maxN), b=rnd(10,Math.max(10,99-a));
+    if(Math.floor(a/10)+Math.floor(b/10)>9 || (a%10)+(b%10)>9) return genAdd1(L);
+    return Q(`כמה זה ${a} + ${b}?`, "", g2Opts(a+b,[a+b+10,a+b-10,a+b+1]), String(a+b),
+      `${a} + ${b} = ${a+b} — עשרות: ${Math.floor(a/10)} + ${Math.floor(b/10)} = ${Math.floor(a/10)+Math.floor(b/10)}, יחידות: ${a%10} + ${b%10} = ${(a%10)+(b%10)}.`, {type:"addNoCarry2"},
+      "מחברים עשרות לעשרות ויחידות ליחידות, בלי המרה.",
+      [`העשרות: ${Math.floor(a/10)} + ${Math.floor(b/10)} = ${Math.floor(a/10)+Math.floor(b/10)}`, `היחידות: ${a%10} + ${b%10} = ${(a%10)+(b%10)}`, `התוצאה: ${a+b}`]);
+  }
+  if(kind===3){
+    let a=rnd(10,maxN), t=rnd(1,9)*10;
+    if(a+t>100) return genAdd1(L);
+    return Q(`כמה זה ${a} + ${t}?`, "", g2Opts(a+t,[a+t+10,a+t-10,a+t+1]), String(a+t),
+      `${a} + ${t} = ${a+t} — מוסיפים רק עשרות: ${Math.floor(a/10)} + ${t/10} = ${Math.floor(a/10)+t/10} עשרות, והיחידות ${a%10} נשארות.`, {type:"addTens"},
+      "כשמוסיפים עשרות שלמות, רק ספרת העשרות גדלה.",
+      [`העשרות: ${Math.floor(a/10)} + ${t/10} = ${Math.floor(a/10)+t/10}`, `היחידות נשארות ${a%10}`, `התוצאה: ${a+t}`]);
+  }
+  const target=rnd(20,maxN);
+  const t1=Math.floor(target/10), o1=target%10;
+  const a1=rnd(1,Math.max(1,t1-1)), a2=rnd(0,Math.max(0,o1));
+  const a=a1*10+a2, b=(t1-a1)*10+(o1-a2);
+  if(a<10||b<10||a+b!==target) return genAdd1(L);
+  const opts=shuffle([`${a} + ${b}`, `${a+1} + ${b}`, `${a} + ${b+10}`, `${a-1} + ${b}`]);
+  const ans=`${a} + ${b}`;
+  return Q(`איזה תרגיל תוצאתו ${target}?`, "", makeOpts(ans, opts.filter(o=>o!==ans)), ans,
+    `${a} + ${b} = ${target}.`, {type:"findSum"},
+    "מחשבים כל תרגיל ובודקים איזה מהם שווה לתוצאה.",
+    [`${a} + ${b} = ${target}`, `זו התשובה הנכונה ✓`]);
+}
+
+/* ---- g6: חיסור בלי המרה ---- */
+function genSub1(L){
+  const maxN = L===1? 50 : L===2? 80 : 99;
+  const kind=rnd(1,4);
+  if(kind===1){
+    let a=rnd(11,maxN), b=rnd(2,9);
+    if((a%10)<b) return genSub1(L);
+    return Q(`כמה זה ${a} − ${b}?`, "", g2Opts(a-b,[a-b+10,a-b-10,a-b+1]), String(a-b),
+      `${a} − ${b} = ${a-b} — העשרות נשארות ${Math.floor(a/10)}, והיחידות: ${a%10} − ${b} = ${(a%10)-b}.`, {type:"subNoBorrow1"},
+      "מחסרים יחידות מיחידות. אין המרה — העשרות לא משתנות.",
+      [`היחידות: ${a%10} − ${b} = ${(a%10)-b}`, `העשרות נשארות ${Math.floor(a/10)}`, `התוצאה: ${a-b}`]);
+  }
+  if(kind===2){
+    let a=rnd(11,maxN), b=rnd(10,a-1);
+    if(Math.floor(b/10)>Math.floor(a/10) || (b%10)>(a%10)) return genSub1(L);
+    return Q(`כמה זה ${a} − ${b}?`, "", g2Opts(a-b,[a-b+10,a-b-10,a-b+1]), String(a-b),
+      `${a} − ${b} = ${a-b} — עשרות: ${Math.floor(a/10)} − ${Math.floor(b/10)} = ${Math.floor(a/10)-Math.floor(b/10)}, יחידות: ${a%10} − ${b%10} = ${(a%10)-(b%10)}.`, {type:"subNoBorrow2"},
+      "מחסרים עשרות מעשרות ויחידות מיחידות, בלי המרה.",
+      [`העשרות: ${Math.floor(a/10)} − ${Math.floor(b/10)} = ${Math.floor(a/10)-Math.floor(b/10)}`, `היחידות: ${a%10} − ${b%10} = ${(a%10)-(b%10)}`, `התוצאה: ${a-b}`]);
+  }
+  if(kind===3){
+    let a=rnd(11,maxN), t=rnd(1,9)*10;
+    if(t>=a) return genSub1(L);
+    return Q(`כמה זה ${a} − ${t}?`, "", g2Opts(a-t,[a-t+10,a-t-10,a-t+1]), String(a-t),
+      `${a} − ${t} = ${a-t} — מחסרים רק עשרות: ${Math.floor(a/10)} − ${t/10} = ${Math.floor(a/10)-t/10} עשרות, והיחידות ${a%10} נשארות.`, {type:"subTens"},
+      "כשמחסרים עשרות שלמות, רק ספרת העשרות קטנה.",
+      [`העשרות: ${Math.floor(a/10)} − ${t/10} = ${Math.floor(a/10)-t/10}`, `היחידות נשארות ${a%10}`, `התוצאה: ${a-t}`]);
+  }
+  const target=rnd(11,Math.min(maxN,89));
+  const a=rnd(target+10,99), b=a-target;
+  if(b<10) return genSub1(L);
+  const opts=shuffle([`${a} − ${b}`, `${a+1} − ${b}`, `${a} − ${b+10}`, `${a+10} − ${b}`]);
+  const ans=`${a} − ${b}`;
+  return Q(`איזה תרגיל תוצאתו ${target}?`, "", makeOpts(ans, opts.filter(o=>o!==ans)), ans,
+    `${a} − ${b} = ${target}.`, {type:"findDiff"},
+    "מחשבים כל תרגיל ובודקים איזה מהם שווה לתוצאה.",
+    [`${a} − ${b} = ${target}`, `זו התשובה הנכונה ✓`]);
+}
+
+/* ---- g7: חיבור עם המרה ---- */
+function genAdd2(L){
+  const maxN = L===1? 60 : L===2? 90 : 100;
+  const kind=rnd(1,3);
+  if(kind===1){
+    let a=rnd(11,maxN-9), b=rnd(2,9);
+    if((a%10)+b<=9 || a+b>100) return genAdd2(L);
+    const ones=(a%10)+b, carry=1;
+    return Q(`כמה זה ${a} + ${b}?`, "", g2Opts(a+b,[a+b+10,a+b-10,a+b+1]), String(a+b),
+      `${a} + ${b} = ${a+b} — היחידות: ${a%10} + ${b} = ${ones}, שזה עשרת אחת ו־${ones-10} יחידות. מעבירים עשרת אחת לעשרות.`, {type:"addCarry1"},
+      "כשהיחידות מצטברות ל־10 ומעלה, מעבירים עשרת אחת לעשרות.",
+      [`היחידות: ${a%10} + ${b} = ${ones}`, `${ones} = עשרת אחת ו־${ones-10} יחידות`, `העשרות: ${Math.floor(a/10)} + 1 = ${Math.floor(a/10)+1}`, `התוצאה: ${a+b}`]);
+  }
+  let a=rnd(11,89), b=rnd(11,Math.max(11,89-a));
+  if((a%10)+(b%10)<=9 || Math.floor(a/10)+Math.floor(b/10)>=9 || a+b>100) return genAdd2(L);
+  const ones=(a%10)+(b%10);
+  return Q(`כמה זה ${a} + ${b}?`, "", g2Opts(a+b,[a+b+10,a+b-10,a+b+1]), String(a+b),
+    `${a} + ${b} = ${a+b} — היחידות: ${a%10} + ${b%10} = ${ones}, שזה עשרת אחת ו־${ones-10} יחידות. מעבירים עשרת אחת לעשרות.`, {type:"addCarry2"},
+    "מחברים יחידות ליחידות; אם יוצא 10 ומעלה — מעבירים עשרת אחת.",
+    [`היחידות: ${a%10} + ${b%10} = ${ones}`, `${ones} = עשרת אחת ו־${ones-10} יחידות`, `העשרות: ${Math.floor(a/10)} + ${Math.floor(b/10)} + 1 = ${Math.floor(a/10)+Math.floor(b/10)+1}`, `התוצאה: ${a+b}`]);
+}
+
+/* ---- g8: חיסור עם המרה ---- */
+function genSub2(L){
+  const maxN = L===1? 60 : L===2? 90 : 100;
+  const kind=rnd(1,3);
+  if(kind===1){
+    let a=rnd(21,maxN), b=rnd(2,9);
+    if((a%10)>=b) return genSub2(L);
+    const ones=10+(a%10)-b;
+    return Q(`כמה זה ${a} − ${b}?`, "", g2Opts(a-b,[a-b+10,a-b-10,a-b+1]), String(a-b),
+      `${a} − ${b} = ${a-b} — היחידות: ${a%10} קטן מ־${b}, אז לווים עשרת אחת: ${10+(a%10)} − ${b} = ${ones}. העשרות קטנות ב־1.`, {type:"subBorrow1"},
+      "כשאין מספיק יחידות, לווים עשרת אחת מהעשרות.",
+      [`לווים עשרת אחת: ${a%10} הופך ל־${10+(a%10)}`, `היחידות: ${10+(a%10)} − ${b} = ${ones}`, `העשרות: ${Math.floor(a/10)} − 1 = ${Math.floor(a/10)-1}`, `התוצאה: ${a-b}`]);
+  }
+  if(kind===2){
+    let a=rnd(21,99), b=rnd(11,a-1);
+    if((a%10)>=(b%10) || Math.floor(b/10)>=Math.floor(a/10)) return genSub2(L);
+    const ones=10+(a%10)-(b%10);
+    return Q(`כמה זה ${a} − ${b}?`, "", g2Opts(a-b,[a-b+10,a-b-10,a-b+1]), String(a-b),
+      `${a} − ${b} = ${a-b} — היחידות: ${a%10} קטן מ־${b%10}, אז לווים עשרת אחת: ${10+(a%10)} − ${b%10} = ${ones}. העשרות קטנות ב־1.`, {type:"subBorrow2"},
+      "מחסרים יחידות מיחידות; אם חסר — לווים עשרת אחת מהעשרות.",
+      [`לווים עשרת אחת: ${a%10} הופך ל־${10+(a%10)}`, `היחידות: ${10+(a%10)} − ${b%10} = ${ones}`, `העשרות: ${Math.floor(a/10)} − 1 − ${Math.floor(b/10)} = ${Math.floor(a/10)-1-Math.floor(b/10)}`, `התוצאה: ${a-b}`]);
+  }
+  const b=rnd(11,99);
+  const a=100;
+  return Q(`כמה זה 100 − ${b}?`, "", g2Opts(100-b,[100-b+10,100-b-10,100-b+1]), String(100-b),
+    `100 − ${b} = ${100-b}.`, {type:"subFrom100"},
+    "מ־100 מחסרים קודם את העשרות ואז את היחידות.",
+    [`100 − ${Math.floor(b/10)*10} = ${100-Math.floor(b/10)*10}`, `${100-Math.floor(b/10)*10} − ${b%10} = ${100-b}`]);
+}
+
+/* ---- g9: המספר החסר ---- */
+function genMissing(L){
+  const maxN = L===1? 50 : L===2? 80 : 100;
+  const kind=rnd(1,4);
+  if(kind===1){
+    const a=rnd(11,maxN-10), b=rnd(2,9);
+    const c=a+b; if(c>100) return genMissing(L);
+    return Q(`מה המספר החסר? ____ + ${a} = ${c}`, "", g2Opts(b,[b+1,b-1,b+10]), String(b),
+      `____ + ${a} = ${c} — המספר החסר הוא ${b}, כי ${c} − ${a} = ${b}.`, {type:"missAddFirst"},
+      "כדי למצוא מחובר חסר, מחסרים את המחובר שידוע מהסכום.",
+      [`${c} − ${a} = ${b}`, `בדיקה: ${b} + ${a} = ${c} ✓`]);
+  }
+  if(kind===2){
+    const a=rnd(11,maxN-10), b=rnd(2,9);
+    const c=a+b; if(c>100) return genMissing(L);
+    return Q(`מה המספר החסר? ${a} + ____ = ${c}`, "", g2Opts(b,[b+1,b-1,b+10]), String(b),
+      `${a} + ____ = ${c} — המספר החסר הוא ${b}, כי ${c} − ${a} = ${b}.`, {type:"missAddSecond"},
+      "כדי למצוא מחובר חסר, מחסרים את המחובר שידוע מהסכום.",
+      [`${c} − ${a} = ${b}`, `בדיקה: ${a} + ${b} = ${c} ✓`]);
+  }
+  if(kind===3){
+    const b=rnd(2,9), c=rnd(11,maxN);
+    const a=b+c; if(a>100) return genMissing(L);
+    return Q(`מה המספר החסר? ____ − ${b} = ${c}`, "", g2Opts(a,[a+1,a-1,a+10]), String(a),
+      `____ − ${b} = ${c} — המספר החסר הוא ${a}, כי ${c} + ${b} = ${a}.`, {type:"missSubFirst"},
+      "כדי למצוא את המספר שממנו חיסרו, מחברים את התוצאה ואת מה שחיסרו.",
+      [`${c} + ${b} = ${a}`, `בדיקה: ${a} − ${b} = ${c} ✓`]);
+  }
+  const a=rnd(21,maxN), b=rnd(2,9);
+  const c=a-b; if(c<1) return genMissing(L);
+  return Q(`מה המספר החסר? ${a} − ____ = ${c}`, "", g2Opts(b,[b+1,b-1,b+10]), String(b),
+    `${a} − ____ = ${c} — המספר החסר הוא ${b}, כי ${a} − ${c} = ${b}.`, {type:"missSubSecond"},
+    "כדי למצוא מחסר חסר, מחסרים את התוצאה מהמספר הראשון.",
+    [`${a} − ${c} = ${b}`, `בדיקה: ${a} − ${b} = ${c} ✓`]);
+}
+
+/* ---- g10: בעיות מילוליות — צעד אחד ---- */
+const G2_OBJS=[["מדבקות","מדבקת"],["גולות","גולת"],["ספרים","ספר"],["עפרונות","עפרון"],["בלונים","בלון"],["תפוחים","תפוח"],["עוגיות","עוגייה"],["כדורים","כדור"],["בובות","בובה"],["מכוניות","מכונית"]];
+function genWord1(L){
+  const maxN = L===1? 50 : L===2? 80 : 100;
+  const kind=rnd(1,5);
+  const nm=g2name();
+  const [objPlural, objSing]=pick(G2_OBJS);
+  const buy=nm.f?"קנתה":"קנה", got=nm.f?"קיבלה":"קיבל", gave=nm.f?"נתנה":"נתן", has=nm.f?"יש לה":"יש לו", left=nm.f?"נשארו לה":"נשארו לו";
+  if(kind===1){
+    const a=rnd(11,maxN-10), b=rnd(5,Math.min(30,maxN-a));
+    return Q(`ל${nm.nm} היו ${a} ${objPlural}. ${nm.f?"היא":"הוא"} ${got} עוד ${b} ${objPlural}. כמה ${objPlural} ${has} עכשיו?`, "",
+      g2Opts(a+b,[a+b+10,a+b-10,a-b>0?a-b:a+b+1]), String(a+b),
+      `היו ${a}, ועוד ${b} — יחד ${a+b} ${objPlural}.`, {type:"wpAdd"},
+      "כשמוסיפים דברים — מחברים.",
+      [`היו ${a} ${objPlural}`, `נוספו עוד ${b}`, `${a} + ${b} = ${a+b}`]);
+  }
+  if(kind===2){
+    const a=rnd(21,maxN), b=rnd(5,a-1);
+    return Q(`ל${nm.nm} היו ${a} ${objPlural}. ${nm.f?"היא":"הוא"} ${gave} ${b} ${objPlural} לחברה. כמה ${objPlural} ${left}?`, "",
+      g2Opts(a-b,[a-b+10,a-b-10,a+b<=100?a+b:a-b+1]), String(a-b),
+      `היו ${a}, נתנו ${b} — נשארו ${a-b} ${objPlural}.`, {type:"wpSubGive"},
+      "כשנותנים דברים — מחסרים.",
+      [`היו ${a} ${objPlural}`, `נתנו ${b}`, `${a} − ${b} = ${a-b}`]);
+  }
+  if(kind===3){
+    const a=rnd(11,maxN-10), b=rnd(5,Math.min(40,a-1));
+    return Q(`ל${nm.nm} היו ${a} שקלים. ${nm.f?"היא":"הוא"} ${buy} ${objSing} ב־${b} שקלים. כמה שקלים ${left}?`, "",
+      g2Opts(a-b,[a-b+10,a-b-10,a+b<=100?a+b:a-b+1]), String(a-b),
+      `היו ${a} שקלים, קנו ב־${b} — נשארו ${a-b} שקלים.`, {type:"wpMoney"},
+      "כשקונים — מחסרים את המחיר ממה שהיה.",
+      [`היו ${a} שקלים`, `המחיר: ${b} שקלים`, `${a} − ${b} = ${a-b}`]);
+  }
+  if(kind===4){
+    const a=rnd(10,maxN-10), b=rnd(5,Math.min(30,maxN-a));
+    return Q(`בכיתה יש ${a} בנים ו־${b} בנות. כמה ילדים יש בכיתה?`, "",
+      g2Opts(a+b,[a+b+10,a+b-10,a-b>0?a-b:a+b+1]), String(a+b),
+      `${a} בנים ועוד ${b} בנות — יחד ${a+b} ילדים.`, {type:"wpClass"},
+      "כדי לדעת כמה יש בסך הכול — מחברים.",
+      [`בנים: ${a}`, `בנות: ${b}`, `${a} + ${b} = ${a+b}`]);
+  }
+  const a=rnd(21,maxN), b=rnd(5,a-1);
+  const nm2=g2name();
+  return Q(`ל${nm.nm} יש ${a} ${objPlural}, ול${nm2.nm} יש ${b} ${objPlural}. בכמה ${objPlural} יש ל${nm.nm} יותר?`, "",
+    g2Opts(a-b,[a-b+10,a-b-10,a+b<=100?a+b:a-b+1]), String(a-b),
+    `ל${nm.nm} יש ${a} ול${nm2.nm} יש ${b} — ההפרש הוא ${a-b}.`, {type:"wpCompare"},
+    "כדי לדעת בכמה יותר — מחסרים את הקטן מהגדול.",
+    [`${a} − ${b} = ${a-b}`, `ל${nm.nm} יש ${a-b} ${objPlural} יותר`]);
+}
+
+/* ---- g11: בעיות מילוליות — שני צעדים ---- */
+function genWord2(L){
+  const maxN = L===1? 60 : L===2? 90 : 100;
+  const kind=rnd(1,4);
+  const nm=g2name();
+  const [objPlural, objSing]=pick(G2_OBJS);
+  const buy=nm.f?"קנתה":"קנה", ate=nm.f?"אכלה":"אכל", got=nm.f?"קיבלה":"קיבל";
+  if(kind===1){
+    const m=rnd(30,maxN), p1=rnd(5,Math.min(20,m-10)), p2=rnd(2,Math.min(10,m-p1-1));
+    return Q(`ל${nm.nm} היו ${m} שקלים. ${nm.f?"היא":"הוא"} ${buy} מחברת ב־${p1} שקלים ועפרון ב־${p2} שקלים. כמה שקלים נשארו ${nm.f?"לה":"לו"}?`, "",
+      g2Opts(m-p1-p2,[m-p1-p2+10,m-p1-p2-10,m-p1]), String(m-p1-p2),
+      `היו ${m} שקלים. קנו ב־${p1} ועוד ${p2} — יחד ${p1+p2}. נשארו ${m-p1-p2} שקלים.`, {type:"wpMoney2"},
+      "מחסרים את שני המחירים, אחד אחרי השני.",
+      [`${m} − ${p1} = ${m-p1}`, `${m-p1} − ${p2} = ${m-p1-p2}`]);
+  }
+  if(kind===2){
+    const a=rnd(30,maxN), e=rnd(5,Math.min(15,a-10)), add=rnd(5,Math.min(20,100-(a-e)));
+    const [foodPlural]=pick([["תפוחים","תפוח"],["עוגיות","עוגייה"]]);
+    return Q(`בקופסה היו ${a} ${foodPlural}. ${nm.nm} ${ate} ${e} ${foodPlural}, ואחר כך אמא הוסיפה ${add} ${foodPlural}. כמה ${foodPlural} יש בקופסה עכשיו?`, "",
+      g2Opts(a-e+add,[a-e+add+10,a-e+add-10,a-e]), String(a-e+add),
+      `היו ${a}, אכלו ${e} — נשארו ${a-e}. הוסיפו ${add} — עכשיו יש ${a-e+add}.`, {type:"wpBox"},
+      "קודם מחסרים את מה שאכלו, ואז מוסיפים את מה שהוסיפו.",
+      [`${a} − ${e} = ${a-e}`, `${a-e} + ${add} = ${a-e+add}`]);
+  }
+  if(kind===3){
+    const d1=rnd(10,Math.min(40,maxN-20)), d2=rnd(5,Math.min(30,maxN-d1-10)), give=rnd(2,Math.min(10,d1+d2-1));
+    return Q(`${nm.nm} אספ${nm.f?"ה":""} ${d1} ${objPlural} ביום ראשון ו־${d2} ${objPlural} ביום שני. ${nm.f?"היא":"הוא"} ${nm.f?"נתנה":"נתן"} לחברה ${give} ${objPlural}. כמה ${objPlural} נשארו ${nm.f?"לה":"לו"}?`, "",
+      g2Opts(d1+d2-give,[d1+d2-give+10,d1+d2-give-10,d1+d2]), String(d1+d2-give),
+      `אספו ${d1} ועוד ${d2} — יחד ${d1+d2}. נתנו ${give} — נשארו ${d1+d2-give}.`, {type:"wpCollect"},
+      "קודם מחברים את שני הימים, ואז מחסרים את מה שנתנו.",
+      [`${d1} + ${d2} = ${d1+d2}`, `${d1+d2} − ${give} = ${d1+d2-give}`]);
+  }
+  const a=rnd(20,maxN-15), b=rnd(10,Math.min(20,maxN-a)), c=rnd(2,Math.min(10,a+b-1));
+  return Q(`בגן יש ${a} ילדים. הגיעו עוד ${b} ילדים, ואז ${c} ילדים הלכו הביתה. כמה ילדים נשארו בגן?`, "",
+    g2Opts(a+b-c,[a+b-c+10,a+b-c-10,a+b]), String(a+b-c),
+    `היו ${a}, הגיעו ${b} — נהיו ${a+b}. הלכו ${c} — נשארו ${a+b-c}.`, {type:"wpGarden"},
+    "קודם מוסיפים את מי שהגיע, ואז מחסרים את מי שהלך.",
+    [`${a} + ${b} = ${a+b}`, `${a+b} − ${c} = ${a+b-c}`]);
+}
+
+/* ---- g12: אומדן וחידות ---- */
+function genSmart(L){
+  const kind=rnd(1,6);
+  if(kind===1){
+    const a=rnd(21,79), b=rnd(11,79-a);
+    if(a%10===0 || b%10===0) return genSmart(L);
+    const ra=Math.round(a/10)*10, rb=Math.round(b/10)*10, est=ra+rb;
+    return Q(`בערך כמה זה ${a} + ${b}? (עגלו כל מספר לעשרות הקרובות)`, "",
+      g2Opts(est,[est+10,est-10,est+20]), String(est),
+      `מעגלים: ${a} קרוב ל־${ra}, ו־${b} קרוב ל־${rb}. ${ra} + ${rb} = ${est} — בערך ${est}.`, {type:"estimateAdd"},
+      "מעגלים כל מספר לעשרות הקרובות ואז מחברים.",
+      [`${a} קרוב ל־${ra}`, `${b} קרוב ל־${rb}`, `${ra} + ${rb} = ${est}`]);
+  }
+  if(kind===2){
+    const n=rnd(11,99);
+    const r=Math.round(n/10)*10;
+    return Q(`עגלו את ${n} לעשרות הקרובות:`, "", g2Opts(r,[r+10,r-10,r+20]), String(r),
+      `${n} קרוב יותר ל־${r} מאשר ל־${r+10>100?r-10:r+10}.`, {type:"roundTen"},
+      "אם ספרת היחידות 5 ומעלה — מעגלים למעלה; אם פחות מ־5 — למטה.",
+      [`ספרת היחידות של ${n} היא ${n%10}`, n%10>=5?`${n%10} זה 5 ומעלה — מעגלים למעלה`:`${n%10} זה פחות מ־5 — מעגלים למטה`, `לכן ${n} מעוגל ל־${r}`]);
+  }
+  if(kind===3){
+    const lo=rnd(1,8)*10, d=rnd(1,9), n=lo+d;
+    return Q(`אני מספר בין ${lo} לבין ${lo+10}. ספרת היחידות שלי היא ${d}. מי אני?`, "",
+      g2Opts(n,[n+1,n-1,n+10]), String(n),
+      `בין ${lo} ל־${lo+10} עם ספרת יחידות ${d} — זה ${n}.`, {type:"riddleRange"},
+      "העשרות אומרות באיזה טווח המספר, והיחידות אומרות בדיוק איזה.",
+      [`המספר בין ${lo} ל־${lo+10}`, `ספרת היחידות ${d}`, `המספר הוא ${n}`]);
+  }
+  if(kind===4){
+    const t=rnd(2,9), o=rnd(0,9);
+    if(o===t) return genSmart(L);
+    const n=t*10+o;
+    const rel = o>t ? "גדולה" : "קטנה";
+    const diff=Math.abs(o-t);
+    return Q(`אני מספר דו־ספרתי. ספרת העשרות שלי היא ${t}, וספרת היחידות שלי ${rel} ממנה ב־${diff}. מי אני?`, "",
+      g2Opts(n,[n+10,n-10,n+1,n-1]), String(n),
+      `העשרות ${t}, והיחידות ${o} — המספר הוא ${n}.`, {type:"riddleDigits"},
+      "קודם מוצאים את ספרת היחידות, ואז בונים את המספר.",
+      [`ספרת העשרות: ${t}`, o>t?`ספרת היחידות: ${t} + ${diff} = ${o}`:`ספרת היחידות: ${t} − ${diff} = ${o}`, `המספר הוא ${n}`]);
+  }
+  if(kind===5){
+    const a=rnd(11,89), b=rnd(11,89);
+    if(Math.abs(a-b)<5) return genSmart(L);
+    const near=Math.abs(a-50)<Math.abs(b-50)?a:b;
+    return Q(`איזה מספר קרוב יותר ל־50: ${a} או ${b}?`, "",
+      g2Opts(near,[near===a?b:a, near+10>100?near-10:near+10, near+5]), String(near),
+      `${near} רחוק מ־50 ב־${Math.abs(near-50)}, והשני רחוק ב־${Math.abs((near===a?b:a)-50)}.`, {type:"near50"},
+      "בודקים את המרחק של כל מספר מ־50.",
+      [`${a} רחוק מ־50 ב־${Math.abs(a-50)}`, `${b} רחוק מ־50 ב־${Math.abs(b-50)}`, `${near} קרוב יותר`]);
+  }
+  const a=rnd(21,89), b=rnd(11,99-a);
+  const sum=a+b;
+  const truth=sum>70;
+  const ans=truth?"נכון":"לא נכון";
+  return Q(`נכון או לא נכון? ${a} + ${b} גדול מ־70.`, "",
+    tfOpts(ans), ans,
+    `${a} + ${b} = ${sum}, ו־${sum} ${truth?"גדול":"קטן"} מ־70 — ${truth?"נכון":"לא נכון"}.`,
+    {type:"tfEstimate"},
+    "מחשבים את הסכום ואז משווים ל־70.",
+    [`${a} + ${b} = ${sum}`, `${sum} ${truth?"גדול":"קטן"} מ־70 — המשפט ${truth?"נכון ✓":"לא נכון ✗"}`]);
+}
+
+/* ================= TOPICS / PARTS / HINTS ================= */
+const TOPICS=[
+  {id:"tens", part:0, emoji:"🔟", name:"עשרות ויחידות", desc:"מה זה מספר דו־ספרתי? עשרות, יחידות וכתיבה במילים", gen:genTens, learn:[
+    {t:"עשרות ויחידות", x:"במספר דו־ספרתי יש ספרה של עשרות וספרה של יחידות. ב־47 יש 4 עשרות ו־7 יחידות.", e:"במספר 63 יש 6 עשרות ו־3 יחידות. כמה עשרות יש במספר 58? (5)"},
+    {t:"בונים מספר מעשרות ויחידות", x:"5 עשרות זה 50, ועוד 3 יחידות — יחד 53. כל עשרת שווה 10.", e:"3 עשרות ו־2 יחידות זה המספר 32. איזה מספר זה 7 עשרות ו־4 יחידות? (74)"},
+    {t:"כותבים מספרים במילים", x:"כותבים קודם את העשרות ואחר כך את היחידות: 35 = שלושים וחמש, 20 = עשרים.", e:"איך כותבים במילים את המספר 42? (ארבעים ושתיים)"}]},
+  {id:"compare", part:0, emoji:"⚖️", name:"משווים ומסדרים", desc:"מי גדול יותר? סדר מהקטן לגדול, לפני ואחרי", gen:genCompare, learn:[
+    {t:"משווים מספרים", x:"משווים קודם את העשרות: למי שיש יותר עשרות — הוא גדול יותר. אם העשרות שוות, משווים את היחידות.", e:"מי גדול יותר: 56 או 65? (65, כי יש לו 6 עשרות)"},
+    {t:"סדר מהקטן לגדול", x:"מוצאים את הקטן ביותר, אחריו את הבא, ובסוף את הגדול. למשל: 29, 34, 43.", e:"סדרו מהקטן לגדול: 51, 15, 25. (15, 25, 51)"}]},
+  {id:"count", part:0, emoji:"🔢", name:"סופרים בקפיצות", desc:"סדרות של 2, 5 ו־10 — קדימה ואחורה", gen:genCount, learn:[
+    {t:"ספירה בקפיצות", x:"קופצים באותו גודל בכל פעם: 10, 20, 30, 40... בקפיצות של 10. 5, 10, 15, 20... בקפיצות של 5.", e:"השלימו: 2, 4, 6, 8, __ (10)"},
+    {t:"מוצאים מספר חסר בסדרה", x:"בודקים בכמה קופצים בין שני מספרים שכנים, ואז משלימים את החסר.", e:"10, 20, __, 40 — מה חסר? (30)"}]},
+  {id:"tensops", part:1, emoji:"🧮", name:"חיבור וחיסור בעשרות", desc:"30 + 40, 80 − 30 ועוד — רק עשרות שלמות", gen:genTensOps, learn:[
+    {t:"מחברים עשרות", x:"30 + 40 = 70. מחברים רק את ספרת העשרות: 3 + 4 = 7 עשרות.", e:"כמה זה 50 + 20? (70)"},
+    {t:"מחסרים עשרות", x:"80 − 30 = 50. מחסרים רק את ספרת העשרות: 8 − 3 = 5 עשרות.", e:"כמה זה 90 − 40? (50)"}]},
+  {id:"add1", part:1, emoji:"➕", name:"חיבור בלי המרה", desc:"מחברים מספרים עד 100 כשהיחידות לא עוברות את 9", gen:genAdd1, learn:[
+    {t:"מחברים יחידות ליחידות", x:"24 + 3 = 27. העשרות נשארות 2, והיחידות: 4 + 3 = 7.", e:"כמה זה 35 + 2? (37)"},
+    {t:"מחברים שני מספרים דו־ספרתיים", x:"35 + 42 = 77. עשרות: 3 + 4 = 7, יחידות: 5 + 2 = 7. בלי המרה — שום דבר לא עובר לעשרות.", e:"כמה זה 23 + 41? (64)"}]},
+  {id:"sub1", part:1, emoji:"➖", name:"חיסור בלי המרה", desc:"מחסרים מספרים עד 100 כשהיחידות מספיקות", gen:genSub1, learn:[
+    {t:"מחסרים יחידות מיחידות", x:"28 − 5 = 23. העשרות נשארות 2, והיחידות: 8 − 5 = 3.", e:"כמה זה 47 − 4? (43)"},
+    {t:"מחסרים שני מספרים דו־ספרתיים", x:"56 − 32 = 24. עשרות: 5 − 3 = 2, יחידות: 6 − 2 = 4. בלי המרה.", e:"כמה זה 68 − 25? (43)"}]},
+  {id:"add2", part:1, emoji:"➕", name:"חיבור עם המרה", desc:"כשהיחידות מצטברות ל־10 ומעלה — מעבירים עשרת", gen:genAdd2, learn:[
+    {t:"מה זו המרה?", x:"7 + 8 = 15 — זה עשרת אחת ו־5 יחידות. את העשרת מעבירים לטור העשרות, ואת ה־5 כותבים ביחידות.", e:"כמה זה 26 + 5? (31)"},
+    {t:"מחברים עם המרה", x:"48 + 25 = 73. יחידות: 8 + 5 = 13 — כותבים 3 ומעבירים 1. עשרות: 4 + 2 + 1 = 7.", e:"כמה זה 37 + 24? (61)"}]},
+  {id:"sub2", part:1, emoji:"➖", name:"חיסור עם המרה", desc:"כשאין מספיק יחידות — לווים עשרת אחת", gen:genSub2, learn:[
+    {t:"לווים עשרת אחת", x:"32 − 7: ב־2 יחידות אין מספיק. לווים עשרת אחת מה־3: 12 − 7 = 5, והעשרות נשארות 2. התוצאה 25.", e:"כמה זה 41 − 6? (35)"},
+    {t:"מחסרים עם המרה", x:"53 − 28 = 25. יחידות: 3 קטן מ־8, לווים: 13 − 8 = 5. עשרות: 4 − 2 = 2.", e:"כמה זה 64 − 17? (47)"}]},
+  {id:"missing", part:1, emoji:"🧩", name:"המספר החסר", desc:"מה חסר בתרגיל? מוצאים בעזרת הפעולה ההפוכה", gen:genMissing, learn:[
+    {t:"מחובר חסר", x:"___ + 24 = 50. מוצאים בחיסור: 50 − 24 = 26. בדיקה: 26 + 24 = 50.", e:"מה חסר? 30 + ___ = 48 (18)"},
+    {t:"מספר חסר בחיסור", x:"___ − 7 = 30. מוצאים בחיבור: 30 + 7 = 37. וגם: 45 − ___ = 30 → 45 − 30 = 15.", e:"מה חסר? ___ − 9 = 21 (30)"}]},
+  {id:"word1", part:2, emoji:"📖", name:"בעיות מילוליות — צעד אחד", desc:"סיפורים קצרים עם מספרים: מחברים או מחסרים פעם אחת", gen:genWord1, learn:[
+    {t:"קוראים את הבעיה לאט", x:"קודם מבינים: מה ידוע? מה שואלים? אם מוסיפים דברים — מחברים. אם נותנים או קונים — מחסרים.", e:"לנועה היו 20 מדבקות. היא קיבלה עוד 10. כמה יש לה? (30)"},
+    {t:"בכמה יותר?", x:"כששואלים 'בכמה יותר' — מחסרים את הקטן מהגדול.", e:"לדנה 35 גולות וליואב 20. בכמה יותר לדנה? (15)"}]},
+  {id:"word2", part:2, emoji:"📖", name:"בעיות מילוליות — שני צעדים", desc:"סיפורים בשני צעדים: מחברים ואז מחסרים, או להפך", gen:genWord2, learn:[
+    {t:"פותרים צעד־צעד", x:"כותבים מה קורה בכל צעד. למשל: היו 60 שקלים, קנו ב־18 — נשארו 42. קנו עוד ב־7 — נשארו 35.", e:"היו 40 עוגיות, אכלו 10, הוסיפו 5. כמה עכשיו? (35)"},
+    {t:"בודקים את התשובה", x:"אחרי שמחשבים, חוזרים לסיפור ובודקים שהתשובה הגיונית.", e:"בגן 24 ילדים, הגיעו 6, הלכו 5. כמה נשארו? (25)"}]},
+  {id:"smart", part:3, emoji:"🧠", name:"אומדן וחידות", desc:"מעגלים לעשרות, מעריכים תוצאות ופותרים חידות מספרים", gen:genSmart, learn:[
+    {t:"מעגלים לעשרות", x:"אם ספרת היחידות 5 ומעלה — מעגלים למעלה. אם פחות מ־5 — למטה. 47 קרוב ל־50, 43 קרוב ל־40.", e:"עגלו את 68 לעשרות הקרובות (70)"},
+    {t:"חידות מספרים", x:"קוראים את הרמזים לאט: הטווח אומר מה העשרות, וספרת היחידות אומרת בדיוק מי המספר.", e:"אני בין 30 ל־40 וספרת היחידות שלי 7. מי אני? (37)"}]},
+];
+const PARTS=[
+  {emoji:"🔟", name:"חלק א׳ — מספרים עד 100", desc:"עשרות ויחידות, השוואה וסדר, ספירה בקפיצות"},
+  {emoji:"➕", name:"חלק ב׳ — חיבור וחיסור עד 100", desc:"בלי המרה ועם המרה, המספר החסר"},
+  {emoji:"📖", name:"חלק ג׳ — בעיות מילוליות", desc:"סיפורים עם מספרים — צעד אחד ושני צעדים"},
+  {emoji:"🚀", name:"חלק ד׳ — העשרה", desc:"אומדן, עיגול לעשרות וחידות מספרים"},
+];
+const TOPIC_HINTS={
+  tens:"הספרה השמאלית = עשרות, הימנית = יחידות.",
+  compare:"משווים קודם עשרות, ואם שוות — יחידות.",
+  count:"בודקים בכמה קופצים בכל צעד.",
+  tensops:"מחברים או מחסרים רק את ספרת העשרות.",
+  add1:"מחברים יחידות ליחידות, עשרות לעשרות.",
+  sub1:"מחסרים יחידות מיחידות, עשרות מעשרות.",
+  add2:"יחידות מעל 9? מעבירים עשרת אחת לעשרות.",
+  sub2:"אין מספיק יחידות? לווים עשרת אחת מהעשרות.",
+  missing:"מחובר חסר — מחסרים. מספר שממנו חיסרו — מחברים.",
+  word1:"קוראים לאט: מה ידוע? מה שואלים?",
+  word2:"פותרים צעד־צעד, כותבים כל צעד בנפרד.",
+  smart:"מעגלים כל מספר לעשרות הקרובות ואז מחשבים.",
+};
+const TOPIC_BY_ID = {}; TOPICS.forEach(t=>TOPIC_BY_ID[t.id]=t);
+
+/* ================= BANKS: exactly 150 unique questions per topic ================= */
+function buildBank(topic, seed){
+  srand(seed);
+  const items=[]; const seen=new Set();
+  let attempts=0;
+  while(items.length<150 && attempts<120000){
+    attempts++;
+    const L=(items.length%3)+1;
+    let q=null;
+    try { q = topic.bankDraw ? topic.bankDraw(items.length) : topic.gen(L); } catch(e){ q=null; }
+    if(!q || !Array.isArray(q.opts) || q.opts.length<2) continue;
+    if(!q.opts.includes(q.ans)) continue;
+    const key=normKey(q);
+    if(seen.has(key)) continue;
+    seen.add(key);
+    q.lvl=L; q.bankIdx=items.length;
+    if(!q.steps || !q.steps.length) q.steps = q.why? [q.why] : [];
+    if(!q.hint) q.hint = fixMath(TOPIC_HINTS[topic.id]||"חשבו צעד־צעד.");
+    items.push(q);
+  }
+  return items;
+}
+const BANKS={};
+TOPICS.forEach((t,i)=>{ BANKS[t.id]=buildBank(t, 2000+i*7919); });
+const TOTAL_BANK = TOPICS.reduce((s,t)=> s+BANKS[t.id].length, 0);
+
+/* ---------- decks: draw without repeats until exhausted ---------- */
+const decks={};
+function deckIdxs(tid, lvl){
+  let idxs = BANKS[tid].map((q,i)=>i);
+  if(lvl) idxs = idxs.filter(i=>BANKS[tid][i].lvl===lvl);
+  return idxs.length? idxs : BANKS[tid].map((q,i)=>i);
+}
+function drawFromBank(tid, lvl){
+  const k = tid+"|"+(lvl||0);
+  if(!decks[k] || decks[k].pos>=decks[k].order.length){
+    decks[k]={ order: shuffle(deckIdxs(tid,lvl)), pos:0 };
+  }
+  const idx = decks[k].order[decks[k].pos++];
+  return { tid, idx, q: BANKS[tid][idx] };
+}
+
+/* ================= PERSISTENT STORE (progress + plan) ================= */
+const LS_KEY="mathKitG2V1";
+function epochDay(){ return Math.floor(Date.now()/86400000); }
+function loadStore(){
+  try { const s=JSON.parse(localStorage.getItem(LS_KEY)); if(s && s.v===2) return s; } catch(e){}
+  return { v:2, correct:{}, seen:{}, leitner:{}, errors:{}, ramzor:{}, plan:null };
+}
+let store = loadStore();
+function saveStore(){ try { localStorage.setItem(LS_KEY, JSON.stringify(store)); } catch(e){} }
+function recordAnswer(tid, idx, correct){
+  const today = epochDay();
+  if(!store.seen[tid]) store.seen[tid]=[];
+  if(!store.seen[tid].includes(idx)) store.seen[tid].push(idx);
+  if(!store.leitner[tid]) store.leitner[tid]={};
+  const L = store.leitner[tid][idx] || {box:0, due:today};
+  const ekey = tid+":"+idx;
+  if(correct){
+    if(!store.correct[tid]) store.correct[tid]=[];
+    if(!store.correct[tid].includes(idx)) store.correct[tid].push(idx);
+    L.box = Math.min(3, (L.box||0)+1);
+    L.due = today + [1,1,2,4][L.box];
+    const er = store.errors[ekey];
+    if(er && !er.resolved){
+      if(!er.correctDays.includes(today)) er.correctDays.push(today);
+      if(er.correctDays.length>=2) er.resolved=true;
+    }
+  } else {
+    L.box = 0; L.due = today+1;
+    if(!store.errors[ekey]) store.errors[ekey] = {tid, idx, correctDays:[], resolved:false, firstDay:today};
+    else if(store.errors[ekey].resolved){ store.errors[ekey]={tid, idx, correctDays:[], resolved:false, firstDay:today}; }
+  }
+  store.leitner[tid][idx]=L;
+  saveStore();
+}
+function coverageCount(){ return TOPICS.reduce((s,t)=> s+((store.correct[t.id]||[]).length), 0); }
+function greenCount(){
+  if(!store.plan || !store.plan.topicState) return 0;
+  return TOPICS.filter(t=> store.plan.topicState[t.id] && store.plan.topicState[t.id].status==="green").length;
+}
+function readinessPct(){ return Math.round(100*greenCount()/TOPICS.length); }
+function updateMeters(){
+  const cov = coverageCount();
+  $("coverFill").style.width = (100*cov/TOTAL_BANK)+"%";
+  $("coverLbl").textContent = `ענית נכון על ${fmtN(cov)} מתוך ${fmtN(TOTAL_BANK)} שאלות המאגר`;
+  if(store.plan){
+    $("readyFill").style.width = readinessPct()+"%";
+    $("readyLbl").textContent = `${greenCount()} מתוך ${TOPICS.length} נושאים במצב "שולט" 🟢 · יום ${planDayNumber()} מתוך ${store.plan.totalDays} במסלול`;
+  } else {
+    $("readyFill").style.width = "0%";
+    $("readyLbl").textContent = "עוד לא התחיל האבחון — התחילי את מסלול השבוע כדי למדוד מוכנות";
+  }
+}
+function topicStatusIcon(tid){
+  const p=store.plan; if(!p || !p.topicState || !p.topicState[tid]) return "";
+  const s=p.topicState[tid].status;
+  return s==="green"? " 🟢" : s==="learned"? " 🟡" : s==="yellow"? " 🟡" : s==="red"? " 🔴" : "";
+}
+
+/* ================= SHARED INTERACTIVE QUESTION (teaching layer) ================= */
+function stepsOf(q){ return (q.steps && q.steps.length)? q.steps : [q.why]; }
+function mountQuestion(host, q, opts, onResult){
+  opts = opts||{};
+  host.innerHTML="";
+  const card=document.createElement("div"); card.className="card";
+  card.innerHTML=`${opts.tag? `<div class="qnum">${opts.tag}</div>`:""}<div class="qtext">${q.text}</div>${q.viz||""}`;
+  if(opts.preSteps && opts.preSteps.length){
+    const fs=document.createElement("div"); fs.className="fadeSteps";
+    fs.innerHTML=`<b>✏️ דוגמה מודרכת — הצעדים הראשונים נתונים, ואת האחרון משלימים לבד:</b><ol>${opts.preSteps.map(s=>`<li>${s}</li>`).join("")}<li>…? — ענו כאן על השאלה</li></ol>`;
+    card.appendChild(fs);
+  }
+  const optsDiv=document.createElement("div"); optsDiv.className="opts"; card.appendChild(optsDiv);
+  let hintBox=null;
+  if(opts.showHint!==false){
+    const tools=document.createElement("div"); tools.className="qtools";
+    const hb=document.createElement("button"); hb.className="hintbtn"; hb.textContent="💡 רמז";
+    hintBox=document.createElement("div"); hintBox.className="hintbox"; hintBox.innerHTML="💡 "+(q.hint||"");
+    hb.onclick=()=>{ hintBox.style.display = hintBox.style.display==="block"? "none":"block"; };
+    tools.appendChild(hb); card.appendChild(tools); card.appendChild(hintBox);
+  }
+  const step1Box=document.createElement("div"); step1Box.className="step1box"; card.appendChild(step1Box);
+  const stepsBox=document.createElement("div"); stepsBox.className="stepsbox"; card.appendChild(stepsBox);
+  const ex=document.createElement("div"); ex.className="explain"; card.appendChild(ex);
+  host.appendChild(card);
+  let attemptsMade=0, done=false;
+  function finish(finalCorrect, firstTry){
+    if(done) return; done=true;
+    optsDiv.querySelectorAll(".opt").forEach(b=>{ b.disabled=true; if(b.innerHTML===q.ans) b.classList.add("right"); });
+    const steps=stepsOf(q);
+    stepsBox.innerHTML=`<div class="stt">${finalCorrect? "✅ נכון! כך פותרים, צעד־צעד:" : "📘 הפתרון המלא, צעד־צעד:"}</div><ol>${steps.map(s=>`<li>${s}</li>`).join("")}</ol>`;
+    stepsBox.style.display="block";
+    ex.innerHTML=`💡 <b>הסבר:</b> ${q.why}`; ex.style.display="block";
+    onResult(firstTry, finalCorrect);
+  }
+  q.opts.forEach(op=>{
+    const b=document.createElement("button"); b.className="opt"; b.innerHTML=op;
+    b.onclick=()=>{
+      if(done) return;
+      if(op===q.ans){ b.classList.add("right"); finish(true, attemptsMade===0); }
+      else {
+        attemptsMade++;
+        b.disabled=true; b.classList.add("wrong");
+        if(attemptsMade===1 && opts.retry!==false){
+          step1Box.innerHTML=`💚 לא נורא! הנה הצעד הראשון של הפתרון: <b>${stepsOf(q)[0]}</b> — ועכשיו נסו שוב!`;
+          step1Box.style.display="block";
+        } else finish(false, false);
+      }
+    };
+    optsDiv.appendChild(b);
+  });
+  return { isDone:()=>done };
+}
+
+/* ================= UI — HOME / MAP ================= */
+let curTopic=null, trainState=null, testQs=[], testSel=[], mockQs=[], mockSel=[];
+const ramzorState = store.ramzor || {};
+function shareApp(){ const data={title:document.title,text:"מתמטיקה — כיתה ב׳ · שבילים פלוס 4",url:location.href};
+ if(navigator.share){ navigator.share(data).catch(()=>{}); }
+ else if(navigator.clipboard){ navigator.clipboard.writeText(location.href).then(()=>alert("הקישור הועתק! 📋")).catch(()=>alert(location.href)); }
+ else alert(location.href); }
+function ramzorHtml(p){ const sel=ramzorState[p];
+ return `<div class="ramzor" id="rz-${p}"><div class="rt">🚦 רמזור למידה — חלק ${"א׳ב׳ג׳ד׳"[p]}: איך הרגשת בפתרון פרק זה?</div>
+ <div class="rrow">
+  <button class="rz ${sel===0?"sel-g":""}" onclick="setRamzor(${p},0)">🟢 מבין מצוין<br>ופתרתי בקלות</button>
+  <button class="rz ${sel===1?"sel-y":""}" onclick="setRamzor(${p},1)">🟡 הבנתי את הרוב<br>נזקקתי למעט עזרה</button>
+  <button class="rz ${sel===2?"sel-r":""}" onclick="setRamzor(${p},2)">🔴 נושא זה דורש<br>ממני תרגול נוסף</button>
+ </div></div>`; }
+function setRamzor(p,v){ ramzorState[p]=v; store.ramzor=ramzorState; saveStore();
+ document.querySelectorAll(`[id="rz-${p}"]`).forEach(el=>{ el.outerHTML=ramzorHtml(p); }); }
+function renderHome(){
+ const host=$("partsHost"); host.innerHTML="";
+ PARTS.forEach((part,p)=>{
+   const sec=document.createElement("div");
+   sec.innerHTML=`<div class="parthead"><div class="pem">${part.emoji}</div><div><div class="pt">${part.name}</div><div class="pd">${part.desc}</div></div></div>`;
+   const grid=document.createElement("div"); grid.className="tgrid";
+   TOPICS.filter(t=>t.part===p).forEach(t=>{
+     const done=(store.correct[t.id]||[]).length;
+     const b=document.createElement("button"); b.className="tcard";
+     b.innerHTML=`<div class="em">${t.emoji}</div><div class="nm">${t.name}${topicStatusIcon(t.id)}</div><div class="ds">${t.desc}</div>`+
+       `<div class="ct">🗂️ ${BANKS[t.id].length} שאלות · ✓ ענית נכון על ${done}</div>`+
+       `<div class="pbar"><div style="width:${Math.round(100*done/BANKS[t.id].length)}%"></div></div>`;
+     b.onclick=()=>openTopic(t.id); grid.appendChild(b);
+   });
+   sec.appendChild(grid);
+   const rz=document.createElement("div"); rz.innerHTML=ramzorHtml(p); sec.appendChild(rz);
+   host.appendChild(sec);
+ });
+ updateMeters();
+}
+function hideAllPanes(){ ["topicPane","mainPane","mockPane","tourPane","planPane"].forEach(id=>{ $(id).style.display="none"; }); }
+function showTopics(){ hideAllPanes(); $("topicPane").style.display=""; renderHome(); window.scrollTo({top:0,behavior:"smooth"}); }
+function openTopic(id){ curTopic=TOPIC_BY_ID[id]; trainState=null;
+ hideAllPanes(); $("mainPane").style.display="";
+ $("curTopicName").textContent=curTopic.emoji+" "+curTopic.name; showLearn(); window.scrollTo({top:0}); }
+function setTabs(which){ for(const [id,key] of [["tabLearn","learn"],["tabTrain","train"],["tabTest","test"]]) $(id).classList.toggle("active",key===which);
+ $("learnPane").style.display=which==="learn"?"":"none";
+ $("trainPane").style.display=which==="train"?"":"none";
+ $("testPane").style.display=which==="test"?"":"none"; }
+
+/* ---------- LEARN + mini-check ---------- */
+function showLearn(){ if(!curTopic)return; setTabs("learn");
+ const host=$("learnPane"); host.innerHTML="";
+ curTopic.learn.forEach((c,i)=>{
+   const d=document.createElement("div"); d.className="card learncard";
+   d.innerHTML=`<h3>${i+1}. ${c.t}</h3><div class="lx">${fixMath(c.x)}</div>${c.e? `<div class="ex">💡 <b>דוגמה:</b> ${fixMath(c.e)}</div>`:""}`;
+   host.appendChild(d);
+ });
+ /* interactive mini-check: one quick bank question with instant feedback (skippable) */
+ const mc=document.createElement("div"); mc.className="card minicheck";
+ mc.innerHTML=`<h3 style="margin:0 0 6px">✋ נסו בעצמכם — בדיקה קצרה אחת</h3><div id="mcHost"></div>
+   <div class="center" style="margin-top:10px"><button class="btn-ghost" onclick="showTrain()">דלגו לאימון ⏭</button></div>`;
+ host.appendChild(mc);
+ const d=drawFromBank(curTopic.id, 1);
+ mountQuestion($("mcHost"), d.q, {tag:"שאלת בדיקה מהמאגר"}, (firstTry, finalCorrect)=>{
+   recordAnswer(d.tid, d.idx, finalCorrect); updateMeters();
+ });
+ const b=document.createElement("div"); b.className="center";
+ b.innerHTML=`<button class="btn btn-new" onclick="showTrain()">הבנתי — לאימון! 🏋️</button>`;
+ host.appendChild(b);
+}
+
+/* ---------- TRAIN (from the bank, by level, teaching interactions) ---------- */
+function showTrain(){ if(!curTopic)return; setTabs("train");
+ if(!trainState){ trainState={level:1,stars:0,streak:0,total:0,correct:0,cur:null,curRef:null};
+   $("tIntro").style.display=""; $("tMain").style.display="none"; $("tMastery").style.display="none"; }
+ else { $("tIntro").style.display="none"; $("tMain").style.display=""; if(!trainState.cur) nextTrainQ(); }
+}
+function acceptIntro(){ $("tIntro").style.display="none"; $("tMain").style.display=""; updateTrainStatus(); nextTrainQ(); }
+function restartTrain(){ trainState={level:1,stars:0,streak:0,total:0,correct:0,cur:null,curRef:null};
+ $("tMastery").style.display="none"; $("tMain").style.display=""; updateTrainStatus(); nextTrainQ(); }
+function updateTrainStatus(){ const st=trainState; if(!st)return;
+ $("tLevel").innerHTML=`<b>רמה ${st.level} מתוך 3</b> ${st.level===1?"🌱":st.level===2?"🌿":"🌳"}`;
+ $("tStars").innerHTML=""; for(let i=0;i<5;i++){ const sp=document.createElement("span"); sp.className="st"+(i<st.stars?" on":""); sp.textContent="★"; sp.style.fontSize="26px"; $("tStars").appendChild(sp); }
+ $("tDots").innerHTML=""; for(let i=0;i<3;i++){ const d=document.createElement("span"); d.className="dot"+(i<st.streak?" on":""); $("tDots").appendChild(d); }
+ $("tProgStars").textContent="⭐".repeat(st.stars)+"☆".repeat(5-st.stars);
+ $("tTotal").textContent=`ענית על ${st.total} שאלות · ${st.correct} נכונות · מהמאגר של ${BANKS[curTopic.id].length} שאלות`;
+}
+function nextTrainQ(){ const st=trainState; if(!st) return;
+ const d=drawFromBank(curTopic.id, st.level); st.cur=d.q; st.curRef=d;
+ $("tNext").style.display="none";
+ mountQuestion($("tQ"), d.q, {tag:`שאלה · רמה ${st.level} · מהמאגר`}, (firstTry, finalCorrect)=>{
+   st.total++;
+   if(finalCorrect){ st.correct++; st.stars++; st.streak = firstTry? st.streak+1 : 0; }
+   else st.streak=0;
+   recordAnswer(d.tid, d.idx, finalCorrect);
+   let leveled=false;
+   if(st.streak>=3 && st.level<3){ st.level++; st.stars=0; st.streak=0; leveled=true; }
+   else if(st.stars>=5){ if(st.level<3){ st.level++; st.stars=0; leveled=true; } else { updateTrainStatus(); mastery(); return; } }
+   updateTrainStatus();
+   if(leveled) showCeleb("🚀",`עלית לרמה ${st.level}! כל הכבוד, אורי!`);
+   $("tNext").style.display="";
+ });
+}
+function mastery(){ $("tMain").style.display="none"; const m=$("tMastery"); m.style.display="";
+ $("masteryStats").textContent=`ענית על ${trainState.total} שאלות, ${trainState.correct} נכונות!`;
+ showCeleb("🏆","סיימת את כל הרמות! כל הכבוד, אורי!"); }
+function showCeleb(em,tx){ $("celebEmoji").textContent=em; $("celebText").textContent=tx; $("celebrate").style.display="flex"; }
+function hideCeleb(){ $("celebrate").style.display="none"; }
+
+/* ---------- TEST (10 bank questions, list style) ---------- */
+function renderListQuiz(hostId, items, sel, prefix){
+ const host=$(hostId); host.innerHTML="";
+ items.forEach((it,i)=>{
+   const q=it.q;
+   const card=document.createElement("div"); card.className="card";
+   card.innerHTML=`<div class="qnum">שאלה ${i+1} מתוך ${items.length}${it.tag? " · "+it.tag:""}</div><div class="qtext">${q.text}</div>${q.viz||""}`;
+   const opts=document.createElement("div"); opts.className="opts";
+   q.opts.forEach(op=>{
+     const b=document.createElement("button"); b.className="opt"; b.innerHTML=op;
+     b.onclick=()=>{ sel[i]=op; [...opts.children].forEach(x=>x.classList.remove("sel")); b.classList.add("sel");
+       if(prefix==="qz") $("pfill").style.width=(sel.filter(x=>x!==null).length/items.length*100)+"%";
+       if(prefix==="mk") $("mockFill").style.width=(sel.filter(x=>x!==null).length/items.length*100)+"%"; };
+     opts.appendChild(b);
+   });
+   card.appendChild(opts);
+   const ex=document.createElement("div"); ex.className="explain"; ex.id=prefix+"Ex"+i; ex.innerHTML=`💡 <b>הסבר:</b> ${q.why}`;
+   card.appendChild(ex); host.appendChild(card);
+ });
+}
+function gradeListQuiz(items, sel, prefix){
+ let score=0;
+ items.forEach((it,i)=>{
+   const q=it.q;
+   const card=$(prefix==="qz"? "quiz":"mockQuiz").children[i];
+   card.querySelectorAll(".opt").forEach(b=>{
+     b.disabled=true;
+     if(b.innerHTML===q.ans) b.classList.add("right");
+     else if(sel[i]===b.innerHTML) b.classList.add("wrong");
+   });
+   const ok = sel[i]===q.ans;
+   if(ok) score++;
+   recordAnswer(it.tid, it.idx, ok);
+   $(prefix+"Ex"+i).style.display="block";
+ });
+ return score;
+}
+function showTest(){ if(!curTopic)return; setTabs("test");
+ const levels=[3,2,3,3,2,3,2,3,3,2];
+ testQs = levels.map(lv=> drawFromBank(curTopic.id, lv));
+ testSel = Array(testQs.length).fill(null);
+ $("counter").textContent=`מבחן ב${curTopic.name} — 10 שאלות מהמאגר`;
+ $("pfill").style.width="0%"; $("result").style.display="none"; $("submitBtn").style.display="";
+ renderListQuiz("quiz", testQs, testSel, "qz");
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+function gradeTest(){
+ if(testSel.some(s=>s===null)){ alert("עוד לא ענית על כל השאלות 🙂"); return; }
+ const score=gradeListQuiz(testQs, testSel, "qz");
+ $("submitBtn").style.display="none";
+ const box=$("result"); box.style.display="";
+ $("scoreNum").textContent=score*10;
+ $("scoreMsg").textContent= score===10? "מושלם! 🏆 את מוכנה!" : score>=8? "מצוין! 💪 כמעט מושלם" :
+   score>=6? "יפה! 👏 עוד קצת אימון ותשלוטי בזה" : "לא נורא! 💡 חוזרים ללמידה ולאימון — ומנסים שוב";
+ const ex=document.createElement("div"); ex.innerHTML=ramzorHtml(curTopic.part);
+ $("scoreDetail").innerHTML=""; $("scoreDetail").appendChild(ex);
+ updateMeters();
+ box.scrollIntoView({behavior:"smooth"});
+}
+
+/* ---------- MOCK TEST (from the banks) ---------- */
+let mockRound=0;
+function startMock(){
+ hideAllPanes(); $("mockPane").style.display="";
+ mockRound++;
+ const A=TOPICS.filter(t=>t.part===0), B=TOPICS.filter(t=>t.part===1), C=TOPICS.filter(t=>t.part===2), D=TOPICS.filter(t=>t.part===3);
+ const rot=(arr,n,off)=>{ const out=[]; for(let i=0;i<n;i++) out.push(arr[(off+i)%arr.length]); return out; };
+ const items=[];
+ rot(A,3,mockRound).forEach(t=> items.push({...drawFromBank(t.id,2), part:0, tag:"חלק א׳ — מספרים עד 100"}));
+ rot(B,4,mockRound).forEach(t=> items.push({...drawFromBank(t.id,3), part:1, tag:"חלק ב׳ — חיבור וחיסור"}));
+ rot(C,3,mockRound).forEach((t,i)=> items.push({...drawFromBank(t.id, i%2? 3:2), part:2, tag:"חלק ג׳ — בעיות מילוליות"}));
+ rot(D,2,mockRound).forEach(t=> items.push({...drawFromBank(t.id,2), part:3, tag:"חלק ד׳ — העשרה"}));
+ /* interleave like the real exam: by part order A,B,C,D blocks */
+ mockQs=items; mockSel=Array(items.length).fill(null);
+ $("mockCounter").textContent=`מבחן מסכם — ${items.length} שאלות מהמאגרים`;
+ $("mockFill").style.width="0%"; $("mockResult").style.display="none"; $("mockSubmit").style.display="";
+ renderListQuiz("mockQuiz", mockQs, mockSel, "mk");
+ window.scrollTo({top:0});
+}
+function gradeMock(){
+ if(mockSel.some(s=>s===null)){ alert("עוד לא ענית על כל השאלות 🙂"); return; }
+ const score=gradeListQuiz(mockQs, mockSel, "mk");
+ $("mockSubmit").style.display="none";
+ const box=$("mockResult"); box.style.display="";
+ $("mockScoreNum").textContent=Math.round(score/mockQs.length*100);
+ $("mockScoreMsg").textContent= score>=11? "מדהים! 🏆 את מוכנה לגמרי!" : score>=9? "מצוין! 💪" :
+   score>=7? "יפה! 👏 עוד תרגול בנושאים החלשים" : "ממשיכים להתאמן! 💡 רואים למטה באיזה חלק כדאי להתחזק";
+ let html="<b>פירוט לפי חלקים:</b><br>";
+ PARTS.forEach((p,pi)=>{
+   const inPart=mockQs.map((it,i)=>[it,i]).filter(([it])=>it.part===pi);
+   const good=inPart.filter(([it,i])=> mockSel[i]===it.q.ans).length;
+   html+=`${p.emoji} ${p.name}: ${good} מתוך ${inPart.length} נכונות<br>`;
+ });
+ html+=`<div style="margin-top:10px">${ramzorHtml(0)}</div>`;
+ $("mockBreakdown").innerHTML=html;
+ updateMeters();
+ box.scrollIntoView({behavior:"smooth"});
+}
+
+/* ================= TOUR — סיור בחומר ================= */
+let tour=null;
+function startTour(){
+  hideAllPanes(); $("tourPane").style.display="";
+  tour={ round:1, order: shuffle(TOPICS.map(t=>t.id)), idx:0, stats:{}, answered:0, correct:0, coveredThisRound:0 };
+  TOPICS.forEach(t=> tour.stats[t.id]={a:0,c:0});
+  $("tourSummary").style.display="none";
+  renderTourQ();
+  window.scrollTo({top:0});
+}
+function renderTourQ(){
+  const tid=tour.order[tour.idx]; const t=TOPIC_BY_ID[tid];
+  const d=drawFromBank(tid);
+  $("tourCounter").textContent=`סבב ${tour.round} · נושא ${tour.idx+1} מתוך ${tour.order.length}`;
+  $("tourRoundLbl").textContent=`🧭 עברת על ${tour.coveredThisRound} מתוך ${TOPICS.length} נושאים בסבב זה`;
+  $("tourFill").style.width=(100*tour.coveredThisRound/tour.order.length)+"%";
+  $("tourNext").style.display="none";
+  mountQuestion($("tourQ"), d.q, {tag:`${PARTS[t.part].emoji} ${PARTS[t.part].name} · ${t.emoji} ${t.name}`}, (ft,fc)=>{
+    tour.answered++; if(fc) tour.correct++;
+    tour.stats[tid].a++; if(fc) tour.stats[tid].c++;
+    tour.coveredThisRound++;
+    recordAnswer(d.tid, d.idx, fc);
+    $("tourFill").style.width=(100*tour.coveredThisRound/tour.order.length)+"%";
+    $("tourRoundLbl").textContent=`🧭 עברת על ${tour.coveredThisRound} מתוך ${TOPICS.length} נושאים בסבב זה`;
+    $("tourNext").style.display="";
+  });
+}
+function nextTourQ(){
+  tour.idx++;
+  if(tour.idx>=tour.order.length){ tour.round++; tour.idx=0; tour.coveredThisRound=0; tour.order=shuffle(TOPICS.map(t=>t.id)); }
+  renderTourQ(); window.scrollTo({top:0,behavior:"smooth"});
+}
+function endTour(){
+  let html=`<h3 style="margin-top:0">🏁 סיכום הסיור</h3>`;
+  html+=`<p>ענית על ${tour.answered} שאלות, ${tour.correct} נכונות (${tour.answered? Math.round(100*tour.correct/tour.answered):0}%). כך נראית התמונה לפי חלקים:</p>`;
+  PARTS.forEach((p,pi)=>{
+    const ts=TOPICS.filter(t=>t.part===pi);
+    const a=ts.reduce((s,t)=>s+tour.stats[t.id].a,0), c=ts.reduce((s,t)=>s+tour.stats[t.id].c,0);
+    html+=`<div style="margin-top:8px">🚦 ${p.emoji} <b>${p.name}</b>: ${c}/${a} נכונות ${a? (c/a>=0.8? "🟢 שולט" : c/a>=0.5? "🟡 בדרך":"🔴 צריך חיזוק"):"—"}</div>`;
+    html+= ts.map(t=>`<div style="font-size:14px;color:#5a6b7d">· ${t.emoji} ${t.name}: ${tour.stats[t.id].c}/${tour.stats[t.id].a}</div>`).join("");
+  });
+  html+=`<div class="center" style="margin-top:12px"><button class="btn btn-new" onclick="startTour()">🧭 סיור נוסף</button> <button class="btn-ghost" onclick="showTopics()">← לכל הנושאים</button></div>`;
+  const s=$("tourSummary"); s.innerHTML=html; s.style.display="";
+  s.scrollIntoView({behavior:"smooth"});
+}
+
+/* ================= PLAN — מסלול השבוע ================= */
+const PLAN_TIPS=[
+  "שינה טובה הלילה שווה יותר מעוד שעת תרגול — הזיכרון מתגבש דווקא בשינה.",
+  "תרגול קצר מדי יום מנצח מרתון חד־פעמי: המוח אוהב חזרות מרווחות.",
+  "טעות שמתקנים וחוזרים אליה ביום אחר — נזכרת הכי טוב. טעויות הן חלק מהשיטה.",
+  "ערבוב נושאים (פעם חיבור, פעם בעיות מילוליות) קשה יותר בזמן התרגול — ומחזיק מעמד טוב יותר לאורך זמן.",
+  "בדקו הבנה בשאלות חדשות מהמאגר, לא בשינון של אותן שאלות שוב ושוב.",
+  "ביום הסיום: שינה מלאה וארוחת בוקר טובה. בלי תרגול כבד בבוקר."
+];
+function isoOfEpochDay(d){ return new Date(d*86400000).toISOString().slice(0,10); }
+function planDayNumber(){
+  if(!store.plan) return 0;
+  const d = epochDay()-store.plan.startDay+1;
+  return Math.max(1, Math.min(store.plan.totalDays, d));
+}
+function daysLeftToExam(){ if(!store.plan) return 0; return Math.max(0, store.plan.examDay-epochDay()); }
+function planDayKind(plan, day){
+  const T=plan.totalDays;
+  if(T===1) return "combined";
+  if(T===2) return day===1? "coverage" : "mockEve";
+  if(day===T) return "eve";
+  if(day===T-1) return "mock";
+  return "coverage";
+}
+function coverageDaysCount(plan){ const T=plan.totalDays; return T>=3? T-2 : 1; }
+function buildAssignments(plan){
+  const diag=plan.diag||{};
+  const reds=TOPICS.filter(t=> diag[t.id]===false).map(t=>t.id);
+  const yels=TOPICS.filter(t=> diag[t.id]!==false).map(t=>t.id);
+  const ordered=[...reds, ...yels];
+  const cd=coverageDaysCount(plan);
+  const dayOf={};
+  ordered.forEach((tid,i)=>{ dayOf[tid]=Math.min(cd, Math.floor(i*cd/ordered.length)+1); });
+  const byDay={}, extra={};
+  ordered.forEach(tid=>{ (byDay[dayOf[tid]]=byDay[dayOf[tid]]||[]).push(tid); });
+  /* weakest topics also reappear (practice only) on the next coverage day */
+  reds.forEach(tid=>{ const nd=Math.min(cd, dayOf[tid]+1); if(nd!==dayOf[tid]) (extra[nd]=extra[nd]||[]).push(tid); });
+  return { byDay, extra };
+}
+function coveredTopicsUpTo(plan, day){
+  const set=new Set();
+  for(let d=1; d<=day; d++){ ((plan.assignments.byDay[d]||[])).forEach(t=>set.add(t)); ((plan.assignments.extra[d]||[])).forEach(t=>set.add(t)); }
+  return [...set];
+}
+/* ---------- diagnostic ---------- */
+let diagRun=null, pendingExamISO="";
+function openPlan(){
+  hideAllPanes(); $("planPane").style.display="";
+  if(store.plan) renderPlanHome(); else renderPlanSetup();
+  window.scrollTo({top:0});
+}
+function renderPlanSetup(){
+  const def = isoOfEpochDay(epochDay()+6);
+  $("planHost").innerHTML=`
+  <div class="card">
+    <h3 style="margin-top:0">📅 איך זה עובד?</h3>
+    <div style="line-height:1.75">
+      1️⃣ <b>אבחון פתיחה</b> — 12 שאלות קצרות, אחת מכל נושא. ככה נדע בדיוק מה חזק ומה צריך חיזוק.<br>
+      2️⃣ <b>שיעור אחד ביום</b> (~20–25 דקות): חימום חוזר על טעויות ועל שאלות שהגיע זמנן, נושאי היום עם דוגמאות שצעדיהן נמוגים,
+      סט מעורב מכל מה שנלמד, ומיני־מבחן יציאה.<br>
+      3️⃣ <b>נושא נהיה 🟢 "שולט"</b> רק כשעוברים מבחן יציאה — וגם בדיקה חוזרת ביום אחר.<br>
+      4️⃣ <b>יום לפני אחרון</b>: מבחן מסכם + תיקון נקודות תורפה. <b>יום הסיום</b>: רק טעויות עבר והצלחות — קצר וקליל.
+    </div>
+    <div style="margin-top:14px">
+      <label style="font-weight:700">מתי מסיימים את המסלול? </label>
+      <input type="date" id="examDateInput" class="dateinput" value="${def}">
+      <div style="color:#5a6b7d;font-size:14px;margin-top:4px">ברירת המחדל: בעוד שבוע. אם נשארו פחות ימים — התוכנית תתכווץ בלי לדלג על אף נושא.</div>
+    </div>
+    <div class="center" style="margin-top:16px"><button class="btn btn-main" onclick="beginDiagnostic()">🔍 התחילי אבחון פתיחה (12 שאלות)</button></div>
+  </div>`;
+}
+function beginDiagnostic(){
+  const inp=$("examDateInput");
+  pendingExamISO = inp? inp.value : "";
+  diagRun={ items: TOPICS.map(t=> drawFromBank(t.id, 2)), idx:0, results:{} };
+  renderDiagQ();
+}
+function renderDiagQ(){
+  const host=$("planHost");
+  const it=diagRun.items[diagRun.idx]; const t=TOPIC_BY_ID[it.tid];
+  host.innerHTML=`<div class="card center"><b>🔍 אבחון פתיחה</b> — שאלה ${diagRun.idx+1} מתוך ${diagRun.items.length}<br><span style="color:#5a6b7d">שאלה אחת מכל נושא · עונים בכנות — ככה התוכנית תדע במה להתמקד</span></div><div id="diagQ"></div><div id="diagNav" class="center" style="margin:12px 0"></div>`;
+  mountQuestion($("diagQ"), it.q, {tag:`${t.emoji} ${t.name}`}, (ft,fc)=>{
+    diagRun.results[it.tid]=fc;
+    recordAnswer(it.tid, it.idx, fc);
+    $("diagNav").innerHTML=`<button class="btn btn-main" onclick="diagNext()">${diagRun.idx<diagRun.items.length-1? "לשאלה הבאה ➜":"סיום האבחון 🏁"}</button>`;
+  });
+}
+function diagNext(){
+  diagRun.idx++;
+  if(diagRun.idx>=diagRun.items.length) finishDiagnostic(); else renderDiagQ();
+  window.scrollTo({top:0});
+}
+function finishDiagnostic(){
+  const today=epochDay();
+  let examDay = today+6;
+  if(pendingExamISO){ const d=new Date(pendingExamISO+"T12:00:00"); if(!isNaN(d.getTime())) examDay=Math.floor(d.getTime()/86400000); }
+  let totalDays = examDay - today + 1;
+  totalDays = Math.max(1, Math.min(7, totalDays));
+  examDay = today + totalDays - 1;
+  const plan={ startDay: today, examDay, totalDays, diag:{...diagRun.results}, topicState:{}, sessionsDone:{}, assignments:null };
+  TOPICS.forEach(t=>{ plan.topicState[t.id]={ status: diagRun.results[t.id]? "yellow":"red", exitDay:0, exitPass:false, recheckPass:false }; });
+  plan.assignments=buildAssignments(plan);
+  store.plan=plan; saveStore();
+  renderPlanHome();
+  showCeleb("🗓️","האבחון הסתיים והתוכנית מוכנה! נתראה ביום 1 💪");
+}
+/* ---------- plan home ---------- */
+function dayKindLabel(plan, day){
+  const k=planDayKind(plan, day);
+  return k==="coverage"? "📚 יום כיסוי נושאים" : k==="mock"? "🎓 מבחן מסכם + תיקונים" : k==="mockEve"? "🎓 מבחן קצר + מחזור טעויות" : k==="eve"? "🌙 יום סיום — חזרה קלילה" : "⚡ יום מרוכז";
+}
+function renderPlanHome(){
+  const plan=store.plan, today=planDayNumber();
+  const greens=greenCount();
+  const yellows=TOPICS.filter(t=>["yellow","learned"].includes(plan.topicState[t.id].status)).length;
+  const reds=TOPICS.filter(t=> plan.topicState[t.id].status==="red").length;
+  let html=`<div class="card">
+    <h3 style="margin:0 0 6px">🗓️ היום: יום ${today} מתוך ${plan.totalDays} · נשארו ${daysLeftToExam()} ימים לסיום המסלול</h3>
+    <div class="bigbar"><div style="width:${readinessPct()}%"></div></div>
+    <div style="color:#5a6b7d;font-size:14.5px;margin-top:4px">מוכנות: ${greens} מתוך ${TOPICS.length} נושאים במצב 🟢 שולט · 🟡 ${yellows} בדרך · 🔴 ${reds} צריכים חיזוק</div>
+    <div class="center" style="margin-top:12px">
+      ${plan.sessionsDone[today]? `<div style="font-weight:700;color:#2b7a5b">✅ שיעור היום הושלם! אפשר לעשות עוד אחד לכיף</div><button class="btn btn-new" style="margin-top:8px" onclick="startSession(${today})">🔁 שיעור נוסף היום</button>`
+        : `<button class="btn btn-main" onclick="startSession(${today})">▶️ התחילי את שיעור יום ${today} — ${dayKindLabel(plan,today)}</button>`}
+    </div>
+  </div>`;
+  html+=`<div class="card"><h3 style="margin-top:0">📆 השבוע במבט אחד</h3>`;
+  for(let d=1; d<=plan.totalDays; d++){
+    const topics=(plan.assignments.byDay[d]||[]).map(id=> TOPIC_BY_ID[id].emoji+" "+TOPIC_BY_ID[id].name).join(" · ");
+    const extras=(plan.assignments.extra[d]||[]).map(id=> TOPIC_BY_ID[id].name).join(", ");
+    html+=`<div class="daycard ${d===today? "today":""} ${plan.sessionsDone[d]? "done":""}">
+      <div class="dt">יום ${d} — ${dayKindLabel(plan,d)} ${plan.sessionsDone[d]? "✅":""}</div>
+      <div class="dd">${planDayKind(plan,d)==="coverage"? (topics||"—") + (extras? `<br>🔁 חיזוק חוזר: ${extras}`:"") : planDayKind(plan,d)==="mock"? "מבחן מסכם + תיקון ממוקד של נושאים שנפלו בו" : planDayKind(plan,d)==="mockEve"? "מבחן מסכם קצר + מחזור טעויות והצלחות" : planDayKind(plan,d)==="eve"? "רק שאלות שפעם טעינו בהן + שאלות שכבר הצלחנו בהן — קצר ומחזק ביטחון" : "כל הנושאים ביום אחד, בקצב מרוכז"}</div>
+    </div>`;
+  }
+  html+=`</div>`;
+  html+=`<div class="card"><h3 style="margin-top:0">🗺️ מצב הנושאים</h3><div style="line-height:2">`;
+  html+= TOPICS.map(t=>{ const s=plan.topicState[t.id].status;
+    return `${t.emoji} ${t.name} ${s==="green"? "🟢 שולט": s==="learned"? "🟡 נלמד — ממתין לבדיקה חוזרת": s==="yellow"? "🟡 בדרך":"🔴 צריך חיזוק"}`; }).join("<br>");
+  html+=`</div></div>`;
+  const unres=Object.values(store.errors).filter(e=>!e.resolved).length;
+  html+=`<div class="parentpanel"><b>👨‍👩‍👦 מבט להורים:</b><br>
+    שיעור היום: ${plan.sessionsDone[today]? "הושלם ✅":"טרם בוצע"} · נושאים: 🟢 ${greens} שולטים, 🟡 ${yellows} בתהליך, 🔴 ${reds} לחיזוק · ימים לסיום המסלול: ${daysLeftToExam()} · שאלות פתוחות למחזור טעויות: ${unres}.<br>
+    💡 טיפ היום: ${PLAN_TIPS[(today-1)%PLAN_TIPS.length]}
+    <div style="margin-top:10px"><button class="btn-ghost" onclick="resetPlan()">↺ התחלה מחדש של המסלול (איפוס תוכנית)</button></div>
+  </div>`;
+  $("planHost").innerHTML=html;
+}
+function resetPlan(){
+  if(!confirm("לאפס את מסלול השבוע ולהתחיל אבחון מחדש? (ההתקדמות במאגרי השאלות תישמר)")) return;
+  store.plan=null; saveStore(); renderPlanSetup(); updateMeters();
+}
+
+/* ---------- guided daily session ---------- */
+let sess=null;
+function sessTake(tid, lvl, purpose, extra){
+  for(let i=0;i<10;i++){
+    const d=drawFromBank(tid, lvl||undefined);
+    const key=tid+":"+d.idx;
+    if(sess.used.has(key)) continue;
+    sess.used.add(key);
+    return Object.assign({type:"q", ref:d, purpose:purpose||"practice"}, extra||{});
+  }
+  return null;
+}
+function sessRefItem(tid, idx, purpose, extra){
+  const key=tid+":"+idx;
+  if(sess.used.has(key)) return null;
+  sess.used.add(key);
+  return Object.assign({type:"q", ref:{tid, idx, q:BANKS[tid][idx]}, purpose}, extra||{});
+}
+function dueLeitner(limit){
+  const today=epochDay(), out=[];
+  for(const tid of Object.keys(store.leitner)){
+    for(const idxS of Object.keys(store.leitner[tid])){
+      const e=store.leitner[tid][idxS];
+      if(e.due<=today && (e.box||0)<3) out.push({tid, idx:+idxS});
+    }
+  }
+  return out.slice(0, limit);
+}
+function learnCardHtml(t){
+  return `<b>${t.emoji} ${t.name} — נזכרים בקצרה:</b>` + t.learn.map(c=>`<div style="margin-top:8px"><b>${c.t}:</b> ${c.x}${c.e? `<br>💡 <i>${c.e}</i>`:""}</div>`).join("");
+}
+function buildSessionBlocks(day){
+  const plan=store.plan, kind=planDayKind(plan, day);
+  const B=[];
+  const card=(html)=> B.push({type:"card", html});
+  /* A. warm-up: unresolved errors first, then Leitner-due reviews */
+  const warm=[];
+  Object.values(store.errors).filter(e=>!e.resolved).slice(0,4).forEach(e=>{ const s=sessRefItem(e.tid,e.idx,"warmup",{tag:"🔁 חימום — שאלה שפעם טעינו בה"}); if(s) warm.push(s); });
+  dueLeitner(4).forEach(r=>{ const s=sessRefItem(r.tid,r.idx,"warmup",{tag:"🔁 חימום חוזר — הגיע זמנה של השאלה"}); if(s) warm.push(s); });
+  if(warm.length){ card(`<b>🔁 חימום חוזר</b> — מתחילים משאלות שחוזרות מהזיכרון. דווקא המאמץ להיזכר הוא מה שמעביר את החומר לזיכרון ארוך־טווח.`); B.push(...warm); }
+  /* B. mastery re-checks: topics whose exit passed on an EARLIER plan day */
+  const recheckTopics=TOPICS.filter(t=>{ const s=plan.topicState[t.id]; return s.exitPass && !s.recheckPass && s.exitDay < day; }).map(t=>t.id);
+  for(const tid of recheckTopics){
+    card(`<b>🔂 בדיקת זיכרון חוזרת: ${TOPIC_BY_ID[tid].emoji} ${TOPIC_BY_ID[tid].name}</b><br>הנושא עבר מבחן יציאה ביום ${plan.topicState[tid].exitDay}. אם גם כאן יהיו 4 מתוך 5 נכונות — הנושא נהיה 🟢 שולט באופן רשמי!`);
+    for(let i=0;i<5;i++){ const s=sessTake(tid, i%2?3:2, "recheck", {exitTid:tid}); if(s) B.push(s); }
+  }
+  /* C. topic blocks (coverage days) */
+  if(kind==="coverage" || kind==="combined"){
+    const todays = kind==="combined"? TOPICS.map(t=>t.id) : (plan.assignments.byDay[day]||[]);
+    const extras = kind==="combined"? [] : (plan.assignments.extra[day]||[]).filter(tid=> !todays.includes(tid));
+    for(const tid of todays){
+      const t=TOPIC_BY_ID[tid];
+      card(learnCardHtml(t));
+      if(kind!=="combined"){
+        const ex1=sessTake(tid,1,"exampleFull"); if(ex1) B.push(ex1);
+        const ex2=sessTake(tid,2,"exampleFade"); if(ex2){ ex2.preSteps=stepsOf(ex2.ref.q).slice(0,-1); B.push(ex2); }
+        for(let i=0;i<4;i++){ const s=sessTake(tid, i<2?2:3, "practice"); if(s) B.push(s); }
+      } else {
+        for(let i=0;i<2;i++){ const s=sessTake(tid,2,"practice"); if(s) B.push(s); }
+      }
+    }
+    for(const tid of extras){
+      card(`<b>🔁 חיזוק נוסף: ${TOPIC_BY_ID[tid].emoji} ${TOPIC_BY_ID[tid].name}</b> — נושא שסומן באבחון כטעון חיזוק מקבל היום סיבוב נוסף.`);
+      for(let i=0;i<3;i++){ const s=sessTake(tid,2,"practice"); if(s) B.push(s); }
+    }
+    if(kind!=="combined"){
+      const covered=coveredTopicsUpTo(plan, day);
+      if(covered.length>1){
+        card(`<b>🔀 סט מעורב</b> — שאלות מכל הנושאים שלמדנו עד עכשיו, מעורבבות כמו במבחן האמיתי.`);
+        for(let i=0;i<6;i++){ const s=sessTake(covered[i%covered.length], 0, "mixed"); if(s) B.push(s); }
+      }
+      for(const tid of todays){
+        card(`<b>📝 מיני־מבחן יציאה: ${TOPIC_BY_ID[tid].emoji} ${TOPIC_BY_ID[tid].name}</b><br>5 שאלות. 4 נכונות ומעלה = הנושא "נלמד" היום — וביום אחר תהיה בדיקה חוזרת שתהפוך אותו ל־🟢 שולט.`);
+        for(let i=0;i<5;i++){ const s=sessTake(tid, i%2?3:2, "exit", {exitTid:tid}); if(s) B.push(s); }
+      }
+    }
+  }
+  /* D. mock day */
+  if(kind==="mock" || kind==="mockEve"){
+    const nMock = kind==="mock"? 12 : 10;
+    card(`<b>🎓 מבחן מסכם</b> — ${nMock} שאלות מכל החלקים. הפעם בלי רמזים — כמו במבחן! בסוף נתקן יחד את הנושאים שנפלו.`);
+    const A=TOPICS.filter(t=>t.part===0), Bp=TOPICS.filter(t=>t.part===1), Cp=TOPICS.filter(t=>t.part===2), D=TOPICS.filter(t=>t.part===3);
+    const items=[];
+    const rot=(arr,n)=>{ for(let i=0;i<n;i++){ const t=arr[(day+i)%arr.length]; const s=sessTake(t.id, 2, "mock", {tag:PARTS[t.part].emoji+" "+PARTS[t.part].name}); if(s) items.push(s); } };
+    rot(A, Math.round(nMock*3/12));
+    rot(Bp, Math.round(nMock*4/12));
+    rot(Cp, Math.round(nMock*3/12));
+    rot(D, Math.max(0, nMock-items.length));
+    B.push(...items);
+  }
+  /* E. exam-eve: errors + confidence only */
+  if(kind==="eve" || kind==="mockEve"){
+    card(`<b>🌙 חזרה קלילה</b> — רק שאלות שפעם טעינו בהן (הן חוזרות עד שייענו נכון בשני ימים נפרדים) ושאלות שכבר הצלחנו בהן פעם — הוכחת התקדמות. בלי חומר חדש!`);
+    Object.values(store.errors).filter(e=>!e.resolved).slice(0,8).forEach(e=>{ const s=sessRefItem(e.tid,e.idx,"errors",{tag:"🔁 מחזור טעויות"}); if(s) B.push(s); });
+    Object.values(store.errors).filter(e=>e.resolved).slice(0,6).forEach(e=>{ const s=sessRefItem(e.tid,e.idx,"confidence",{tag:"💪 הוכחת התקדמות — פעם טעינו בזה, ואחר כך הצלחנו!"}); if(s) B.push(s); });
+  }
+  return B;
+}
+function startSession(day){
+  hideAllPanes(); $("planPane").style.display="";
+  sess={ day, pos:0, used:new Set(), exitScores:{}, recheckScores:{}, missed:[], missedKeys:new Set(),
+         mockMisses:{}, endRetryDone:false, repairsAdded:new Set(), mockRepairDone:false };
+  sess.blocks=buildSessionBlocks(day);
+  renderSessStep();
+  window.scrollTo({top:0});
+}
+const PURPOSE_LBL={warmup:"🔁 חימום חוזר",recheck:"🔂 בדיקה חוזרת",exampleFull:"👀 דוגמה פתורה",exampleFade:"✏️ דוגמה — משלימים צעד",practice:"🏋️ תרגול",mixed:"🔀 סט מעורב",exit:"📝 מבחן יציאה",mock:"🎓 מבחן מסכם",errors:"🔁 מחזור טעויות",confidence:"💪 ביטחון",retryEnd:"🔁 חזרה על טעויות היום",repair:"🔧 תיקון ממוקד"};
+function renderSessStep(){
+  const host=$("planHost");
+  if(sess.pos>=sess.blocks.length){
+    if(!sess.endRetryDone && sess.missed.length){
+      sess.endRetryDone=true;
+      sess.blocks.push({type:"card", html:`<b>🔁 לפני שמסיימים — חוזרים פעם נוספת על השאלות של היום שבהן טעינו</b>, כדי שהן ייכנסו למחזור החזרות ולא ילכו לאיבוד.`});
+      const seen=new Set();
+      sess.missed.forEach(r=>{ const key=r.tid+":"+r.idx; if(!seen.has(key)){ seen.add(key); sess.blocks.push({type:"q", ref:r, purpose:"retryEnd", tag:"🔁 ניסיון נוסף — שאלה מהיום"}); } });
+    } else { finishSession(); return; }
+  }
+  const step=sess.blocks[sess.pos];
+  const total=sess.blocks.length;
+  host.innerHTML=`<div class="sessbar"><span>📅 שיעור יום ${sess.day} · צעד ${sess.pos+1} מתוך ${total}</span><span class="blocktag">${step.type==="card"? "📖 הסבר" : (PURPOSE_LBL[step.purpose]||"")}</span></div><div class="progress"><div style="width:${Math.round(100*sess.pos/total)}%"></div></div><div id="sessQ"></div><div id="sessNav" class="center" style="margin:12px 0"></div>`;
+  if(step.type==="card"){
+    $("sessQ").innerHTML=`<div class="card learncard"><div class="lx">${step.html}</div></div>`;
+    $("sessNav").innerHTML=`<button class="btn btn-main" onclick="sessAdvance()">ממשיכים ➜</button>`;
+    return;
+  }
+  if(step.purpose==="exampleFull"){ renderExampleFull(step); return; }
+  mountQuestion($("sessQ"), step.ref.q, {tag: step.tag||PURPOSE_LBL[step.purpose]||"", preSteps: step.preSteps||null, showHint: step.purpose!=="mock"}, (ft,fc)=>{
+    onSessAnswer(step, ft, fc);
+    $("sessNav").innerHTML=`<button class="btn btn-main" onclick="sessAdvance()">הבא ➜</button>`;
+  });
+}
+function renderExampleFull(step){
+  const q=step.ref.q;
+  const host=$("sessQ");
+  const card=document.createElement("div"); card.className="card";
+  card.innerHTML=`<div class="qnum">👀 דוגמה פתורה — מסתכלים איך פותרים, צעד־צעד</div><div class="qtext">${q.text}</div>${q.viz||""}`;
+  const opts=document.createElement("div"); opts.className="opts";
+  q.opts.forEach(op=>{ const b=document.createElement("button"); b.className="opt"+(op===q.ans?" right":""); b.innerHTML=op; b.disabled=true; opts.appendChild(b); });
+  card.appendChild(opts);
+  const sb=document.createElement("div"); sb.className="stepsbox"; sb.style.display="block";
+  sb.innerHTML=`<div class="stt">📘 הפתרון המלא:</div><ol>${stepsOf(q).map(s=>`<li>${s}</li>`).join("")}</ol><div style="margin-top:6px">💡 ${q.why}</div>`;
+  card.appendChild(sb);
+  host.appendChild(card);
+  $("sessNav").innerHTML=`<button class="btn btn-main" onclick="sessAdvance()">הבנתי — ממשיכים ➜</button>`;
+}
+function sessAdvance(){ sess.pos++; renderSessStep(); window.scrollTo({top:0,behavior:"smooth"}); }
+function onSessAnswer(step, firstTry, finalCorrect){
+  const {tid, idx}=step.ref;
+  recordAnswer(tid, idx, finalCorrect);
+  if(!finalCorrect){ const key=tid+":"+idx; if(!sess.missedKeys.has(key)){ sess.missedKeys.add(key); sess.missed.push(step.ref); } }
+  if(step.purpose==="exit" && step.exitTid){
+    const s=(sess.exitScores[step.exitTid] = sess.exitScores[step.exitTid]||{a:0,c:0});
+    s.a++; if(finalCorrect) s.c++;
+  }
+  if(step.purpose==="recheck" && step.exitTid){
+    const s=(sess.recheckScores[step.exitTid] = sess.recheckScores[step.exitTid]||{a:0,c:0});
+    s.a++; if(finalCorrect) s.c++;
+    if(s.a===5){
+      const plan=store.plan, ts=plan.topicState[step.exitTid];
+      if(s.c>=4){ ts.recheckPass=true; ts.status="green"; }
+      else if(!sess.repairsAdded.has(step.exitTid)){
+        sess.repairsAdded.add(step.exitTid);
+        sess.blocks.push({type:"card", html:`<b>🔧 הבדיקה החוזרת ב${TOPIC_BY_ID[step.exitTid].name} לא עברה הפעם — לא נורא!</b> עושים עכשיו תיקון קצר של 4 שאלות, והנושא ייבדק שוב ביום הבא.`});
+        for(let i=0;i<4;i++){ const r=sessTake(step.exitTid, 2, "repair"); if(r) sess.blocks.push(r); }
+      }
+      saveStore();
+    }
+  }
+  if(step.purpose==="mock"){
+    if(!finalCorrect) sess.mockMisses[tid]=(sess.mockMisses[tid]||0)+1;
+    const moreMock = sess.blocks.slice(sess.pos+1).some(b=>b.type==="q" && b.purpose==="mock");
+    if(!moreMock && !sess.mockRepairDone){
+      sess.mockRepairDone=true;
+      const missTopics=Object.keys(sess.mockMisses).slice(0,3);
+      if(missTopics.length){
+        sess.blocks.push({type:"card", html:`<b>🔧 תיקון נקודות תורפה מהמבחן המסכם</b> — נתרגל עכשיו בקצרה את הנושאים שנפלו: ${missTopics.map(id=> TOPIC_BY_ID[id].emoji+" "+TOPIC_BY_ID[id].name).join(", ")}.`});
+        missTopics.forEach(mt=>{ for(let i=0;i<4;i++){ const r=sessTake(mt, 2, "repair"); if(r) sess.blocks.push(r); } });
+      }
+    }
+  }
+}
+function finishSession(){
+  const plan=store.plan, day=sess.day;
+  const lines=[];
+  for(const tid of Object.keys(sess.exitScores)){
+    const s=sess.exitScores[tid], ts=plan.topicState[tid];
+    const pass = s.a>=4 && s.c>=Math.ceil(0.8*s.a) && s.c>=4;
+    if(pass && !ts.exitPass){ ts.exitPass=true; ts.exitDay=day; if(ts.status!=="green") ts.status="learned"; }
+    if(pass) lines.push(`📝 <b>${TOPIC_BY_ID[tid].name}</b>: מבחן היציאה עבר (${s.c}/${s.a}) — ${ts.status==="green"? "🟢 שולט" : "נלמד! ביום אחר תהיה בדיקה חוזרת לסגירת ה־🟢"}`);
+    else {
+      lines.push(`📝 <b>${TOPIC_BY_ID[tid].name}</b>: מבחן יציאה ${s.c}/${s.a} — עדיין לא 80%. הנושא יחזור לתרגול נוסף.`);
+      const nd=day+1;
+      if(nd<=coverageDaysCount(plan) && planDayKind(plan, nd)==="coverage"){ (plan.assignments.extra[nd]=plan.assignments.extra[nd]||[]); if(!plan.assignments.extra[nd].includes(tid)) plan.assignments.extra[nd].push(tid); }
+    }
+  }
+  for(const tid of Object.keys(sess.recheckScores)){
+    const s=sess.recheckScores[tid];
+    lines.push(`🔂 <b>${TOPIC_BY_ID[tid].name}</b>: בדיקה חוזרת ${s.c}/${s.a} — ${plan.topicState[tid].status==="green"? "🟢 הנושא שולט באופן רשמי!" : "ייבדק שוב ביום הבא"}`);
+  }
+  plan.sessionsDone[day]=epochDay();
+  saveStore();
+  const unres=Object.values(store.errors).filter(e=>!e.resolved).length;
+  $("planHost").innerHTML=`<div class="card center">
+    <div style="font-size:44px">🎉</div>
+    <h3 style="margin:6px 0">שיעור יום ${day} הושלם!</h3>
+    <div style="text-align:right;line-height:1.9">${lines.length? lines.join("<br>") : "עבדת יפה היום! כל הכבוד."}</div>
+    <div style="margin-top:10px">🏆 מוכנות: <b>${readinessPct()}%</b> (${greenCount()}/${TOPICS.length} נושאים 🟢) · כיסוי מאגרים: ${Math.round(100*coverageCount()/TOTAL_BANK)}% · טעויות פתוחות למחזור: ${unres}</div>
+    <div style="margin-top:14px"><button class="btn btn-main" onclick="renderPlanHome()">🗓️ חזרה לתוכנית</button> <button class="btn-ghost" onclick="showTopics()">← לעמוד הבית</button></div>
+  </div>`;
+  sess=null;
+  updateMeters();
+  window.scrollTo({top:0});
+}
+
+/* ================= INIT ================= */
+$("totalBankLbl").textContent = fmtN(TOTAL_BANK);
+renderHome();
+</script>
+</body>
+</html>
