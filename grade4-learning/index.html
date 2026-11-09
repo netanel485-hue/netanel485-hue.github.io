@@ -191,13 +191,16 @@ a:focus-visible {
   .opt.correct { border-color: var(--good); background: var(--good-bg); font-weight: 700; }
   .opt.wrong { border-color: var(--bad); background: var(--bad-bg); }
   .opt:disabled { cursor: default; opacity: 1; }
-  .btn { display: inline-block; border: 2px solid var(--line); border-radius: 16px; padding: 13px 26px; font-size: 16px;
+  .btn, .btn-secondary { display: inline-block; border: 2px solid var(--line); border-radius: 16px; padding: 13px 26px; font-size: 16px;
          font-weight: 700; cursor: pointer; min-height: 52px; touch-action: manipulation; font-family: inherit; background: #FFFFFF; color: var(--ink); }
-  .btn-main { background: var(--accent-deep); color: #fff; border: none; font-size: 17px; font-weight: 800; min-height: 54px; padding: 14px 28px; }
-  .btn-main:disabled { background: #E7EDE6; color: #8A9A8F; border: 2px solid #E7EDE6; cursor: not-allowed; }
-  .btn:disabled, .btn-ghost:disabled { background: #E7EDE6; color: #8A9A8F; border: 2px solid #E7EDE6; cursor: not-allowed; }
-  .btn-new { background: var(--accent-deep); color: #fff; border: none; font-size: 17px; font-weight: 800; min-height: 54px; padding: 14px 28px; }
-  button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .btn-main, .btn-new { background: var(--accent-deep); color: #fff; border: none; font-size: 17px; font-weight: 800; min-height: 54px; padding: 14px 28px; }
+  .btn-main:disabled, .btn-new:disabled { background: #E7EDE6; color: #8A9A8F; border: 2px solid #E7EDE6; cursor: not-allowed; }
+  .btn:disabled, .btn-secondary:disabled, .btn-ghost:disabled { background: #E7EDE6; color: #8A9A8F; border: 2px solid #E7EDE6; cursor: not-allowed; }
+  button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  /* ---- stage 5: prefers-reduced-motion — ביטול אנימציות, מעברים וגלילה חלקה ---- */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
   .center { text-align: center; }
   .explain { display: none; margin-top: 12px; background: var(--accent-soft); border: 1px solid #F0D9A0;
              border-radius: 10px; padding: 10px 14px; font-size: 16px; line-height: 1.55; }
@@ -231,12 +234,6 @@ a:focus-visible {
   @keyframes pop { from { transform: scale(.6); } to { transform: scale(1); } }
   .intro-emoji { font-size: 44px; }
   .intro-list { text-align: right; font-size: clamp(16px, 4.4vw, 18px); line-height: 2.05; margin: 12px 0 18px; }
-  .t-help { background: none; border: none; color: var(--accent-deep); font-size: 14px; cursor: pointer;
-            text-decoration: underline; padding: 8px; font-family: inherit; min-height: 40px; }
-  .sharebtn { margin-top: 10px; background: transparent; color: var(--ink); border: 2px solid var(--line);
-    border-radius: 99px; padding: 10px 22px; font-size: 16px; font-weight: 700; cursor: pointer;
-    touch-action: manipulation; font-family: inherit; -webkit-tap-highlight-color: transparent; }
-  .sharebtn:active { background: var(--card); }
   .reset-link { font-size: 14px; color: var(--muted); }
   /* ---- topic picker ---- */
   .tgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 6px 0 14px; }
@@ -248,7 +245,7 @@ a:focus-visible {
   .t-status .streakrow { margin-top: 0; font-size: 14px; }
   .t-status #tProgStars { font-size: 15px !important; }
   .t-status #tTotal { margin-top: 0 !important; font-size: 13px !important; }
-  .t-status .t-help { min-height: auto; padding: 2px 8px; font-size: 13px; } }
+  .t-status .btn-ghost { min-height: auto; padding: 2px 8px; font-size: 13px; } }
   .tcard { background: var(--card); border: 2px solid var(--line); border-radius: 20px; padding: 18px 10px;
            text-align: center; cursor: pointer; font-family: inherit; color: inherit;
            touch-action: manipulation; min-height: 120px; }
@@ -272,7 +269,6 @@ a:focus-visible {
   .pageinput:focus { border-color: var(--accent-deep); }
   .pagespreview { background: var(--card); border: 1px dashed var(--line); border-radius: 12px; padding: 10px 14px;
                   font-size: 15.5px; line-height: 1.75; margin: 6px 0 14px; min-height: 52px; }
-  .btn-new:disabled { background: #E7EDE6; color: #8A9A8F; border: 2px solid #E7EDE6; cursor: not-allowed; }
   .spanhint { margin: 2px 0 0; color: var(--muted); font-size: 13.5px; font-weight: 600; }
   .bkspan { font-size: 12.5px; font-weight: 600; opacity: .75; }
   .chiprow { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 10px 0 2px; }
@@ -379,7 +375,7 @@ a:focus-visible {
   body{padding-top:62px;}
   .h-top-btn span{display:none;}
   .h-top-btn{padding:8px 10px;}
-  .btn-main{width:100%;}
+  .btn-main, .btn-new, .btn-primary{width:100%;}
   .h-scard{min-height:150px;padding:16px 14px;}
 }
 @media (max-width: 479px){
@@ -407,10 +403,10 @@ a:focus-visible {
 </head>
 <body>
 <header id="hubTopbar"><div class="h-top-inner">
-  <button class="h-top-logo" onclick="hubHomeFromEnd()">🎒 <span class="h-top-full">מרכז הלמידה · כיתה ד׳</span><span class="h-top-short">כיתה ד׳</span></button>
+  <button class="h-top-logo" aria-label="דף הבית — מרכז הלמידה" onclick="hubHomeFromEnd()">🎒 <span class="h-top-full">מרכז הלמידה · כיתה ד׳</span><span class="h-top-short">כיתה ד׳</span></button>
   <nav class="h-top-nav">
-    <button class="h-top-btn" onclick="hubHomeFromEnd()">🏠 <span>בית</span></button>
-    <button class="h-top-btn" onclick="hubOpenMap()">🗺️ <span>מפה</span></button>
+    <button class="h-top-btn" aria-label="בית" onclick="hubHomeFromEnd()">🏠 <span>בית</span></button>
+    <button class="h-top-btn" aria-label="מפה" onclick="hubOpenMap()">🗺️ <span>מפה</span></button>
   </nav>
   <button id="hubTopCoins" class="h-top-btn h-top-coins" onclick="hubOpenParent()" aria-label="מטבעות — מסך הורה">🪙 0</button>
 </div></header>
@@ -424,17 +420,17 @@ a:focus-visible {
   <div id="hubHomeTop"></div>
   <div id="hubGrid" class="h-grid"></div>
   <div class="h-rowbtns" style="justify-content:center;margin-top:16px">
-    <button class="btn btn-ghost" onclick="hubShare()">📤 שיתוף האתר</button>
+    <button class="btn-ghost" onclick="hubShare()">📤 שיתוף האתר</button>
   </div>
   <div id="hubSharePanel" class="h-sharebox h-hidden">
     <input id="hubShareLink" readonly value="">
     <div class="h-rowbtns">
-      <button class="btn" id="hubCopyBtn" onclick="hubCopyShare()">📋 העתקת קישור</button>
-      <a class="btn" id="hubShareWa" target="_blank" rel="noopener">💬 וואטסאפ</a>
-      <a class="btn" id="hubShareMail">✉️ מייל</a>
+      <button class="btn-secondary" id="hubCopyBtn" onclick="hubCopyShare()">📋 העתקת קישור</button>
+      <a class="btn-secondary" id="hubShareWa" target="_blank" rel="noopener">💬 וואטסאפ</a>
+      <a class="btn-secondary" id="hubShareMail">✉️ מייל</a>
     </div>
   </div>
-  <div class="h-foot-parent"><button class="btn btn-ghost" onclick="hubOpenParent()">👨‍👧 מסך הורה</button></div>
+  <div class="h-foot-parent"><button class="btn-ghost" onclick="hubOpenParent()">👨‍👧 מסך הורה</button></div>
 </div>
 
 <div id="hubProfiles" class="h-wrap h-hidden">
@@ -448,7 +444,7 @@ a:focus-visible {
 
 
 <div id="hubMap" class="h-wrap h-hidden">
-  <button class="btn btn-ghost" onclick="hubHomeFromEnd()">🏠 כל המקצועות</button>
+  <button class="btn-ghost" onclick="hubHomeFromEnd()">🏠 כל המקצועות</button>
   <div class="h-head">
     <div style="font-size:40px">🗺️</div>
     <h1 style="font-size:26px">מפת ההתקדמות</h1>
@@ -458,25 +454,25 @@ a:focus-visible {
 </div>
 
 <div id="hubParent" class="h-wrap h-hidden">
-  <button class="btn btn-ghost" onclick="hubHomeFromEnd()">🏠 כל המקצועות</button>
+  <button class="btn-ghost" onclick="hubHomeFromEnd()">🏠 כל המקצועות</button>
   <div class="h-head">
     <div style="font-size:40px">👨‍👧</div>
     <h1 style="font-size:26px">מסך להורה</h1>
     <p>מה נלמד השבוע ועל מה כדאי לדבר. בדיוק אותו מידע שהילד רואה — בלי מעקב נסתר.</p>
   </div>
   <div id="hubParentBody"></div>
-  <div class="h-rowbtns"><button class="btn btn-main" onclick="hubShareWeek()">📤 שיתוף הסיכום השבועי</button></div>
+  <div class="h-rowbtns"><button class="btn-primary" onclick="hubShareWeek()">📤 שיתוף הסיכום השבועי</button></div>
   <div id="hubWeekPanel" class="h-sharebox h-hidden">
     <textarea id="hubWeekText" readonly rows="9" style="width:100%;padding:9px;border:1.5px solid #d7dce6;border-radius:10px;font-size:14px;font-family:inherit"></textarea>
     <div class="h-rowbtns">
-      <button class="btn" id="hubWeekCopyBtn" onclick="hubCopyWeek()">📋 העתקת הסיכום</button>
-      <a class="btn" id="hubWeekWa" target="_blank" rel="noopener">💬 וואטסאפ</a>
+      <button class="btn-secondary" id="hubWeekCopyBtn" onclick="hubCopyWeek()">📋 העתקת הסיכום</button>
+      <a class="btn-secondary" id="hubWeekWa" target="_blank" rel="noopener">💬 וואטסאפ</a>
     </div>
   </div>
 </div>
 
 <div id="hubSubject" class="h-wrap h-hidden">
-  <button class="btn btn-ghost" onclick="hubHomeFromEnd()">🏠 כל המקצועות</button>
+  <button class="btn-ghost" onclick="hubHomeFromEnd()">🏠 כל המקצועות</button>
   <div class="card" style="margin-top:10px">
     <div id="hubSubjTitle" style="font-size:24px;font-weight:800"></div>
     <div id="hubSubjBook" class="h-ssub" style="font-size:14px"></div>
@@ -495,32 +491,32 @@ a:focus-visible {
     </select>
     <div id="hubLvlHint" class="h-ssub" style="font-size:13px;margin-top:4px"></div>
     <div class="h-rowbtns">
-      <button class="btn btn-main h-primary-full" onclick="hubStart('train')">▶️ התחלת אימון (10 שאלות)</button>
+      <button class="btn-primary h-primary-full" onclick="hubStart('train')">▶️ התחלת אימון (10 שאלות)</button>
     </div>
     <div class="h-ssub" style="font-size:13px;margin-top:4px">אימון (10 שאלות ברמה שבחרת): +2 🪙 בסיום · עליית רמה +15 🪙 · נחשב יום למידה.</div>
     <div class="h-rowbtns">
-      <button class="btn" id="hubMoreBtn" onclick="hubToggleMore()">➕ עוד דרכים לתרגל</button>
+      <button class="btn-secondary" id="hubMoreBtn" onclick="hubToggleMore()">➕ עוד דרכים לתרגל</button>
     </div>
     <div id="hubMoreModes" class="h-hidden">
     <div class="h-rowbtns">
-      <button class="btn" id="hubLearnBtn" onclick="hubOpenLearn()">📖 לימוד — קודם לומדים</button>
-      <button class="btn" onclick="hubOpenCards()">🃏 כרטיסיות</button>
-      <button class="btn h-hidden" id="hubReviewBtn" onclick="hubStart('review')">🔁 חיזוק — שאלות ששווה לראות שוב</button>
-      <button class="btn h-hidden" id="hubMatchBtn" onclick="hubOpenMatch()">🧩 התאמת זוגות</button>
-      <button class="btn h-hidden" id="hubDictBtn" onclick="hubOpenDict()">🎧 הכתבה</button>
-      <button class="btn h-hidden" id="hubTypeBtn" onclick="hubOpenType()">⌨️ הקלדה חופשית</button>
+      <button class="btn-secondary" id="hubLearnBtn" onclick="hubOpenLearn()">📖 לימוד — קודם לומדים</button>
+      <button class="btn-secondary" onclick="hubOpenCards()">🃏 כרטיסיות</button>
+      <button class="btn-secondary h-hidden" id="hubReviewBtn" onclick="hubStart('review')">🔁 חיזוק — שאלות ששווה לראות שוב</button>
+      <button class="btn-secondary h-hidden" id="hubMatchBtn" onclick="hubOpenMatch()">🧩 התאמת זוגות</button>
+      <button class="btn-secondary h-hidden" id="hubDictBtn" onclick="hubOpenDict()">🎧 הכתבה</button>
+      <button class="btn-secondary h-hidden" id="hubTypeBtn" onclick="hubOpenType()">⌨️ הקלדה חופשית</button>
     </div>
     <div class="h-ssub" style="font-size:13px;margin-top:4px">📖 לימוד, 🃏 כרטיסיות, 🧩 התאמה, 🎧 הכתבה ו⌨️ הקלדה הם רק לכיף — בלי מטבעות ובלי יום למידה. כפתורים מופיעים רק בנושאים שבהם הם רלוונטיים.</div>
     <div class="h-ssub" style="font-size:13px;margin-top:4px">🔁 חיזוק: +5 🪙 מציון 50% ומעלה · שאלה שסיימה חיזוק +3 🪙 · נחשב יום למידה.</div>
     <div class="h-rowbtns">
-      <button class="btn" id="hubMixedBtn" onclick="hubStart('mixed')">🔀 סבב מעורב</button>
-      <button class="btn" onclick="hubStart('test')">📝 מבחן — שאלות מאתגרות</button>
+      <button class="btn-secondary" id="hubMixedBtn" onclick="hubStart('mixed')">🔀 סבב מעורב</button>
+      <button class="btn-secondary" onclick="hubStart('test')">📝 מבחן — שאלות מאתגרות</button>
     </div>
-    <div class="h-ssub" style="font-size:13px;margin-top:4px">🔀 סבב מעורב (10 שאלות משתי רמות סמוכות): בלי מטבעות, אבל נחשב יום למידה · מופיע כשהגעת לרמה 2 ומעלה. 📝 מבחן (10 שאלות מאתגרות): +10 🪙 מציון 80% ומעלה · 80%+ מקפיץ את השליטה קדימה · נחשב יום למידה.</div>
+    <div class="h-ssub" style="font-size:13px;margin-top:4px">🔀 סבב מעורב (10 שאלות משתי רמות סמוכות): בלי מטבעות, אבל נחשב יום למידה · מופיע כשהגעת לרמה 2 ומעלה. 📝 מבחן (10 שאלות מאתגרות): +10 🪙 מציון 80% ומעלה · 80%+ מקפיץ את הרמה קדימה · נחשב יום למידה.</div>
     <div class="h-lab">🎓 הכנה כוללת — הספר הנוכחי, רמות 4–8:</div>
     <select id="hubPrepUpTo" class="h-sel"></select>
     <div class="h-rowbtns">
-      <button class="btn" onclick="hubStart('prep')">📚 התחלת הכנה כוללת (15 שאלות)</button>
+      <button class="btn-secondary" onclick="hubStart('prep')">📚 התחלת הכנה כוללת (15 שאלות)</button>
     </div>
     <div class="h-ssub" style="font-size:13px;margin-top:4px">📚 הכנה כוללת (15 שאלות): בלי מטבעות, אבל נחשבת יום למידה.</div>
     </div>
@@ -532,8 +528,8 @@ a:focus-visible {
 </div>
 
 <div id="hubQuiz" class="h-wrap h-hidden">
-  <button class="btn btn-ghost" onclick="hubAgain()">← חזרה לנושאים</button>
-  <button class="btn btn-ghost" onclick="hubHomeFromEnd()">🏠 כל המקצועות</button>
+  <button class="btn-ghost" onclick="hubAgain()">← חזרה לנושאים</button>
+  <button class="btn-ghost" onclick="hubHomeFromEnd()">🏠 כל המקצועות</button>
   <div class="card" style="margin-top:10px">
     <div id="hubQuizTitle" style="font-size:20px;font-weight:800"></div>
     <div class="h-quizgrid">
@@ -546,24 +542,24 @@ a:focus-visible {
     <div class="h-quizmain">
     <div id="hubQType" class="h-ssub" style="font-size:13px"></div>
     <div id="hubQPsg" class="h-psg h-hidden" dir="auto"></div>
-    <button class="btn btn-ghost h-hidden" id="hubPsgToggle" onclick="hubPsgToggle()">📖 הצגת הקטע</button>
+    <button class="btn-ghost h-hidden" id="hubPsgToggle" onclick="hubPsgToggle()">📖 הצגת הקטע</button>
     <div id="hubQText" class="qtext" dir="auto" style="margin-top:8px"></div>
     <div class="h-rowbtns" style="margin-top:2px">
-      <button class="btn btn-ghost" onclick="hubSpeakQ()">🔊 הקראת השאלה</button>
-      <button class="btn btn-ghost" onclick="hubReportToggle()">🚩 דיווח על שאלה</button>
+      <button class="btn-ghost" onclick="hubSpeakQ()">🔊 הקראת השאלה</button>
+      <button class="btn-ghost" onclick="hubReportToggle()">🚩 דיווח על שאלה</button>
     </div>
     <div id="hubReportPanel" class="h-sharebox h-hidden">
       <div style="font-weight:700">משהו לא נכון בשאלה? ספרו לנו:</div>
       <div class="h-rowbtns">
-        <a class="btn" id="hubReportMail">📧 שליחה במייל</a>
-        <button class="btn" id="hubReportCopyBtn" onclick="hubReportCopy()">📋 העתקת פרטי השאלה</button>
+        <a class="btn-secondary" id="hubReportMail">📧 שליחה במייל</a>
+        <button class="btn-secondary" id="hubReportCopyBtn" onclick="hubReportCopy()">📋 העתקת פרטי השאלה</button>
       </div>
     </div>
     <div id="hubOpts" class="opts"></div>
     <div id="hubQFb"></div>
     <div class="h-rowbtns">
-      <button id="hubCheckBtn" class="btn btn-main" onclick="hubCheck()">בדיקה ✓</button>
-      <button id="hubNextBtn" class="btn btn-main h-hidden" onclick="hubNext()">הבא ←</button>
+      <button id="hubCheckBtn" class="btn-primary" onclick="hubCheck()">בדיקה ✓</button>
+      <button id="hubNextBtn" class="btn-primary h-hidden" onclick="hubNext()">הבא ←</button>
     </div>
     </div>
     </div>
@@ -584,68 +580,68 @@ a:focus-visible {
       <div id="hubEndFocus" style="margin-top:10px"></div>
     </div>
     <div class="h-rowbtns" style="justify-content:center">
-      <button class="btn btn-main" onclick="hubAgain()">← חזרה לנושאים</button>
-      <button class="btn btn-main" onclick="hubAgainTrain()">🔄 סבב נוסף באותו נושא</button>
-      <button class="btn" onclick="hubHomeFromEnd()">🏠 כל המקצועות</button>
+      <button class="btn-primary" onclick="hubAgain()">← חזרה לנושאים</button>
+      <button class="btn-primary" onclick="hubAgainTrain()">🔄 סבב נוסף באותו נושא</button>
+      <button class="btn-secondary" onclick="hubHomeFromEnd()">🏠 כל המקצועות</button>
     </div>
   </div>
 </div>
 
 <div id="hubLearn" class="h-wrap h-hidden">
-  <button class="btn btn-ghost" onclick="hubAgain()">← חזרה לנושאים</button>
-  <button class="btn btn-ghost" onclick="hubHomeFromEnd()">🏠 כל המקצועות</button>
+  <button class="btn-ghost" onclick="hubAgain()">← חזרה לנושאים</button>
+  <button class="btn-ghost" onclick="hubHomeFromEnd()">🏠 כל המקצועות</button>
   <div class="card" style="margin-top:10px">
     <div id="hubLearnTitle" style="font-size:20px;font-weight:800"></div>
-    <div class="h-rowbtns" style="margin-top:2px"><button class="btn btn-ghost" onclick="hubLearnSpeak()">🔊 הקראת הכרטיס</button></div>
+    <div class="h-rowbtns" style="margin-top:2px"><button class="btn-ghost" onclick="hubLearnSpeak()">🔊 הקראת הכרטיס</button></div>
     <div id="hubLearnCount" class="h-ssub" style="font-size:14px"></div>
     <div id="hubLearnDots" style="text-align:center;margin-top:8px"></div>
     <div id="hubLearnCardT" style="font-size:19px;font-weight:800;margin-top:10px"></div>
     <div id="hubLearnBody" class="h-learnbody"></div>
     <div id="hubLearnCheck"></div>
     <div class="h-rowbtns" style="justify-content:space-between">
-      <button class="btn" id="hubLearnPrev" onclick="hubLearnNav(-1)">→ הקודם</button>
-      <button class="btn btn-main" id="hubLearnNext" onclick="hubLearnNav(1)">הכרטיס הבא ←</button>
+      <button class="btn-secondary" id="hubLearnPrev" onclick="hubLearnNav(-1)">→ הקודם</button>
+      <button class="btn-primary" id="hubLearnNext" onclick="hubLearnNav(1)">הכרטיס הבא ←</button>
     </div>
     <div id="hubLearnDone" class="h-hidden" style="margin-top:12px">
       <div style="font-weight:800">🎉 סיימתם ללמוד! עכשיו בודקים שהבנתם:</div>
       <div class="h-ssub" style="font-size:14px">🎈 הלימוד הוא רק לכיף — בלי מטבעות ובלי יום למידה.</div>
       <div class="h-rowbtns">
-        <button class="btn btn-main" onclick="hubLearnToTrain()">▶️ לאימון</button>
-        <button class="btn" onclick="hubLearnToTest()">📝 ישר למבחן</button>
+        <button class="btn-primary" onclick="hubLearnToTrain()">▶️ לאימון</button>
+        <button class="btn-secondary" onclick="hubLearnToTest()">📝 ישר למבחן</button>
       </div>
     </div>
   </div>
 </div>
 
 <div id="hubCards" class="h-wrap h-hidden">
-  <button class="btn btn-ghost" onclick="hubAgain()">← חזרה לנושאים</button>
-  <button class="btn btn-ghost" onclick="hubHomeFromEnd()">🏠 כל המקצועות</button>
+  <button class="btn-ghost" onclick="hubAgain()">← חזרה לנושאים</button>
+  <button class="btn-ghost" onclick="hubHomeFromEnd()">🏠 כל המקצועות</button>
   <div class="card center" style="margin-top:10px">
     <div id="hubCardCount" class="h-ssub" style="font-size:14px"></div>
     <div id="hubCardFront" class="qtext" dir="auto" style="margin-top:12px"></div>
     <div id="hubCardBack" class="explain h-hidden" dir="auto" style="margin-top:10px"></div>
     <div id="hubCardExp" class="explain h-hidden" dir="auto" style="margin-top:6px"></div>
     <div class="h-rowbtns" style="justify-content:center">
-      <button class="btn btn-main" id="hubCardFlipBtn" onclick="hubFlipCard()">🧠 עניתי בלב — הראו את התשובה</button>
-      <button class="btn h-hidden" id="hubCardWhyBtn" onclick="hubCardWhy()">💡 למה? ההסבר</button>
+      <button class="btn-primary" id="hubCardFlipBtn" onclick="hubFlipCard()">🧠 עניתי בלב — הראו את התשובה</button>
+      <button class="btn-secondary h-hidden" id="hubCardWhyBtn" onclick="hubCardWhy()">💡 למה? ההסבר</button>
     </div>
     <div class="h-rowbtns h-hidden" id="hubCardMark" style="justify-content:center">
-      <button class="btn" onclick="hubMarkCard(true)">✓ ידעתי</button>
-      <button class="btn" onclick="hubMarkCard(false)">✗ לא ידעתי</button>
+      <button class="btn-secondary" onclick="hubMarkCard(true)">✓ ידעתי</button>
+      <button class="btn-secondary" onclick="hubMarkCard(false)">✗ לא ידעתי</button>
     </div>
     <div id="hubCardEnd" class="h-hidden" style="margin-top:12px">
       <div class="h-ssub" style="font-size:14px">🎈 הכרטיסיות הן רק לכיף — בלי מטבעות ובלי יום למידה. חזרה עליהן עוזרת לזכור, והאימון הוא שנותן מטבעות.</div>
       <div class="h-rowbtns" style="justify-content:center">
-        <button class="btn btn-main" onclick="hubCardsToTrain()">▶️ לאימון באותו נושא</button>
-        <button class="btn" onclick="hubAgain()">← חזרה לנושאים</button>
+        <button class="btn-primary" onclick="hubCardsToTrain()">▶️ לאימון באותו נושא</button>
+        <button class="btn-secondary" onclick="hubAgain()">← חזרה לנושאים</button>
       </div>
     </div>
   </div>
 </div>
 
 <div id="hubMatch" class="h-wrap h-hidden">
-  <button class="btn btn-ghost" onclick="hubAgain()">← חזרה לנושאים</button>
-  <button class="btn btn-ghost" onclick="hubHomeFromEnd()">🏠 כל המקצועות</button>
+  <button class="btn-ghost" onclick="hubAgain()">← חזרה לנושאים</button>
+  <button class="btn-ghost" onclick="hubHomeFromEnd()">🏠 כל המקצועות</button>
   <div class="card" style="margin-top:10px">
     <div style="font-size:20px;font-weight:800">🧩 התאמת זוגות — מילה ופירושה</div>
     <div id="hubMatchScore" class="h-ssub" style="font-size:14px"></div>
@@ -656,45 +652,45 @@ a:focus-visible {
     <div id="hubMatchEnd" class="h-hidden" style="margin-top:12px">
       <div class="h-ssub" style="font-size:14px">🎈 ההתאמה היא רק לכיף — בלי מטבעות ובלי יום למידה.</div>
       <div class="h-rowbtns">
-        <button class="btn btn-main" onclick="hubOpenMatch()">🔄 סבב התאמה חדש</button>
-        <button class="btn" onclick="hubAgain()">← חזרה לנושאים</button>
+        <button class="btn-primary" onclick="hubOpenMatch()">🔄 סבב התאמה חדש</button>
+        <button class="btn-secondary" onclick="hubAgain()">← חזרה לנושאים</button>
       </div>
     </div>
   </div>
 </div>
 
 <div id="hubDict" class="h-wrap h-hidden">
-  <button class="btn btn-ghost" onclick="hubAgain()">← חזרה לנושאים</button>
-  <button class="btn btn-ghost" onclick="hubHomeFromEnd()">🏠 כל המקצועות</button>
+  <button class="btn-ghost" onclick="hubAgain()">← חזרה לנושאים</button>
+  <button class="btn-ghost" onclick="hubHomeFromEnd()">🏠 כל המקצועות</button>
   <div class="card" style="margin-top:10px">
     <div style="font-size:20px;font-weight:800">🎧 הכתבה — שומעים וכותבים</div>
     <div id="hubDictScore" class="h-ssub" style="font-size:14px"></div>
     <div id="hubDictMsg" style="margin-top:8px"></div>
     <div class="h-rowbtns">
-      <button class="btn" onclick="hubSpeak(hubD.word.en)">🔊 שמיעה שוב</button>
+      <button class="btn-secondary" onclick="hubSpeak(hubD.word.en)">🔊 שמיעה שוב</button>
     </div>
     <input id="hubDictInput" class="h-dictin" dir="ltr" placeholder="Type the word here..." autocomplete="off">
     <div id="hubDictFb"></div>
     <div class="h-rowbtns" id="hubDictBtns">
-      <button class="btn btn-main" onclick="hubCheckDict()">בדיקה ✓</button>
-      <button class="btn" onclick="hubNextDictWord()">מילה הבאה ←</button>
-      <button class="btn" onclick="hubDictFinish()">🏁 סיום</button>
+      <button class="btn-primary" onclick="hubCheckDict()">בדיקה ✓</button>
+      <button class="btn-secondary" onclick="hubNextDictWord()">מילה הבאה ←</button>
+      <button class="btn-secondary" onclick="hubDictFinish()">🏁 סיום</button>
     </div>
     <div id="hubDictEnd" class="h-hidden" style="margin-top:12px">
       <div style="font-size:19px;font-weight:800">🎉 סיימת את ההכתבה!</div>
       <div id="hubDictEndScore" class="h-ssub" style="font-size:14px"></div>
       <div class="h-ssub" style="font-size:14px">🎈 ההכתבה היא רק לכיף — בלי מטבעות ובלי יום למידה.</div>
       <div class="h-rowbtns">
-        <button class="btn btn-main" onclick="hubDictResume()">🎧 עוד מילים</button>
-        <button class="btn" onclick="hubAgain()">← חזרה לנושאים</button>
+        <button class="btn-primary" onclick="hubDictResume()">🎧 עוד מילים</button>
+        <button class="btn-secondary" onclick="hubAgain()">← חזרה לנושאים</button>
       </div>
     </div>
   </div>
 </div>
 
 <div id="hubType" class="h-wrap h-hidden">
-  <button class="btn btn-ghost" onclick="hubAgain()">← חזרה לנושאים</button>
-  <button class="btn btn-ghost" onclick="hubHomeFromEnd()">🏠 כל המקצועות</button>
+  <button class="btn-ghost" onclick="hubAgain()">← חזרה לנושאים</button>
+  <button class="btn-ghost" onclick="hubHomeFromEnd()">🏠 כל המקצועות</button>
   <div class="card" style="margin-top:10px">
     <div id="hubTypeTitle" style="font-size:20px;font-weight:800">⌨️ הקלדה חופשית</div>
     <div id="hubTypeScore" class="h-ssub" style="font-size:14px"></div>
@@ -702,17 +698,17 @@ a:focus-visible {
     <input id="hubTypeInput" class="h-dictin" placeholder="כתבו כאן..." autocomplete="off" style="margin-top:8px">
     <div id="hubTypeFb"></div>
     <div class="h-rowbtns" id="hubTypeBtns">
-      <button class="btn btn-main" onclick="hubCheckType()">בדיקה ✓</button>
-      <button class="btn" onclick="hubNextTypeItem()">הבא ←</button>
-      <button class="btn" onclick="hubTypeFinish()">🏁 סיום</button>
+      <button class="btn-primary" onclick="hubCheckType()">בדיקה ✓</button>
+      <button class="btn-secondary" onclick="hubNextTypeItem()">הבא ←</button>
+      <button class="btn-secondary" onclick="hubTypeFinish()">🏁 סיום</button>
     </div>
     <div id="hubTypeEnd" class="h-hidden" style="margin-top:12px">
       <div style="font-size:19px;font-weight:800">🎉 סיימת את ההקלדה!</div>
       <div id="hubTypeEndScore" class="h-ssub" style="font-size:14px"></div>
       <div class="h-ssub" style="font-size:14px">🎈 ההקלדה היא רק לכיף — בלי מטבעות ובלי יום למידה.</div>
       <div class="h-rowbtns">
-        <button class="btn btn-main" onclick="hubTypeResume()">⌨️ עוד מילים</button>
-        <button class="btn" onclick="hubAgain()">← חזרה לנושאים</button>
+        <button class="btn-primary" onclick="hubTypeResume()">⌨️ עוד מילים</button>
+        <button class="btn-secondary" onclick="hubAgain()">← חזרה לנושאים</button>
       </div>
     </div>
   </div>
@@ -720,14 +716,14 @@ a:focus-visible {
 
 <div id="mathWrap" class="h-hidden">
   <div style="max-width:760px;margin:0 auto;padding:10px 12px 0">
-    <button class="btn btn-ghost" onclick="hubCloseMath()">🏠 כל המקצועות</button>
+    <button class="btn-ghost" onclick="hubCloseMath()">🏠 כל המקצועות</button>
   </div>
   
 <div class="wrap">
   <header>
     <h1>🧮 ערכת לימוד חשבון — כיתה ד׳</h1>
     <p>שבילים פלוס 10, 11 ו־12 · גאומטריה, שברים והכנה למבחנים · מאות שאלות בכל נושא · אימון רמות, מבחנים והכנה כוללת</p>
-    <button class="sharebtn" onclick="shareApp()">📤 שיתוף</button>
+    <button class="btn-ghost" onclick="shareApp()">📤 שיתוף</button>
   </header>
 
   <!-- ============ TOPIC PICKER ============ -->
@@ -769,7 +765,7 @@ a:focus-visible {
         <label class="pagefield">עד עמוד<input type="number" id="pageTo" class="pageinput" oninput="updatePagesPreview()" onfocus="this.select()" onblur="clampPageInputs()"></label>
       </div>
       <div id="pagesPreview" class="pagespreview"></div>
-      <button class="btn btn-new" id="pagesStart" onclick="startPagesSession()">מתחילים! 🎉</button>
+      <button class="btn-primary" id="pagesStart" onclick="startPagesSession()">מתחילים! 🎉</button>
     </div>
     </div>
     <div id="cumMode" style="display:none">
@@ -789,7 +785,7 @@ a:focus-visible {
         <label class="pagefield" style="align-items:center">עד עמוד<input type="number" id="cumPage" class="pageinput" oninput="updateCumPreview()" onfocus="this.select()" onblur="clampCumInput()"></label>
       </div>
       <div id="cumPreview" class="pagespreview"></div>
-      <button class="btn btn-new" id="cumStart" onclick="startCumSession()">מתחילים! 🎉</button>
+      <button class="btn-primary" id="cumStart" onclick="startCumSession()">מתחילים! 🎉</button>
     </div>
     </div>
   </div>
@@ -817,7 +813,7 @@ a:focus-visible {
         <div>💚 טעות? לא נורא! הכוכבים <b>נשארים</b> והרמה <b>אף פעם לא יורדת</b></div>
         <div id="tIntroMaster">🏆 יש <b>8 רמות</b>!</div>
       </div>
-      <button class="btn btn-new" onclick="acceptIntro()">הבנתי, מתחילים! 🎉</button>
+      <button class="btn-primary" onclick="acceptIntro()">הבנתי, מתחילים! 🎉</button>
     </div>
 
     <div id="tMain" style="display:none">
@@ -827,11 +823,11 @@ a:focus-visible {
         <div class="streakrow"><span>🔥 רצף נכונות:</span><span class="dots" id="tDots"></span></div>
         <div class="streakrow"><span>⭐ כוכבים לרמה הבאה:</span><span id="tProgStars" style="font-size:17px;letter-spacing:2px"></span></div>
         <div id="tTotal" style="margin-top:6px;color:#5a6b7d;font-size:14px"></div>
-        <button class="t-help" onclick="showIntroAgain()">❓ איך זה עובד?</button>
+        <button class="btn-ghost" onclick="showIntroAgain()">❓ איך זה עובד?</button>
       </div>
       <div id="tQ"></div>
       <div class="center" style="margin:6px 0 18px;">
-        <button class="btn btn-main" id="tNext" style="display:none" onclick="nextTrainQ()">הבא ➜</button>
+        <button class="btn-primary" id="tNext" style="display:none" onclick="nextTrainQ()">הבא ➜</button>
       </div>
     </div>
 
@@ -841,8 +837,8 @@ a:focus-visible {
       <p class="msg" id="tMasteryMsg">סיימת את כל 8 הרמות! 🎉</p>
       <p id="masteryStats" style="font-size:17px"></p>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px;">
-        <button class="btn btn-new" onclick="continueTraining()">🏋️ המשך להתאמן</button>
-        <button class="btn btn-main" onclick="showTest();newTest();">📝 למבחן מסכם</button>
+        <button class="btn-primary" onclick="continueTraining()">🏋️ המשך להתאמן</button>
+        <button class="btn-primary" onclick="showTest();newTest();">📝 למבחן מסכם</button>
       </div>
     </div>
   </div>
@@ -853,14 +849,14 @@ a:focus-visible {
     <div class="progress"><div id="pfill"></div></div>
     <div id="quiz"></div>
     <div class="center" style="margin: 18px 0;">
-      <button class="btn btn-main" id="submitBtn" onclick="grade()">סיימתי — בדוק ציון ✅</button>
+      <button class="btn-primary" id="submitBtn" onclick="grade()">סיימתי — בדוק ציון ✅</button>
     </div>
     <div id="result" class="card center" style="display:none;">
       <div>הציון שלך:</div>
       <div class="score" id="scoreNum"></div>
       <div class="msg" id="scoreMsg"></div>
       <p style="color:#5a6b7d;">גלול למעלה כדי לראות ליד כל שאלה אם צדקת ומה ההסבר.</p>
-      <button class="btn btn-new" onclick="newTest()">🔀 מבחן חדש — שאלות אחרות לגמרי</button>
+      <button class="btn-primary" onclick="newTest()">🔀 מבחן חדש — שאלות אחרות לגמרי</button>
     </div>
   </div>
   </div><!-- /mainPane -->
@@ -876,7 +872,7 @@ a:focus-visible {
   <div class="celeb-box">
     <div style="font-size:52px" id="celebEmoji">🎉</div>
     <div id="celebText"></div>
-    <div><button class="btn btn-new" id="celebBtn" style="margin-top:14px">ממשיכים! 🚀</button></div>
+    <div><button class="btn-primary" id="celebBtn" style="margin-top:14px">ממשיכים! 🚀</button></div>
   </div>
 </div>
 
@@ -41751,7 +41747,7 @@ function hubShareWeek(){
   const mg=hubWk.mastery.length?hubWk.mastery.join(', '):'—';
   const txt='📊 הסיכום השבועי שלי — מרכז הלמידה כיתה ד׳\n'
     +'• ימי למידה השבוע: '+ad+'\n• סבבים שסיימתי: '+hubWk.rounds+'\n• שאלות שסיימו חיזוק: '+hubWk.grads+'\n'
-    +'• עליות שליטה: '+mg+'\n• בבנק הידע: '+hubBank.coins+' מטבעות (+'+hubWk.coins+' השבוע)\n'
+    +'• עליות רמה: '+mg+'\n• בבנק הידע: '+hubBank.coins+' מטבעות (+'+hubWk.coins+' השבוע)\n'
     +(gi?('• היעד השבועי שלי: '+gi.g.label+' — '+(gi.done?'הושג! ✔':'התקדמות '+Math.min(gi.cur,gi.g.target)+'/'+gi.g.target))+'\n':'')
     +((hubWk.mathQ||0)>0?('• חשבון השבוע: '+Object.keys(hubWk.mathDays||{}).length+' ימי חשבון · '+hubWk.mathQ+' שאלות\n'):'')
     +'https://netanel485-hue.github.io/grade4-learning/';
@@ -41792,7 +41788,7 @@ function hubRenderMap(){
       html+='<div class="h-mapsec"><div class="h-maphead">🔢 חשבון</div>';
       const md=hubMathProgress();
       if(!md.rows.length&&!md.pages.length){
-        html+='<div class="center">'+HUB_ART_EMPTY+'</div><div class="h-mapnote">ההתקדמות בחשבון מתנהלת בתוך ערכת החשבון עצמה (שבילים פלוס 10 · 11 · 12 + גאומטריה, שברים והכנה למבחנים).</div><div class="h-rowbtns"><button class="btn" onclick="hubOpenMath()">פתיחת ערכת החשבון 🔢</button></div>';
+        html+='<div class="center">'+HUB_ART_EMPTY+'</div><div class="h-mapnote">ההתקדמות בחשבון מתנהלת בתוך ערכת החשבון עצמה (שבילים פלוס 10 · 11 · 12 + גאומטריה, שברים והכנה למבחנים).</div><div class="h-rowbtns"><button class="btn-secondary" onclick="hubOpenMath()">פתיחת ערכת החשבון 🔢</button></div>';
       }else{
         const all=md.rows.concat(md.pages);
         for(const r of all){
@@ -41819,9 +41815,9 @@ function hubRenderParent(){
   const profRows=hubProfiles.map(p=>{
     let coins=0;try{const d=JSON.parse(localStorage.getItem(hubProfileKey(p.id))||'null');coins=(d&&d.bank&&d.bank.coins)||0;}catch(e){}
     return '<div class="h-typerow"><span>'+p.emoji+' '+hEsc(p.name)+(p.id===hubActiveId?' · פעיל עכשיו':'')+' · '+coins+' 🪙</span><span>'
-      +'<button class="btn" onclick="hubRenameProfile(\''+p.id+'\')">✏️ שינוי שם</button>'
-      +(hubProfiles.length>1?'<button class="btn" onclick="hubDeleteProfile(\''+p.id+'\')">🗑️ מחיקה</button>':'')
-      +'<button class="btn" onclick="hubExportProfile(\''+p.id+'\')">📤 קוד העברה</button></span></div>';
+      +'<button class="btn-secondary" onclick="hubRenameProfile(\''+p.id+'\')">✏️ שינוי שם</button>'
+      +(hubProfiles.length>1?'<button class="btn-danger" onclick="hubDeleteProfile(\''+p.id+'\')">🗑️ מחיקה</button>':'')
+      +'<button class="btn-secondary" onclick="hubExportProfile(\''+p.id+'\')">📤 קוד העברה</button></span></div>';
   }).join('');
   const mg=hubWk.mastery.length?hubWk.mastery.map(m=>'<div class="h-typerow"><span>🏆 '+hEsc(m)+'</span></div>').join(''):'<div class="h-ssub">עדיין לא השבוע</div>';
   let talk=null,mx=0;for(const k in hubWk.missTop)if(hubWk.missTop[k]>mx){mx=hubWk.missTop[k];talk=k;}
@@ -41838,15 +41834,15 @@ function hubRenderParent(){
   const mdP=hubMathProgress();
   let mathRows='';
   for(const r of mdP.rows.concat(mdP.pages))mathRows+='<div class="h-typerow"><span>🔢 '+hEsc(r.label)+'</span><span>'+(r.mastered?'👑 הושלם':r.answered>0?'רמה '+(r.level+1)+'/8':'לא התחיל')+'</span></div>';
-  const reqs=hubBank.reqs.map((r,i)=>'<div class="h-typerow"><span>🎁 בקשת צ׳ופר · '+r.d+'</span>'+(r.st==='pending'?'<button class="btn" onclick="hubApproveReq('+i+')">✔ אישור ומימוש (50 מטבעות)</button>':'<span>✔ מומש</span>')+'</div>').join('');
+  const reqs=hubBank.reqs.map((r,i)=>'<div class="h-typerow"><span>🎁 בקשת צ׳ופר · '+r.d+'</span>'+(r.st==='pending'?'<button class="btn-secondary" onclick="hubApproveReq('+i+')">✔ אישור ומימוש (50 מטבעות)</button>':'<span>✔ מומש</span>')+'</div>').join('');
   const log=hubBank.log.slice(0,8).map(l=>'<div class="h-typerow"><span>'+hEsc(l.why)+'</span><span>+'+l.amt+' 🪙</span></div>').join('');
   hEl('hubParentBody').innerHTML=
     '<div class="h-lab">פרופילים במכשיר הזה</div>'+profRows
-    +'<div class="h-rowbtns"><button class="btn" onclick="hubOpenProfiles()">👤 החלפת פרופיל / פרופיל חדש</button><button class="btn" onclick="hubImportPanel()">📥 ייבוא פרופיל מקוד</button></div>'
+    +'<div class="h-rowbtns"><button class="btn-secondary" onclick="hubOpenProfiles()">👤 החלפת פרופיל / פרופיל חדש</button><button class="btn-secondary" onclick="hubImportPanel()">📥 ייבוא פרופיל מקוד</button></div>'
     +(profMsg?'<div class="fb good">'+hEsc(profMsg)+'</div>':'')
     +'<div id="hubProfPanel" class="h-sharebox h-hidden"></div>'
     +'<div class="h-bankcard"><div style="font-size:19px;font-weight:800">🏦 בנק הידע</div><div style="font-size:30px;font-weight:800;margin:4px 0">'+hubBank.coins+' מטבעות</div>'
-    +'<div class="h-ssub">השבוע נכנסו +'+hubWk.coins+' מטבעות. מטבעות נצברים רק על למידה מאומתת: שאלה שסיימה חיזוק (+3), עליית שליטה (+15), סבב אימון שהושלם (+2), סבב חיזוק שהושלם בציון 50%+ (+5), מבחן מעל 80% (+10), בונוס 4 ימי למידה בשבוע (+20). צ׳ופר אחד = 50 מטבעות, והמימוש באישורכם כאן במסך.</div></div>'
+    +'<div class="h-ssub">השבוע נכנסו +'+hubWk.coins+' מטבעות. מטבעות נצברים רק על למידה מאומתת: שאלה שסיימה חיזוק (+3), עליית רמה (+15), סבב אימון שהושלם (+2), סבב חיזוק שהושלם בציון 50%+ (+5), מבחן מעל 80% (+10), בונוס 4 ימי למידה בשבוע (+20). צ׳ופר אחד = 50 מטבעות, והמימוש באישורכם כאן במסך.</div></div>'
     +'<div class="h-lab">השבוע (ראשון–שבת)</div>'
     +'<div class="h-typerow"><span>ימי למידה</span><span><b>'+ad+'</b> מתוך 7</span></div>'
     +'<div class="h-typerow"><span>סבבים שהושלמו</span><span><b>'+hubWk.rounds+'</b></span></div>'
@@ -41854,7 +41850,7 @@ function hubRenderParent(){
     +'<div class="h-typerow"><span>תשובות נכונות בסבבי חיזוק</span><span><b>'+hubWk.reviews+'</b></span></div>'
     +((hubWk.mathQ||0)>0?'<div class="h-typerow"><span>שאלות חשבון שנענו השבוע</span><span><b>'+hubWk.mathQ+'</b></span></div><div class="h-typerow"><span>ימי חשבון השבוע</span><span><b>'+Object.keys(hubWk.mathDays||{}).length+'</b></span></div>':'')
     +(gi?'<div class="h-typerow"><span>היעד השבועי שהוא בחר</span><span>'+hEsc(gi.g.label)+' · '+Math.min(gi.cur,gi.g.target)+'/'+gi.g.target+(gi.done?' ✔':'')+'</span></div>':'')
-    +'<div class="h-lab">עליות שליטה השבוע</div>'+mg
+    +'<div class="h-lab">עליות רמה השבוע</div>'+mg
     +'<div class="h-lab">התקדמות לפי נושא (נושאים שהתחילו)</div>'
     +(progRows||('<div class="center">'+HUB_ART_EMPTY+'<div class="h-ssub">עדיין לא הושלם סבב באף נושא.</div></div>'))
     +(mathRows?'<div class="h-lab">חשבון (מערכת החשבון)</div>'+mathRows:'')
@@ -41895,17 +41891,17 @@ function hubRenderProfiles(){
       html+='<button class="h-tcard'+(p.id===hubActiveId?' h-active':'')+'" onclick="hubSelectProfile(\''+p.id+'\')"><div class="h-temoji">'+p.emoji+'</div><div class="h-tname">'+hEsc(p.name)+'</div><div class="h-ssub">'+coins+' 🪙</div></button>';
     }
     html+='</div>';
-    if(hubActiveProfile())html+='<div class="h-rowbtns"><button class="btn btn-ghost" onclick="hubProfilesHome()">↩️ חזרה למסך הבית</button></div>';
+    if(hubActiveProfile())html+='<div class="h-rowbtns"><button class="btn-ghost" onclick="hubProfilesHome()">↩️ חזרה למסך הבית</button></div>';
   } else {
     html+='<div class="h-tip">עוד אין פרופילים במכשיר הזה. יוצרים את הראשון — כל ההתקדמות שלו תישמר בנפרד.</div>';
   }
   html+='<div class="h-lab">או פשוט בלי פרופיל:</div>'
-    +'<div class="h-rowbtns"><button class="btn btn-ghost" onclick="hubEnterGuest()">🎭 כניסה כאורח</button></div>'
+    +'<div class="h-rowbtns"><button class="btn-ghost" onclick="hubEnterGuest()">🎭 כניסה כאורח</button></div>'
     +'<div class="h-tip">מצב אורח לא יוצר פרופיל ולא שומר כלום — לא התקדמות, לא מטבעות ולא חשבון. גם רענון מאפס את ההתקדמות, ואף פרופיל קיים לא נפגע.</div>';
   html+='<div class="h-lab">פרופיל חדש:</div>'
-    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0">'+HUB_EMOJIS.map(e=>'<button class="btn'+(e===hubProfEmoji?' btn-main':'')+'" onclick="hubSetProfEmoji(\''+e+'\')">'+e+'</button>').join('')+'</div>'
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0">'+HUB_EMOJIS.map(e=>'<button class="btn-secondary'+(e===hubProfEmoji?' btn-primary':'')+'" aria-label="בחירת אימוג׳י '+e+'" onclick="hubSetProfEmoji(\''+e+'\')">'+e+'</button>').join('')+'</div>'
     +'<input class="h-sel" id="hubProfName" maxlength="20" placeholder="שם הילד/ה...">'
-    +'<div class="h-rowbtns"><button class="btn btn-main" onclick="hubCreateProfile()">➕ יצירת פרופיל</button></div>';
+    +'<div class="h-rowbtns"><button class="btn-primary" onclick="hubCreateProfile()">➕ יצירת פרופיל</button></div>';
   body.innerHTML=html;
 }
 function hubB64enc(str){const bytes=new TextEncoder().encode(str);let bin='';const CH=32768;for(let i=0;i<bytes.length;i+=CH){bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+CH));}return btoa(bin);}
@@ -41923,7 +41919,7 @@ function hubExportProfile(id){
   const panel=hEl('hubProfPanel');if(!panel)return;
   panel.innerHTML='<div class="h-lab">קוד העברה של '+hEsc(p.name)+' — מעתיקים אותו, ובמכשיר השני מדביקים במסך להורה ← ייבוא פרופיל מקוד:</div>'
     +'<textarea id="hubProfCode" readonly rows="4" style="width:100%;padding:9px;border:1.5px solid #d7dce6;border-radius:10px;font-size:12px;font-family:inherit;direction:ltr">'+code+'</textarea>'
-    +'<div class="h-rowbtns"><button class="btn" id="hubProfCopyBtn" onclick="hubCopyProfCode()">📋 העתקת הקוד</button></div>';
+    +'<div class="h-rowbtns"><button class="btn-secondary" id="hubProfCopyBtn" onclick="hubCopyProfCode()">📋 העתקת הקוד</button></div>';
   panel.classList.remove('h-hidden');
 }
 function hubCopyProfCode(){const i=hEl('hubProfCode');if(!i)return;i.select();i.setSelectionRange(0,99999);try{navigator.clipboard.writeText(i.value);}catch(e){try{document.execCommand('copy');}catch(e2){}}const b=hEl('hubProfCopyBtn');if(b){b.textContent='✓ הועתק';setTimeout(()=>{b.textContent='📋 העתקת הקוד';},1800);}}
@@ -41932,7 +41928,7 @@ function hubImportPanel(){
   const panel=hEl('hubProfPanel');if(!panel)return;
   panel.innerHTML='<div class="h-lab">הדביקו כאן קוד העברה שהועתק ממכשיר אחר (מאותה כיתה):</div>'
     +'<textarea id="hubProfImport" rows="4" style="width:100%;padding:9px;border:1.5px solid #d7dce6;border-radius:10px;font-size:12px;font-family:inherit;direction:ltr"></textarea>'
-    +'<div class="h-rowbtns"><button class="btn btn-main" onclick="hubImportProfile()">📥 ייבוא כפרופיל חדש</button></div>';
+    +'<div class="h-rowbtns"><button class="btn-primary" onclick="hubImportProfile()">📥 ייבוא כפרופיל חדש</button></div>';
   panel.classList.remove('h-hidden');
 }
 function hubImportProfile(){
@@ -42051,17 +42047,17 @@ function hubRenderHome(){
   // 2026-11-09 redesign: continue card + quiet row; profiles entry-only (no switcher chip here);
   // map/parent moved to the top bar / home footer; weekly summary stays in the parent screen only.
   if(hasCont){const f=hubFindTopic(hubLast.topic);const cp=hubTopicProg(f.topic.id);
-    th+='<div class="h-cont">'+HUB_MASCOT.replace('h-mascot','h-mascot h-mascot-small')+'<div style="font-size:20px;font-weight:800">▶️ ממשיכים מאיפה שהפסקת</div><div class="h-ssub" style="margin-top:4px">'+hEsc(f.topic.name)+' · רמה '+Math.min(8,cp.mastery+1)+' · '+hEsc(f.subj.name)+'</div><div class="h-rowbtns"><button class="btn btn-main h-primary-full" onclick="hubContinue()">▶️ המשך: '+hEsc(f.topic.name)+'</button></div></div>';}
-  let quiet='<div class="h-rowbtns"><button class="btn btn-ghost" onclick="hubToggleDaily()">🎯 נושא יומי</button>';
-  if(dueTot>0)quiet+='<button class="btn btn-ghost" onclick="hubStartDue()">🔁 '+dueTot+' שאלות לחיזוק היום</button>';
-  if(window.hubGuest)quiet+='<button class="btn btn-ghost" onclick="hubExitGuest()">🎭 מצב אורח · סיום וחזרה</button>';
-  quiet+=(window.hubGuest?'':(hubBank.reqs.some(r=>r.st==='pending')?'<span class="h-ssub" style="align-self:center">🎁 בקשת הצ׳ופר ממתינה לאישור הורה</span>':(hubBank.coins>=50?'<button class="btn btn-ghost" onclick="hubReqReward()">🎁 בקש צ׳ופר (50 🪙)</button>':'')));
+    th+='<div class="h-cont">'+HUB_MASCOT.replace('h-mascot','h-mascot h-mascot-small')+'<div style="font-size:20px;font-weight:800">▶️ ממשיכים מאיפה שהפסקת</div><div class="h-ssub" style="margin-top:4px">'+hEsc(f.topic.name)+' · רמה '+Math.min(8,cp.mastery+1)+' · '+hEsc(f.subj.name)+'</div><div class="h-rowbtns"><button class="btn-primary h-primary-full" onclick="hubContinue()">▶️ המשך: '+hEsc(f.topic.name)+'</button></div></div>';}
+  let quiet='<div class="h-rowbtns"><button class="btn-ghost" onclick="hubToggleDaily()">🎯 נושא יומי</button>';
+  if(dueTot>0)quiet+='<button class="btn-ghost" onclick="hubStartDue()">🔁 '+dueTot+' שאלות לחיזוק היום</button>';
+  if(window.hubGuest)quiet+='<button class="btn-ghost" onclick="hubExitGuest()">🎭 מצב אורח · סיום וחזרה</button>';
+  quiet+=(window.hubGuest?'':(hubBank.reqs.some(r=>r.st==='pending')?'<span class="h-ssub" style="align-self:center">🎁 בקשת הצ׳ופר ממתינה לאישור הורה</span>':(hubBank.coins>=50?'<button class="btn-ghost" onclick="hubReqReward()">🎁 בקש צ׳ופר (50 🪙)</button>':'')));
   quiet+='</div>';
   th+=quiet;
   if(!window.hubGuest){const toGo=Math.max(0,50-hubBank.coins);th+='<div class="h-tip">🪙 יש לך <b>'+hubBank.coins+' מטבעות</b>'+(toGo>0?' — עוד '+toGo+' מטבעות לצ׳ופר 🎁':' — אפשר לבקש צ׳ופר! 🎁')+' · איך מרוויחים: אימון +2, חיזוק +5 (מציון 50% ומעלה), מבחן מעל 80% +10, עליית רמה +15.</div>';}
   if(hubDailyOpen){const dailies=hubDailyTopics();const d0=dailies[0],d1=dailies[1];const f0=hubFindTopic(d0.id),f1=hubFindTopic(d1.id);
-    th+='<div class="h-tip" style="background:#eef7ee;border-color:#9fd8ae">🎯 <b>הנושא היומי:</b> '+hEsc(d0.name)+' · '+hEsc(f0.subj.name)+' · רמה '+Math.min(8,hubTopicProg(d0.id).mastery+1)+'<div class="h-rowbtns"><button class="btn btn-main" onclick="hubStartDaily(\''+d0.id+'\')">▶️ התחל אימון בנושא היומי</button></div>'
-    +'<div style="margin-top:8px">📌 <b>גם כדאי היום:</b> '+hEsc(d1.name)+' · '+hEsc(f1.subj.name)+' · רמה '+Math.min(8,hubTopicProg(d1.id).mastery+1)+'</div><div class="h-rowbtns"><button class="btn btn-ghost" onclick="hubStartDaily(\''+d1.id+'\')">▶️ התחל אימון</button><button class="btn btn-ghost" onclick="hubToggleDaily()">✖️ לא עכשיו</button></div></div>';}
+    th+='<div class="h-tip" style="background:#eef7ee;border-color:#9fd8ae">🎯 <b>הנושא היומי:</b> '+hEsc(d0.name)+' · '+hEsc(f0.subj.name)+' · רמה '+Math.min(8,hubTopicProg(d0.id).mastery+1)+'<div class="h-rowbtns"><button class="btn-primary" onclick="hubStartDaily(\''+d0.id+'\')">▶️ התחל אימון בנושא היומי</button></div>'
+    +'<div style="margin-top:8px">📌 <b>גם כדאי היום:</b> '+hEsc(d1.name)+' · '+hEsc(f1.subj.name)+' · רמה '+Math.min(8,hubTopicProg(d1.id).mastery+1)+'</div><div class="h-rowbtns"><button class="btn-ghost" onclick="hubStartDaily(\''+d1.id+'\')">▶️ התחל אימון</button><button class="btn-ghost" onclick="hubToggleDaily()">✖️ לא עכשיו</button></div></div>';}
   const gi=hubGoalInfo();
   if(gi&&gi.done)th+='<div class="center">'+HUB_ART_CELEB+'<div class="h-ssub">🎉 היעד השבועי הושג!</div></div>';
   th+=(window.hubGuest?'<div style="margin-top:8px" class="h-ssub">🎭 מצב אורח — ההתקדמות, המטבעות והחשבון לא נשמרים. כדי לשמור התקדמות, צרו פרופיל. מסך להורה, סיכום שבועי ובקשת צ׳ופר זמינים רק עם פרופיל.</div>':'');
@@ -42071,8 +42067,8 @@ function hubRenderHome(){
     if(s.special==='math'){
       const mc=hubMathCont();const md2=hubMathDaily();
       let mathExtra='';
-      if(mc)mathExtra+='<div class="h-rowbtns" style="margin-top:6px"><button class="btn btn-main" onclick="hubMathStartTopic(\''+mc.key+'\')">▶️ המשך בחשבון: '+hEsc(mc.label)+' · רמה '+(mc.level+1)+'</button></div>';
-      if(md2)mathExtra+='<div class="h-rowbtns" style="margin-top:6px"><button class="btn btn-ghost" onclick="hubMathStartTopic(\''+md2.id+'\')">🎯 הנושא היומי בחשבון: '+hEsc(md2.name)+'</button></div>';
+      if(mc)mathExtra+='<div class="h-rowbtns" style="margin-top:6px"><button class="btn-primary" onclick="hubMathStartTopic(\''+mc.key+'\')">▶️ המשך בחשבון: '+hEsc(mc.label)+' · רמה '+(mc.level+1)+'</button></div>';
+      if(md2)mathExtra+='<div class="h-rowbtns" style="margin-top:6px"><button class="btn-ghost" onclick="hubMathStartTopic(\''+md2.id+'\')">🎯 הנושא היומי בחשבון: '+hEsc(md2.name)+'</button></div>';
       html+='<div style="display:flex;flex-direction:column;gap:8px"><button class="h-scard" style="width:100%" onclick="hubOpenMath()">'+hubArt('math')+'<div class="h-sname">חשבון</div><div class="h-ssub">'+hEsc(s.sub)+'</div></button>'+mathExtra+'</div>';
       continue;
     }
@@ -42349,7 +42345,7 @@ function hubCheck(){
       const p=hubTopicProg(S.topic.id);
       if(p.mastery<8){
         p.mastery=Math.min(8,p.mastery+1);
-        hubAward(15,'עליית שליטה · '+S.topic.name+' לרמה '+(p.mastery+1));
+        hubAward(15,'עליית רמה · '+S.topic.name+' לרמה '+(p.mastery+1));
         hubWkReset();hubWk.mastery.push(S.topic.name+' — רמה '+(p.mastery+1));
         S._leveledUp=true;
         S.level=Math.min(8,Math.max(S.level,p.mastery+1));hEl('hubQuizMode').textContent='אימון · רמה '+S.level+' '+LV_NAMES[S.level];
@@ -42407,7 +42403,7 @@ function hubMaybeAdapt(){
   if(last3.every(a=>!a.ok)&&S.level>1&&!S._down){
     const repl=hubDraw(S.topic,[S.level-1],remaining,seen);
     if(repl.length===remaining){S.qs=S.qs.slice(0,S.idx+1).concat(repl);S.level--;S._down=true;
-      hEl('hubQuizMode').textContent+=' · ירדנו רמה בסבב הזה כדי להתחזק 💪 — השליטה שנצברה נשמרת';}
+      hEl('hubQuizMode').textContent+=' · ירדנו רמה בסבב הזה כדי להתחזק 💪 — הרמה שנצברה נשמרת';}
   }
 }
 // ---------- smart feedback ----------
@@ -42474,14 +42470,14 @@ function hubFinish(){
     const prevMastery=p.mastery;
     if(S.mode==='test'&&an.score>=80)p.mastery=Math.max(p.mastery,Math.min(8,S.testTop||8));
     p._leveledUp=!!S._leveledUp||p.mastery>prevMastery;
-    if(p.mastery>prevMastery){hubAward(15*(p.mastery-prevMastery),'עליית שליטה · '+S.topic.name+' לרמה '+(p.mastery+1));hubWk.mastery.push(S.topic.name+' — רמה '+(p.mastery+1));}
+    if(p.mastery>prevMastery){hubAward(15*(p.mastery-prevMastery),'עליית רמה · '+S.topic.name+' לרמה '+(p.mastery+1));hubWk.mastery.push(S.topic.name+' — רמה '+(p.mastery+1));}
   }
   hubSave(); // שמירת ההתקדמות שנרשמה בסיום הסבב (סבבים/שליטה/קיצור מבחן) — אחרת היא נשמרת רק בקליק הבא על נושא
   hubFocusCtx=null;
   hEl('hubEndFocus').innerHTML='';
   if(an.weak&&S.mode!=='prep'){
     hubFocusCtx={topicId:S.topic.id,family:an.weak.type,level:S.level};
-    hEl('hubEndFocus').innerHTML='<button class="btn btn-main" onclick="hubStartFocus()">🎯 סבב ממוקד: '+hEsc(an.weak.type)+'</button>';
+    hEl('hubEndFocus').innerHTML='<button class="btn-primary" onclick="hubStartFocus()">🎯 סבב ממוקד: '+hEsc(an.weak.type)+'</button>';
   }
   let rows='';
   for(const t of an.types.sort((a,b)=>a.type<b.type?-1:1)){
@@ -44798,7 +44794,8 @@ function renderStatus(){
   document.getElementById('tProgStars').innerHTML=[0,1,2,3,4].map(i=>i<S.stars?'⭐':'☆').join('');
   document.getElementById('tTotal').textContent=`נכונות בסך הכל: ${S.correct} ✅`;
 }
-function confetti(n){
+function hubReducedMotion(){try{return window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}}
+function confetti(n){if(hubReducedMotion())return;
   const em=['🎉','⭐','🎊','✨','🌟','💪'];
   for(let i=0;i<n;i++){
     const s=document.createElement('span');s.className='confetti';
@@ -44834,7 +44831,7 @@ function renderTpWidget(box,qhead,q){
   const picker=w.parts.length>1?`<div class="tppick">${w.parts.map((p,i)=>`<button type="button" class="tppickbtn${i===0?' sel':''}" data-c="${p.color}">🖍️ ${p.label}</button>`).join('')}</div>`:'';
   let cells='';
   for(let i=0;i<w.cells;i++)cells+=`<button type="button" class="tpcell" data-i="${i}" aria-label="משבצת ${i+1}"></button>`;
-  box.innerHTML=`<div class="card">${qhead}${picker}<div class="tpgrid" style="width:${w.cols*46}px">${cells}</div><div class="tpcount" id="tpCount"></div><button type="button" class="btn btn-main" id="tpCheck">בדיקה ✓</button><div class="explain" id="tExp"></div></div>`;
+  box.innerHTML=`<div class="card">${qhead}${picker}<div class="tpgrid" style="width:${w.cols*46}px">${cells}</div><div class="tpcount" id="tpCount"></div><button type="button" class="btn-primary" id="tpCheck">בדיקה ✓</button><div class="explain" id="tExp"></div></div>`;
   let sel=w.parts[0].color;
   const countEl=document.getElementById('tpCount');
   const refresh=()=>{
@@ -44922,7 +44919,7 @@ function showMastery(){
   document.getElementById('tMasteryMsg').textContent=`סיימת את כל ${NUM_LEVELS} הרמות ${scopeTxt}! 🎉`;
   document.getElementById('masteryStats').innerHTML=`ענית נכון על <b>${S.correct}</b> שאלות מתוך ${S.answered} (${acc}% הצלחה).`;
   confetti(70);
-  m.scrollIntoView({behavior:'smooth'});
+  m.scrollIntoView({behavior:hubReducedMotion()?'auto':'smooth'});
 }
 function continueTraining(){
   document.getElementById('tMastery').style.display='none';
@@ -45036,13 +45033,13 @@ function grade(){
   });
   document.getElementById('scoreNum').textContent=score+' / 100';
   document.getElementById('scoreMsg').textContent =
-    score===100?'מושלם! 🏆 שליטה מלאה בחומר' :
+    score===100?'מושלם! 🏆 הגעת לרמה הכי גבוהה' :
     score>=80?'מצוין! 💪 כמעט שם' :
     score>=60?'יפה! 👍 עוד קצת תרגול וזה נסגר' :
     score>=40?'התחלה טובה — קראו את ההסברים ונסו מבחן חדש 🌱' :
     'לא נורא — ההסברים ליד כל שאלה הם בדיוק בשביל זה. נסו שוב! 🌱';
   const r=document.getElementById('result'); r.style.display='block';
-  r.scrollIntoView({behavior:'smooth'});
+  r.scrollIntoView({behavior:hubReducedMotion()?'auto':'smooth'});
   if(window.hubMathTestDone)window.hubMathTestDone();
 }
 
@@ -45067,9 +45064,9 @@ function showSharePanel(text,url){
   const wa='https://wa.me/?text='+encodeURIComponent(text+'\n'+url);
   const mail='mailto:?subject='+encodeURIComponent('🧮 מתמטיקה לכיתה ד׳')+'&body='+encodeURIComponent(text+'\n'+url);
   p.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:17px">🔗 שיתוף הערכה</b>
-  <button onclick="document.getElementById('sharePanel').style.display='none'" style="border:none;background:#eef2f7;border-radius:50%;width:32px;height:32px;font-size:15px;cursor:pointer">✖</button></div>
+  <button class="btn-ghost" aria-label="סגירת חלונית השיתוף" onclick="document.getElementById('sharePanel').style.display='none'" style="border-radius:50%;width:40px;height:40px;padding:0;min-height:40px">✖</button></div>
   <div style="display:flex;gap:8px;margin:12px 0"><input id="shareUrlBox" readonly value="${url}" style="flex:1;padding:10px;border:2px solid #dfe6ef;border-radius:10px;font-size:14px;direction:ltr;text-align:left;min-width:0">
-  <button onclick="copyShareLink()" style="border:none;background:#4a6bdf;color:#fff;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer">📋 העתק</button></div>
+  <button class="btn-primary" onclick="copyShareLink()">📋 העתק</button></div>
   <div id="shareMsg" style="min-height:20px;color:#2e7d32;font-weight:700"></div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
   <a href="${wa}" target="_blank" rel="noopener" style="background:#25d366;color:#fff;font-weight:800;padding:10px 16px;border-radius:10px;text-decoration:none">💬 וואטסאפ</a>
