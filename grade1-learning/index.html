@@ -915,8 +915,25 @@ function finishRound() {
   show('screen-end');
 }
 
+/* ================= parent gate (STAGE 0 safety, 9/11/2026) =================
+   The parent screen — including the 50-coin reward "אישור ומימוש" button —
+   opens ONLY after a grown-up passes this gate. No login, no network.
+   Gate: a random two-digit + two-digit addition question (numbers re-drawn
+   every time, so the answer cannot be memorised). Grade-1 maths covers
+   numbers to 20, so a two-digit sum with carry is out of reach for a
+   6-year-old. The flag is session-only (a plain var, never stored), so the
+   gate must be passed again after every page load. */
+var parentUnlocked = false;
+function askParentGate() {
+  var a = 20 + Math.floor(Math.random() * 60); // 20..79
+  var b = 20 + Math.floor(Math.random() * 60);
+  var ans = prompt('🔒 מסך הורים — שאלת מבוגרים בלבד:\nכמה זה ' + a + ' + ' + b + '?');
+  if (ans !== null && parseInt(ans, 10) === a + b) { parentUnlocked = true; renderParent(); }
+}
+
 /* ================= parent ================= */
 function renderParent() {
+  if (!parentUnlocked) return; // never render the parent screen without passing the gate
   var body = el('parentBody');
   var html = '';
   ['א','ב'].forEach(function (bk) {
@@ -951,6 +968,7 @@ function renderParent() {
   body.innerHTML = html;
   Array.prototype.forEach.call(body.querySelectorAll('[data-approve]'), function (b) {
     b.onclick = function () {
+      if (!parentUnlocked) return; // STAGE 0: the reward-approve button only works behind the parent gate
       var i = +b.getAttribute('data-approve');
       if (prog.bank >= 50) { addCoins(-50, 'צ׳ופר: ' + prog.requests[i].name); prog.requests.splice(i, 1); save(); renderParent(); renderHome(); }
     };
@@ -971,7 +989,7 @@ function renderParent() {
 el('learnBack').onclick = renderHome;
 el('quizBack').onclick = function () { seqToken++; try { if (curAudio) curAudio.pause(); } catch (e) {} renderHome(); };
 el('parentBack').onclick = renderHome;
-el('btnParent').onclick = renderParent;
+el('btnParent').onclick = askParentGate; // STAGE 0: parent screen behind the grown-ups gate (was: renderParent directly)
 el('learnStart').onclick = function () { startRound(curPage, false); };
 el('btnReview').onclick = function () { startRound(DATA.PAGES.length - 1, true); };
 el('tabHe').onclick = function () { setTab('he'); };
