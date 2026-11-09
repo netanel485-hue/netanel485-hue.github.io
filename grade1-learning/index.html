@@ -110,6 +110,36 @@ table.ptable td,table.ptable th{border-bottom:1px solid #eee;padding:7px 4px;tex
 .fbmark.bad{color:#d32f2f}
 .tile{position:relative}
 .tile .fbmark{position:absolute;top:0;left:2px;font-size:16px;line-height:1;margin:0}
+
+/* ---- STAGE 5: focus, mobile, reduced motion, unified compact buttons ---- */
+button:focus-visible,a:focus-visible,summary:focus-visible,[role="button"]:focus-visible,input:focus-visible{outline:3px solid #7c5cbf;outline-offset:2px}
+#qSpk{cursor:pointer}
+.btn-primary,.btn-secondary,.btn-ghost,.btn-danger{display:inline-block;border-radius:16px;padding:12px 20px;font-size:18px;font-weight:800;font-family:inherit;cursor:pointer;min-height:48px;text-align:center}
+.btn-primary{background:var(--pink);color:#fff;border:none;box-shadow:0 4px 0 #d64f80}
+.btn-secondary{background:var(--purple);color:#fff;border:none;box-shadow:0 4px 0 #5a41a0}
+.btn-ghost{background:#fff;color:var(--purple);border:3px solid #e7e2ff;box-shadow:0 4px 0 #d9d2ff}
+.btn-danger{background:#d32f2f;color:#fff;border:none;box-shadow:0 4px 0 #9c2222}
+.btn-primary:active,.btn-secondary:active,.btn-ghost:active,.btn-danger:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@media (max-width:480px){
+h1{font-size:clamp(24px,7vw,30px)}
+.tabs{gap:8px}
+.tabbtn{font-size:20px;padding:12px 4px}
+.tabbtn .emo{font-size:36px}
+.bank{flex-wrap:wrap;gap:8px}
+.bank .goal{text-align:right}
+.learnletter{font-size:clamp(72px,22vw,110px)}
+.qprompt .word,.qprompt .gapword{font-size:clamp(32px,10vw,46px)}
+.qprompt .emoji{font-size:clamp(64px,18vw,88px)}
+.eq{font-size:clamp(28px,8vw,42px)}
+.continuecard .cc-title{font-size:21px}
+}
+@media (max-width:360px){
+.pages,.wordgrid{grid-template-columns:repeat(auto-fill,minmax(92px,1fr))}
+.opt{font-size:34px}
+.opt.small{font-size:26px}
+.syl{font-size:30px}
+}
 </style>
 </head>
 <body>
@@ -395,6 +425,10 @@ function navSay(text, done){
 }
 /* Tap a nav button: announce its label, then open it (latest tap wins). */
 function navBtnClick(b, idx){
+  b.setAttribute('role', 'button');
+  b.setAttribute('tabindex', '0');
+  b.setAttribute('aria-label', navPageLabel(DATA.PAGES[idx]));
+  b.onkeydown = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); b.onclick(); } };
   b.onclick = function(){
     navStopReadAll();
     var my = ++navTapSeq;
@@ -769,7 +803,7 @@ function openLearn(idx) {
   }
   body.innerHTML = html;
   Array.prototype.forEach.call(body.querySelectorAll('[data-syl]'), function (b) { b.onclick = function () { speak(b.getAttribute('data-syl')); }; });
-  Array.prototype.forEach.call(body.querySelectorAll('[data-w]'), function (b) { b.onclick = function () { speak(b.getAttribute('data-w')); }; });
+  Array.prototype.forEach.call(body.querySelectorAll('[data-w]'), function (b) { b.setAttribute('role', 'button'); b.setAttribute('tabindex', '0'); var wl = b.querySelector('.w'); if (wl) b.setAttribute('aria-label', 'שמעי את המילה ' + wl.textContent); b.onkeydown = function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); b.onclick(); } }; b.onclick = function () { speak(b.getAttribute('data-w')); }; });
   show('screen-learn');
 }
 
@@ -805,7 +839,7 @@ function genMathQuestions(pg) {
   }
   function qHear(maxN) {
     var n = ri(1, maxN);
-    push({inst: 'min|hear', seq: ['min|hear', 'num|' + n], promptHtml: '<span class="spk">🔊</span>', options: numOpts(n, maxN), correct: String(n), optClass: 'small', itemKey: 'M:hear:' + n});
+    push({inst: 'min|hear', seq: ['min|hear', 'num|' + n], promptHtml: '<span class="spk" aria-hidden="true">🔊</span>', options: numOpts(n, maxN), correct: String(n), optClass: 'small', itemKey: 'M:hear:' + n});
   }
   function qNext() {
     var n = ri(4, 19);
@@ -836,11 +870,11 @@ function genMathQuestions(pg) {
     var t = SHAPES[ri(0, SHAPES.length - 1)];
     var pool = SHAPES.filter(function (s) { return s[0] !== t[0]; });
     var opts = shuffle([t].concat(pickN(pool, 3))).map(function (s) { return s[1]; });
-    push({inst: 'min|shape', seq: ['min|shape', 'shp|' + t[0]], promptHtml: '<span class="spk">🔊</span>', options: opts, correct: t[1], optClass: 'emoji', itemKey: 'M:shp:' + t[0]});
+    push({inst: 'min|shape', seq: ['min|shape', 'shp|' + t[0]], promptHtml: '<span class="spk" aria-hidden="true">🔊</span>', options: opts, correct: t[1], optClass: 'emoji', itemKey: 'M:shp:' + t[0]});
   }
   function qHear100() {
     var n = ri(1, 100);
-    push({inst: 'min|hear', seq: ['min|hear', 'num|' + n], promptHtml: '<span class="spk">🔊</span>', options: numOpts100(n), correct: String(n), optClass: 'small', itemKey: 'M:hear100:' + n});
+    push({inst: 'min|hear', seq: ['min|hear', 'num|' + n], promptHtml: '<span class="spk" aria-hidden="true">🔊</span>', options: numOpts100(n), correct: String(n), optClass: 'small', itemKey: 'M:hear100:' + n});
   }
   function qTensSeq() {
     var s = ri(1, 6) * 10, m = ri(0, 4);
@@ -854,7 +888,7 @@ function genMathQuestions(pg) {
     var n = ri(1, 10) * 10;
     var pool = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100].filter(function (t) { return t !== n; });
     var opts = shuffle([n].concat(pickN(pool, 3))).map(String);
-    push({inst: 'min|hear', seq: ['min|hear', 'num|' + n], promptHtml: '<span class="spk">🔊</span>', options: opts, correct: String(n), optClass: 'small', itemKey: 'M:hten:' + n});
+    push({inst: 'min|hear', seq: ['min|hear', 'num|' + n], promptHtml: '<span class="spk" aria-hidden="true">🔊</span>', options: opts, correct: String(n), optClass: 'small', itemKey: 'M:hten:' + n});
   }
   function qNext100() {
     var n = ri(21, 99);
@@ -882,7 +916,7 @@ function genMathQuestions(pg) {
   function qShape2() {
     var t = SHAPES2[ri(0, SHAPES2.length - 1)];
     var opts = shuffle(SHAPES2.concat(pickN(SHAPES, 2))).map(function (s) { return s[1]; });
-    push({inst: 'min|shape', seq: ['min|shape', 'shp|' + t[0]], promptHtml: '<span class="spk">🔊</span>', options: opts, correct: t[1], optClass: 'emoji', itemKey: 'M:shp2:' + t[0]});
+    push({inst: 'min|shape', seq: ['min|shape', 'shp|' + t[0]], promptHtml: '<span class="spk" aria-hidden="true">🔊</span>', options: opts, correct: t[1], optClass: 'emoji', itemKey: 'M:shp2:' + t[0]});
   }
   function qShapeSides() {
     var t = POLY[ri(0, POLY.length - 1)];
@@ -979,7 +1013,7 @@ function genQuestions(pageIdx, review) {
     var opts;
     if (letters.length >= 3) opts = letterOpts(L, Math.min(4, letters.length));
     else { var all = Object.keys(DATA.NAMES).filter(function (x) { return x !== L; }); opts = shuffle([L].concat(pickN(all, 3))); }
-    return {type: 'snd', inst: 'inst|snd', audio: syllable(L, v), promptHtml: '<span class="spk">🔊</span>', options: opts, correct: L, itemKey: 'L:' + L};
+    return {type: 'snd', inst: 'inst|snd', audio: syllable(L, v), promptHtml: '<span class="spk" aria-hidden="true">🔊</span>', options: opts, correct: L, itemKey: 'L:' + L};
   }
   function qSyl() {
     var sylVowels = vowels.slice();
@@ -993,7 +1027,7 @@ function genQuestions(pageIdx, review) {
     var opts = [tgt], seen = {}; seen[tgt] = 1;
     shuffle(cands).forEach(function (c) { if (opts.length < 4 && !seen[c]) { seen[c] = 1; opts.push(c); } });
     if (opts.length < 2) return null;
-    return {type: 'syl', inst: 'inst|syl', audio: tgt, promptHtml: '<span class="spk">🔊</span>', options: shuffle(opts), correct: tgt, optClass: 'small', itemKey: 'Y:' + tgt};
+    return {type: 'syl', inst: 'inst|syl', audio: tgt, promptHtml: '<span class="spk" aria-hidden="true">🔊</span>', options: shuffle(opts), correct: tgt, optClass: 'small', itemKey: 'Y:' + tgt};
   }
   function qFirst() {
     var w = target(words); if (!w) return null;
@@ -1004,7 +1038,7 @@ function genQuestions(pageIdx, review) {
     var w = target(words); if (!w) return null;
     var pool = words.filter(function (x) { return x.p !== w.p; });
     var opts = shuffle([w].concat(pickN(pool, 2)));
-    return {type: 'hearword', inst: 'inst|hearword', audio: w.p, promptHtml: '<span class="spk">🔊</span>', options: opts.map(function (x) { return x.n; }), correct: w.n, itemKey: 'W:' + w.p};
+    return {type: 'hearword', inst: 'inst|hearword', audio: w.p, promptHtml: '<span class="spk" aria-hidden="true">🔊</span>', options: opts.map(function (x) { return x.n; }), correct: w.n, itemKey: 'W:' + w.p};
   }
   function qReadEmoji() {
     var w = target(words); if (!w) return null;
@@ -1088,6 +1122,10 @@ function renderQ() {
   el('qInst').innerHTML = instText + ' <span class="spk" id="qSpk" style="width:44px;height:44px;font-size:20px;line-height:38px">🔊</span>';
   el('qPrompt').innerHTML = q.promptHtml;
   el('qSpk').onclick = function () { speakSeq(q.seq || [q.inst, q.audio, q.audio2]); };
+  el('qSpk').setAttribute('role', 'button');
+  el('qSpk').setAttribute('tabindex', '0');
+  el('qSpk').setAttribute('aria-label', 'השמעי את השאלה שוב');
+  el('qSpk').onkeydown = function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); speakSeq(q.seq || [q.inst, q.audio, q.audio2]); } };
   var body = el('qBody'); body.innerHTML = '';
   // reademoji: the word IS the answer — auto-play the instruction only; the word stays on the 🔊 hint button
   if (q.type === 'reademoji') speakSeq([q.inst], 300);
@@ -1246,13 +1284,13 @@ function renderParent() {
     });
     html += '</div>';
   });
-  html += '<p><button id="focusSave">💾 שמירת מיקוד</button> <button id="focusReset">↩ ברירת מחדל</button> <span id="focusMsg"></span></p>';
+  html += '<p><button class="btn-primary" id="focusSave">💾 שמירת מיקוד</button> <button class="btn-ghost" id="focusReset">↩ ברירת מחדל</button> <span id="focusMsg"></span></p>';
   var weak = Object.keys(prog.items).filter(function (k) { return prog.items[k].wrong >= 2; }).sort(function (a, b) { return prog.items[b].wrong - prog.items[a].wrong; }).slice(0, 8);
   html += '<h3>כדאי לחזק</h3>';
   html += weak.length ? '<p>' + weak.map(function (k) { return k.replace('L:', 'האות ').replace('W:', 'המילה ').replace('Y:', 'ההברה ') + ' (' + prog.items[k].wrong + ' טעויות)'; }).join('<br>') + '</p>' : '<p>אין פריטים חלשים כרגע 🌟</p>';
   html += '<h3>בנק הידע — ' + prog.bank + ' 🪙</h3>';
   if (prog.requests.length) {
-    html += '<p><b>בקשות לצ׳ופר:</b></p>' + prog.requests.map(function (r, i) { return '<p>' + r.name + ' — 50 🪙 <button data-approve="' + i + '">אישור ומימוש</button></p>'; }).join('');
+    html += '<p><b>בקשות לצ׳ופר:</b></p>' + prog.requests.map(function (r, i) { return '<p>' + r.name + ' — 50 🪙 <button class="btn-danger" data-approve="' + i + '">אישור ומימוש</button></p>'; }).join('');
   }
   html += '<table class="ptable"><tr><th>תאריך</th><th>שינוי</th><th>סיבה</th></tr>' + prog.log.slice(0, 15).map(function (l) { return '<tr><td>' + l.d + '</td><td>' + (l.n > 0 ? '+' : '') + l.n + '</td><td>' + l.why + '</td></tr>'; }).join('') + '</table>';
   html += '<p class="note">צ׳ופר = 50 מטבעות, באישור הורה כאן. הבנק רק גדל.</p>';
