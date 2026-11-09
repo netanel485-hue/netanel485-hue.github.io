@@ -9,7 +9,155 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="מרכז הלמידה">
 <style>
-  :root{--bg:#FAF6EB;--bar:#FFFDF7;--card:#EAF4E6;--card-focus:#FFFFFF;--ink:#1E4634;--ink-soft:#4F6B5D;--muted:#7A8B7F;--line:#D8E4D4;--accent:#F59E0B;--accent-deep:#D97706;--accent-soft:#FDF3DC;--good:#2E7D4F;--good-bg:#DFF0E3;--bad:#B3382E;--bad-bg:#FBE7E3;}
+  /* DESIGN-TOKENS-START */
+/* ==========================================================================
+   DESIGN TOKENS — מקור אמת אחד לכל מוצרי הלמידה
+   --------------------------------------------------------------------------
+   הפלטה הקנונית היא פלטת grade6 אחרי העיצוב המחודש (8/11/2026):
+   רקע קרם, כרטיסים ירוקים בהירים, טקסט ירוק כהה, מבטא אחד צהוב-כתום.
+   הערכים כאן מועתקים בדיוק מ־grade6 — אין לעצב מחדש בקובץ הזה.
+
+   כלל ברזל: לא עורכים את הבלוק המוזרק בתוך קובץ מוצר.
+   שינוי טוקן נעשה כאן בלבד, ואז מריצים:
+     node ~/workspace/hub-audit/inject-tokens.js <קובץ מוצר>
+   ובודקים סטייה לפני כל פרסום:
+     node ~/workspace/hub-audit/check-tokens-drift.js
+   אין תלות ריצה: אחרי ההזרקה הטוקנים חיים בתוך כל קובץ מוצר.
+   אין פונטים חיצוניים, אין URL-ים, אין תמונות.
+   ========================================================================== */
+
+:root {
+  /* --- צבעי רקע --- */
+  --bg: #FAF6EB;          /* רקע הדף — קרם */
+  --bar: #FFFDF7;         /* סרגל עליון — קרם בהיר יותר */
+  --card: #EAF4E6;        /* כרטיס — ירוק בהיר רך */
+  --card-focus: #FFFFFF;  /* כרטיס במוקד (שאלה פעילה) — לבן */
+
+  /* --- צבעי טקסט --- */
+  --ink: #1E4634;         /* טקסט ראשי — ירוק כהה */
+  --ink-soft: #4F6B5D;    /* טקסט משני — ירוק-אפור */
+  --muted: #7A8B7F;       /* טקסט חלש / כיתוב קטן */
+
+  /* --- קווים וגבולות --- */
+  --line: #D8E4D4;        /* גבול כרטיסים וכפתורים */
+
+  /* --- מבטא — צהוב-כתום אחד בלבד --- */
+  --accent: #F59E0B;      /* מבטא ראשי (מוקד, פס התקדמות) */
+  --accent-deep: #D97706; /* מבטא כהה — כפתורים ראשיים */
+  --accent-soft: #FDF3DC; /* רקע רך למבטא (בחירה, טיפ) */
+
+  /* --- מצבים: הצלחה / שגיאה / אזהרה --- */
+  --good: #2E7D4F;        /* ירוק הצלחה */
+  --good-bg: #DFF0E3;     /* רקע הצלחה */
+  --bad: #B3382E;         /* אדום שגיאה */
+  --bad-bg: #FBE7E3;      /* רקע שגיאה */
+  /* אזהרה: אין גוון חדש בפלטה — משתמשים במשפחת המבטא בלבד */
+  --warn: #D97706;        /* = --accent-deep */
+  --warn-bg: #FDF3DC;     /* = --accent-soft */
+
+  /* --- מצב מושבת (מועתק מחוקי הכפתורים ב־grade6) --- */
+  --disabled-bg: #E7EDE6;
+  --disabled-ink: #8A9A8F;
+
+  /* --- צל --- */
+  --shadow-card: 0 2px 12px rgba(30, 70, 50, .08);
+
+  /* --- רדיוסים (מועתקים מ־grade6) --- */
+  --radius-card: 24px;    /* כרטיס גדול */
+  --radius-md: 20px;      /* כרטיס נושא / חלונית */
+  --radius-btn: 16px;     /* כפתור ואפשרות תשובה */
+  --radius-sm: 12px;      /* שדה קלט / משוב */
+  --radius-pill: 999px;   /* צ'יפ / פס התקדמות */
+
+  /* --- מרווחים (סקאלה, מבוססת על הערכים הנפוצים ב־grade6) --- */
+  --sp-xs: 8px;
+  --sp-sm: 12px;
+  --sp-md: 16px;
+  --sp-lg: 20px;
+  --sp-xl: 28px;
+}
+
+/* ==========================================================================
+   שפת כפתורים משותפת — class-ים עצמאיים, לא דורסים class-ים קיימים.
+   .btn-primary / .btn-secondary / .btn-ghost / .btn-danger הם שמות חדשים
+   (אין אף מוצר שמגדיר אותם היום), והערכים מועתקים מ־grade6:
+   .btn-primary = .btn-main, .btn-secondary = .btn, .btn-ghost = .btn-ghost.
+   כפתור מסוכן (.btn-danger) חדש — משתמש ב־--bad הקיים, בלי גוון חדש.
+   ========================================================================== */
+
+/* בסיס משותף לכל הכפתורים */
+.btn-primary,
+.btn-secondary,
+.btn-ghost,
+.btn-danger {
+  display: inline-block;
+  border-radius: var(--radius-btn);
+  padding: 13px 26px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  min-height: 52px;
+  touch-action: manipulation;
+  text-align: center;
+}
+
+/* ראשי — הפעולה החשובה בעמוד (התחל / בדוק / המשך) */
+.btn-primary {
+  background: var(--accent-deep);
+  color: #fff;
+  border: none;
+  font-size: 17px;
+  font-weight: 800;
+  min-height: 54px;
+  padding: 14px 28px;
+}
+
+/* משני — פעולה רגילה (חזרה / דלג / ביטול) */
+.btn-secondary {
+  background: #FFFFFF;
+  color: var(--ink);
+  border: 2px solid var(--line);
+}
+
+/* שקט — פעולה זניחה, בלי מסגרת בולטת (סגירה / פרטים) */
+.btn-ghost {
+  background: transparent;
+  border: 2px solid var(--line);
+  color: var(--ink-soft);
+  padding: 10px 16px;
+  font-size: 15px;
+  min-height: 48px;
+}
+
+/* מסוכן — פעולה הרסנית / בלתי הפיכה (מחיקת פרופיל) */
+.btn-danger {
+  background: var(--bad);
+  color: #fff;
+  border: none;
+}
+
+/* מצב מושבת — זהה לכל הכפתורים */
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-ghost:disabled,
+.btn-danger:disabled {
+  background: var(--disabled-bg);
+  color: var(--disabled-ink);
+  border: 2px solid var(--disabled-bg);
+  cursor: not-allowed;
+}
+
+/* מוקד מקלדת נראה — אותו כלל כמו ב־grade6 */
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+/* DESIGN-TOKENS-END */
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { overflow-x: hidden; }
   body { font-family: "Segoe UI", Arial, sans-serif; background: var(--bg); color: var(--ink); margin: 0; padding: 68px 12px 12px; font-size: 17px; line-height: 1.6; }
@@ -27,10 +175,10 @@
   .qtext { font-size: clamp(17px, 4.6vw, 20px); line-height: 1.6; margin-bottom: 8px; }
   .frac { display: inline-block; vertical-align: middle; text-align: center; margin: 0 3px; unicode-bidi: isolate; }
   .m { direction: ltr; unicode-bidi: isolate; white-space: nowrap; }
-  .frac .top { display: block; border-bottom: 2px solid #1c2b3a; padding: 0 5px; font-size: .92em; }
+  .frac .top { display: block; border-bottom: 2px solid var(--ink); padding: 0 5px; font-size: .92em; }
   .frac .bot { display: block; padding: 0 5px; font-size: .92em; }
   .viz { margin: 10px 0 4px; }
-  .vizcap { font-size: 14px; color: #5a6b7d; }
+  .vizcap { font-size: 14px; color: var(--ink-soft); }
   .opts { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 12px; }
   @media (min-width: 640px) { .opts { grid-template-columns: 1fr 1fr; } }
   .opt { min-height: 60px; border: 2px solid var(--line); background: #FFFFFF; border-radius: 16px; padding: 12px;
@@ -66,14 +214,14 @@
   .progress > div { height: 100%; background: var(--accent); width: 0%; transition: width .3s; }
   /* ---- training mode ---- */
   .t-status { background: var(--card); }
-  .st { font-size: 22px; color: #d5e2f2; }
+  .st { font-size: 22px; color: var(--line); }
   .st.on { color: var(--accent); }
   .dots { display: inline-flex; gap: 8px; direction: ltr; vertical-align: middle; }
   .dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--accent); background: #fff; display: inline-block; }
   .dot.on { background: var(--accent); }
   .streakrow { display: flex; align-items: center; gap: 10px; justify-content: center; margin-top: 8px;
                font-weight: 700; font-size: 16px; flex-wrap: wrap; }
-  .celebrate { position: fixed; inset: 0; background: rgba(20,30,60,.55); z-index: 50;
+  .celebrate { position: fixed; inset: 0; background: rgba(30,70,50,.55); z-index: 50;
                display: flex; align-items: center; justify-content: center; padding: 16px; }
   .celeb-box { background: #fff; border-radius: 20px; padding: 28px 32px; text-align: center;
                font-size: clamp(20px, 5.4vw, 25px); font-weight: 800; max-width: 92vw; animation: pop .35s; }
@@ -89,7 +237,7 @@
     border-radius: 99px; padding: 10px 22px; font-size: 16px; font-weight: 700; cursor: pointer;
     touch-action: manipulation; font-family: inherit; -webkit-tap-highlight-color: transparent; }
   .sharebtn:active { background: var(--card); }
-  .reset-link { font-size: 14px; color: #8a97a8; }
+  .reset-link { font-size: 14px; color: var(--muted); }
   /* ---- topic picker ---- */
   .tgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 6px 0 14px; }
   @media (min-width: 640px) { .tgrid { grid-template-columns: 1fr 1fr 1fr; } }
@@ -107,7 +255,7 @@
   .tcard:hover { border-color: var(--accent); }
   .tcard .em { font-size: 40px; }
   .tcard .nm { font-weight: 800; font-size: clamp(15px, 4vw, 17px); margin: 6px 0 2px; }
-  .tcard .ds { font-size: 13px; color: #5a6b7d; line-height: 1.4; }
+  .tcard .ds { font-size: 13px; color: var(--ink-soft); line-height: 1.4; }
   .tcard .ct { font-size: 12px; color: var(--ink-soft); font-weight: 700; margin-top: 6px; }
   .topicbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 14px 2px; }
   .topicbar .tn { font-weight: 800; font-size: clamp(16px, 4.4vw, 19px); }
@@ -118,14 +266,14 @@
   .pageform { display: flex; gap: 16px; justify-content: center; align-items: flex-end; flex-wrap: wrap; margin: 14px 0 8px; }
   .pagefield { display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 15px; text-align: center; }
   .pageinput { width: 100px; font-size: 24px; font-weight: 700; text-align: center; padding: 10px 6px;
-               border: 2px solid #d5e2f2; border-radius: 12px; font-family: inherit; color: inherit;
+               border: 2px solid var(--line); border-radius: 12px; font-family: inherit; color: inherit;
                -moz-appearance: textfield; appearance: textfield; }
   .pageinput::-webkit-outer-spin-button, .pageinput::-webkit-inner-spin-button { -webkit-appearance: none; }
   .pageinput:focus { border-color: var(--accent-deep); }
   .pagespreview { background: var(--card); border: 1px dashed var(--line); border-radius: 12px; padding: 10px 14px;
                   font-size: 15.5px; line-height: 1.75; margin: 6px 0 14px; min-height: 52px; }
   .btn-new:disabled { background: #E7EDE6; color: #8A9A8F; border: 2px solid #E7EDE6; cursor: not-allowed; }
-  .spanhint { margin: 2px 0 0; color: #8a97a8; font-size: 13.5px; font-weight: 600; }
+  .spanhint { margin: 2px 0 0; color: var(--muted); font-size: 13.5px; font-weight: 600; }
   .bkspan { font-size: 12.5px; font-weight: 600; opacity: .75; }
   .chiprow { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 10px 0 2px; }
   .chip { border: 2px solid var(--line); background: #fff; border-radius: 999px; padding: 7px 16px;
@@ -155,18 +303,18 @@
 .h-foot-parent{margin-top:18px;text-align:center}
 @media (max-width: 639px){.h-art{width:72px;height:72px}.h-mascot{width:88px;height:88px}}
 .h-sname{font-size:20px;font-weight:800;margin-top:4px}
-.h-ssub{font-size:12.5px;color:var(--ink-soft);margin-top:3px;line-height:1.45}
+.h-ssub{font-size:14px;color:var(--ink-soft);margin-top:3px;line-height:1.45}
 .h-sprog{font-size:13px;color:var(--muted);margin-top:3px;line-height:1.45}
-.h-sel{width:100%;padding:10px;border:2px solid #d7dce6;border-radius:12px;font-size:16px;font-family:inherit;background:#fff}
+.h-sel{width:100%;padding:10px;border:2px solid var(--line);border-radius:12px;font-size:16px;font-family:inherit;background:#fff}
 .h-lab{font-weight:800;font-size:17px;color:var(--ink);margin:12px 0 5px}
 .fb{border-radius:12px;padding:10px 12px;font-weight:700;margin-top:10px}
-.fb.good{background:#e4f8e9;color:#177245}
-.fb.bad{background:#fdeaea;color:#a02c2c}
+.fb.good{background:var(--good-bg);color:var(--good)}
+.fb.bad{background:var(--bad-bg);color:var(--bad)}
 .h-typerow{display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px 12px;padding:10px 2px;border-bottom:1px solid var(--line);font-size:15px}
 .h-tip{background:var(--accent-soft);border:1.5px solid #F0D9A0;border-radius:16px;padding:9px 12px;margin-top:8px;font-size:15px;text-align:right}
 .h-next{background:var(--accent-soft);border:1.5px solid var(--accent);border-radius:16px;padding:9px 12px;margin-top:10px;font-size:15.5px}
 .h-sharebox{margin-top:10px;background:#FFFFFF;border:2px solid var(--line);border-radius:16px;padding:12px}
-.h-sharebox input{width:100%;padding:9px;border:1.5px solid #d7dce6;border-radius:10px;font-size:13px;direction:ltr}
+.h-sharebox input{width:100%;padding:9px;border:1.5px solid var(--line);border-radius:10px;font-size:13px;direction:ltr}
 .h-rowbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .h-mission{display:block;width:100%;text-align:right;background:var(--card);border:2px solid var(--line);border-radius:16px;padding:13px 15px;font-size:16.5px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:10px}
 .h-daily{background:var(--card);border-color:var(--line)}
@@ -206,7 +354,7 @@
 .h-learnbody li{margin:4px 0}
 
 /* ---- redesign 2026-11-08: topbar, quiz grid, continue card, responsive ---- */
-#hubTopbar{position:fixed;top:0;right:0;left:0;height:56px;background:var(--bar);border-bottom:1px solid var(--line);box-shadow:0 2px 12px rgba(30,70,50,.10);z-index:40;}
+#hubTopbar{position:fixed;top:0;right:0;left:0;height:56px;padding:0;border-radius:0;background:var(--bar);border-bottom:1px solid var(--line);box-shadow:0 2px 12px rgba(30,70,50,.10);z-index:40;}
 .h-top-inner{max-width:860px;margin:0 auto;height:56px;display:flex;align-items:center;gap:8px;padding:0 12px;}
 .h-top-logo{background:transparent;border:none;font-size:17px;font-weight:800;color:var(--ink);cursor:pointer;font-family:inherit;padding:8px 4px;min-height:40px;white-space:nowrap;}
 .h-top-nav{margin-inline-start:auto;display:flex;gap:6px;}
@@ -336,23 +484,23 @@
       <button class="btn btn-main h-primary-full" onclick="hubStart('train')">▶️ התחלת אימון (10 שאלות)</button>
     </div>
     <div class="h-rowbtns">
-      <button class="btn" id="hubLearnBtn" onclick="hubOpenLearn()">📖 לימוד — קודם לומדים</button>
-      <button class="btn" onclick="hubOpenCards()">🃏 כרטיסיות</button>
-      <button class="btn h-hidden" id="hubReviewBtn" onclick="hubStart('review')">🔁 חיזוק — שאלות ששווה לראות שוב</button>
-      <button class="btn h-hidden" id="hubMatchBtn" onclick="hubOpenMatch()">🧩 התאמת זוגות</button>
-      <button class="btn h-hidden" id="hubDictBtn" onclick="hubOpenDict()">🎧 הכתבה</button>
-      <button class="btn h-hidden" id="hubTypeBtn" onclick="hubOpenType()">⌨️ הקלדה חופשית</button>
+      <button class="btn btn-ghost" id="hubLearnBtn" onclick="hubOpenLearn()">📖 לימוד — קודם לומדים</button>
+      <button class="btn btn-ghost" onclick="hubOpenCards()">🃏 כרטיסיות</button>
+      <button class="btn btn-ghost h-hidden" id="hubReviewBtn" onclick="hubStart('review')">🔁 חיזוק — שאלות ששווה לראות שוב</button>
+      <button class="btn btn-ghost h-hidden" id="hubMatchBtn" onclick="hubOpenMatch()">🧩 התאמת זוגות</button>
+      <button class="btn btn-ghost h-hidden" id="hubDictBtn" onclick="hubOpenDict()">🎧 הכתבה</button>
+      <button class="btn btn-ghost h-hidden" id="hubTypeBtn" onclick="hubOpenType()">⌨️ הקלדה חופשית</button>
     </div>
     <div class="h-ssub" style="font-size:13px;margin-top:4px">📖 לימוד, 🧩 התאמה, 🎧 הכתבה ו⌨️ הקלדה הם לתרגול בכיף — בלי כוכבים ובלי מטבעות. 🃏 כרטיסיות עוזרות לחזרה המרווחת. כפתורים מופיעים רק בנושאים שבהם הם רלוונטיים.</div>
     <div class="h-rowbtns">
-      <button class="btn" onclick="hubStart('mixed')">🔀 סבב מעורב</button>
-      <button class="btn" onclick="hubStart('test')">📝 מבחן — שאלות מאתגרות</button>
+      <button class="btn btn-ghost" onclick="hubStart('mixed')">🔀 סבב מעורב</button>
+      <button class="btn btn-ghost" onclick="hubStart('test')">📝 מבחן — שאלות מאתגרות</button>
     </div>
     <div class="h-ssub" style="font-size:13px;margin-top:4px">אימון = 10 שאלות ברמה שבחרת · מעורב = 10 שאלות משתי רמות סמוכות · מבחן = 10 שאלות מאתגרות, ציון 80%+ מקפיץ את השליטה קדימה</div>
     <div class="h-lab">🎓 הכנה כוללת — הספר הנוכחי, רמות 4–8:</div>
     <select id="hubPrepUpTo" class="h-sel"></select>
     <div class="h-rowbtns">
-      <button class="btn" onclick="hubStart('prep')">📚 התחלת הכנה כוללת (15 שאלות)</button>
+      <button class="btn btn-ghost" onclick="hubStart('prep')">📚 התחלת הכנה כוללת (15 שאלות)</button>
     </div>
     <div class="parents" style="margin-top:14px">
       <div style="font-weight:800">👨‍👩‍👧 להורים — טיפים לנושא הנבחר</div>
@@ -414,7 +562,7 @@
     </div>
     <div class="h-rowbtns" style="justify-content:center">
       <button class="btn btn-main" onclick="hubAgain()">← חזרה לנושאים</button>
-      <button class="btn btn-main" onclick="hubAgainTrain()">🔄 סבב נוסף באותו נושא</button>
+      <button class="btn btn-ghost" onclick="hubAgainTrain()">🔄 סבב נוסף באותו נושא</button>
       <button class="btn" onclick="hubHomeFromEnd()">🏠 כל המקצועות</button>
     </div>
   </div>
