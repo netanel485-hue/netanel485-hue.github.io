@@ -206,9 +206,6 @@ a:focus-visible {
   button:disabled { opacity: .45; cursor: default; }
   .big { font-size: 2.2em; }
   .choice { min-width: 74px; font-size: 1.8em; font-weight: bold; }
-  .green { background: #D9F99D; border-color: #65A30D; }
-  .blue { background: #DBEAFE; border-color: #2563EB; }
-  .pink { background: #FCE7F3; border-color: #DB2777; }
   .msg { font-size: 1.5em; margin: 14px 0; min-height: 1.6em; }
   .pic { font-size: 4.5em; line-height: 1.2; }
   .wordtile { font-size: 2.6em; font-weight: bold; background: #FEF3C7; border-radius: 18px; display: inline-block; padding: 12px 26px; margin: 8px; }
@@ -223,6 +220,27 @@ a:focus-visible {
   .dots { margin: 12px 0 4px; }
   .dot { display: inline-block; min-width: 34px; height: 34px; line-height: 34px; margin: 3px; border-radius: 50%; background: #fff; border: 2px solid #ddd; font-size: 1.05em; font-weight: bold; }
   .dot.done { background: var(--good-bg); border-color: var(--good); }
+
+/* ---- STAGE 5: kid-scale unified buttons, mobile, reduced motion ---- */
+/* button.btn-* (not .btn-*) so these beat the generic `button` rule below
+   on specificity; colours/borders still come from the token block above. */
+button.btn-primary,button.btn-secondary,button.btn-ghost,button.btn-danger{font-size:1.35em;padding:14px 22px;min-height:56px}
+button.btn-ghost.mini{font-size:1em;padding:9px 16px;min-height:48px}
+summary:focus-visible,[role="button"]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wordtile{max-width:100%;overflow-wrap:anywhere}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@media (max-width:480px){
+h1{font-size:clamp(1.5em,6vw,2em)}
+.card{padding:14px 12px}
+.row{gap:8px}
+.row .w{min-width:0;font-size:1.5em}
+.pic{font-size:3.8em}
+.choice{min-width:64px}
+}
+@media (max-width:360px){
+button{padding:12px 14px}
+.wordtile{font-size:2em;padding:10px 16px}
+}
 </style>
 </head>
 <body>
@@ -372,7 +390,7 @@ function micSupported() {
 }
 function micButtonsHTML() {
   if (!micSupported()) return '';
-  return '<span id="micBox"><button id="recBtn" onclick="micRecord()">🎤 הקליטי אותי</button> <button id="playBtn" onclick="micPlay()" disabled>▶️ לשמוע אותי</button></span>';
+  return '<span id="micBox"><button class="btn-secondary" id="recBtn" onclick="micRecord()">🎤 הקליטי אותי</button> <button class="btn-ghost" id="playBtn" onclick="micPlay()" disabled>▶️ לשמוע אותי</button></span>';
 }
 function micRecord() {
   try {
@@ -470,11 +488,11 @@ function goMap() {
     html += '<div class="card' + (unlocked ? '' : ' locked') + '">';
     html += '<h2>' + lv.icon + ' שלב ' + (li + 1) + ': ' + lv.name + (unlocked ? '' : ' 🔒') + '</h2>';
     html += '<div class="stars">' + '⭐'.repeat(stars) + '☆'.repeat(lv.activities.length - stars) + ' ' + stars + ' מתוך ' + lv.activities.length + '</div>';
-    if (!unlocked) { html += '<p class="small">סיימי את שלב ' + li + ' כדי לפתוח! 🔒</p><div><button class="mini" onclick="askParentUnlock(' + li + ')">🔓 פתיחה להורה</button></div>'; }
+    if (!unlocked) { html += '<p class="small">סיימי את שלב ' + li + ' כדי לפתוח! 🔒</p><div><button class="mini btn-ghost" onclick="askParentUnlock(' + li + ')">🔓 פתיחה להורה</button></div>'; }
     for (var ai = 0; ai < lv.activities.length; ai++) {
       var act = lv.activities[ai];
       var done = isDone(act.id);
-      html += '<div><button ' + (unlocked ? '' : 'disabled') + ' onclick="startActivity(' + li + ',' + ai + ')">' + act.icon + ' ' + act.name + (done ? ' ✅' : '') + '</button></div>';
+      html += '<div><button class="btn-secondary" ' + (unlocked ? '' : 'disabled') + ' onclick="startActivity(' + li + ',' + ai + ')">' + act.icon + ' ' + act.name + (done ? ' ✅' : '') + '</button></div>';
     }
     html += '</div>';
   }
@@ -498,8 +516,8 @@ function startActivity(li, ai) {
 
 function sayPhaseHTML(text) {
   return '<div class="msg">🎤 אמרי! <span class="big">' + esc(text) + '</span></div>' +
-    '<div><button onclick="speak(\'' + text.replace(/'/g, '') + '\')">🔊 לשמוע</button> ' + micButtonsHTML() + '</div>' +
-    '<div><button class="green" onclick="nextStep()">אמרתי! ✅</button></div>';
+    '<div><button class="btn-secondary" onclick="speak(\'' + text.replace(/'/g, '') + '\')">🔊 לשמוע</button> ' + micButtonsHTML() + '</div>' +
+    '<div><button class="btn-primary" onclick="nextStep()">אמרתי! ✅</button></div>';
 }
 
 /* Hebrew instruction per step kind (STAGE 4.1) — spoken in Hebrew, while
@@ -530,9 +548,9 @@ function renderStep(skipInstr) {
   var html = '<div class="card"><div class="small">שלב ' + (current.li + 1) + ' • ' + current.act.name + ' • ' + (current.idx + 1) + ' מתוך ' + n + '</div>';
   if (st.kind === 'tap') {
     html += '<div class="msg">👂 הקשיבי! לחצי על התשובה הנכונה.</div>';
-    html += '<div><button class="blue" onclick="speak(\'' + st.audio + '\')">🔊 לשמוע</button>';
-    if (st.audioKind === 'letter') html += ' <button onclick="speak(\'' + LETTER_WORD[st.audio] + '\')">💡 לשמוע מילה</button>';
-    html += ' <button onclick="replayInstr()">📢 הוראות</button>';
+    html += '<div><button class="btn-secondary" onclick="speak(\'' + st.audio + '\')">🔊 לשמוע</button>';
+    if (st.audioKind === 'letter') html += ' <button class="btn-ghost" onclick="speak(\'' + LETTER_WORD[st.audio] + '\')">💡 לשמוע מילה</button>';
+    html += ' <button class="btn-ghost" onclick="replayInstr()">📢 הוראות</button>';
     html += '</div><div id="fb" class="msg"></div><div>';
     for (var i = 0; i < st.choices.length; i++) {
       html += '<button class="choice" onclick="tapAnswer(\'' + st.choices[i] + '\',this)">' + st.choices[i] + '</button>';
@@ -540,12 +558,12 @@ function renderStep(skipInstr) {
     html += '</div>';
   } else if (st.kind === 'say') {
     html += '<div class="msg">הסתכלי ואמרי:</div><div class="big">' + esc(st.text) + '</div>';
-    html += '<div><button class="blue" onclick="speak(\'' + st.audio + '\')">🔊 לשמוע</button> ' + micButtonsHTML() + ' <button onclick="replayInstr()">📢 הוראות</button></div>';
+    html += '<div><button class="btn-secondary" onclick="speak(\'' + st.audio + '\')">🔊 לשמוע</button> ' + micButtonsHTML() + ' <button class="btn-ghost" onclick="replayInstr()">📢 הוראות</button></div>';
     html += '<div class="msg">🎤 אמרי בקול רם!</div>';
-    html += '<div><button class="green" onclick="nextStep()">אמרתי! ✅</button></div>';
+    html += '<div><button class="btn-primary" onclick="nextStep()">אמרתי! ✅</button></div>';
   } else if (st.kind === 'build') {
     html += '<div class="msg">👂 הקשיבי לצלילים, ואז לחצי על המילה הנכונה!</div>';
-    html += '<div><button class="blue" onclick="playSounds()">🔊 לשמוע את הצלילים</button> <button onclick="replayInstr()">📢 הוראות</button></div><div id="fb" class="msg"></div><div>';
+    html += '<div><button class="btn-secondary" onclick="playSounds()">🔊 לשמוע את הצלילים</button> <button class="btn-ghost" onclick="replayInstr()">📢 הוראות</button></div><div id="fb" class="msg"></div><div>';
     for (var j = 0; j < st.choices.length; j++) {
       html += '<button class="choice" onclick="tapAnswer(\'' + st.choices[j] + '\',this)">' + st.choices[j] + '</button>';
     }
@@ -554,7 +572,7 @@ function renderStep(skipInstr) {
     html += '<div class="msg">באיזו אות מתחילה המילה שבתמונה?</div>';
     if (PIC[st.pic]) html += '<div class="pic">' + PIC[st.pic] + '</div>';
     else html += '<div><span class="wordtile">' + esc(st.pic) + '</span></div>';
-    html += '<div><button class="blue" onclick="speak(\'' + st.audio + '\')">🔊 לשמוע את המילה</button> <button onclick="replayInstr()">📢 הוראות</button></div><div id="fb" class="msg"></div><div>';
+    html += '<div><button class="btn-secondary" onclick="speak(\'' + st.audio + '\')">🔊 לשמוע את המילה</button> <button class="btn-ghost" onclick="replayInstr()">📢 הוראות</button></div><div id="fb" class="msg"></div><div>';
     for (var k = 0; k < st.choices.length; k++) {
       html += '<button class="choice" onclick="tapAnswer(\'' + st.choices[k] + '\',this)">' + st.choices[k] + '</button>';
     }
@@ -576,14 +594,14 @@ function renderStep(skipInstr) {
     if (ci < total) {
       var w = st.words[ci];
       html += '<div class="row" id="row-' + ci + '"><span class="w">' + esc(w) + '</span>' +
-        '<button onclick="speak(\'' + w + '\')">🔊</button>' +
-        '<button onclick="checkWord(' + ci + ',this)">🎤 קראתי!</button></div>';
+        '<button class="btn-secondary" aria-label="לשמוע את המילה" onclick="speak(\'' + w + '\')">🔊</button>' +
+        '<button class="btn-primary" onclick="checkWord(' + ci + ',this)">🎤 קראתי!</button></div>';
     } else {
       html += '<div class="msg">כל המילים נקראו! 🎉</div>';
     }
-    html += '<div id="fb" class="msg"></div><div><button class="green" id="doneBtn" onclick="finishChecklist()" ' + (doneCount === total ? '' : 'disabled') + '>סיימתי הכול! ⭐</button> <button onclick="replayInstr()">📢 הוראות</button></div>';
+    html += '<div id="fb" class="msg"></div><div><button class="btn-primary" id="doneBtn" onclick="finishChecklist()" ' + (doneCount === total ? '' : 'disabled') + '>סיימתי הכול! ⭐</button> <button class="btn-ghost" onclick="replayInstr()">📢 הוראות</button></div>';
   }
-  html += '<div><button onclick="goMap()">🗺️ חזרה למפה</button></div></div>';
+  html += '<div><button class="btn-ghost" onclick="goMap()">🗺️ חזרה למפה</button></div></div>';
   app().innerHTML = html;
   var st2 = current.steps[current.idx];
   current.instr = stepInstr(st2);
@@ -604,7 +622,7 @@ function tapAnswer(choice, btn) {
   var fb = document.getElementById('fb');
   if (choice === st.answer) {
     app().innerHTML = '<div class="card"><div class="msg">' + cheer() + '</div>' + sayPhaseHTML(st.sayText) +
-      '<div><button onclick="goMap()">🗺️ חזרה למפה</button></div></div>';
+      '<div><button class="btn-ghost" onclick="goMap()">🗺️ חזרה למפה</button></div></div>';
     speakHe('אמרי את המילה בקול רם!', null);
   } else {
     /* STAGE 4.5a: mark the wrong answer ON the tapped button, not only in text. */
@@ -656,11 +674,11 @@ function finishActivity() {
   var lv = LEVELS[li];
   var nextBtn = '';
   for (var ai = 0; ai < lv.activities.length; ai++) {
-    if (!isDone(lv.activities[ai].id)) { nextBtn = '<button class="green" onclick="startActivity(' + li + ',' + ai + ')">⏭️ הפעילות הבאה: ' + lv.activities[ai].name + '</button>'; break; }
+    if (!isDone(lv.activities[ai].id)) { nextBtn = '<button class="btn-primary" onclick="startActivity(' + li + ',' + ai + ')">⏭️ הפעילות הבאה: ' + lv.activities[ai].name + '</button>'; break; }
   }
   app().innerHTML = '<div class="card"><div class="pic">🎉</div><div class="msg">עשית את זה! הרווחת כוכב! ⭐</div>' +
     '<div class="total">⭐ ' + totalStars() + ' מתוך ' + totalActivities() + ' כוכבים</div>' +
-    '<div>' + nextBtn + ' <button onclick="goMap()">🗺️ חזרה למפה</button></div></div>';
+    '<div>' + nextBtn + ' <button class="btn-ghost" onclick="goMap()">🗺️ חזרה למפה</button></div></div>';
 }
 
 goMap();
