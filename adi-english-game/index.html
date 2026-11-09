@@ -4,11 +4,18 @@
   For Adi, grade 1, English-speakers class. Built from her school pages only:
   letters a, c, s, t, p; words a, at, cat, tat, tac, sat, pat, pac, cap;
   sentences "A cat." and "A cat sat."; S/T/C/P beginning words listed below.
-  No external resources: no network, no login, no external images, scripts or
-  fonts. Emoji only. Audio uses the built-in speechSynthesis voice (English).
+  No external resources except one: Hebrew instructions are read aloud via
+  Google Translate TTS (runtime audio only, no login, no external images,
+  scripts or fonts). Emoji only. English words/letters use the built-in
+  speechSynthesis voice (English), unchanged.
   Letter "sounds" in v1 are spoken by speechSynthesis plus an example word
   (a-apple, c-cat, s-sun, t-tiger, p-pig); recorded phonics audio is a
   possible future upgrade, not part of v1.
+  STAGE 4.1 (9/11/2026): the interface is Hebrew (written + spoken); the
+  English letters/words being learned stay English. STAGE 4.5: wrong answers
+  are marked on the tapped button; a parent can unlock a level for one visit
+  via a grown-ups maths question (session-only, never stored); "Read It Fast"
+  shows one word at a time with numbered progress.
 
   EXPERT PEDAGOGY CHECKLIST (follow this when adding content):
   1. Letter sounds before letter names.
@@ -30,11 +37,11 @@
     ignored, missing activities default to unplayed (0 stars).
   - Because of this, progress survives adding new pages/levels later.
 -->
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Adi's English Game</title>
+<title>המשחק באנגלית של עדי</title>
 <style>
 /* DESIGN-TOKENS-START */
 /* ==========================================================================
@@ -211,11 +218,16 @@ a:focus-visible {
   .parents { max-width: 620px; margin: 22px auto; background: #EFF6FF; border-radius: 18px; padding: 14px 18px; text-align: right; direction: rtl; font-size: 1em; line-height: 1.7; }
   .parents summary { cursor: pointer; font-weight: bold; font-size: 1.1em; }
   .small { font-size: .95em; color: #555; }
+  .choice.wrong { background: var(--bad-bg); border-color: var(--bad); color: var(--bad); text-decoration: line-through; }
+  .mini { font-size: 1em; padding: 9px 16px; }
+  .dots { margin: 12px 0 4px; }
+  .dot { display: inline-block; min-width: 34px; height: 34px; line-height: 34px; margin: 3px; border-radius: 50%; background: #fff; border: 2px solid #ddd; font-size: 1.05em; font-weight: bold; }
+  .dot.done { background: var(--good-bg); border-color: var(--good); }
 </style>
 </head>
 <body>
 <header>
-  <h1>🌟 Adi's English Game 🌟</h1>
+  <h1>🌟 המשחק באנגלית של עדי 🌟</h1>
   <div class="total" id="totalStars"></div>
 </header>
 <main id="app"></main>
@@ -234,8 +246,8 @@ var T_WORDS = ['tape', 'toothbrush', 'turtle', 'tiger', 'top'];
 var C_WORDS = ['cat', 'cap'];
 var P_WORDS = ['pig', 'pot', 'pen', 'pin', 'puzzle'];
 var PIC = { sun: '☀️', sock: '🧦', saw: '🪚', soap: '🧼', seven: '7️⃣', sandwich: '🥪', snake: '🐍', star: '⭐', soup: '🍜', sunflowers: '🌻', soccer: '⚽', shoes: '👟', shell: '🐚', sand: '🏖️', scooter: '🛴', slide: '🛝', turtle: '🐢', tiger: '🐯', tape: '<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 100 100" role="img" aria-label="tape"><ellipse cx="50" cy="90" rx="30" ry="4" fill="#000000" opacity="0.08"/><rect x="58" y="28" width="34" height="11" rx="2" fill="#CFE8F5" stroke="#1d3a2a" stroke-width="2.5"/><rect x="86" y="28" width="6" height="11" fill="#8FC7E8"/><circle cx="40" cy="58" r="30" fill="#EAF6FB" stroke="#1d3a2a" stroke-width="3"/><circle cx="40" cy="58" r="22" fill="none" stroke="#A8D8EA" stroke-width="2" opacity="0.7"/><path d="M22,44 A22,22 0 0 1 34,34" stroke="#ffffff" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.8"/><circle cx="40" cy="58" r="14" fill="#F2C078" stroke="#1d3a2a" stroke-width="2.5"/><circle cx="40" cy="58" r="6" fill="#FFFDF7" stroke="#1d3a2a" stroke-width="2"/></svg>', top: '<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 100 100" role="img" aria-label="spinning top"><ellipse cx="50" cy="92" rx="22" ry="3.5" fill="#000000" opacity="0.08"/><path d="M10,52 Q4,62 12,70" stroke="#7A8B7F" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.6"/><path d="M90,52 Q96,62 88,70" stroke="#7A8B7F" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.6"/><rect x="46" y="6" width="8" height="24" rx="4" fill="#B08968" stroke="#1d3a2a" stroke-width="2.5"/><circle cx="50" cy="8" r="6" fill="#F59E0B" stroke="#1d3a2a" stroke-width="2.5"/><path d="M16,40 L84,40 L75,58 L25,58 Z" fill="#FFD54F" stroke="#1d3a2a" stroke-width="2.5" stroke-linejoin="round"/><path d="M25,58 L75,58 L65,74 L35,74 Z" fill="#3B82F6" stroke="#1d3a2a" stroke-width="2.5" stroke-linejoin="round"/><path d="M35,74 L65,74 L50,90 Z" fill="#EF4444" stroke="#1d3a2a" stroke-width="2.5" stroke-linejoin="round"/><ellipse cx="50" cy="38" rx="36" ry="10" fill="#FF6B6B" stroke="#1d3a2a" stroke-width="3"/><ellipse cx="38" cy="35" rx="10" ry="3" fill="#ffffff" opacity="0.5"/><circle cx="50" cy="38" r="4" fill="#FFFDF7" stroke="#1d3a2a" stroke-width="2"/></svg>', toothbrush: '🪥', cat: '🐱', cap: '🧢', pig: '🐷', pot: '🍲', pen: '🖊️', pin: '📌', puzzle: '🧩', apple: '🍎' };
-var CHEERS = ['Great job! 🌟', 'Awesome! 🎉', 'You did it! 👏', 'Super star! ⭐', 'Wonderful! 🌈', 'Amazing! 🥳'];
-var TRY_AGAIN = ['Try again! You can do it! 💪', 'Almost! Listen again 👂', 'Good try! Listen once more 🎧'];
+var CHEERS = ['כל הכבוד! 🌟', 'מדהים! 🎉', 'עשית את זה! 👏', 'את כוכבת! ⭐', 'נהדר! 🌈', 'מדהימה! 🥳'];
+var TRY_AGAIN = ['נסי שוב! את יכולה! 💪', 'כמעט! הקשיבי שוב 👂', 'ניסיון טוב! הקשיבי עוד פעם 🎧'];
 
 /* ---------- Persistence (contract: see header comment) ---------- */
 function loadProgress() {
@@ -257,8 +269,21 @@ function markDone(id) { progress.done[id] = true; saveProgress(); }
 function levelStars(level) { var n = 0; for (var i = 0; i < level.activities.length; i++) { if (isDone(level.activities[i].id)) n++; } return n; }
 function totalStars() { var n = 0; for (var i = 0; i < LEVELS.length; i++) n += levelStars(LEVELS[i]); return n; }
 function totalActivities() { var n = 0; for (var i = 0; i < LEVELS.length; i++) n += LEVELS[i].activities.length; return n; }
+/* Parent bypass (STAGE 4.5b): same spirit as the grade-1 parent gate — a
+   random two-digit + two-digit addition question a 6-year-old cannot pass.
+   Session-only (a plain var, never stored): unlocking one level for this
+   visit only. Stars, progress and the adiEngGameV1 key are untouched, and
+   the next level still needs this level's activities done. */
+var parentUnlockedLevels = {};
+function askParentUnlock(li) {
+  var a = 20 + Math.floor(Math.random() * 60); // 20..79
+  var b = 20 + Math.floor(Math.random() * 60);
+  var ans = prompt('🔒 פתיחה להורה בלבד:\nכמה זה ' + a + ' + ' + b + '?');
+  if (ans !== null && parseInt(ans, 10) === a + b) { parentUnlockedLevels[li] = true; goMap(); }
+}
 function isLevelUnlocked(i) {
   if (i === 0) return true;
+  if (parentUnlockedLevels[i]) return true;
   var prev = LEVELS[i - 1];
   for (var j = 0; j < prev.activities.length; j++) { if (!isDone(prev.activities[j].id)) return false; }
   return true;
@@ -274,6 +299,7 @@ function pick(arr, n) { return shuffle(arr).slice(0, n); }
 function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
 function speak(text, rate) {
   try {
+    stopHeAudio();
     speechSynthesis.cancel();
     var u = new SpeechSynthesisUtterance(text);
     u.lang = 'en-US'; u.rate = rate || 0.85;
@@ -284,6 +310,7 @@ function speakSeq(sounds, i) {
   i = i || 0;
   if (i >= sounds.length) return;
   try {
+    stopHeAudio();
     var u = new SpeechSynthesisUtterance(sounds[i]);
     u.lang = 'en-US'; u.rate = 0.7;
     u.onend = function () { setTimeout(function () { speakSeq(sounds, i + 1); }, 200); };
@@ -293,6 +320,51 @@ function speakSeq(sounds, i) {
 function cheer() { return CHEERS[Math.floor(Math.random() * CHEERS.length)]; }
 function tryAgain() { return TRY_AGAIN[Math.floor(Math.random() * TRY_AGAIN.length)]; }
 
+/* ---------- Hebrew instructions, spoken (STAGE 4.1) ----------
+   PRIMARY: Google Translate TTS (tl=he) as a runtime <audio> element —
+   the Adi audio precedent: device Hebrew TTS has the wrong accent and must
+   not be primary. Niqqud is stripped for TTS. The <audio> element MUST
+   carry referrerPolicy='no-referrer' set BEFORE src: Google TTS returns
+   HTTP 404 for requests with a third-party Referer (proven 9/11/2026 on
+   the grade-2 kit — the read-aloud never worked in a real browser until
+   this was set). Fallback only: device speechSynthesis (he-IL).
+   English words/letters keep the speak() path above, untouched. */
+var heAudio = null;
+function heStripNiqqud(s) { return String(s || '').replace(/[\u0591-\u05BD\u05BF\u05C1-\u05C2\u05C4-\u05C5\u05C7]/g, ''); }
+function stopHeAudio() { try { if (heAudio) { heAudio.pause(); heAudio = null; } } catch (e) {} }
+function speakHeDevice(text, onDone) {
+  var done = false;
+  function fin() { if (done) return; done = true; if (onDone) onDone(); }
+  try {
+    var u = new SpeechSynthesisUtterance(heStripNiqqud(text));
+    u.lang = 'he-IL'; u.rate = 0.9;
+    u.onend = fin; u.onerror = fin;
+    setTimeout(fin, 8000);
+    speechSynthesis.speak(u);
+  } catch (e) { fin(); }
+}
+function speakHe(text, onDone) {
+  var clean = heStripNiqqud(text).replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}\u{FE0F}\u{200D}]/gu, ' ').replace(/\s+/g, ' ').trim();
+  if (!clean) { if (onDone) onDone(); return; }
+  stopHeAudio();
+  var done = false;
+  function fin() { if (done) return; done = true; if (onDone) onDone(); }
+  var url = 'https://translate.google.com/translate_tts?ie=UTF-8&tl=he&client=tw-ob&q=' + encodeURIComponent(clean);
+  var a;
+  try {
+    a = new Audio();
+    a.referrerPolicy = 'no-referrer'; /* BEFORE src — see note above */
+    a.src = url;
+  } catch (e) { speakHeDevice(clean, fin); return; }
+  heAudio = a;
+  var wd = setTimeout(function () { try { a.pause(); } catch (e) {} if (heAudio === a) heAudio = null; speakHeDevice(clean, fin); }, 8000);
+  a.onended = function () { clearTimeout(wd); if (heAudio === a) heAudio = null; fin(); };
+  a.onerror = function () { clearTimeout(wd); if (heAudio === a) heAudio = null; speakHeDevice(clean, fin); };
+  var pr = null;
+  try { pr = a.play(); } catch (e) { clearTimeout(wd); speakHeDevice(clean, fin); return; }
+  if (pr && pr.catch) pr.catch(function () { clearTimeout(wd); if (heAudio === a) heAudio = null; speakHeDevice(clean, fin); });
+}
+
 /* ---------- Microphone (optional, graceful fallback) ---------- */
 var micRec = null, micUrl = null;
 function micSupported() {
@@ -300,7 +372,7 @@ function micSupported() {
 }
 function micButtonsHTML() {
   if (!micSupported()) return '';
-  return '<span id="micBox"><button id="recBtn" onclick="micRecord()">🎤 Record me</button> <button id="playBtn" onclick="micPlay()" disabled>▶️ Hear me</button></span>';
+  return '<span id="micBox"><button id="recBtn" onclick="micRecord()">🎤 הקליטי אותי</button> <button id="playBtn" onclick="micPlay()" disabled>▶️ לשמוע אותי</button></span>';
 }
 function micRecord() {
   try {
@@ -312,11 +384,11 @@ function micRecord() {
       micRec.onstop = function () {
         micUrl = URL.createObjectURL(new Blob(chunks, { type: 'audio/webm' }));
         var pb = document.getElementById('playBtn'); if (pb) pb.disabled = false;
-        var rb = document.getElementById('recBtn'); if (rb) rb.textContent = '🎤 Record again';
+        var rb = document.getElementById('recBtn'); if (rb) rb.textContent = '🎤 להקליט שוב';
         stream.getTracks().forEach(function (t) { t.stop(); });
       };
       micRec.start();
-      var rb = document.getElementById('recBtn'); if (rb) rb.textContent = '⏹ Stop';
+      var rb = document.getElementById('recBtn'); if (rb) rb.textContent = '⏹ עצירה';
     }).catch(function () { var b = document.getElementById('micBox'); if (b) b.style.display = 'none'; });
   } catch (e) { var b = document.getElementById('micBox'); if (b) b.style.display = 'none'; }
 }
@@ -348,43 +420,46 @@ function reviewSteps(levelIdx) {
 
 /* ---------- Levels and activities (ids are permanent — see contract) ---------- */
 var LEVELS = [
-  { name: 'Hear the Letter', icon: '🔤', activities: [
-    { id: 'l1_hear_tap', name: 'Hear & Tap', icon: '👂', build: function () { return LETTERS.map(letterTapStep); } },
-    { id: 'l1_say_letters', name: 'Say the Letters', icon: '🎤', build: function () { return LETTERS.map(sayStep); } }
+  { name: 'לשמוע את האות', icon: '🔤', activities: [
+    { id: 'l1_hear_tap', name: 'להקשיב וללחוץ', icon: '👂', build: function () { return LETTERS.map(letterTapStep); } },
+    { id: 'l1_say_letters', name: 'להגיד את האותיות', icon: '🎤', build: function () { return LETTERS.map(sayStep); } }
   ]},
-  { name: 'Blend It!', icon: '🧩', activities: [
-    { id: 'l2_listen_build', name: 'Listen & Build', icon: '👂', build: function () { return shuffle(WORDS).map(buildStep); } },
-    { id: 'l2_read_words', name: 'Read the Words', icon: '📖', build: function () { return shuffle(WORDS).map(sayStep); } }
+  { name: 'להרכיב את המילה!', icon: '🧩', activities: [
+    { id: 'l2_listen_build', name: 'להקשיב ולבנות', icon: '👂', build: function () { return shuffle(WORDS).map(buildStep); } },
+    { id: 'l2_read_words', name: 'לקרוא את המילים', icon: '📖', build: function () { return shuffle(WORDS).map(sayStep); } }
   ]},
-  { name: 'Starts With...?', icon: '🎯', activities: [
-    { id: 'l3_s_words', name: 'S Words', icon: '☀️', build: function () { return shuffle(['sun', 'sock', 'saw', 'soap', 'snake', 'star', 'sandwich', 'soup', 'sunflowers', 'soccer']).map(picTapStep); } },
-    { id: 'l3_tcp_words', name: 'T, C and P Words', icon: '🐯', build: function () { return shuffle(T_WORDS.concat(C_WORDS).concat(P_WORDS)).map(picTapStep); } }
+  { name: 'באיזו אות מתחילה המילה?', icon: '🎯', activities: [
+    { id: 'l3_s_words', name: 'מילים שמתחילות ב־S', icon: '☀️', build: function () { return shuffle(['sun', 'sock', 'saw', 'soap', 'snake', 'star', 'sandwich', 'soup', 'sunflowers', 'soccer']).map(picTapStep); } },
+    { id: 'l3_tcp_words', name: 'מילים שמתחילות ב־T, C, P', icon: '🐯', build: function () { return shuffle(T_WORDS.concat(C_WORDS).concat(P_WORDS)).map(picTapStep); } }
   ]},
-  { name: 'Read It Fast!', icon: '⚡', activities: [
-    { id: 'l4_round_1', name: 'Round 1', icon: '1️⃣', build: function () { return [{ kind: 'checklist', words: shuffle(WORDS) }]; } },
-    { id: 'l4_round_2', name: 'Round 2', icon: '2️⃣', build: function () { return [{ kind: 'checklist', words: shuffle(WORDS) }]; } },
-    { id: 'l4_round_3', name: 'Round 3', icon: '3️⃣', build: function () { return [{ kind: 'checklist', words: shuffle(WORDS) }]; } }
+  { name: 'לקרוא מהר!', icon: '⚡', activities: [
+    { id: 'l4_round_1', name: 'סיבוב 1', icon: '1️⃣', build: function () { return [{ kind: 'checklist', words: shuffle(WORDS) }]; } },
+    { id: 'l4_round_2', name: 'סיבוב 2', icon: '2️⃣', build: function () { return [{ kind: 'checklist', words: shuffle(WORDS) }]; } },
+    { id: 'l4_round_3', name: 'סיבוב 3', icon: '3️⃣', build: function () { return [{ kind: 'checklist', words: shuffle(WORDS) }]; } }
   ]},
-  { name: 'Read a Sentence!', icon: '📖', activities: [
+  { name: 'לקרוא משפט!', icon: '📖', activities: [
     { id: 'l5_sentence_cat', name: 'A cat.', icon: '🐱', build: function () { return [sayStep('A cat.')]; } },
     { id: 'l5_sentence_cat_sat', name: 'A cat sat.', icon: '🐱', build: function () { return [sayStep('A cat sat.')]; } }
   ]}
 ];
 var PARENTS_HE = [
-  ['Level 1 — Hear the Letter', 'האזנה לצלילי האותיות a, c, s, t, p וזיהוין, ואמירת הצליל בקול.'],
-  ['Level 2 — Blend It!', 'הרכבת מילים מצלילים (blending): שומעים צליל־צליל ובונים את המילה, ואז קוראים אותה בקול.'],
-  ['Level 3 — Starts With...?', 'התאמת מילים ותמונות לצליל הפותח: s, t, c, p.'],
-  ['Level 4 — Read It Fast!', 'קריאת מילות דפי הקריאה מהר ובביטחון — 3 סיבובים, כמו בדפי בית הספר (כל מילה נקראת 3 פעמים בסך הכול).'],
-  ['Level 5 — Read a Sentence!', 'קריאת משפטים שלמים בקול: "A cat." ו־"A cat sat.".']
+  ['שלב 1 — לשמוע את האות', 'האזנה לצלילי האותיות a, c, s, t, p וזיהוין, ואמירת הצליל בקול.'],
+  ['שלב 2 — להרכיב את המילה!', 'הרכבת מילים מצלילים (blending): שומעים צליל־צליל ובונים את המילה, ואז קוראים אותה בקול.'],
+  ['שלב 3 — באיזו אות מתחילה המילה?', 'התאמת מילים ותמונות לצליל הפותח: s, t, c, p.'],
+  ['שלב 4 — לקרוא מהר!', 'קריאת מילות דפי הקריאה מהר ובביטחון — 3 סיבובים, כמו בדפי בית הספר (כל מילה נקראת 3 פעמים בסך הכול).'],
+  ['שלב 5 — לקרוא משפט!', 'קריאת משפטים שלמים בקול: "A cat." ו־"A cat sat.".']
 ];
 
 /* ---------- Runner ---------- */
 var current = null;
+var currentGen = 0; /* bumped on every navigation — stale async audio/timeouts check it */
 function app() { return document.getElementById('app'); }
-function setTotal() { document.getElementById('totalStars').textContent = '⭐ ' + totalStars() + ' / ' + totalActivities() + ' stars'; }
+function setTotal() { document.getElementById('totalStars').textContent = '⭐ ' + totalStars() + ' מתוך ' + totalActivities() + ' כוכבים'; }
 
 function goMap() {
+  currentGen++;
   try { speechSynthesis.cancel(); } catch (e) {}
+  stopHeAudio();
   stopMic();
   setTotal();
   var html = '';
@@ -393,9 +468,9 @@ function goMap() {
     var unlocked = isLevelUnlocked(li);
     var stars = levelStars(lv);
     html += '<div class="card' + (unlocked ? '' : ' locked') + '">';
-    html += '<h2>' + lv.icon + ' Level ' + (li + 1) + ': ' + lv.name + (unlocked ? '' : ' 🔒') + '</h2>';
-    html += '<div class="stars">' + '⭐'.repeat(stars) + '☆'.repeat(lv.activities.length - stars) + ' (' + stars + '/' + lv.activities.length + ')</div>';
-    if (!unlocked) { html += '<p class="small">Finish Level ' + li + ' to unlock! 🔒</p>'; }
+    html += '<h2>' + lv.icon + ' שלב ' + (li + 1) + ': ' + lv.name + (unlocked ? '' : ' 🔒') + '</h2>';
+    html += '<div class="stars">' + '⭐'.repeat(stars) + '☆'.repeat(lv.activities.length - stars) + ' ' + stars + ' מתוך ' + lv.activities.length + '</div>';
+    if (!unlocked) { html += '<p class="small">סיימי את שלב ' + li + ' כדי לפתוח! 🔒</p><div><button class="mini" onclick="askParentUnlock(' + li + ')">🔓 פתיחה להורה</button></div>'; }
     for (var ai = 0; ai < lv.activities.length; ai++) {
       var act = lv.activities[ai];
       var done = isDone(act.id);
@@ -405,93 +480,135 @@ function goMap() {
   }
   html += '<div class="parents"><details><summary>להורים 👨‍👩‍👧 — מה לומדים בכל שלב, וההתקדמות של עדי</summary>';
   for (var pi = 0; pi < PARENTS_HE.length; pi++) {
-    html += '<p><b>' + PARENTS_HE[pi][0] + '</b> — ' + PARENTS_HE[pi][1] + ' כוכבים: ' + levelStars(LEVELS[pi]) + '/' + LEVELS[pi].activities.length + '</p>';
+    html += '<p><b>' + PARENTS_HE[pi][0] + '</b> — ' + PARENTS_HE[pi][1] + ' כוכבים: ' + levelStars(LEVELS[pi]) + ' מתוך ' + LEVELS[pi].activities.length + '</p>';
   }
-  html += '<p><b>סך הכול: ' + totalStars() + ' / ' + totalActivities() + ' כוכבים.</b></p>';
-  html += '<p class="small">ההתקדמות נשמרת במכשיר הזה בלבד. כשנוסיף דפים, מילים ורמות חדשות, ההתקדמות לא תתאפס: כל פעילות חדשה מקבלת מזהה חדש, והישנות נשארות בדיוק כמו שהיו. המשחק עובד בלי אינטרנט ובלי התחברות.</p>';
+  html += '<p><b>סך הכול: ' + totalStars() + ' מתוך ' + totalActivities() + ' כוכבים.</b></p>';
+  html += '<p class="small">ההתקדמות נשמרת במכשיר הזה בלבד. כשנוסיף דפים, מילים ורמות חדשות, ההתקדמות לא תתאפס: כל פעילות חדשה מקבלת מזהה חדש, והישנות נשארות בדיוק כמו שהיו. המשחק עובד בלי אינטרנט ובלי התחברות. ההוראות בעברית מוקראות דרך האינטרנט (Google); בלי אינטרנט הן כתובות על המסך, והמילים באנגלית מושמעות כרגיל מהמכשיר.</p>';
   html += '</details></div>';
   app().innerHTML = html;
 }
 
 function startActivity(li, ai) {
   if (!isLevelUnlocked(li)) return;
+  currentGen++;
   var act = LEVELS[li].activities[ai];
-  current = { li: li, act: act, steps: reviewSteps(li).concat(act.build()), idx: 0, checked: {} };
+  current = { li: li, act: act, steps: reviewSteps(li).concat(act.build()), idx: 0, checked: {}, checkIdx: 0, instr: '' };
   renderStep();
 }
 
 function sayPhaseHTML(text) {
-  return '<div class="msg">🎤 Say it! <span class="big">' + esc(text) + '</span></div>' +
-    '<div><button onclick="speak(\'' + text.replace(/'/g, '') + '\')">🔊 Hear it</button> ' + micButtonsHTML() + '</div>' +
-    '<div><button class="green" onclick="nextStep()">I said it! ➡️</button></div>';
+  return '<div class="msg">🎤 אמרי! <span class="big">' + esc(text) + '</span></div>' +
+    '<div><button onclick="speak(\'' + text.replace(/'/g, '') + '\')">🔊 לשמוע</button> ' + micButtonsHTML() + '</div>' +
+    '<div><button class="green" onclick="nextStep()">אמרתי! ✅</button></div>';
 }
 
-function renderStep() {
+/* Hebrew instruction per step kind (STAGE 4.1) — spoken in Hebrew, while
+   the letter/word itself is still spoken in English by playStepAudio. */
+function stepInstr(st) {
+  if (st.kind === 'tap') return 'הקשיבי! לחצי על התשובה הנכונה.';
+  if (st.kind === 'say') return 'הסתכלי על המילה, ואמרי אותה בקול רם.';
+  if (st.kind === 'build') return 'הקשיבי לצלילים, ואז לחצי על המילה הנכונה.';
+  if (st.kind === 'pic') return 'באיזו אות מתחילה המילה שבתמונה?';
+  if (st.kind === 'checklist') return 'קראי כל מילה בקול רם, ולחצי קראתי על כל מילה.';
+  return '';
+}
+function playStepAudio(st) {
+  if (!st) return;
+  if (st.kind === 'tap' || st.kind === 'pic') speak(st.audio);
+  else if (st.kind === 'build') playSounds();
+  else if (st.kind === 'say') speak(st.audio);
+}
+function replayInstr() { if (current && current.instr) speakHe(current.instr, null); }
+
+function renderStep(skipInstr) {
   try { speechSynthesis.cancel(); } catch (e) {}
+  stopHeAudio();
   stopMic();
   setTotal();
   var st = current.steps[current.idx];
   var n = current.steps.length;
-  var html = '<div class="card"><div class="small">Level ' + (current.li + 1) + ' • ' + current.act.name + ' • ' + (current.idx + 1) + '/' + n + '</div>';
+  var html = '<div class="card"><div class="small">שלב ' + (current.li + 1) + ' • ' + current.act.name + ' • ' + (current.idx + 1) + ' מתוך ' + n + '</div>';
   if (st.kind === 'tap') {
-    html += '<div class="msg">👂 Listen! Tap the right one.</div>';
-    html += '<div><button class="blue" onclick="speak(\'' + st.audio + '\')">🔊 Hear it</button>';
-    if (st.audioKind === 'letter') html += ' <button onclick="speak(\'' + LETTER_WORD[st.audio] + '\')">💡 Hear a word</button>';
+    html += '<div class="msg">👂 הקשיבי! לחצי על התשובה הנכונה.</div>';
+    html += '<div><button class="blue" onclick="speak(\'' + st.audio + '\')">🔊 לשמוע</button>';
+    if (st.audioKind === 'letter') html += ' <button onclick="speak(\'' + LETTER_WORD[st.audio] + '\')">💡 לשמוע מילה</button>';
+    html += ' <button onclick="replayInstr()">📢 הוראות</button>';
     html += '</div><div id="fb" class="msg"></div><div>';
     for (var i = 0; i < st.choices.length; i++) {
-      html += '<button class="choice" onclick="tapAnswer(\'' + st.choices[i] + '\')">' + st.choices[i] + '</button>';
+      html += '<button class="choice" onclick="tapAnswer(\'' + st.choices[i] + '\',this)">' + st.choices[i] + '</button>';
     }
     html += '</div>';
   } else if (st.kind === 'say') {
-    html += '<div class="msg">Look and say:</div><div class="big">' + esc(st.text) + '</div>';
-    html += '<div><button class="blue" onclick="speak(\'' + st.audio + '\')">🔊 Hear it</button> ' + micButtonsHTML() + '</div>';
-    html += '<div class="msg">🎤 Say it out loud!</div>';
-    html += '<div><button class="green" onclick="nextStep()">I said it! ➡️</button></div>';
+    html += '<div class="msg">הסתכלי ואמרי:</div><div class="big">' + esc(st.text) + '</div>';
+    html += '<div><button class="blue" onclick="speak(\'' + st.audio + '\')">🔊 לשמוע</button> ' + micButtonsHTML() + ' <button onclick="replayInstr()">📢 הוראות</button></div>';
+    html += '<div class="msg">🎤 אמרי בקול רם!</div>';
+    html += '<div><button class="green" onclick="nextStep()">אמרתי! ✅</button></div>';
   } else if (st.kind === 'build') {
-    html += '<div class="msg">👂 Hear the sounds, then tap the word!</div>';
-    html += '<div><button class="blue" onclick="playSounds()">🔊 Hear the sounds</button></div><div id="fb" class="msg"></div><div>';
+    html += '<div class="msg">👂 הקשיבי לצלילים, ואז לחצי על המילה הנכונה!</div>';
+    html += '<div><button class="blue" onclick="playSounds()">🔊 לשמוע את הצלילים</button> <button onclick="replayInstr()">📢 הוראות</button></div><div id="fb" class="msg"></div><div>';
     for (var j = 0; j < st.choices.length; j++) {
-      html += '<button class="choice" onclick="tapAnswer(\'' + st.choices[j] + '\')">' + st.choices[j] + '</button>';
+      html += '<button class="choice" onclick="tapAnswer(\'' + st.choices[j] + '\',this)">' + st.choices[j] + '</button>';
     }
     html += '</div>';
   } else if (st.kind === 'pic') {
-    html += '<div class="msg">What sound does it start with?</div>';
+    html += '<div class="msg">באיזו אות מתחילה המילה שבתמונה?</div>';
     if (PIC[st.pic]) html += '<div class="pic">' + PIC[st.pic] + '</div>';
     else html += '<div><span class="wordtile">' + esc(st.pic) + '</span></div>';
-    html += '<div><button class="blue" onclick="speak(\'' + st.audio + '\')">🔊 Hear the word</button></div><div id="fb" class="msg"></div><div>';
+    html += '<div><button class="blue" onclick="speak(\'' + st.audio + '\')">🔊 לשמוע את המילה</button> <button onclick="replayInstr()">📢 הוראות</button></div><div id="fb" class="msg"></div><div>';
     for (var k = 0; k < st.choices.length; k++) {
-      html += '<button class="choice" onclick="tapAnswer(\'' + st.choices[k] + '\')">' + st.choices[k] + '</button>';
+      html += '<button class="choice" onclick="tapAnswer(\'' + st.choices[k] + '\',this)">' + st.choices[k] + '</button>';
     }
     html += '</div>';
   } else if (st.kind === 'checklist') {
-    html += '<div class="msg">📖 Read every word out loud! Tap "I read it!" for each one.</div>';
-    for (var m = 0; m < st.words.length; m++) {
-      var w = st.words[m];
-      html += '<div class="row" id="row-' + m + '"><span class="w">' + esc(w) + '</span>' +
+    /* STAGE 4.5c: one word at a time, numbered, with visible progress —
+       same words, same checklist content, just stepped. */
+    var total = st.words.length;
+    var doneCount = 0;
+    for (var c = 0; c < total; c++) { if (current.checked[c]) doneCount++; }
+    var ci = current.checkIdx || 0;
+    while (ci < total && current.checked[ci]) ci++;
+    current.checkIdx = ci;
+    html += '<div class="msg">📖 קראי כל מילה בקול רם! לחצי "קראתי!" על כל מילה.</div>';
+    html += '<div class="small">מילה ' + Math.min(ci + 1, total) + ' מתוך ' + total + ' • קראתי ' + doneCount + ' מתוך ' + total + '</div>';
+    html += '<div class="dots">';
+    for (var d = 0; d < total; d++) { html += '<span class="dot' + (current.checked[d] ? ' done' : '') + '">' + (current.checked[d] ? '✅' : (d + 1)) + '</span>'; }
+    html += '</div>';
+    if (ci < total) {
+      var w = st.words[ci];
+      html += '<div class="row" id="row-' + ci + '"><span class="w">' + esc(w) + '</span>' +
         '<button onclick="speak(\'' + w + '\')">🔊</button>' +
-        '<button onclick="checkWord(' + m + ',this)">🎤 I read it!</button></div>';
+        '<button onclick="checkWord(' + ci + ',this)">🎤 קראתי!</button></div>';
+    } else {
+      html += '<div class="msg">כל המילים נקראו! 🎉</div>';
     }
-    html += '<div id="fb" class="msg"></div><div><button class="green" id="doneBtn" onclick="finishChecklist()" disabled>All done! ⭐</button></div>';
+    html += '<div id="fb" class="msg"></div><div><button class="green" id="doneBtn" onclick="finishChecklist()" ' + (doneCount === total ? '' : 'disabled') + '>סיימתי הכול! ⭐</button> <button onclick="replayInstr()">📢 הוראות</button></div>';
   }
-  html += '<div><button onclick="goMap()">🗺️ Back to map</button></div></div>';
+  html += '<div><button onclick="goMap()">🗺️ חזרה למפה</button></div></div>';
   app().innerHTML = html;
   var st2 = current.steps[current.idx];
-  if (st2.kind === 'tap' || st2.kind === 'pic') speak(st2.audio);
-  else if (st2.kind === 'build') playSounds();
-  else if (st2.kind === 'say') speak(st2.audio);
+  current.instr = stepInstr(st2);
+  if (!skipInstr && current.instr) {
+    var tok = current, g = currentGen;
+    speakHe(current.instr, function () { if (current === tok && currentGen === g) playStepAudio(st2); });
+  } else if (!skipInstr) {
+    playStepAudio(st2);
+  }
 }
 
 function playSounds() {
   var st = current.steps[current.idx];
   if (st && st.kind === 'build') speakSeq(st.sounds, 0);
 }
-function tapAnswer(choice) {
+function tapAnswer(choice, btn) {
   var st = current.steps[current.idx];
   var fb = document.getElementById('fb');
   if (choice === st.answer) {
     app().innerHTML = '<div class="card"><div class="msg">' + cheer() + '</div>' + sayPhaseHTML(st.sayText) +
-      '<div><button onclick="goMap()">🗺️ Back to map</button></div></div>';
+      '<div><button onclick="goMap()">🗺️ חזרה למפה</button></div></div>';
+    speakHe('אמרי את המילה בקול רם!', null);
   } else {
+    /* STAGE 4.5a: mark the wrong answer ON the tapped button, not only in text. */
+    if (btn) { btn.className += ' wrong'; btn.disabled = true; }
     if (fb) fb.textContent = tryAgain();
     speak(st.audio);
   }
@@ -507,13 +624,28 @@ function checkWord(m, btn) {
   if (all) {
     var fb = document.getElementById('fb'); if (fb) fb.textContent = cheer();
     var db = document.getElementById('doneBtn'); if (db) db.disabled = false;
+    var dot = document.querySelectorAll('.dot')[m];
+    if (dot) { dot.className = 'dot done'; dot.textContent = '✅'; }
+  } else {
+    /* Advance to the next unread word (same step — no instruction re-play). */
+    var tok = current, g = currentGen;
+    setTimeout(function () {
+      if (current !== tok || currentGen !== g) return;
+      var nx = 0;
+      while (nx < st.words.length && current.checked[nx]) nx++;
+      current.checkIdx = nx;
+      renderStep(true);
+    }, 600);
   }
 }
 function finishChecklist() { nextStep(); }
 function nextStep() {
   try { speechSynthesis.cancel(); } catch (e) {}
+  stopHeAudio();
   stopMic();
   current.idx++;
+  current.checkIdx = 0;
+  current.checked = {};
   if (current.idx >= current.steps.length) finishActivity();
   else renderStep();
 }
@@ -524,11 +656,11 @@ function finishActivity() {
   var lv = LEVELS[li];
   var nextBtn = '';
   for (var ai = 0; ai < lv.activities.length; ai++) {
-    if (!isDone(lv.activities[ai].id)) { nextBtn = '<button class="green" onclick="startActivity(' + li + ',' + ai + ')">➡️ Next activity: ' + lv.activities[ai].name + '</button>'; break; }
+    if (!isDone(lv.activities[ai].id)) { nextBtn = '<button class="green" onclick="startActivity(' + li + ',' + ai + ')">⏭️ הפעילות הבאה: ' + lv.activities[ai].name + '</button>'; break; }
   }
-  app().innerHTML = '<div class="card"><div class="pic">🎉</div><div class="msg">You did it! You earned a star! ⭐</div>' +
-    '<div class="total">⭐ ' + totalStars() + ' / ' + totalActivities() + ' stars</div>' +
-    '<div>' + nextBtn + ' <button onclick="goMap()">🗺️ Back to map</button></div></div>';
+  app().innerHTML = '<div class="card"><div class="pic">🎉</div><div class="msg">עשית את זה! הרווחת כוכב! ⭐</div>' +
+    '<div class="total">⭐ ' + totalStars() + ' מתוך ' + totalActivities() + ' כוכבים</div>' +
+    '<div>' + nextBtn + ' <button onclick="goMap()">🗺️ חזרה למפה</button></div></div>';
 }
 
 goMap();
