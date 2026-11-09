@@ -191,6 +191,11 @@ ul{padding-right:20px}
 .feedback.good{background:#dcfce7}
 .feedback.bad{background:#fee2e2}
 .feedback.show{display:block}
+/* STAGE 3.7 (11/2026): skip button + end screen — display/UI only, no engine/content changes */
+#skipBtn{background:#fff;color:#334155;border:2px solid #e2e8f0}
+.skip-hint{color:#64748b;font-size:.9em;margin:10px 0 0}
+.end-next{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.end-next .btn{flex:1 1 auto}
 .bar{height:12px;background:#e2e8f0;border-radius:999px;overflow:hidden}
 .bar i{display:block;height:100%;background:#f59e0b;width:0%}
 .filters{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
@@ -411,14 +416,15 @@ footer{text-align:center;color:#64748b;padding:20px;font-size:.9em}
 </section>
 
 <section id="quiz">
-<h2>🎯 תרגול — 200 שאלות</h2>
-<p>בחר פרק, ענה, וקבל משוב מיידי עם הסבר. בסוף תראה ציון ורשימת טעויות לחזרה.</p>
+<h2 id="quizTitle">🎯 תרגול — 10 שאלות מעורבות</h2>
+<p>בחר פרק או סבב קצר, ענה, וקבל משוב מיידי עם הסבר. אפשר לדלג על שאלה — דילוג לא נחשב כטעות ולא נכנס לציון. בסוף תראה ציון, עידוד ומה הלאה.</p>
 <p style="color:#15803d;font-weight:700">✅ ההתקדמות נשמרת אוטומטית במכשיר — אפשר לצאת ולחזור ולהמשיך מאותה נקודה.</p>
 <div class="filters" id="filters"></div>
 <div class="bar"><i id="bar"></i></div>
 <p><span id="prog"></span> &nbsp;|&nbsp; <span class="score" id="score"></span></p>
 <div class="qcard" id="qcard"></div>
 <button class="btn" id="nextBtn" onclick="nextQ()" style="display:none">שאלה הבאה ⏭</button>
+<button class="btn" id="skipBtn" onclick="skipQ()" style="display:none">⏭ דלג על השאלה</button>
 <button class="btn" id="againBtn" onclick="startQuiz(true)" style="display:none">🔄 סבב חדש</button>
 <button class="btn btn-danger" id="resetBtn" onclick="resetProgress()">🗑 איפוס התקדמות</button>
 </section>
@@ -645,9 +651,11 @@ const CH_MINI = {
 };
 const DONE_ART = '<svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true"><circle cx="60" cy="30" r="24" fill="#dff0e3" stroke="#2e7d4f" stroke-width="2.5"/><path d="M48,30 L57,39 L74,21" stroke="#2e7d4f" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><g stroke="#2e7d4f" stroke-width="2" fill="none" stroke-linecap="round"><path d="M28,18 Q18,30 28,44"/><path d="M92,18 Q102,30 92,44"/></g></svg>';
 const CH_NAMES = {17:'י״ז',18:'י״ח',19:'י״ט',20:'כ׳',21:'כ״א',22:'כ״ב'};
-let pool = [], qi = 0, good = 0, bad = 0, mistakes = [], filter = 0, answers = {};
+let pool = [], qi = 0, good = 0, bad = 0, mistakes = [], filter = 'ten', answers = {}, skipped = [], reviewMode = null;
 const SAVE_KEY = 'dvirMelachimProgV1';
 function saveProgress(){
+  /* STAGE 3.7: review rounds (mistakes/skipped) are ephemeral — never overwrite the saved run */
+  if(reviewMode) return;
   try{
     const all = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
     all[filter] = {order: pool.map(q => QUESTIONS.indexOf(q)), answers: answers, good: good, bad: bad, mistakes: mistakes.map(q => QUESTIONS.indexOf(q))};
@@ -670,7 +678,8 @@ function show(id){
 
 function buildFilters(){
   const f = document.getElementById('filters');
-  const defs = [[0,'הכל (200 שאלות)'],[17,'פרק י״ז'],[18,'פרק י״ח'],[19,'פרק י״ט'],[20,'פרק כ׳'],[21,'פרק כ״א'],[22,'פרק כ״ב']];
+  /* STAGE 3.7: sane default is a short mixed round of 10 — "הכל (200)" stays as an explicit choice, last */
+  const defs = [['ten','10 שאלות (מעורב)'],[17,'פרק י״ז'],[18,'פרק י״ח'],[19,'פרק י״ט'],[20,'פרק כ׳'],[21,'פרק כ״א'],[22,'פרק כ״ב'],[0,'הכל (200 שאלות)']];
   defs.forEach(d => {
     const b = document.createElement('button');
     b.textContent = d[1];
@@ -689,7 +698,11 @@ function shuffle(a){
 }
 
 function startQuiz(fresh){
-  const full = QUESTIONS.filter(q => filter === 0 || q.c === filter);
+  /* STAGE 3.7: a normal run always starts fresh w.r.t. skips/review — skipped lives only in memory */
+  reviewMode = null;
+  skipped = [];
+  /* STAGE 3.7: 'ten' = 10 questions sampled from all 200; chapters / all unchanged */
+  const full = filter === 'ten' ? shuffle(QUESTIONS.slice()).slice(0, 10) : QUESTIONS.filter(q => filter === 0 || q.c === filter);
   const saved = fresh ? null : loadProgress();
   if(saved && saved.order && saved.order.length === full.length && saved.order.every(i => i >= 0 && i < QUESTIONS.length)){
     pool = saved.order.map(i => QUESTIONS[i]);
@@ -703,10 +716,76 @@ function startQuiz(fresh){
     qi = 0; good = 0; bad = 0; mistakes = []; answers = {};
     saveProgress();
   }
+  updateQuizTitle();
   document.getElementById('againBtn').style.display = 'none';
   document.getElementById('nextBtn').style.display = 'none';
   renderQ();
 }
+
+/* STAGE 3.7 helpers — UI only, no question/content/storage-key changes */
+function updateQuizTitle(){
+  const t = document.getElementById('quizTitle');
+  if(!t) return;
+  if(reviewMode === 'mistakes') t.textContent = '🎯 חזרה על הטעויות — ' + pool.length + ' שאלות';
+  else if(reviewMode === 'skipped') t.textContent = '🎯 חזרה לשאלות שדילגת עליהן — ' + pool.length + ' שאלות';
+  else if(filter === 'ten') t.textContent = '🎯 תרגול — 10 שאלות מעורבות';
+  else if(filter === 0) t.textContent = '🎯 תרגול — הכל (200 שאלות)';
+  else t.textContent = '🎯 תרגול — פרק ' + CH_NAMES[filter] + ' (' + pool.length + ' שאלות)';
+}
+function updateScoreLine(){
+  document.getElementById('score').textContent = 'נכון: ' + good + ' | טעויות: ' + bad + ' | דילגת: ' + skipped.length;
+}
+function encouragementFor(pct, answered){
+  if(answered === 0) return 'דילגת על כל השאלות — זה בסדר, אין לחץ. נסה סבב חדש, שאלה אחת בכל פעם.';
+  if(pct === 100) return 'מושלם! 💯 בלי טעות אחת — אתה שולט בחומר. 🏆';
+  if(pct >= 80) return 'כל הכבוד! 👏 ציון מצוין — אתה כמעט שם.';
+  if(pct >= 60) return 'יפה מאוד! 👍 רוב התשובות נכונות — חזרה קצרה על הטעויות תסגור את הפער.';
+  if(pct >= 40) return 'כל הכבוד שסיימת את הסבב! 💪 הטעויות הן בדיוק המקום ללמוד ממנו — עבור עליהן למטה.';
+  return 'סיימת את הסבב — וזה כבר הישג. 🌱 עבור על הטעויות למטה, שאלה שאלה, ובסבב הבא הציון יעלה.';
+}
+/* STAGE 3.7 — skip semantics (shown honestly in the UI, see the hint under each question):
+   a skipped question is set aside, NOT recorded as a mistake, NOT added to the mistakes
+   list, and NOT counted in the score denominator (score = good / (good + bad) over
+   answered questions only). Skipped questions live only in memory for this run; they
+   are never written to saved progress, so a reload simply shows them again unanswered.
+   The end screen shows how many were skipped and offers a review round with just them. */
+function skipQ(){
+  const q = pool[qi];
+  if(q && skipped.indexOf(q) === -1) skipped.push(q);
+  qi++;
+  updateScoreLine();
+  renderQ();
+}
+function startReview(list, mode){
+  if(!list || !list.length) return;
+  reviewMode = mode;
+  pool = shuffle(list.slice());
+  qi = 0; good = 0; bad = 0; mistakes = []; answers = {}; skipped = [];
+  updateQuizTitle();
+  document.getElementById('againBtn').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'none';
+  renderQ();
+  window.scrollTo(0, 0);
+}
+function reviewMistakes(){ startReview(mistakes, 'mistakes'); }
+function reviewSkipped(){ startReview(skipped, 'skipped'); }
+function nextChapter(){
+  if(typeof filter === 'number' && filter >= 17 && filter < 22){
+    filter = filter + 1;
+  } else if(filter === 22){
+    filter = 17;
+  } else {
+    filter = 'ten';
+  }
+  buildFilters();
+  startQuiz(true);
+}
+function startTen(){
+  filter = 'ten';
+  buildFilters();
+  startQuiz(true);
+}
+function backToSummary(){ show('sum'); }
 function resetProgress(){
   /* STAGE 0 (safety, 9/11/2026): one click used to wipe progress with no confirm and no undo — ask first */
   if(!confirm('למחוק את כל ההתקדמות? אי אפשר לבטל.')) return;
@@ -730,35 +809,68 @@ function shareKit(){
 
 function renderQ(){
   const card = document.getElementById('qcard');
+  /* STAGE 3.7: never show a question that already has an answer (a skipped question left
+     a gap in `answers` after a reload) — advance past answered positions, or finish. */
+  while(qi < pool.length && Object.prototype.hasOwnProperty.call(answers, qi)) qi++;
   if(qi >= pool.length){
     document.getElementById('bar').style.width = '100%';
-    document.getElementById('prog').textContent = 'סיימת את כל השאלות!';
-    document.getElementById('score').textContent = 'נכון: ' + good + ' | טעויות: ' + bad + ' | ציון: ' + Math.round(good / pool.length * 100) + '%';
-    let html = '<div class="done-art">' + DONE_ART + '</div><h3>🎉 סיימת!</h3><p>ענית נכון על ' + good + ' מתוך ' + pool.length + ' שאלות.</p>';
+    document.getElementById('prog').textContent = 'סיימת את הסבב!';
+    const answered = good + bad;
+    const pct = answered > 0 ? Math.round(good / answered * 100) : null;
+    document.getElementById('score').textContent = answered > 0
+      ? 'נכון: ' + good + ' | טעויות: ' + bad + ' | דילגת: ' + skipped.length + ' | ציון: ' + pct + '%'
+      : 'דילגת על כל השאלות (' + skipped.length + ') — אין ציון בסבב הזה';
+    let html = '<div class="done-art">' + DONE_ART + '</div><h3>🎉 סיימת את הסבב!</h3>';
+    html += '<p class="score">' + (answered > 0 ? 'ציון: ' + pct + '% — ' + good + ' נכונות מתוך ' + answered + ' שאלות שנענו (מתוך ' + pool.length + ' בסבב)' : 'לא ענית על אף שאלה בסבב הזה.') + '</p>';
+    html += '<p>' + encouragementFor(pct, answered) + '</p>';
+    if(skipped.length){
+      html += '<p>⏭ דילגת על ' + skipped.length + ' שאלות — הן לא נספרו כטעות ולא נכנסו לציון.</p>';
+    }
+    html += '<h3>מה הלאה?</h3><div class="end-next">';
+    if(mistakes.length){
+      html += '<button class="btn" onclick="reviewMistakes()">🔁 חזרה על הטעויות (' + mistakes.length + ')</button>';
+    }
+    if(skipped.length){
+      html += '<button class="btn" onclick="reviewSkipped()">⏭ חזרה לשאלות שדילגת עליהן (' + skipped.length + ')</button>';
+    }
+    if(reviewMode){
+      html += '<button class="btn" onclick="startQuiz(true)">🎯 חזרה לסבב הרגיל</button>';
+    } else if(typeof filter === 'number' && filter >= 17 && filter < 22){
+      html += '<button class="btn" onclick="nextChapter()">➡ המשך לפרק ' + CH_NAMES[filter + 1] + '</button>';
+    } else if(filter === 22){
+      html += '<button class="btn" onclick="nextChapter()">🔄 חזרה לפרק י״ז</button>';
+    } else {
+      html += '<button class="btn" onclick="startTen()">🎯 עוד סבב קצר — 10 שאלות</button>';
+    }
+    html += '<button class="btn" onclick="backToSummary()">📚 חזרה לסיכום</button>';
+    html += '</div>';
     if(mistakes.length){
       html += '<h3>חזרה על הטעויות:</h3>';
       mistakes.forEach(m => {
         html += '<div class="allq"><b>' + m.q + '</b><br>התשובה הנכונה: <span class="ans">' + m.o[m.a] + '</span><br>' + m.e + '</div>';
       });
-    } else {
+    } else if(answered > 0){
       html += '<p>מושלם! בלי טעות אחת. 🏆</p>';
     }
     card.innerHTML = html;
     document.getElementById('nextBtn').style.display = 'none';
+    document.getElementById('skipBtn').style.display = 'none';
     document.getElementById('againBtn').style.display = 'inline-block';
     return;
   }
   const q = pool[qi];
   document.getElementById('bar').style.width = Math.round(qi / pool.length * 100) + '%';
   document.getElementById('prog').textContent = 'שאלה ' + (qi + 1) + ' מתוך ' + pool.length + ' | פרק ' + CH_NAMES[q.c];
-  document.getElementById('score').textContent = 'נכון: ' + good + ' | טעויות: ' + bad;
+  updateScoreLine();
   let html = '<div class="meta"><span class="q-art">' + CH_MINI[q.c] + '</span>פרק ' + CH_NAMES[q.c] + '</div><h3 style="margin:8px 0">' + q.q + '</h3>';
   q.o.forEach((opt, i) => {
     html += '<button class="opt" onclick="answer(' + i + ', this)">' + opt + '</button>';
   });
   html += '<div class="feedback" id="fb"></div>';
+  html += '<p class="skip-hint">💡 דילוג לא נחשב כטעות ולא נכנס לציון — בסוף הסבב תוכל לחזור לשאלות שדילגת עליהן.</p>';
   card.innerHTML = html;
   document.getElementById('nextBtn').style.display = 'none';
+  document.getElementById('skipBtn').style.display = 'inline-block';
 }
 
 function answer(i, btn){
@@ -780,8 +892,9 @@ function answer(i, btn){
     mistakes.push(q);
   }
   answers[qi] = i; saveProgress();
-  document.getElementById('score').textContent = 'נכון: ' + good + ' | טעויות: ' + bad;
+  updateScoreLine();
   document.getElementById('nextBtn').style.display = 'inline-block';
+  document.getElementById('skipBtn').style.display = 'none';
 }
 
 function nextQ(){
