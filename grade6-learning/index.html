@@ -483,6 +483,11 @@ a:focus-visible {
     <div class="h-rowbtns">
       <button class="btn btn-main h-primary-full" onclick="hubStart('train')">▶️ התחלת אימון (10 שאלות)</button>
     </div>
+    <div class="h-ssub" style="font-size:13px;margin-top:4px">אימון (10 שאלות ברמה שבחרת): +2 🪙 בסיום · עליית רמה +15 🪙 · נחשב יום למידה.</div>
+    <div class="h-rowbtns">
+      <button class="btn btn-ghost" id="hubMoreBtn" onclick="hubToggleMore()">➕ עוד דרכים לתרגל</button>
+    </div>
+    <div id="hubMoreModes" class="h-hidden">
     <div class="h-rowbtns">
       <button class="btn btn-ghost" id="hubLearnBtn" onclick="hubOpenLearn()">📖 לימוד — קודם לומדים</button>
       <button class="btn btn-ghost" onclick="hubOpenCards()">🃏 כרטיסיות</button>
@@ -491,16 +496,19 @@ a:focus-visible {
       <button class="btn btn-ghost h-hidden" id="hubDictBtn" onclick="hubOpenDict()">🎧 הכתבה</button>
       <button class="btn btn-ghost h-hidden" id="hubTypeBtn" onclick="hubOpenType()">⌨️ הקלדה חופשית</button>
     </div>
-    <div class="h-ssub" style="font-size:13px;margin-top:4px">📖 לימוד, 🧩 התאמה, 🎧 הכתבה ו⌨️ הקלדה הם לתרגול בכיף — בלי כוכבים ובלי מטבעות. 🃏 כרטיסיות עוזרות לחזרה המרווחת. כפתורים מופיעים רק בנושאים שבהם הם רלוונטיים.</div>
+    <div class="h-ssub" style="font-size:13px;margin-top:4px">📖 לימוד, 🃏 כרטיסיות, 🧩 התאמה, 🎧 הכתבה ו⌨️ הקלדה הם רק לכיף — בלי מטבעות ובלי יום למידה. כפתורים מופיעים רק בנושאים שבהם הם רלוונטיים.</div>
+    <div class="h-ssub" style="font-size:13px;margin-top:4px">🔁 חיזוק: +5 🪙 מציון 50% ומעלה · שאלה שסיימה חיזוק +3 🪙 · נחשב יום למידה.</div>
     <div class="h-rowbtns">
-      <button class="btn btn-ghost" onclick="hubStart('mixed')">🔀 סבב מעורב</button>
+      <button class="btn btn-ghost" id="hubMixedBtn" onclick="hubStart('mixed')">🔀 סבב מעורב</button>
       <button class="btn btn-ghost" onclick="hubStart('test')">📝 מבחן — שאלות מאתגרות</button>
     </div>
-    <div class="h-ssub" style="font-size:13px;margin-top:4px">אימון = 10 שאלות ברמה שבחרת · מעורב = 10 שאלות משתי רמות סמוכות · מבחן = 10 שאלות מאתגרות, ציון 80%+ מקפיץ את השליטה קדימה</div>
+    <div class="h-ssub" style="font-size:13px;margin-top:4px">🔀 סבב מעורב (10 שאלות משתי רמות סמוכות): בלי מטבעות, אבל נחשב יום למידה · מופיע כשהגעת לרמה 2 ומעלה. 📝 מבחן (10 שאלות מאתגרות): +10 🪙 מציון 80% ומעלה · 80%+ מקפיץ את השליטה קדימה · נחשב יום למידה.</div>
     <div class="h-lab">🎓 הכנה כוללת — הספר הנוכחי, רמות 4–8:</div>
     <select id="hubPrepUpTo" class="h-sel"></select>
     <div class="h-rowbtns">
       <button class="btn btn-ghost" onclick="hubStart('prep')">📚 התחלת הכנה כוללת (15 שאלות)</button>
+    </div>
+    <div class="h-ssub" style="font-size:13px;margin-top:4px">📚 הכנה כוללת (15 שאלות): בלי מטבעות, אבל נחשבת יום למידה.</div>
     </div>
     <div class="parents" style="margin-top:14px">
       <div style="font-weight:800">👨‍👩‍👧 להורים — טיפים לנושא הנבחר</div>
@@ -553,6 +561,7 @@ a:focus-visible {
     <div id="hubEndEmoji" style="font-size:52px"></div>
     <div id="hubEndTitle" style="font-size:24px;font-weight:800"></div>
     <div id="hubEndScore" style="font-size:19px;margin-top:4px"></div>
+    <div id="hubEndCoins" style="text-align:right;margin-top:6px"></div>
     <div style="text-align:right;margin-top:14px">
       <div id="hubEndTips"></div>
       <div style="font-weight:800;margin-top:12px">📊 איך הלך לפי סוגי שאלות</div>
@@ -585,6 +594,7 @@ a:focus-visible {
     </div>
     <div id="hubLearnDone" class="h-hidden" style="margin-top:12px">
       <div style="font-weight:800">🎉 סיימתם ללמוד! עכשיו בודקים שהבנתם:</div>
+      <div class="h-ssub" style="font-size:14px">🎈 הלימוד הוא רק לכיף — בלי מטבעות ובלי יום למידה.</div>
       <div class="h-rowbtns">
         <button class="btn btn-main" onclick="hubLearnToTrain()">▶️ לאימון</button>
         <button class="btn" onclick="hubLearnToTest()">📝 ישר למבחן</button>
@@ -609,6 +619,13 @@ a:focus-visible {
       <button class="btn" onclick="hubMarkCard(true)">✓ ידעתי</button>
       <button class="btn" onclick="hubMarkCard(false)">✗ לא ידעתי</button>
     </div>
+    <div id="hubCardEnd" class="h-hidden" style="margin-top:12px">
+      <div class="h-ssub" style="font-size:14px">🎈 הכרטיסיות הן רק לכיף — בלי מטבעות ובלי יום למידה. חזרה עליהן עוזרת לזכור, והאימון הוא שנותן מטבעות.</div>
+      <div class="h-rowbtns" style="justify-content:center">
+        <button class="btn btn-main" onclick="hubCardsToTrain()">▶️ לאימון באותו נושא</button>
+        <button class="btn" onclick="hubAgain()">← חזרה לנושאים</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -622,6 +639,13 @@ a:focus-visible {
     <div id="hubMatchWords" class="opts"></div>
     <div class="h-lab">פירושים:</div>
     <div id="hubMatchMeanings" class="opts"></div>
+    <div id="hubMatchEnd" class="h-hidden" style="margin-top:12px">
+      <div class="h-ssub" style="font-size:14px">🎈 ההתאמה היא רק לכיף — בלי מטבעות ובלי יום למידה.</div>
+      <div class="h-rowbtns">
+        <button class="btn btn-main" onclick="hubOpenMatch()">🔄 סבב התאמה חדש</button>
+        <button class="btn" onclick="hubAgain()">← חזרה לנושאים</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -637,9 +661,19 @@ a:focus-visible {
     </div>
     <input id="hubDictInput" class="h-dictin" dir="ltr" placeholder="Type the word here..." autocomplete="off">
     <div id="hubDictFb"></div>
-    <div class="h-rowbtns">
+    <div class="h-rowbtns" id="hubDictBtns">
       <button class="btn btn-main" onclick="hubCheckDict()">בדיקה ✓</button>
       <button class="btn" onclick="hubNextDictWord()">מילה הבאה ←</button>
+      <button class="btn" onclick="hubDictFinish()">🏁 סיום</button>
+    </div>
+    <div id="hubDictEnd" class="h-hidden" style="margin-top:12px">
+      <div style="font-size:19px;font-weight:800">🎉 סיימת את ההכתבה!</div>
+      <div id="hubDictEndScore" class="h-ssub" style="font-size:14px"></div>
+      <div class="h-ssub" style="font-size:14px">🎈 ההכתבה היא רק לכיף — בלי מטבעות ובלי יום למידה.</div>
+      <div class="h-rowbtns">
+        <button class="btn btn-main" onclick="hubDictResume()">🎧 עוד מילים</button>
+        <button class="btn" onclick="hubAgain()">← חזרה לנושאים</button>
+      </div>
     </div>
   </div>
 </div>
@@ -653,9 +687,19 @@ a:focus-visible {
     <div id="hubTypeMsg" style="margin-top:8px;font-size:16.5px"></div>
     <input id="hubTypeInput" class="h-dictin" placeholder="כתבו כאן..." autocomplete="off" style="margin-top:8px">
     <div id="hubTypeFb"></div>
-    <div class="h-rowbtns">
+    <div class="h-rowbtns" id="hubTypeBtns">
       <button class="btn btn-main" onclick="hubCheckType()">בדיקה ✓</button>
       <button class="btn" onclick="hubNextTypeItem()">הבא ←</button>
+      <button class="btn" onclick="hubTypeFinish()">🏁 סיום</button>
+    </div>
+    <div id="hubTypeEnd" class="h-hidden" style="margin-top:12px">
+      <div style="font-size:19px;font-weight:800">🎉 סיימת את ההקלדה!</div>
+      <div id="hubTypeEndScore" class="h-ssub" style="font-size:14px"></div>
+      <div class="h-ssub" style="font-size:14px">🎈 ההקלדה היא רק לכיף — בלי מטבעות ובלי יום למידה.</div>
+      <div class="h-rowbtns">
+        <button class="btn btn-main" onclick="hubTypeResume()">⌨️ עוד מילים</button>
+        <button class="btn" onclick="hubAgain()">← חזרה לנושאים</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1429,7 +1473,7 @@ function hubStartFocus(){
   if(!t)return;
   const qs=hubDrawType(t,hubFocusCtx.family,10,hubFocusCtx.level);
   if(!qs.length)return;
-  hubS={mode:'focus',topic:t,level:hubFocusCtx.level,qs,idx:0,correct:0,selected:-1,checked:false,answers:[]};
+  hubS={mode:'focus',topic:t,level:hubFocusCtx.level,qs,idx:0,correct:0,selected:-1,checked:false,answers:[],_c0:hubBank.coins,_awards:[]};
   hEl('hubQuizTitle').innerHTML=hubArtMini(hubSubj?hubSubj.id:'torah')+hEsc(t.name);
   hEl('hubQuizMode').textContent='סבב ממוקד · '+hubFocusCtx.family;
   hubShow('hubQuiz');hubRenderQ();
@@ -1482,7 +1526,7 @@ function hubWeekKey(){return hubWeekStart(hubToday());}
 function hubWkReset(){const k=hubWeekKey();if(!hubWk||hubWk.key!==k)hubWk={key:k,rounds:0,grads:0,reviews:0,coins:0,mastery:[],missTop:{},bonus:false,mathDays:{},mathQ:0};}
 function hubWeekDays(){const ws=hubWeekStart(hubToday());const out=[];for(let i=0;i<7;i++){const d=new Date(ws+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+i);const ds=d.toISOString().slice(0,10);out.push({ds,n:hubDays[ds]||0,future:ds>hubToday()});}return out;}
 function hubActiveDays(){return hubWeekDays().filter(x=>x.n>0).length;}
-function hubAward(amt,why){hubWkReset();hubBank.coins+=amt;hubWk.coins+=amt;hubBank.log.unshift({d:hubToday(),amt,why});if(hubBank.log.length>60)hubBank.log.length=60;}
+function hubAward(amt,why){hubWkReset();hubBank.coins+=amt;hubWk.coins+=amt;hubBank.log.unshift({d:hubToday(),amt,why});if(hubBank.log.length>60)hubBank.log.length=60;if(hubS&&hubS._awards)hubS._awards.push({amt:amt,why:why});}
 function hubMathAnswered(){
   if(window.hubGuest||!hubActiveId)return;
   try{
@@ -1516,7 +1560,7 @@ function hubGoalCancel(){hubGoalPick=false;hubRenderHome();}
 function hubSetGoal(kind,topicId){
   hubGoalPick=false;hubWkReset();const wk=hubWeekKey();
   if(kind==='topic'){const f=hubFindTopic(topicId);if(!f)return;hubGoal={wk,kind,topicId,base:hubTopicProg(topicId).mastery,target:1,label:'לעלות רמה בנושא '+f.topic.name};}
-  else if(kind==='grads')hubGoal={wk,kind,target:15,label:'15 שאלות שיבוגרו בחזרה מרווחת'};
+  else if(kind==='grads')hubGoal={wk,kind,target:15,label:'15 שאלות שיסיימו חיזוק'};
   else hubGoal={wk,kind:'rounds',target:8,label:'8 סבבי למידה השבוע'};
   hubSave();hubRenderHome();
 }
@@ -1535,7 +1579,7 @@ function hubShareWeek(){
   hubWkReset();const ad=hubActiveDays();const gi=hubGoalInfo();
   const mg=hubWk.mastery.length?hubWk.mastery.join(', '):'—';
   const txt='📊 הסיכום השבועי שלי — מרכז הלמידה כיתה ו׳\n'
-    +'• ימי למידה השבוע: '+ad+'\n• סבבים שסיימתי: '+hubWk.rounds+'\n• שאלות שבוגרו בחזרה מרווחת: '+hubWk.grads+'\n'
+    +'• ימי למידה השבוע: '+ad+'\n• סבבים שסיימתי: '+hubWk.rounds+'\n• שאלות שסיימו חיזוק: '+hubWk.grads+'\n'
     +'• עליות שליטה: '+mg+'\n• בבנק הידע: '+hubBank.coins+' מטבעות (+'+hubWk.coins+' השבוע)\n'
     +(gi?('• היעד השבועי שלי: '+gi.g.label+' — '+(gi.done?'הושג! ✔':'התקדמות '+Math.min(gi.cur,gi.g.target)+'/'+gi.g.target))+'\n':'')
     +((hubWk.mathQ||0)>0?('• חשבון השבוע: '+Object.keys(hubWk.mathDays||{}).length+' ימי חשבון · '+hubWk.mathQ+' שאלות\n'):'')
@@ -1631,11 +1675,11 @@ function hubRenderParent(){
     +(profMsg?'<div class="fb good">'+hEsc(profMsg)+'</div>':'')
     +'<div id="hubProfPanel" class="h-sharebox h-hidden"></div>'
     +'<div class="h-bankcard"><div style="font-size:19px;font-weight:800">🏦 בנק הידע</div><div style="font-size:30px;font-weight:800;margin:4px 0">'+hubBank.coins+' מטבעות</div>'
-    +'<div class="h-ssub">השבוע נכנסו +'+hubWk.coins+' מטבעות. מטבעות נצברים רק על למידה מאומתת: שאלה שבוגרה בחזרה מרווחת (+3), עליית שליטה (+15), סבב אימון שהושלם (+2), סבב חיזוק שהושלם בציון 50%+ (+5), מבחן מעל 80% (+10), בונוס 4 ימי למידה בשבוע (+20). צ׳ופר אחד = 50 מטבעות, והמימוש באישורכם כאן במסך.</div></div>'
+    +'<div class="h-ssub">השבוע נכנסו +'+hubWk.coins+' מטבעות. מטבעות נצברים רק על למידה מאומתת: שאלה שסיימה חיזוק (+3), עליית שליטה (+15), סבב אימון שהושלם (+2), סבב חיזוק שהושלם בציון 50%+ (+5), מבחן מעל 80% (+10), בונוס 4 ימי למידה בשבוע (+20). צ׳ופר אחד = 50 מטבעות, והמימוש באישורכם כאן במסך.</div></div>'
     +'<div class="h-lab">השבוע (ראשון–שבת)</div>'
     +'<div class="h-typerow"><span>ימי למידה</span><span><b>'+ad+'</b> מתוך 7</span></div>'
     +'<div class="h-typerow"><span>סבבים שהושלמו</span><span><b>'+hubWk.rounds+'</b></span></div>'
-    +'<div class="h-typerow"><span>שאלות שבוגרו (נזכרו נכון גם אחרי ימים)</span><span><b>'+hubWk.grads+'</b></span></div>'
+    +'<div class="h-typerow"><span>שאלות שסיימו חיזוק (נזכרו נכון גם אחרי ימים)</span><span><b>'+hubWk.grads+'</b></span></div>'
     +'<div class="h-typerow"><span>תשובות נכונות בסבבי חיזוק</span><span><b>'+hubWk.reviews+'</b></span></div>'
     +((hubWk.mathQ||0)>0?'<div class="h-typerow"><span>שאלות חשבון שנענו השבוע</span><span><b>'+hubWk.mathQ+'</b></span></div><div class="h-typerow"><span>ימי חשבון השבוע</span><span><b>'+Object.keys(hubWk.mathDays||{}).length+'</b></span></div>':'')
     +(gi?'<div class="h-typerow"><span>היעד השבועי שהוא בחר</span><span>'+hEsc(gi.g.label)+' · '+Math.min(gi.cur,gi.g.target)+'/'+gi.g.target+(gi.done?' ✔':'')+'</span></div>':'')
@@ -1754,7 +1798,7 @@ function hubAddMiss(tid,qtext){if(!hubMiss[tid])hubMiss[tid]={};const it=hubMiss
 function hubReviewSuccess(tid,qtext){const m=hubMiss[tid];if(!m||!m[qtext])return;const it=m[qtext];const td=hubToday();
   if(it.ld===td)return; // same-day repeats do not advance the stage — real spacing
   it.ld=td;it.st=(it.st||0)+1;
-  if(it.st>=2){hubWkReset();hubWk.grads++;hubAward(3,'שאלה בוגרה בחזרה מרווחת');delete m[qtext];if(!Object.keys(m).length)delete hubMiss[tid];}
+  if(it.st>=2){hubWkReset();hubWk.grads++;hubAward(3,'שאלה סיימה חיזוק');delete m[qtext];if(!Object.keys(m).length)delete hubMiss[tid];}
   else it.due=hubDayPlusMs(it.st===1?3:7);}
 function hubReviewFail(tid,qtext){const m=hubMiss[tid];if(!m||!m[qtext])return;const it=m[qtext];it.st=0;it.ld=hubToday();it.due=hubDayPlusMs(1);}
 function hubClearMiss(tid,qtext){hubReviewSuccess(tid,qtext);}
@@ -1782,12 +1826,48 @@ function hubDailyTopics(){
   return [a,b];
 }
 function hubDailyTopic(){return hubDailyTopics()[0];}
+let hubDailyOpen=false;
+function hubToggleDaily(){hubDailyOpen=!hubDailyOpen;hubRenderHome();}
+let hubMoreOpen=false;
+function hubToggleMore(){hubMoreOpen=!hubMoreOpen;const m=hEl('hubMoreModes');if(m)m.classList.toggle('h-hidden',!hubMoreOpen);const b=hEl('hubMoreBtn');if(b)b.textContent=hubMoreOpen?'➖ פחות דרכים לתרגל':'➕ עוד דרכים לתרגל';}
 function hubStartDue(){
   let best=null,bn=0;
   for(const s of HUB_SUBJECTS){if(!s.books)continue;for(const b of s.books)for(const t of b.topics){const d=hubDueCount(t.id);if(d>bn){bn=d;best=t;}}}
   if(!best)return;const f=hubFindTopic(best.id);if(!f)return;
   hubSubj=f.subj;hubBookIdx=f.bookIdx;hubRenderSubject();
   hEl('hubTopicSel').value=best.id;hubTopicChanged();hubStart('review');
+}
+// ---------- math continuity (stage 3.2): read-only from math progress data ----------
+// The math kit keeps its own progress (mathProgV1:<base>:<profile>); the hub only
+// reads it here — no math storage or rules change.
+function hubMathCont(){
+  const md=hubMathProgress();
+  const cands=md.rows.filter(r=>r.answered>0&&!r.mastered);
+  if(!cands.length)return null;
+  cands.sort((a,b)=>(b.level-a.level)||(b.answered-a.answered));
+  return cands[0];
+}
+function hubMathDaily(){
+  let all=[];try{all=Object.values(BOOKLETS).flatMap(b=>b.topics);}catch(e){return null;}
+  if(!all.length)return null;
+  const seed=parseInt(new Date().toISOString().slice(0,10).replace(/-/g,''),10);
+  const md=hubMathProgress();const done=new Set(md.rows.filter(r=>r.mastered).map(r=>r.key));
+  const open=all.filter(d=>!done.has(d.id));
+  const pool=open.length?open:all;
+  return pool[seed%pool.length];
+}
+function hubMathStartTopic(id){
+  if(typeof selectTopic!=='function')return;
+  try{
+    for(const k of Object.keys(BOOKLETS)){
+      if(BOOKLETS[k].topics.some(t=>t.id===id)){
+        const kk=isNaN(+k)?k:+k;
+        if(typeof curBooklet!=='undefined'&&curBooklet!==kk&&typeof setBooklet==='function')setBooklet(kk);
+        break;
+      }
+    }
+  }catch(e){}
+  hubOpenMath();selectTopic(id);
 }
 function hubRenderHome(){
   const cont=hEl('hubHomeTop');let th='';
@@ -1802,16 +1882,20 @@ function hubRenderHome(){
   // compact action chips only — no full-width suggestion rows on home (user feedback: visual clutter)
   let chips='';
   if(window.hubGuest)chips+='<button class="btn btn-ghost" onclick="hubExitGuest()">🎭 מצב אורח · סיום וחזרה</button>';
-  let quiet='<div class="h-rowbtns"><button class="btn btn-ghost" onclick="hubStartDaily()">🎯 נושא יומי</button>';
+  let quiet='<div class="h-rowbtns"><button class="btn btn-ghost" onclick="hubToggleDaily()">🎯 נושא יומי</button>';
   if(dueTot>0)quiet+='<button class="btn btn-ghost" onclick="hubStartDue()">🔁 '+dueTot+' שאלות לחיזוק היום</button>';
   quiet+='</div>';
   if(hasCont){const f=hubFindTopic(hubLast.topic);const cp=hubTopicProg(f.topic.id);
     th+='<div class="h-cont">'+HUB_MASCOT.replace('h-mascot','h-mascot h-mascot-small')+'<div style="font-size:20px;font-weight:800">▶️ ממשיכים מאיפה שהפסקת</div><div class="h-ssub" style="margin-top:4px">'+hEsc(f.topic.name)+' · רמה '+Math.min(8,cp.mastery+1)+' · '+hEsc(f.subj.name)+'</div><div class="h-rowbtns"><button class="btn btn-main h-primary-full" onclick="hubContinue()">▶️ המשך: '+hEsc(f.topic.name)+'</button></div></div>';}
   th+=quiet;
+  if(!window.hubGuest){const toGo=Math.max(0,50-hubBank.coins);th+='<div class="h-tip">🪙 יש לך <b>'+hubBank.coins+' מטבעות</b>'+(toGo>0?' — עוד '+toGo+' מטבעות לצ׳ופר 🎁':' — אפשר לבקש צ׳ופר! 🎁')+' · איך מרוויחים: אימון +2, חיזוק +5 (מציון 50% ומעלה), מבחן מעל 80% +10, עליית רמה +15.</div>';}
+  if(hubDailyOpen){const d0=dailies[0],d1=dailies[1];const f0=hubFindTopic(d0.id),f1=hubFindTopic(d1.id);
+    th+='<div class="h-tip" style="background:#eef7ee;border-color:#9fd8ae">🎯 <b>הנושא היומי:</b> '+hEsc(d0.name)+' · '+hEsc(f0.subj.name)+' · רמה '+Math.min(8,hubTopicProg(d0.id).mastery+1)+'<div class="h-rowbtns"><button class="btn btn-main" onclick="hubStartDaily(\''+d0.id+'\')">▶️ התחל אימון בנושא היומי</button></div>'
+    +'<div style="margin-top:8px">📌 <b>גם כדאי היום:</b> '+hEsc(d1.name)+' · '+hEsc(f1.subj.name)+' · רמה '+Math.min(8,hubTopicProg(d1.id).mastery+1)+'</div><div class="h-rowbtns"><button class="btn btn-ghost" onclick="hubStartDaily(\''+d1.id+'\')">▶️ התחל אימון</button><button class="btn btn-ghost" onclick="hubToggleDaily()">✖️ לא עכשיו</button></div></div>';}
   th+='<div class="h-weekstrip">'
     +'<div style="margin-top:6px">השבוע: '+dots+' <span class="h-ssub">'+ad+' ימי למידה'+(ad>=4?' · הבונוס השבועי (+20) כבר נכנס ✔':' · עוד '+(4-ad)+' ימי למידה לבונוס +20')+'</span></div>'
     +((gi&&!hubGoalPick)?'<div style="margin-top:8px">🎯 היעד שלי השבוע: <b>'+hEsc(gi.g.label)+'</b><div class="h-goalbar"><div style="width:'+Math.min(100,Math.round(gi.cur/gi.g.target*100))+'%"></div></div><span class="h-ssub">'+Math.min(gi.cur,gi.g.target)+'/'+gi.g.target+(gi.done?' · הושג! 🎉':'')+'</span> <button class="btn" onclick="hubGoalSwap()">🔄 החלף יעד</button></div>'
-       :'<div style="margin-top:8px"><span class="h-ssub">🎯 '+((hubGoal&&hubGoal.wk===hubWeekKey())?'בחירת יעד אחר:':'יעד לשבוע הזה:')+'</span> <span class="h-rowbtns" style="display:inline-flex;margin-top:0;vertical-align:middle">'+((hubGoal&&hubGoal.wk===hubWeekKey())?'<button class="btn" onclick="hubGoalCancel()">↩️ בלי שינוי</button>':'')+dailies.slice(0,1).map(dt=>'<button class="btn" onclick="hubSetGoal(\'topic\',\''+dt.id+'\')">לעלות רמה ב'+hEsc(dt.name)+'</button>').join('')+'<button class="btn" onclick="hubSetGoal(\'grads\')">15 שאלות שיבוגרו</button><button class="btn" onclick="hubSetGoal(\'rounds\')">8 סבבים</button></span></div>')
+       :'<div style="margin-top:8px"><span class="h-ssub">🎯 '+((hubGoal&&hubGoal.wk===hubWeekKey())?'בחירת יעד אחר:':'יעד לשבוע הזה:')+'</span> <span class="h-rowbtns" style="display:inline-flex;margin-top:0;vertical-align:middle">'+((hubGoal&&hubGoal.wk===hubWeekKey())?'<button class="btn" onclick="hubGoalCancel()">↩️ בלי שינוי</button>':'')+dailies.slice(0,1).map(dt=>'<button class="btn" onclick="hubSetGoal(\'topic\',\''+dt.id+'\')">לעלות רמה ב'+hEsc(dt.name)+'</button>').join('')+'<button class="btn" onclick="hubSetGoal(\'grads\')">15 שאלות שיסיימו חיזוק</button><button class="btn" onclick="hubSetGoal(\'rounds\')">8 סבבים</button></span></div>')
     +(window.hubGuest?'<div style="margin-top:8px" class="h-ssub">🎭 מצב אורח — ההתקדמות, המטבעות והחשבון לא נשמרים. כדי לשמור התקדמות, צרו פרופיל. מסך להורה, סיכום שבועי ובקשת צ׳ופר זמינים רק עם פרופיל.</div>':'')
     +'<div class="h-rowbtns">'+chips+''
     +(window.hubGuest?'':(hubBank.reqs.some(r=>r.st==='pending')?'<span class="h-ssub" style="align-self:center">🎁 בקשת הצ׳ופר ממתינה לאישור הורה</span>':(hubBank.coins>=50?'<button class="btn btn-ghost" onclick="hubReqReward()">🎁 בקש צ׳ופר (50 🪙)</button>':'')))
@@ -1821,7 +1905,11 @@ function hubRenderHome(){
   const grid=hEl('hubGrid');let html='';
   for(const s of HUB_SUBJECTS){
     if(s.special==='math'){
-      html+='<button class="h-scard" onclick="hubOpenMath()">'+hubArt('math')+'<div class="h-sname">חשבון</div><div class="h-ssub">3 חוברות · 21 נושאים</div></button>';
+      const mc=hubMathCont();const md2=hubMathDaily();
+      let mathExtra='';
+      if(mc)mathExtra+='<div class="h-rowbtns" style="margin-top:6px"><button class="btn btn-main" onclick="hubMathStartTopic(\''+mc.key+'\')">▶️ המשך בחשבון: '+hEsc(mc.label)+' · רמה '+(mc.level+1)+'</button></div>';
+      if(md2)mathExtra+='<div class="h-rowbtns" style="margin-top:6px"><button class="btn btn-ghost" onclick="hubMathStartTopic(\''+md2.id+'\')">🎯 הנושא היומי בחשבון: '+hEsc(md2.name)+'</button></div>';
+      html+='<div style="display:flex;flex-direction:column;gap:8px"><button class="h-scard" style="width:100%" onclick="hubOpenMath()">'+hubArt('math')+'<div class="h-sname">חשבון</div><div class="h-ssub">3 חוברות · 21 נושאים</div></button>'+mathExtra+'</div>';
       continue;
     }
     const books=s.books.length;
@@ -1832,15 +1920,16 @@ function hubRenderHome(){
     html+='<button class="h-scard" onclick="hubOpenSubject(\''+s.id+'\')">'+hubArt(s.id)+'<div class="h-sname">'+hEsc(s.name)+'</div><div class="h-ssub">'+(books>1?books+' ספרים · ':'')+topics+' נושאים</div><div class="h-sprog">'+progLine+'</div></button>';
   }
   grid.innerHTML=html;
-  var tc=document.getElementById('hubTopCoins');if(tc){tc.classList.toggle('h-hidden',!!window.hubGuest);tc.textContent=window.hubGuest?'🎭 אורח':'🪙 '+hubBank.coins;}
+  var tc=document.getElementById('hubTopCoins');if(tc){tc.classList.toggle('h-hidden',!!window.hubGuest);tc.textContent=window.hubGuest?'🎭 אורח':'🪙 '+hubBank.coins+'/50';}
 }
 
 function hubContinue(){
   if(!hubLast)return;const f=hubFindTopic(hubLast.topic);if(!f)return;
   hubSubj=f.subj;hubBookIdx=f.bookIdx;hubRenderSubject();
-  hEl('hubTopicSel').value=f.topic.id;hubTopicChanged();hubShow('hubSubject');
+  hEl('hubTopicSel').value=f.topic.id;hubTopicChanged();hubStart('train'); // stage 3.2: continue starts the training round itself
 }
 function hubStartDaily(tid){
+  hubDailyOpen=false;
   const t=tid?hubFindTopic(tid).topic:hubDailyTopic();const f=hubFindTopic(t.id);if(!f)return;
   hubSubj=f.subj;hubBookIdx=f.bookIdx;hubRenderSubject();
   hEl('hubTopicSel').value=t.id;hubTopicChanged();
@@ -1849,7 +1938,7 @@ function hubStartDaily(tid){
   hubStart('train');
 }
 function hubOpenMath(){hubShow('mathWrap');}
-function hubCloseMath(){hubShow('hubHome');}
+function hubCloseMath(){hubRenderHome();hubShow('hubHome');}
 function hubOpenSubject(id){
   hubSubj=HUB_SUBJECTS.find(s=>s.id===id);hubBookIdx=0;
   hubRenderSubject();hubShow('hubSubject');
@@ -1893,6 +1982,7 @@ function hubTopicChanged(){
   hEl('hubDictBtn').classList.toggle('h-hidden',!isVocab);
   hEl('hubTypeBtn').classList.toggle('h-hidden',!(t.id==='heb-root'||t.id==='heb-syn'));
   const p=hubTopicProg(t.id);
+  hEl('hubMixedBtn').classList.toggle('h-hidden',p.mastery===0); // stage 3.1: mixed == train while mastery is 0, so it is not offered
   hEl('hubTopicDesc').textContent=t.desc||'';
   hEl('hubTopicTips').innerHTML=t.tips||'';
   hEl('hubTopicStars').innerHTML=hStars(p.mastery);
@@ -1954,7 +2044,7 @@ function hubRenderLearnDone(){
   const L=hubL;L.phase='done';
   hEl('hubLearnCount').textContent='סיימתם את הלימוד ✓';
   hEl('hubLearnCardT').textContent='🎉 עברתם את כל בדיקות ההבנה!';
-  hEl('hubLearnBody').innerHTML='<p>🗣️ לפני שממשיכים: נסו להסביר בקול רם, במשפט אחד, מה למדתם בנושא הזה — הסבר בקול נועל את החומר בזיכרון.</p><p>עכשיו בודקים שהחומר נקלט באמת — באימון קצר, או ישר במבחן.</p>';
+  hEl('hubLearnBody').innerHTML='<p>🗣️ לפני שממשיכים: נסו להסביר בקול רם, במשפט אחד, מה למדתם בנושא הזה — הסבר בקול נועל את החומר בזיכרון.</p><p>עכשיו בודקים שהחומר נקלט באמת — באימון קצר, או ישר במבחן.</p><p>🎈 הלימוד עצמו הוא רק לכיף — בלי מטבעות ובלי יום למידה. סיימת '+L.topic.learn.length+' כרטיסים ו־'+L.checks.length+' בדיקות הבנה.</p>';
   hEl('hubLearnCheck').innerHTML='';hEl('hubLearnDots').innerHTML='';
   hEl('hubLearnPrev').classList.add('h-hidden');hEl('hubLearnNext').classList.add('h-hidden');
   hEl('hubLearnDone').classList.remove('h-hidden');
@@ -1988,7 +2078,7 @@ function hubStart(mode){
     qs.sort((a,b)=>((miss[a.q].due||0)-(miss[b.q].due||0)));
     qs=qs.slice(0,10);
     label='חיזוק · '+qs.length+' שאלות ששווה לראות שוב';
-    if(!qs.length){hEl('hubTopicDesc').innerHTML='<div class="center">'+HUB_ART_EMPTY+'<div>🎉 אין שאלות לחיזוק — הכול בוגר ומוכן!</div></div>';window.scrollTo(0,0);return;}
+    if(!qs.length){hEl('hubTopicDesc').innerHTML='<div class="center">'+HUB_ART_EMPTY+'<div>🎉 אין שאלות לחיזוק — הכול הושלם!</div></div>';window.scrollTo(0,0);return;}
   }else if(mode==='train'){
     qs=hubDraw(t,[lvl],10);
     const widened=qs.some(q=>q.lvl!==lvl);
@@ -2020,7 +2110,7 @@ function hubStart(mode){
     hubS_prepTopics=topics;
   }
   if(!qs.length){hEl('hubTopicDesc').textContent='⚠️ אין עדיין שאלות במצב הזה בנושא הזה — נסו רמה אחרת או מצב אחר.';window.scrollTo(0,0);return;}
-  hubS={mode,topic:t,level:lvl,qs,idx:0,correct:0,selected:-1,checked:false,answers:[],testTop,_lastPsg:-1,_psgOpen:false,_spoke:-1,_c0:hubBank.coins,stars:0};
+  hubS={mode,topic:t,level:lvl,qs,idx:0,correct:0,selected:-1,checked:false,answers:[],testTop,_lastPsg:-1,_psgOpen:false,_spoke:-1,_c0:hubBank.coins,stars:0,_awards:[]};
   hEl('hubQuizTitle').innerHTML=hubArtMini(hubSubj?hubSubj.id:'torah')+hEsc(t.name);
   hEl('hubQuizMode').textContent=label;
   hubShow('hubQuiz');hubRenderQ();
@@ -2180,6 +2270,25 @@ function hubAnalyze(S){
   if(!tips.length)tips.push('המשך כך — אימון קבוע קצר עדיף על מרתון חד־פעמי.');
   return {byType,types,weak,strong,score,tips:tips.slice(0,2)};
 }
+function hubRenderCoinsBreakdown(S,bankDelta){
+  const el=hEl('hubEndCoins');if(!el)return;
+  const toGo=Math.max(0,50-hubBank.coins);
+  const balRow='<div class="h-typerow"><span>יתרה עכשיו</span><span><b>'+hubBank.coins+' 🪙</b>'+(window.hubGuest?' · מצב אורח — לא נשמר':(toGo>0?' · עוד '+toGo+' לצ׳ופר 🎁':' · אפשר לבקש צ׳ופר! 🎁'))+'</span></div>';
+  const aw=(S._awards||[]);
+  if(aw.length){
+    el.innerHTML='<div style="font-weight:800;margin-top:12px">🪙 מטבעות בסבב הזה: +'+bankDelta+'</div>'
+      +aw.map(a=>'<div class="h-typerow"><span>'+hEsc(a.why)+'</span><span>+'+a.amt+' 🪙</span></div>').join('')
+      +balRow;
+  }else{
+    const why=S.mode==='mixed'?'סבב מעורב הוא תרגול בלי מטבעות — אבל הוא נחשב יום למידה.'
+      :S.mode==='prep'?'ההכנה הכוללת היא תרגול בלי מטבעות — אבל היא נחשבת יום למידה.'
+      :S.mode==='focus'?'סבב ממוקד הוא תרגול בלי מטבעות — אבל הוא נחשב יום למידה.'
+      :S.mode==='test'?'מבחן נותן +10 מטבעות רק מציון 80% ומעלה.'
+      :S.mode==='review'?'סבב חיזוק נותן +5 מטבעות רק מציון 50% ומעלה.'
+      :'אין מטבעות בסבב הזה.';
+    el.innerHTML='<div class="h-tip">🪙 '+why+'</div>'+balRow;
+  }
+}
 function hubFinish(){
   const S=hubS;const an=hubAnalyze(S);
   const td=hubToday();hubDays[td]=(hubDays[td]||0)+1;
@@ -2235,8 +2344,8 @@ function hubFinish(){
   hEl('hubEndTypes').innerHTML=rows||'';
   const lvlUp=(S.mode!=='prep'&&hubTopicProg(S.topic.id)._leveledUp)?'<div class="h-tip" style="background:#e4f8e9;border-color:#9fd8ae">🎉 עלית לרמה '+(hubTopicProg(S.topic.id).mastery+1)+' בנושא הזה!</div>':'';
   const bankDelta=hubBank.coins-(S._c0||0);
-  const bankLine=bankDelta>0?'<div class="h-tip" style="background:#e8fbef;border-color:#9fd8ae">🏦 +'+bankDelta+' מטבעות ידע נכנסו לבנק! היתרה עכשיו: '+hubBank.coins+' מטבעות</div>':'';
-  hEl('hubEndTips').innerHTML=lvlUp+bankLine+an.tips.map(t=>'<div class="h-tip">💡 '+hEsc(t)+'</div>').join('')+(an.strong?'<div class="h-tip">⭐ חזק במיוחד: "'+hEsc(an.strong.type)+'" — כל התשובות נכונות!</div>':'');
+  hEl('hubEndTips').innerHTML=lvlUp+an.tips.map(t=>'<div class="h-tip">💡 '+hEsc(t)+'</div>').join('')+(an.strong?'<div class="h-tip">⭐ חזק במיוחד: "'+hEsc(an.strong.type)+'" — כל התשובות נכונות!</div>':'');
+  hubRenderCoinsBreakdown(S,bankDelta);
   hEl('hubEndNext').innerHTML=nextHtml;
   if((hubDays[td]||0)>=3)hEl('hubEndTips').innerHTML+='<div class="h-tip">🌙 זהו הסבב ה־'+hubDays[td]+' היום — מנוחה ושינה עוזרות לזיכרון. אפשר לעצור כאן בכיף ולחזור מחר.</div>';
   const celeb=(S.mode!=='prep'&&hubTopicProg(S.topic.id)._leveledUp&&hubTopicProg(S.topic.id).mastery>=8)||an.score===100;
@@ -2245,14 +2354,14 @@ function hubFinish(){
 }
 function hubAgain(){
   if(hubSubj){hubRenderSubject();hubShow('hubSubject');}
-  else hubShow('hubHome');
+  else{hubRenderHome();hubShow('hubHome');}
 }
 function hubAgainTrain(){
   if(!hubLast)return;const f=hubFindTopic(hubLast.topic);if(!f)return;
   hubSubj=f.subj;hubBookIdx=f.bookIdx;hubRenderSubject();
   hEl('hubTopicSel').value=f.topic.id;hubTopicChanged();hubStart('train');
 }
-function hubHomeFromEnd(){hubShow('hubHome');}
+function hubHomeFromEnd(){hubRenderHome();hubShow('hubHome');}
 function hubShare(){
   const url='https://netanel485-hue.github.io/grade6-learning/';
   if(navigator.share){navigator.share({title:'מרכז הלמידה — כיתה ו׳',text:'מרכז למידה אינטראקטיבי לכל מקצועות כיתה ו׳',url}).catch(()=>hubSharePanel(url));}
@@ -2317,11 +2426,12 @@ function hubOpenCards(){
   const first=hShuffle(miss).slice(0,5);
   const rest=hubDraw(t,[lvl],10,new Set(first.map(q=>q.q)));
   const qs=first.concat(rest).slice(0,10);if(!qs.length){hEl('hubTopicDesc').textContent='⚠️ אין עדיין שאלות במצב הזה בנושא הזה — נסו רמה אחרת או מצב אחר.';window.scrollTo(0,0);return;}
-  hubC={topic:t,qs,idx:0,stage:0,known:0};
+  hubC={topic:t,qs,idx:0,stage:0,known:0,_c0:hubBank.coins};
   hubShow('hubCards');hubRenderCard();
 }
 function hubRenderCard(){
   const C=hubC,q=C.qs[C.idx];
+  const ce=hEl('hubCardEnd');if(ce)ce.classList.add('h-hidden');
   hEl('hubCardCount').textContent='כרטיס '+(C.idx+1)+' מתוך '+C.qs.length+' · ידעתי: '+C.known+' · קודם עונים בלב 🧠, ורק אז הופכים';
   hEl('hubCardFront').textContent=q.q;
   hEl('hubCardBack').textContent=q.opts[q.a];
@@ -2354,10 +2464,13 @@ function hubMarkCard(known){
   else hubAddMiss(C.topic.id,q.q);
   hubSave();
   if(C.idx<C.qs.length-1){C.idx++;hubRenderCard();}
-  else{hEl('hubCardFront').textContent='סיימת! ידעת '+C.known+' מתוך '+C.qs.length+' 🎉';
+  else{const delta=hubBank.coins-(C._c0||0);
+    hEl('hubCardFront').textContent='🎉 סיימת את הכרטיסיות! ידעת '+C.known+' מתוך '+C.qs.length;
     hEl('hubCardBack').classList.add('h-hidden');hEl('hubCardExp').classList.add('h-hidden');hEl('hubCardWhyBtn').classList.add('h-hidden');hEl('hubCardMark').classList.add('h-hidden');hEl('hubCardFlipBtn').classList.add('h-hidden');
-    hEl('hubCardCount').textContent='אפשר לחזור לנושא או לעשות סבב נוסף';}
+    hEl('hubCardCount').textContent='🎈 רק לכיף, בלי קרדיט — לא מטבעות ולא יום למידה'+(delta>0?' · בונוס חיזוק: +'+delta+' 🪙 (שאלה שסיימה חיזוק)':'');
+    const ce=hEl('hubCardEnd');if(ce)ce.classList.remove('h-hidden');}
 }
+function hubCardsToTrain(){if(!hubC)return;const f=hubFindTopic(hubC.topic.id);if(!f)return;hubSubj=f.subj;hubBookIdx=f.bookIdx;hubRenderSubject();hEl('hubTopicSel').value=f.topic.id;hubTopicChanged();hubStart('train');}
 // ---------- english vocab: matching + dictation ----------
 const HUB_VOCAB_BANKS={'eng-vocab-home':()=>ENG_VOCAB_HOME,'eng-vocab-school':()=>ENG_VOCAB_SCHOOL,'eng-vocab-nature':()=>ENG_VOCAB_NATURE};
 let hubM=null;
@@ -2370,6 +2483,7 @@ function hubOpenMatch(){
 }
 function hubRenderMatch(){
   const M=hubM;
+  const me0=hEl('hubMatchEnd');if(me0&&M.done<M.words.length)me0.classList.add('h-hidden');
   hEl('hubMatchScore').textContent='הותאמו: '+M.done+' מתוך '+M.words.length;
   const wl=hEl('hubMatchWords'),ml=hEl('hubMatchMeanings');wl.innerHTML='';ml.innerHTML='';
   for(const w of M.words){const b=document.createElement('button');b.className='opt';b.textContent=w.en;b.setAttribute('dir','ltr');
@@ -2380,7 +2494,7 @@ function hubRenderMatch(){
     if(w._done)b.classList.add('correct');b.disabled=!!w._done;
     b.onclick=()=>{if(!M.picked)return;
       if(M.picked===w){w._done=true;M.done++;M.picked=null;hubRenderMatch();
-        if(M.done===M.words.length)hEl('hubMatchScore').textContent='🎉 כל הזוגות הותאמו!';}
+        if(M.done===M.words.length){hEl('hubMatchScore').textContent='🎉 כל הזוגות הותאמו!';const me=hEl('hubMatchEnd');if(me)me.classList.remove('h-hidden');}}
       else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),600);}};
     ml.appendChild(b);}
 }
@@ -2404,6 +2518,8 @@ function hubCheckDict(){
   else hEl('hubDictFb').innerHTML='<div class="fb bad">הכתיב הנכון: <b dir="ltr">'+D.word.en+'</b></div>';
   hEl('hubDictScore').textContent='נכון: '+D.score+' מתוך '+D.total;
 }
+function hubDictFinish(){const D=hubD;if(!D)return;hEl('hubDictEndScore').textContent='כתבת נכון '+D.score+' מתוך '+D.total+' מילים';hEl('hubDictInput').classList.add('h-hidden');hEl('hubDictBtns').classList.add('h-hidden');hEl('hubDictEnd').classList.remove('h-hidden');}
+function hubDictResume(){hEl('hubDictEnd').classList.add('h-hidden');hEl('hubDictInput').classList.remove('h-hidden');hEl('hubDictBtns').classList.remove('h-hidden');hubNextDictWord();}
 // ---------- hebrew free-typing (roots & synonyms) ----------
 let hubT=null;
 function hubTypeData(){const t=hubCurTopic();if(!t)return null;try{return t.id==='heb-root'?HEB_TYPE.root:HEB_TYPE.syn;}catch(e){return null;}}
@@ -2411,12 +2527,12 @@ function hubNormType(v){return String(v||'').replace(/[\u0591-\u05C7]/g,'').repl
 function hubOpenType(){
   const data=hubTypeData();if(!data||!data.length)return;
   const t=hubCurTopic();
-  hubT={data,item:null,score:0,total:0,kind:t.id==='heb-root'?'root':'syn',used:new Set()};
+  hubT={data,item:null,score:0,total:0,kind:t.id==='heb-root'?'root':'syn',used:new Set(),_done:false};
   hEl('hubTypeTitle').textContent=t.id==='heb-root'?'⌨️ הקלידו את השורש':'⌨️ הקלידו מילה נרדפת';
   hubShow('hubType');hubNextTypeItem();
 }
 function hubNextTypeItem(){
-  const D=hubT;let it=null,tries=0;
+  const D=hubT;if(!D||D._done)return;let it=null,tries=0;
   do{it=D.data[(Math.random()*D.data.length)|0];tries++;}while(D.used.has(it.w)&&tries<30&&D.used.size<D.data.length);
   D.item=it;D.used.add(it.w);
   hEl('hubTypeMsg').innerHTML=D.kind==='root'
@@ -2433,21 +2549,23 @@ function hubCheckType(){
   if(ok){D.score++;hEl('hubTypeFb').innerHTML='<div class="fb good">✅ נכון! '+hEsc(D.item.w)+' ← '+hEsc(D.item.a[0])+'</div>';}
   else hEl('hubTypeFb').innerHTML='<div class="fb bad">התשובה: <b>'+hEsc(D.item.a.join(' · '))+'</b> — נסו לזכור לפעם הבאה</div>';
   hEl('hubTypeScore').textContent='נכון: '+D.score+' מתוך '+D.total;
-  setTimeout(()=>{if(hubT===D)hubNextTypeItem();},1600);
+  setTimeout(()=>{if(hubT===D&&!D._done)hubNextTypeItem();},1600);
 }
+function hubTypeFinish(){const D=hubT;if(!D)return;D._done=true;hEl('hubTypeEndScore').textContent='ענית נכון על '+D.score+' מתוך '+D.total+' מילים';hEl('hubTypeInput').classList.add('h-hidden');hEl('hubTypeBtns').classList.add('h-hidden');hEl('hubTypeEnd').classList.remove('h-hidden');}
+function hubTypeResume(){const D=hubT;if(!D)return;D._done=false;hEl('hubTypeEnd').classList.add('h-hidden');hEl('hubTypeInput').classList.remove('h-hidden');hEl('hubTypeBtns').classList.remove('h-hidden');hubNextTypeItem();}
 // expose
-window.hubOpenMath=hubOpenMath;window.hubCloseMath=hubCloseMath;
+window.hubOpenMath=hubOpenMath;window.hubCloseMath=hubCloseMath;window.hubMathStartTopic=hubMathStartTopic;
 window.hubOpenSubject=hubOpenSubject;window.hubSetBook=hubSetBook;
 window.hubTopicChanged=hubTopicChanged;window.hubStart=hubStart;
 window.hubSelect=hubSelect;window.hubCheck=hubCheck;window.hubNext=hubNext;
 window.hubAgain=hubAgain;window.hubAgainTrain=hubAgainTrain;window.hubStartFocus=hubStartFocus;window.hubMathAnswered=hubMathAnswered;window.hubMathTestDone=hubMathTestDone;
-window.hubPickTopic=hubPickTopic;window.hubContinue=hubContinue;window.hubStartDaily=hubStartDaily;
+window.hubPickTopic=hubPickTopic;window.hubContinue=hubContinue;window.hubStartDaily=hubStartDaily;window.hubToggleDaily=hubToggleDaily;window.hubToggleMore=hubToggleMore;
 window.hubOpenLearn=hubOpenLearn;window.hubLearnNav=hubLearnNav;window.hubLearnToTrain=hubLearnToTrain;window.hubLearnToTest=hubLearnToTest;
 window.hubSpeakQ=hubSpeakQ;window.hubSpeak=hubSpeak;window.hubReportToggle=hubReportToggle;window.hubReportCopy=hubReportCopy;
-window.hubOpenCards=hubOpenCards;window.hubFlipCard=hubFlipCard;window.hubMarkCard=hubMarkCard;window.hubCardWhy=hubCardWhy;
+window.hubOpenCards=hubOpenCards;window.hubFlipCard=hubFlipCard;window.hubMarkCard=hubMarkCard;window.hubCardWhy=hubCardWhy;window.hubCardsToTrain=hubCardsToTrain;
 window.hubLearnSpeak=hubLearnSpeak;window.hubPsgToggle=hubPsgToggle;window.hubStartDue=hubStartDue;
-window.hubOpenMatch=hubOpenMatch;window.hubOpenDict=hubOpenDict;window.hubNextDictWord=hubNextDictWord;window.hubCheckDict=hubCheckDict;window.hubHomeFromEnd=hubHomeFromEnd;
-window.hubOpenType=hubOpenType;window.hubNextTypeItem=hubNextTypeItem;window.hubCheckType=hubCheckType;
+window.hubOpenMatch=hubOpenMatch;window.hubOpenDict=hubOpenDict;window.hubNextDictWord=hubNextDictWord;window.hubCheckDict=hubCheckDict;window.hubDictFinish=hubDictFinish;window.hubDictResume=hubDictResume;window.hubHomeFromEnd=hubHomeFromEnd;
+window.hubOpenType=hubOpenType;window.hubNextTypeItem=hubNextTypeItem;window.hubCheckType=hubCheckType;window.hubTypeFinish=hubTypeFinish;window.hubTypeResume=hubTypeResume;
 window.hubShare=hubShare;window.hubCopyShare=hubCopyShare;
 window.hubSetGoal=hubSetGoal;window.hubGoalSwap=hubGoalSwap;window.hubGoalCancel=hubGoalCancel;window.hubReqReward=hubReqReward;window.hubApproveReq=hubApproveReq;window.hubOpenMap=hubOpenMap;window.hubMapGo=hubMapGo;window.hubOpenParent=hubOpenParent;window.hubShareWeek=hubShareWeek;window.hubCopyWeek=hubCopyWeek;
 window.hubOpenProfiles=hubOpenProfiles;window.hubEnterGuest=hubEnterGuest;window.hubExitGuest=hubExitGuest;window.hubProfilesHome=hubProfilesHome;window.hubSelectProfile=hubSelectProfile;window.hubSetProfEmoji=hubSetProfEmoji;window.hubCreateProfile=hubCreateProfile;window.hubRenameProfile=hubRenameProfile;window.hubDeleteProfile=hubDeleteProfile;window.hubExportProfile=hubExportProfile;window.hubImportPanel=hubImportPanel;window.hubImportProfile=hubImportProfile;window.hubCopyProfCode=hubCopyProfCode;
