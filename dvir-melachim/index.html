@@ -177,6 +177,12 @@ details summary::-webkit-details-marker{color:#f59e0b}
 .video{background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:14px 18px;margin:14px 0}
 .vidwrap{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px;margin-top:10px}
 .vidwrap iframe{position:absolute;top:0;right:0;width:100%;height:100%;border:0}
+/* STAGE 4.6 (11/2026): segment entry points for the Tanach b'Click lessons (ch 19, 21) — display/UI only, no engine changes */
+.segs{margin-top:10px}
+.segs p{margin:0 0 8px;font-size:.92em;color:#1e40af}
+.seg{display:inline-block;background:#fff;color:#1e40af;border:2px solid #bfdbfe;border-radius:999px;padding:6px 12px;margin:3px;font-size:.9em;cursor:pointer;font-family:inherit}
+.seg:hover{border-color:#1e3a8a}
+.seg b{color:#1e3a8a}
 ul{padding-right:20px}
 .timeline{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px}
 .timeline li{margin:6px 0}
@@ -336,7 +342,7 @@ footer{text-align:center;color:#64748b;padding:20px;font-size:.9em}
 </ul>
 <div class="key"><b>משפטים לזכור:</b> ״קול דממה דקה״ • ״קנוא קינאתי״ • ״והשארתי בישראל שבעת אלפים״ • ״קום אכול כי רב ממך הדרך״</div>
 <p><b>הרעיון:</b> ה׳ לא מתגלה רק ברעש ובאש אלא בדממה; ואליהו לומד שהוא לא לבד — יש עוד 7,000 נאמנים, ויש לו ממשיך: אלישע.</p>
-<div class="video"><b>🎬 סרטון לפרק:</b> שיעור וידאו לפרק י״ט — תנ״ך בקליק | <div class="vidwrap"><iframe src="https://www.youtube.com/embed/eD8SWGiexlQ" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>
+<div class="video"><b>🎬 סרטון לפרק:</b> שיעור וידאו לפרק י״ט — תנ״ך בקליק | <div class="vidwrap"><iframe id="vid19" src="https://www.youtube.com/embed/eD8SWGiexlQ" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><div class="segs"><p>⏱ קטעים בשיעור — לחצי כדי לקפוץ ישר לקטע:</p><button type="button" class="seg" onclick="segJump('vid19','https://www.youtube.com/embed/eD8SWGiexlQ',0)"><b>0:00</b> · מההתחלה: איזבל מאיימת; הבריחה לבאר שבע ולמדבר</button><button type="button" class="seg" onclick="segJump('vid19','https://www.youtube.com/embed/eD8SWGiexlQ',88)"><b>1:28</b> · תחת הרותם: המלאך — ״קום אכול״</button><button type="button" class="seg" onclick="segJump('vid19','https://www.youtube.com/embed/eD8SWGiexlQ',142)"><b>2:22</b> · ארבעים יום וארבעים לילה עד הר חורב</button><button type="button" class="seg" onclick="segJump('vid19','https://www.youtube.com/embed/eD8SWGiexlQ',240)"><b>4:00</b> · במערה: ״מה לך פה אליהו?״</button><button type="button" class="seg" onclick="segJump('vid19','https://www.youtube.com/embed/eD8SWGiexlQ',331)"><b>5:31</b> · רוח, רעש, אש — וקול דממה דקה</button><button type="button" class="seg" onclick="segJump('vid19','https://www.youtube.com/embed/eD8SWGiexlQ',522)"><b>8:42</b> · הדרך החדשה: משיחת חזאל, יהוא ואלישע; 7,000 נשארים</button><button type="button" class="seg" onclick="segJump('vid19','https://www.youtube.com/embed/eD8SWGiexlQ',835)"><b>13:55</b> · אלישע: האדרת, הפרידה ושחיטת הבקר</button><button type="button" class="seg" onclick="segJump('vid19','https://www.youtube.com/embed/eD8SWGiexlQ',1037)"><b>17:17</b> · סיכום: מה לומדים מהפרק</button></div></div>
 </details>
 
 <details>
@@ -383,7 +389,7 @@ footer{text-align:center;color:#64748b;padding:20px;font-size:.9em}
 <div class="key"><b>משפטים לזכור:</b> ״חלילה לי מה׳ מתתי את נחלת אבותי לך״ • ״הרצחת וגם ירשת״ • ״המצאתני אויבי״ • ״מהלך אט״</div>
 <p><b>הרעיון:</b> רצח משפטי בחסות המלוכה — ונביא שאינו מפחד לומר למלך את האמת; תשובה אמיתית דוחה עונש.</p>
 <div class="video"><b>🎬 סרטון לפרק:</b> שיעור וידאו לפרק כ״א — תנ״ך בקליק
-<div class="vidwrap"><iframe src="https://www.youtube.com/embed/bkMH1RqCMuM" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+<div class="vidwrap"><iframe id="vid21" src="https://www.youtube.com/embed/bkMH1RqCMuM" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><div class="segs"><p>⏱ קטעים בשיעור — לחצי כדי לקפוץ ישר לקטע:</p><button type="button" class="seg" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',0)"><b>0:00</b> · מההתחלה: נבות והכרם — אחאב מבקש את הכרם</button><button type="button" class="seg" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',146)"><b>2:26</b> · נבות מסרב: ״חלילה לי... נחלת אבותי״</button><button type="button" class="seg" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',235)"><b>3:55</b> · אחאב סר וזעף; איזבל מבטיחה את הכרם</button><button type="button" class="seg" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',417)"><b>6:57</b> · מזימת איזבל: הספרים ושני עדי השקר</button><button type="button" class="seg" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',552)"><b>9:12</b> · אנשי העיר עושים כדבריה: צום וסקילה</button><button type="button" class="seg" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',688)"><b>11:28</b> · אחאב יורש את הכרם</button><button type="button" class="seg" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',722)"><b>12:02</b> · אליהו: ״הרצחת וגם ירשת״</button><button type="button" class="seg" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',779)"><b>12:59</b> · ״המצאתני אויבי?״ — הנבואה על בית אחאב</button><button type="button" class="seg" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',1058)"><b>17:38</b> · אחאב קורע בגדיו וצם — והעונש נדחה</button><button type="button" class="seg" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',1176)"><b>19:36</b> · סיכום והרחבה: שאלות על הפרק</button></div>
 <p style="font-size:.9em;margin:8px 0 0">לא נפתח? <a href="https://www.youtube.com/watch?v=bkMH1RqCMuM" target="_blank" rel="noopener">צפייה ביוטיוב</a></p></div>
 </details>
 
@@ -674,6 +680,16 @@ function show(id){
   ['b-sum','b-quiz','b-all'].forEach(b => document.getElementById(b).classList.toggle('off', ('b-'+id) !== b));
   if(id === 'all') renderAll();
   window.scrollTo(0,0);
+}
+
+/* STAGE 4.6 (11/2026): jump a chapter video embed to a segment start (YouTube ?start= + autoplay).
+   Segment times were read off the videos' timed auto-caption transcripts (see report); each
+   timestamp lands ~5s before the new section begins, so it never cuts mid-sentence. */
+function segJump(frameId, base, sec){
+  const f = document.getElementById(frameId);
+  if(!f) return;
+  f.src = base + '?start=' + sec + '&autoplay=1';
+  f.scrollIntoView({behavior:'smooth', block:'center'});
 }
 
 function buildFilters(){
