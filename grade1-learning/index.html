@@ -10,7 +10,7 @@
 body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--ink)}
 .wrap{max-width:560px;margin:0 auto;padding:14px 14px 40px}
 h1{font-size:30px;text-align:center;margin:8px 0 2px}
-.sub{text-align:center;color:#8a86b8;margin:0 0 14px;font-size:16px}
+.sub{text-align:center;color:#5b5480;margin:0 0 14px;font-size:16px}
 .hidden{display:none!important}
 .bank{background:linear-gradient(135deg,#ffe29a,#ffb800);border-radius:20px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 14px rgba(255,184,0,.35);margin-bottom:14px}
 .bank .coins{font-size:26px;font-weight:800}
@@ -83,7 +83,7 @@ table.ptable{width:100%;border-collapse:collapse;font-size:15px}
 table.ptable td,table.ptable th{border-bottom:1px solid #eee;padding:7px 4px;text-align:right}
 .bar{height:12px;background:#eee9ff;border-radius:6px;overflow:hidden}
 .bar>div{height:100%;background:var(--good)}
-.note{font-size:13px;color:#8a86b8}
+.note{font-size:13px;color:#5b5480}
 .objs{font-size:38px;text-align:center;line-height:1.35;letter-spacing:2px}
 .eq{font-size:42px;font-weight:800;text-align:center;margin:8px 0;direction:ltr}
 .gone{filter:grayscale(1);opacity:.35}
@@ -103,6 +103,13 @@ table.ptable td,table.ptable th{border-bottom:1px solid #eee;padding:7px 4px;tex
 .homefold{margin:14px 0 4px}
 .homefold>summary{cursor:pointer;font-size:18px;font-weight:800;color:var(--purple);text-align:center;padding:10px;list-style:none}
 .focusbox>summary{cursor:pointer;list-style:none}
+/* ---- STAGE 4.3: question counter + spoken/visual error feedback ---- */
+.qcount{text-align:center;font-size:18px;font-weight:800;color:var(--purple);margin:2px 0 4px}
+.fbmark{font-size:30px;margin-inline-start:4px;vertical-align:middle}
+.fbmark.good{color:#1e9e55}
+.fbmark.bad{color:#d32f2f}
+.tile{position:relative}
+.tile .fbmark{position:absolute;top:0;left:2px;font-size:16px;line-height:1;margin:0}
 </style>
 </head>
 <body>
@@ -147,6 +154,7 @@ table.ptable td,table.ptable th{border-bottom:1px solid #eee;padding:7px 4px;tex
   <div id="screen-quiz" class="hidden">
     <button class="bigbtn ghost" id="quizBack">⬅ חזרה</button>
     <div class="prog"><div id="qProg" style="width:0%"></div></div>
+    <div class="qcount" id="qCount"></div>
     <div class="qinst" id="qInst"></div>
     <div class="qprompt" id="qPrompt"></div>
     <div id="qBody"></div>
@@ -368,7 +376,16 @@ function navSay(text, done){
   try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {}
   var cap = setTimeout(function(){ if (seq === navTtsSeq) navTtsStop(); finish(); }, 4000);
   var url = 'https://translate.google.com/translate_tts?ie=UTF-8&tl=he&client=tw-ob&q=' + encodeURIComponent(clean);
-  var a = new Audio(url);
+  /* STAGE 4.3 fix (proven in grade-2 kit, commit e067ed83): Google Translate
+     TTS returns HTTP 404 for requests carrying a third-party Referer, and a
+     real browser's <audio> sends the page's Referer (github.io) by default —
+     so `new Audio(url)` fails in a real browser and falls back to the device
+     voice (wrong Hebrew accent). Create the element with NO src, set
+     referrerPolicy BEFORE assigning src, so the request goes out with no
+     Referer — exactly like a working curl request. */
+  var a = new Audio();
+  try { a.referrerPolicy = 'no-referrer'; } catch (e) {}
+  a.src = url;
   navTtsAudio = a;
   a.onended = function(){ clearTimeout(cap); if (navTtsAudio === a) navTtsAudio = null; finish(); };
   a.onerror = function(){ clearTimeout(cap); navTtsSpeakDevice(clean, seq, finish); };
@@ -596,7 +613,7 @@ function renderEng(host) {
     + '<div style="font-size:17px;margin:8px 0">' + line + '</div>'
     + '<div style="font-size:15px;color:#555">אותיות, מילים ומשפטים מהחוברת שלך — קוראים ואומרים בקול</div>'
     + '<a class="bigbtn purple" style="text-decoration:none;text-align:center;box-sizing:border-box" target="_blank" rel="noopener" href="' + ENG_GAME_URL + '">▶️ לשחק באנגלית</a>'
-    + '<div style="font-size:13px;color:#777;margin-top:4px">המשחק נפתח בלשונית חדשה — כל הכוכבים שלך נשמרים</div></div>';
+    + '<div style="font-size:13px;color:#666;margin-top:4px">המשחק נפתח בלשונית חדשה — כל הכוכבים שלך נשמרים</div></div>';
   host.appendChild(wrap);
 }
 /* ================= continue card (STAGE 3.6: resume from EXISTING prog.pages only, no new keys) ================= */
@@ -1065,6 +1082,7 @@ function startRound(pageIdx, review) {
 function renderQ() {
   var q = round[roundIdx];
   el('qProg').style.width = (roundIdx / round.length * 100) + '%';
+  el('qCount').textContent = 'שאלה ' + (roundIdx + 1) + ' מתוך ' + round.length;
   firstTry = true;
   var instText = {'inst|snd':'הקשיבי לצליל — איזו אות זו?','inst|first':'באיזו אות המילה מתחילה?','inst|hearword':'הקשיבי — מצאי את המילה','inst|reademoji':'קראי את המילה — מה היא אומרת?','inst|emojiword':'מה רואים בתמונה?','inst|syl':'הקשיבי לצליל — איזו הברה זו?','inst|missing':'איזו אות חסרה?','inst|build':'בני את המילה מהאותיות','inst|sent':'הקשיבי למשפט','min|count':'כמה יש כאן?','min|hear':'איזה מספר שמעת?','min|see':'איזה מספר זה?','min|add':'כמה יש ביחד?','min|sub':'כמה נשאר?','min|bigger':'איזה מספר גדול יותר?','min|more':'איפה יש יותר?','min|shape':'איזו צורה שמעת?','min|next':'איזה מספר בא אחרי?','min|tens':'איזה מספר חסר בסדרה?','min|longer':'איזה פס ארוך יותר?','min|measure':'כמה קוביות באורך של הפס?','min|sides':'כמה צלעות יש לצורה?','min|prev':'איזה מספר בא לפני?','min|corners':'כמה פינות יש לצורה?'}[q.inst] || '';
   el('qInst').innerHTML = instText + ' <span class="spk" id="qSpk" style="width:44px;height:44px;font-size:20px;line-height:38px">🔊</span>';
@@ -1088,15 +1106,40 @@ function recordItem(q, okFirst) {
   if (okFirst) it.right++; else it.wrong++;
   prog.items[q.itemKey] = it; save();
 }
+/* ================= STAGE 4.3: spoken + visual error feedback =================
+   Finding א־מ1: a wrong answer gave only red + shake — no word, sound or
+   symbol — and a right answer had no ✓. Now: a wrong tap speaks "נסי שוב"
+   and marks the tapped button with ❌; a right tap marks it with ✓.
+   Voice: NO embedded "נסי שוב" clip exists in AUDIO (only praise|0..3),
+   so this reuses navSay() — Google Translate TTS (tl=he) primary, device
+   speechSynthesis as FALLBACK only (its Hebrew accent is wrong). Before
+   speaking, the running question read-aloud is stopped (seqToken++ kills
+   the speakSeq chain, curAudio is paused) so the two voices never overlap.
+   No-penalty retry is unchanged: a wrong answer only disables that one
+   button, never blocks the round, never costs coins or score. */
+function markBtn(btn, sym, cls) {
+  var m = document.createElement('span');
+  m.className = 'fbmark ' + cls;
+  m.textContent = sym;
+  btn.appendChild(m);
+}
+function sayTryAgain() {
+  try { seqToken++; } catch (e) {}
+  try { if (curAudio) curAudio.pause(); } catch (e) {}
+  navSay('נסי שוב');
+}
 function answer(q, chosen, btn, grid) {
   if (chosen === q.correct) {
     btn.classList.add('right');
+    markBtn(btn, '✓', 'good');
     Array.prototype.forEach.call(grid.children, function (c) { c.disabled = true; });
     if (firstTry) { roundScore++; recordItem(q, true); } else recordItem(q, false);
     praise();
     setTimeout(nextQ, 1200);
   } else {
     btn.classList.add('wrong'); btn.disabled = true;
+    markBtn(btn, '❌', 'bad');
+    sayTryAgain();
     if (firstTry) { firstTry = false; }
   }
 }
@@ -1123,7 +1166,9 @@ function renderBuild(q, body) {
         }
       } else {
         t.classList.add('wrong'); firstTry = false;
-        setTimeout(function () { t.classList.remove('wrong'); }, 350);
+        markBtn(t, '❌', 'bad');
+        sayTryAgain();
+        setTimeout(function () { t.classList.remove('wrong'); var m = t.querySelector('.fbmark'); if (m) m.remove(); }, 900);
       }
     };
     trow.appendChild(t);
