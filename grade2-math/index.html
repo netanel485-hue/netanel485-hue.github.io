@@ -694,7 +694,13 @@ function ttsPlayUrl(url, seq){
   return new Promise((resolve)=>{
     if(seq !== ttsSeq){ resolve(false); return; }
     ttsStopAudio();
-    const a = new Audio(url);
+    const a = new Audio();
+    /* Google Translate TTS מחזיר 404 לבקשות עם Referer של צד שלישי
+       (דפדפן אמיתי שולח את ה־Referer של הדף כברירת מחדל) — לכן
+       בלי זה ההקראה נכשלת בכל דפדפן אמיתי ונופלת לקול המכשיר.
+       שולחים בלי Referer, כמו בקשת curl תקינה. */
+    try { a.referrerPolicy = "no-referrer"; } catch(e){}
+    a.src = url;
     ttsAudio = a;
     let done = false;
     const finish = (ok)=>{
@@ -717,7 +723,7 @@ function ttsPlayUrl(url, seq){
 async function ttsPlayChunk(text, seq){
   if(ttsCache.has(text)) return await ttsPlayUrl(ttsCache.get(text), seq);
   try {
-    const res = await fetch(ttsUrl(text), {mode:"cors"});
+    const res = await fetch(ttsUrl(text), {mode:"cors", referrerPolicy:"no-referrer"});
     if(res && res.ok){
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
