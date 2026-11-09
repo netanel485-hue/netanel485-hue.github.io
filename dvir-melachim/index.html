@@ -200,6 +200,18 @@ ul{padding-right:20px}
 .allq{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;margin:10px 0}
 .allq .ans{color:#15803d;font-weight:700}
 footer{text-align:center;color:#64748b;padding:20px;font-size:.9em}
+
+/* STAGE 2.4 (11/2026): chapter art + drawn timeline — display only, no engine changes */
+.ch-art{margin:6px 0 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:10px}
+.ch-art svg{width:100%;height:auto;display:block}
+.tl-svg{margin-top:14px}
+.tl-svg svg{width:100%;height:auto;display:block}
+.tl-svg text{font-family:inherit}
+.q-art{display:inline-block;vertical-align:-13px;margin-left:8px}
+.q-art svg{width:44px;height:44px;display:block}
+.done-art{text-align:center;margin:4px 0 2px}
+.done-art svg{width:120px;height:60px}
+@media (max-width:560px){.q-art svg{width:36px;height:36px}}
 </style>
 </head>
 <body>
@@ -230,10 +242,35 @@ footer{text-align:center;color:#64748b;padding:20px;font-size:.9em}
 <li><b>כא:</b> כרם נבות ← מזימת איזבל ← ״הרצחת וגם ירשת״ ← תשובת אחאב</li>
 <li><b>כב:</b> רמות גלעד ← מיכיהו נגד 400 נביאים ← מות אחאב ← יהושפט ואחזיהו</li>
 </ul>
+<div class="tl-svg"><svg viewBox="0 0 760 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ציר זמן מצויר של ששת הפרקים: בצורת, הכרמל, חורב, אפק, כרם נבות, רמות גלעד">
+<line x1="40" y1="95" x2="720" y2="95" stroke="#1e3a8a" stroke-width="3"/>
+<polygon points="40,95 54,88 54,102" fill="#1e3a8a"/>
+<g font-family="inherit" font-size="19" font-weight="700" fill="#1e3a8a" text-anchor="middle">
+<circle cx="700" cy="95" r="24" fill="#ffffff" stroke="#1e3a8a" stroke-width="3"/><text x="700" y="102">י״ז</text>
+<circle cx="580" cy="95" r="24" fill="#ffffff" stroke="#1e3a8a" stroke-width="3"/><text x="580" y="102">י״ח</text>
+<circle cx="460" cy="95" r="24" fill="#ffffff" stroke="#1e3a8a" stroke-width="3"/><text x="460" y="102">י״ט</text>
+<circle cx="340" cy="95" r="24" fill="#ffffff" stroke="#1e3a8a" stroke-width="3"/><text x="340" y="102">כ׳</text>
+<circle cx="220" cy="95" r="24" fill="#ffffff" stroke="#1e3a8a" stroke-width="3"/><text x="220" y="102">כ״א</text>
+<circle cx="100" cy="95" r="24" fill="#ffffff" stroke="#1e3a8a" stroke-width="3"/><text x="100" y="102">כ״ב</text>
+</g>
+<g>
+<ellipse cx="700" cy="48" rx="13" ry="8" fill="#1e293b"/><circle cx="710" cy="42" r="6" fill="#1e293b"/><polygon points="716,40 723,42 716,45" fill="#d97706"/>
+<path d="M580,34 C574,44 572,48 575,55 C578,50 579,49 580,46 C581,49 582,50 585,55 C588,48 586,44 580,34 Z" fill="#f59e0b"/>
+<path d="M438,66 L460,34 L482,66 Z" fill="#64748b"/><path d="M452,66 L452,54 Q460,46 468,54 L468,66 Z" fill="#1e293b"/>
+<path d="M324,52 L356,52 L356,64 Q356,73 340,77 Q324,73 324,64 Z" fill="#1e3a8a" stroke="#f59e0b" stroke-width="2"/><circle cx="340" cy="61" r="4" fill="#f59e0b"/>
+<g fill="#6b5b95"><circle cx="216" cy="44" r="5"/><circle cx="225" cy="44" r="5"/><circle cx="220" cy="52" r="5"/><circle cx="211" cy="52" r="5"/><circle cx="229" cy="52" r="5"/><circle cx="220" cy="60" r="5"/></g><ellipse cx="228" cy="36" rx="8" ry="4" fill="#43a06a" transform="rotate(-25 228 36)"/>
+<path d="M84,44 L90,34 L96,42 L102,32 L108,42 L114,34 L120,44 L117,52 L87,52 Z" fill="#f59e0b" stroke="#d97706" stroke-width="1.2"/>
+</g>
+<g font-family="inherit" font-size="14" fill="#475569" text-anchor="middle">
+<text x="700" y="148">בצורת</text><text x="580" y="148">הכרמל</text><text x="460" y="148">חורב</text>
+<text x="340" y="148">אפק</text><text x="220" y="148">כרם נבות</text><text x="100" y="148">רמות גלעד</text>
+</g>
+</svg></div>
 </div>
 
 <details open>
 <summary>פרק י״ז — הבצורת, נחל כרית ואלמנת צרפת</summary>
+<figure class="ch-art"><svg viewBox="0 0 240 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="עורב מביא לחם לאליהו מעל נחל כרית"><rect x="0" y="0" width="240" height="120" fill="#eef4fb"/><circle cx="205" cy="22" r="12" fill="#fcd34d" opacity="0.85"/><path d="M0,96 Q60,72 120,92 T240,90 V120 H0 Z" fill="#d9e4cf"/><path d="M0,106 Q30,99 60,106 T120,106 T180,106 T240,106" stroke="#7aa7d9" stroke-width="3" fill="none"/><path d="M0,114 Q30,108 60,114 T120,114 T180,114 T240,114" stroke="#a8c6e8" stroke-width="2.5" fill="none"/><g><ellipse cx="95" cy="48" rx="17" ry="10" fill="#1e293b"/><circle cx="110" cy="40" r="7.5" fill="#1e293b"/><polygon points="117,38 126,41 117,44" fill="#d97706"/><ellipse cx="125" cy="44" rx="7" ry="4" fill="#d97706"/><path d="M84,44 Q95,34 108,44 Q95,50 84,44 Z" fill="#334155"/><polygon points="79,48 68,56 80,54" fill="#1e293b"/><circle cx="112" cy="38" r="1.6" fill="#ffffff"/></g><rect x="166" y="88" width="15" height="19" rx="4" fill="#b45309"/><rect x="169" y="83" width="9" height="6" fill="#92400e"/></svg></figure>
 <p><span class="tag">דמויות: אליהו, אחאב, אלמנת צרפת ובנה</span> <span class="tag">מקומות: נחל כרית, צרפת</span></p>
 <ul>
 <li>אליהו התשבי אומר לאחאב: לא יהיה טל ומטר בשנים האלה, אלא לפי דברי.</li>
@@ -251,6 +288,7 @@ footer{text-align:center;color:#64748b;padding:20px;font-size:.9em}
 
 <details>
 <summary>פרק י״ח — המבחן בהר הכרמל</summary>
+<figure class="ch-art"><svg viewBox="0 0 240 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="מזבח ה׳ מ־12 אבנים ואש מן השמים בהר הכרמל"><rect x="0" y="0" width="240" height="120" fill="#eef4fb"/><circle cx="32" cy="24" r="11" fill="#fcd34d" opacity="0.7"/><ellipse cx="200" cy="24" rx="19" ry="10" fill="#cbd5e1"/><ellipse cx="212" cy="30" rx="13" ry="8" fill="#cbd5e1"/><rect x="0" y="100" width="240" height="20" fill="#e2e8f0"/><path d="M58,106 Q120,99 182,106" stroke="#7aa7d9" stroke-width="3" fill="none"/><g fill="#94a3b8" stroke="#64748b" stroke-width="1"><rect x="88" y="88" width="14" height="11" rx="3"/><rect x="104" y="88" width="14" height="11" rx="3"/><rect x="120" y="88" width="14" height="11" rx="3"/><rect x="136" y="88" width="14" height="11" rx="3"/><rect x="152" y="88" width="14" height="11" rx="3"/><rect x="96" y="76" width="14" height="11" rx="3"/><rect x="112" y="76" width="14" height="11" rx="3"/><rect x="128" y="76" width="14" height="11" rx="3"/><rect x="144" y="76" width="14" height="11" rx="3"/><rect x="104" y="64" width="14" height="11" rx="3"/><rect x="120" y="64" width="14" height="11" rx="3"/><rect x="136" y="64" width="14" height="11" rx="3"/></g><path d="M120,26 C111,40 107,46 112,58 C116,51 118,49 120,45 C122,49 124,51 128,58 C133,46 129,40 120,26 Z" fill="#f59e0b"/><path d="M120,40 C116,47 115,50 117,55 C119,51 121,51 123,55 C125,50 124,47 120,40 Z" fill="#d97706"/></svg></figure>
 <p><span class="tag">דמויות: אליהו, אחאב, עובדיהו, 450 נביאי הבעל</span> <span class="tag">מקומות: הר הכרמל, נחל קישון, יזרעאל</span></p>
 <ul>
 <li>בשנה השלישית לבצורת ה׳ שולח את אליהו להיראות אל אחאב.</li>
@@ -277,6 +315,7 @@ footer{text-align:center;color:#64748b;padding:20px;font-size:.9em}
 
 <details>
 <summary>פרק י״ט — בריחה, חורב וקול דממה דקה</summary>
+<figure class="ch-art"><svg viewBox="0 0 240 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="הר חורב, המערה וקול דממה דקה"><rect x="0" y="0" width="240" height="120" fill="#eef4fb"/><circle cx="205" cy="22" r="11" fill="#fcd34d" opacity="0.7"/><path d="M15,110 L100,22 L148,68 L180,42 L225,110 Z" fill="#64748b"/><path d="M100,22 L113,40 L95,42 Z" fill="#ffffff"/><path d="M82,110 L82,82 Q100,62 118,82 L118,110 Z" fill="#1e293b"/><g stroke="#f59e0b" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.85"><path d="M140,72 Q150,82 140,92"/><path d="M149,65 Q163,82 149,99"/><path d="M158,58 Q176,82 158,106"/></g><rect x="0" y="110" width="240" height="10" fill="#d9e4cf"/></svg></figure>
 <p><span class="tag">דמויות: אליהו, איזבל, אלישע</span> <span class="tag">מקומות: באר שבע, מדבר, הר חורב, אבל מחולה</span></p>
 <ul>
 <li>אחאב מספר לאיזבל את כל מה שעשה אליהו. איזבל שולחת מלאך: ״כה יעשון אלוקים וכה יוסיפון, כי כעת מחר אשים את נפשך כנפש אחד מהם.״</li>
@@ -297,6 +336,7 @@ footer{text-align:center;color:#64748b;padding:20px;font-size:.9em}
 
 <details>
 <summary>פרק כ׳ — שתי מלחמות אחאב בבן־הדד</summary>
+<figure class="ch-art"><svg viewBox="0 0 240 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="חומת אפק, חניתות ומגן"><rect x="0" y="0" width="240" height="120" fill="#eef4fb"/><circle cx="205" cy="20" r="11" fill="#fcd34d" opacity="0.7"/><g stroke="#8d6e4a" stroke-width="3" stroke-linecap="round"><line x1="62" y1="28" x2="98" y2="72"/><line x1="178" y1="28" x2="142" y2="72"/></g><polygon points="62,28 56,40 68,40" fill="#8d6e4a"/><polygon points="178,28 172,40 184,40" fill="#8d6e4a"/><g fill="#cbd5e1" stroke="#94a3b8" stroke-width="1.5"><rect x="40" y="52" width="13" height="12"/><rect x="64" y="52" width="13" height="12"/><rect x="88" y="52" width="13" height="12"/><rect x="112" y="52" width="13" height="12"/><rect x="136" y="52" width="13" height="12"/><rect x="160" y="52" width="13" height="12"/><rect x="184" y="52" width="13" height="12"/><rect x="40" y="62" width="157" height="48"/></g><path d="M104,74 L136,74 L136,92 Q136,106 120,112 Q104,106 104,92 Z" fill="#1e3a8a" stroke="#f59e0b" stroke-width="2"/><circle cx="120" cy="90" r="6" fill="#f59e0b"/><rect x="0" y="110" width="240" height="10" fill="#d9e4cf"/></svg></figure>
 <p><span class="tag">דמויות: אחאב, בן־הדד, נביאים, נערי שרי המדינות</span> <span class="tag">מקומות: שומרון, אפק</span></p>
 <ul>
 <li>בן־הדד מלך ארם עולה עם 32 מלכים, סוסים ורכב, וצר על שומרון. הוא דורש מאחאב: כספך וזהבך לי, נשיך ובניך הטובים לי. אחאב מסכים בהתחלה.</li>
@@ -321,6 +361,7 @@ footer{text-align:center;color:#64748b;padding:20px;font-size:.9em}
 
 <details>
 <summary>פרק כ״א — כרם נבות</summary>
+<figure class="ch-art"><svg viewBox="0 0 240 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="כרם נבות — גפן, עלים ואשכולות"><rect x="0" y="0" width="240" height="120" fill="#eef4fb"/><circle cx="205" cy="20" r="11" fill="#fcd34d" opacity="0.7"/><rect x="30" y="30" width="6" height="80" fill="#8d6e4a"/><rect x="204" y="30" width="6" height="80" fill="#8d6e4a"/><rect x="30" y="34" width="180" height="5" fill="#8d6e4a"/><path d="M36,40 C80,18 160,58 204,36" stroke="#2e7d4f" stroke-width="3" fill="none"/><g fill="#43a06a"><ellipse cx="70" cy="32" rx="11" ry="6" transform="rotate(-25 70 32)"/><ellipse cx="120" cy="44" rx="11" ry="6" transform="rotate(20 120 44)"/><ellipse cx="170" cy="30" rx="11" ry="6" transform="rotate(-20 170 30)"/></g><g fill="#6b5b95"><circle cx="86" cy="62" r="6"/><circle cx="96" cy="62" r="6"/><circle cx="91" cy="71" r="6"/><circle cx="81" cy="71" r="6"/><circle cx="101" cy="71" r="6"/><circle cx="91" cy="80" r="6"/><circle cx="146" cy="66" r="6"/><circle cx="156" cy="66" r="6"/><circle cx="151" cy="75" r="6"/><circle cx="141" cy="75" r="6"/><circle cx="161" cy="75" r="6"/><circle cx="151" cy="84" r="6"/></g><rect x="0" y="108" width="240" height="12" fill="#d9e4cf"/></svg></figure>
 <p><span class="tag">דמויות: אחאב, איזבל, נבות היזרעאלי</span> <span class="tag">מקומות: יזרעאל</span></p>
 <ul>
 <li>לנבות היזרעאלי כרם ליד היכל אחאב ביזרעאל. אחאב מבקש: תן לי את הכרם לגן ירק, ואתן לך כרם טוב ממנו או כסף.</li>
@@ -343,6 +384,7 @@ footer{text-align:center;color:#64748b;padding:20px;font-size:.9em}
 
 <details>
 <summary>פרק כ״ב — רמות גלעד ומות אחאב</summary>
+<figure class="ch-art"><svg viewBox="0 0 240 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="קשת, חץ וכתר — רמות גלעד ומות אחאב"><rect x="0" y="0" width="240" height="120" fill="#eef4fb"/><circle cx="30" cy="22" r="11" fill="#fcd34d" opacity="0.7"/><path d="M88,26 L98,10 L108,24 L118,8 L128,24 L138,10 L148,26 L143,40 L93,40 Z" fill="#f59e0b" stroke="#d97706" stroke-width="1.5"/><circle cx="108" cy="30" r="3" fill="#1e3a8a"/><circle cx="128" cy="30" r="3" fill="#b3382e"/><path d="M62,102 Q62,58 106,50" stroke="#8d6e4a" stroke-width="4" fill="none" stroke-linecap="round"/><line x1="106" y1="50" x2="62" y2="102" stroke="#64748b" stroke-width="1.5"/><line x1="72" y1="94" x2="132" y2="56" stroke="#475569" stroke-width="3" stroke-linecap="round"/><polygon points="132,56 120,54 128,66" fill="#475569"/><path d="M72,94 l-8,4 M72,94 l-2,9" stroke="#475569" stroke-width="2" stroke-linecap="round"/><rect x="0" y="108" width="240" height="12" fill="#d9e4cf"/></svg></figure>
 <p><span class="tag">דמויות: אחאב, יהושפט, מיכיהו בן ימלה, צדקיהו בן כנענה</span> <span class="tag">מקומות: רמות גלעד, שומרון</span></p>
 <ul>
 <li>שלוש שנים אין מלחמה בין ארם וישראל. בשנה השלישית יהושפט מלך יהודה יורד אל אחאב.</li>
@@ -590,6 +632,18 @@ const QUESTIONS = [{c:17,q:"מי אמר לאחאב: לא יהיה טל ומטר 
 {c:22,q:"מה לא סר בימי יהושפט?",o:["הבמות","המלחמות","המס","הבעל"],a:0,e:"אך הבמות לא סרו."},
 {c:22,q:"מי מלך על ישראל אחרי אחאב?",o:["יהוא","יהושפט","אחזיהו בנו","יהורם"],a:2,e:"ואחזיהו בן אחאב מלך על ישראל בשומרון."},
 {c:22,q:"כמה שנים מלך אחזיהו, ובאיזו דרך הלך?",o:["שנתיים, בדרך אביו ואמו ובדרך ירבעם, ועבד את הבעל","40 שנה בדרך אסא","שנה אחת","25 שנה בדרך דוד"],a:0,e:"וימלוך על ישראל שנתיים... וילך בדרך אביו ובדרך אמו ובדרך ירבעם בן נבט... ויעבוד את הבעל."}];
+
+/* STAGE 2.4 (11/2026): small per-chapter motifs for the quiz card + completion mark.
+   Display only — same flat style/palette as the summary art. No engine changes. */
+const CH_MINI = {
+17:'<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true"><ellipse cx="28" cy="36" rx="15" ry="9" fill="#1e293b"/><circle cx="41" cy="29" r="6.5" fill="#1e293b"/><polygon points="47,27 54,29 47,32" fill="#d97706"/><path d="M16,33 Q26,25 38,33 Q26,38 16,33 Z" fill="#334155"/><path d="M6,52 Q18,47 30,52 T54,52" stroke="#7aa7d9" stroke-width="2.5" fill="none"/></svg>',
+18:'<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true"><path d="M32,8 C22,24 18,30 24,44 C27,37 29,35 32,31 C35,35 37,37 40,44 C46,30 42,24 32,8 Z" fill="#f59e0b"/><path d="M32,30 C28,38 27,41 29,46 C31,42 33,42 35,46 C37,41 36,38 32,30 Z" fill="#d97706"/><rect x="16" y="48" width="32" height="6" rx="2" fill="#94a3b8"/></svg>',
+19:'<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true"><path d="M6,56 L32,12 L58,56 Z" fill="#64748b"/><path d="M26,56 L26,42 Q32,34 38,42 L38,56 Z" fill="#1e293b"/><path d="M44,26 Q50,32 44,38 M48,22 Q56,32 48,42" stroke="#f59e0b" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>',
+20:'<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true"><path d="M14,14 L50,14 L50,30 Q50,48 32,56 Q14,48 14,30 Z" fill="#1e3a8a" stroke="#f59e0b" stroke-width="2"/><circle cx="32" cy="32" r="7" fill="#f59e0b"/></svg>',
+21:'<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true"><ellipse cx="42" cy="14" rx="10" ry="5" fill="#43a06a" transform="rotate(-25 42 14)"/><g fill="#6b5b95"><circle cx="24" cy="26" r="6"/><circle cx="35" cy="26" r="6"/><circle cx="29" cy="35" r="6"/><circle cx="19" cy="35" r="6"/><circle cx="40" cy="35" r="6"/><circle cx="29" cy="44" r="6"/><circle cx="24" cy="53" r="6"/><circle cx="35" cy="53" r="6"/><circle cx="29" cy="60" r="5"/></g></svg>',
+22:'<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true"><path d="M10,26 L18,10 L26,22 L32,8 L38,22 L46,10 L54,26 L50,42 L14,42 Z" fill="#f59e0b" stroke="#d97706" stroke-width="1.5"/><circle cx="26" cy="32" r="3" fill="#1e3a8a"/><circle cx="38" cy="32" r="3" fill="#b3382e"/></svg>'
+};
+const DONE_ART = '<svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true"><circle cx="60" cy="30" r="24" fill="#dff0e3" stroke="#2e7d4f" stroke-width="2.5"/><path d="M48,30 L57,39 L74,21" stroke="#2e7d4f" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><g stroke="#2e7d4f" stroke-width="2" fill="none" stroke-linecap="round"><path d="M28,18 Q18,30 28,44"/><path d="M92,18 Q102,30 92,44"/></g></svg>';
 const CH_NAMES = {17:'י״ז',18:'י״ח',19:'י״ט',20:'כ׳',21:'כ״א',22:'כ״ב'};
 let pool = [], qi = 0, good = 0, bad = 0, mistakes = [], filter = 0, answers = {};
 const SAVE_KEY = 'dvirMelachimProgV1';
@@ -680,7 +734,7 @@ function renderQ(){
     document.getElementById('bar').style.width = '100%';
     document.getElementById('prog').textContent = 'סיימת את כל השאלות!';
     document.getElementById('score').textContent = 'נכון: ' + good + ' | טעויות: ' + bad + ' | ציון: ' + Math.round(good / pool.length * 100) + '%';
-    let html = '<h3>🎉 סיימת!</h3><p>ענית נכון על ' + good + ' מתוך ' + pool.length + ' שאלות.</p>';
+    let html = '<div class="done-art">' + DONE_ART + '</div><h3>🎉 סיימת!</h3><p>ענית נכון על ' + good + ' מתוך ' + pool.length + ' שאלות.</p>';
     if(mistakes.length){
       html += '<h3>חזרה על הטעויות:</h3>';
       mistakes.forEach(m => {
@@ -698,7 +752,7 @@ function renderQ(){
   document.getElementById('bar').style.width = Math.round(qi / pool.length * 100) + '%';
   document.getElementById('prog').textContent = 'שאלה ' + (qi + 1) + ' מתוך ' + pool.length + ' | פרק ' + CH_NAMES[q.c];
   document.getElementById('score').textContent = 'נכון: ' + good + ' | טעויות: ' + bad;
-  let html = '<div class="meta">פרק ' + CH_NAMES[q.c] + '</div><h3 style="margin:8px 0">' + q.q + '</h3>';
+  let html = '<div class="meta"><span class="q-art">' + CH_MINI[q.c] + '</span>פרק ' + CH_NAMES[q.c] + '</div><h3 style="margin:8px 0">' + q.q + '</h3>';
   q.o.forEach((opt, i) => {
     html += '<button class="opt" onclick="answer(' + i + ', this)">' + opt + '</button>';
   });
