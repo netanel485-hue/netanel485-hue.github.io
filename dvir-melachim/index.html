@@ -160,10 +160,15 @@ header{background:#1e3a8a;color:#fff;padding:28px 20px;text-align:center}
 header h1{margin:0 0 6px;font-size:1.7em}
 header p{margin:0;opacity:.9}
 nav{display:flex;gap:10px;justify-content:center;padding:14px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.1);position:sticky;top:0;z-index:5;flex-wrap:wrap}
-nav button,.btn{background:#1e3a8a;color:#fff;border:0;border-radius:999px;padding:10px 20px;font-size:1em;cursor:pointer}
-/* STAGE 0 (safety, 9/11/2026): destructive action — must look dangerous, not like a normal button */
-.btn.btn-danger{background:#dc2626}
-nav button.off{background:#e2e8f0;color:#334155}
+/* STAGE 5 (polish, 9/11/2026): unified button language — four roles only.
+   .btn (and nav buttons) = SECONDARY (white, ink text, line border).
+   Primary = .btn-primary from the tokens block (one accent, --accent-deep).
+   Ghost = .btn-ghost from tokens. Danger = .btn-danger from tokens.
+   No new button variants; existing buttons only re-skinned. */
+nav button,.btn{background:#fff;color:var(--ink);border:2px solid var(--line);border-radius:var(--radius-btn);padding:10px 20px;font-size:1em;cursor:pointer;font-family:inherit;min-height:48px}
+nav button:not(.off){background:var(--accent-deep);color:#fff;border-color:var(--accent-deep)}
+nav button.off{background:#fff;color:var(--ink-soft)}
+header .btn{margin-top:10px}
 main{max-width:820px;margin:0 auto;padding:20px}
 section{display:none}
 section.on{display:block}
@@ -180,9 +185,9 @@ details summary::-webkit-details-marker{color:#f59e0b}
 /* STAGE 4.6 (11/2026): segment entry points for the Tanach b'Click lessons (ch 19, 21) — display/UI only, no engine changes */
 .segs{margin-top:10px}
 .segs p{margin:0 0 8px;font-size:.92em;color:#1e40af}
-.seg{display:inline-block;background:#fff;color:#1e40af;border:2px solid #bfdbfe;border-radius:999px;padding:6px 12px;margin:3px;font-size:.9em;cursor:pointer;font-family:inherit}
-.seg:hover{border-color:#1e3a8a}
-.seg b{color:#1e3a8a}
+.seg{display:inline-block;background:#fff;color:var(--ink);border:2px solid var(--line);border-radius:999px;padding:6px 12px;margin:3px;font-size:.9em;cursor:pointer;font-family:inherit;max-width:100%;text-align:right;white-space:normal}
+.seg:hover{border-color:var(--accent-deep)}
+.seg b{color:var(--accent-deep)}
 ul{padding-right:20px}
 .timeline{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px}
 .timeline li{margin:6px 0}
@@ -197,16 +202,17 @@ ul{padding-right:20px}
 .feedback.good{background:#dcfce7}
 .feedback.bad{background:#fee2e2}
 .feedback.show{display:block}
-/* STAGE 3.7 (11/2026): skip button + end screen — display/UI only, no engine/content changes */
-#skipBtn{background:#fff;color:#334155;border:2px solid #e2e8f0}
+/* STAGE 5: skip is a normal secondary button now (.btn) — the #skipBtn override is gone.
+   The button keeps its class="btn"; nothing else about it changes. */
 .skip-hint{color:#64748b;font-size:.9em;margin:10px 0 0}
 .end-next{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
-.end-next .btn{flex:1 1 auto}
+.end-next .btn,.end-next .btn-primary{flex:1 1 auto}
 .bar{height:12px;background:#e2e8f0;border-radius:999px;overflow:hidden}
 .bar i{display:block;height:100%;background:#f59e0b;width:0%}
 .filters{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
-.filters button{background:#e2e8f0;color:#334155;border:0;border-radius:999px;padding:8px 16px;cursor:pointer;font-size:1em}
-.filters button.sel{background:#1e3a8a;color:#fff}
+/* STAGE 5: filter chips = GHOST role (unselected) / PRIMARY fill (selected = state, not a new role) */
+.filters button{background:transparent;color:var(--ink-soft);border:2px solid var(--line);border-radius:999px;padding:8px 16px;cursor:pointer;font-size:1em;font-family:inherit;min-height:44px}
+.filters button.sel{background:var(--accent-deep);color:#fff;border-color:var(--accent-deep)}
 .score{font-weight:700;font-size:1.1em}
 .allq{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;margin:10px 0}
 .allq .ans{color:#15803d;font-weight:700}
@@ -222,14 +228,42 @@ footer{text-align:center;color:#64748b;padding:20px;font-size:.9em}
 .q-art svg{width:44px;height:44px;display:block}
 .done-art{text-align:center;margin:4px 0 2px}
 .done-art svg{width:120px;height:60px}
-@media (max-width:560px){.q-art svg{width:36px;height:36px}}
+/* STAGE 5 (polish, 9/11/2026): focus on disclosures + reduced motion + mobile.
+   The tokens block already gives :focus-visible to button/select/input/textarea/a;
+   <summary> is the one interactive element it does not cover, so it gets the same
+   outline here (the injected tokens block itself is never edited). */
+summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+/* Mobile (~360-390px): fix genuine breakage, never hide content.
+   - Timeline SVG (760-wide viewBox) would shrink its 14/19px labels to ~7px:
+     keep it at a legible width and let its box scroll horizontally instead.
+   - Segment pills: long labels wrap inside the pill (max-width + normal wrapping).
+   - End-screen actions stack full-width so none is clipped or cramped.
+   - Type/spacing shrink modestly; nothing is removed. */
+@media (max-width:560px){
+  .q-art svg{width:36px;height:36px}
+  header{padding:20px 14px}
+  header h1{font-size:1.35em}
+  nav{padding:10px;gap:8px}
+  nav button,.btn{padding:10px 16px;font-size:.95em}
+  main{padding:14px}
+  h2{font-size:1.25em}
+  details{padding:12px 14px}
+  .qcard{padding:16px}
+  .tl-svg{overflow-x:auto}
+  .tl-svg svg{min-width:560px}
+  .seg{font-size:.88em}
+  .end-next .btn,.end-next .btn-primary{flex:1 1 100%}
+}
 </style>
 </head>
 <body>
 <header>
 <h1>📖 מלכים א׳ פרקים י״ז–כ״ב</h1>
 <p>סיכום אינטראקטיבי + 200 שאלות לתרגול | הכנה למבחן של דביר</p>
-<button class="btn" style="background:#f59e0b;color:#1e293b;margin-top:10px" onclick="shareKit()">🔗 שתף את הערכה</button>
+<button class="btn" onclick="shareKit()">🔗 שתף את הערכה</button>
 </header>
 <nav>
 <button id="b-sum" onclick="show('sum')">📚 סיכום</button>
@@ -320,7 +354,7 @@ footer{text-align:center;color:#64748b;padding:20px;font-size:.9em}
 <div class="key"><b>משפטים לזכור:</b> ״עד מתי אתם פוסחים על שתי הסעיפים״ • ״ה׳ הוא האלוקים״ • ״קול המון גשם״ • ״עב קטנה ככף איש״</div>
 <p><b>הרעיון:</b> המבחן מוכיח לעם מי האלוקים האמיתי, והגשם חוזר בזכות תפילת אליהו.</p>
 <div class="video"><b>🎬 סרטון לפרק:</b> ״הבחירות הגורליות בהר הכרמל״ — שיעור של הרב יואב אלון
-<div class="vidwrap"><iframe src="https://www.youtube.com/embed/4YycRvsira8" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+<div class="vidwrap"><iframe loading="lazy" src="https://www.youtube.com/embed/4YycRvsira8" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
 <p style="font-size:.9em;margin:8px 0 0">שיעור נוסף: <a href="https://meirtv.com/shiurim/shiur-37661/" target="_blank" rel="noopener">הרב אייל ורד, ערוץ מאיר (כ־44 דקות)</a></p></div>
 </details>
 
@@ -342,7 +376,7 @@ footer{text-align:center;color:#64748b;padding:20px;font-size:.9em}
 </ul>
 <div class="key"><b>משפטים לזכור:</b> ״קול דממה דקה״ • ״קנוא קינאתי״ • ״והשארתי בישראל שבעת אלפים״ • ״קום אכול כי רב ממך הדרך״</div>
 <p><b>הרעיון:</b> ה׳ לא מתגלה רק ברעש ובאש אלא בדממה; ואליהו לומד שהוא לא לבד — יש עוד 7,000 נאמנים, ויש לו ממשיך: אלישע.</p>
-<div class="video"><b>🎬 סרטון לפרק:</b> שיעור וידאו לפרק י״ט — תנ״ך בקליק | <div class="vidwrap"><iframe id="vid19" src="https://www.youtube.com/embed/eD8SWGiexlQ" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><div class="segs"><p>⏱ קטעים בשיעור — לחצי כדי לקפוץ ישר לקטע:</p><button type="button" class="seg" onclick="segJump('vid19','https://www.youtube.com/embed/eD8SWGiexlQ',0)"><b>0:00</b> · מההתחלה: איזבל מאיימת; הבריחה לבאר שבע ולמדבר</button><button type="button" class="seg" onclick="segJump('vid19','https://www.youtube.com/embed/eD8SWGiexlQ',88)"><b>1:28</b> · תחת הרותם: המלאך — ״קום אכול״</button><button type="button" class="seg" onclick="segJump('vid19','https://www.youtube.com/embed/eD8SWGiexlQ',142)"><b>2:22</b> · ארבעים יום וארבעים לילה עד הר חורב</button><button type="button" class="seg" onclick="segJump('vid19','https://www.youtube.com/embed/eD8SWGiexlQ',240)"><b>4:00</b> · במערה: ״מה לך פה אליהו?״</button><button type="button" class="seg" onclick="segJump('vid19','https://www.youtube.com/embed/eD8SWGiexlQ',331)"><b>5:31</b> · רוח, רעש, אש — וקול דממה דקה</button><button type="button" class="seg" onclick="segJump('vid19','https://www.youtube.com/embed/eD8SWGiexlQ',522)"><b>8:42</b> · הדרך החדשה: משיחת חזאל, יהוא ואלישע; 7,000 נשארים</button><button type="button" class="seg" onclick="segJump('vid19','https://www.youtube.com/embed/eD8SWGiexlQ',835)"><b>13:55</b> · אלישע: האדרת, הפרידה ושחיטת הבקר</button><button type="button" class="seg" onclick="segJump('vid19','https://www.youtube.com/embed/eD8SWGiexlQ',1037)"><b>17:17</b> · סיכום: מה לומדים מהפרק</button></div></div>
+<div class="video"><b>🎬 סרטון לפרק:</b> שיעור וידאו לפרק י״ט — תנ״ך בקליק | <div class="vidwrap"><iframe loading="lazy" id="vid19" src="https://www.youtube.com/embed/eD8SWGiexlQ" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><div class="segs"><p>⏱ קטעים בשיעור — לחצי כדי לקפוץ ישר לקטע:</p><button type="button" class="seg" aria-label="קפוץ לקטע: 0:00 · מההתחלה: איזבל מאיימת; הבריחה לבאר שבע ולמדבר" onclick="segJump('vid19','https://www.youtube.com/embed/eD8SWGiexlQ',0)"><b>0:00</b> · מההתחלה: איזבל מאיימת; הבריחה לבאר שבע ולמדבר</button><button type="button" class="seg" aria-label="קפוץ לקטע: 1:28 · תחת הרותם: המלאך — ״קום אכול״" onclick="segJump('vid19','https://www.youtube.com/embed/eD8SWGiexlQ',88)"><b>1:28</b> · תחת הרותם: המלאך — ״קום אכול״</button><button type="button" class="seg" aria-label="קפוץ לקטע: 2:22 · ארבעים יום וארבעים לילה עד הר חורב" onclick="segJump('vid19','https://www.youtube.com/embed/eD8SWGiexlQ',142)"><b>2:22</b> · ארבעים יום וארבעים לילה עד הר חורב</button><button type="button" class="seg" aria-label="קפוץ לקטע: 4:00 · במערה: ״מה לך פה אליהו?״" onclick="segJump('vid19','https://www.youtube.com/embed/eD8SWGiexlQ',240)"><b>4:00</b> · במערה: ״מה לך פה אליהו?״</button><button type="button" class="seg" aria-label="קפוץ לקטע: 5:31 · רוח, רעש, אש — וקול דממה דקה" onclick="segJump('vid19','https://www.youtube.com/embed/eD8SWGiexlQ',331)"><b>5:31</b> · רוח, רעש, אש — וקול דממה דקה</button><button type="button" class="seg" aria-label="קפוץ לקטע: 8:42 · הדרך החדשה: משיחת חזאל, יהוא ואלישע; 7,000 נשארים" onclick="segJump('vid19','https://www.youtube.com/embed/eD8SWGiexlQ',522)"><b>8:42</b> · הדרך החדשה: משיחת חזאל, יהוא ואלישע; 7,000 נשארים</button><button type="button" class="seg" aria-label="קפוץ לקטע: 13:55 · אלישע: האדרת, הפרידה ושחיטת הבקר" onclick="segJump('vid19','https://www.youtube.com/embed/eD8SWGiexlQ',835)"><b>13:55</b> · אלישע: האדרת, הפרידה ושחיטת הבקר</button><button type="button" class="seg" aria-label="קפוץ לקטע: 17:17 · סיכום: מה לומדים מהפרק" onclick="segJump('vid19','https://www.youtube.com/embed/eD8SWGiexlQ',1037)"><b>17:17</b> · סיכום: מה לומדים מהפרק</button></div></div>
 </details>
 
 <details>
@@ -389,7 +423,7 @@ footer{text-align:center;color:#64748b;padding:20px;font-size:.9em}
 <div class="key"><b>משפטים לזכור:</b> ״חלילה לי מה׳ מתתי את נחלת אבותי לך״ • ״הרצחת וגם ירשת״ • ״המצאתני אויבי״ • ״מהלך אט״</div>
 <p><b>הרעיון:</b> רצח משפטי בחסות המלוכה — ונביא שאינו מפחד לומר למלך את האמת; תשובה אמיתית דוחה עונש.</p>
 <div class="video"><b>🎬 סרטון לפרק:</b> שיעור וידאו לפרק כ״א — תנ״ך בקליק
-<div class="vidwrap"><iframe id="vid21" src="https://www.youtube.com/embed/bkMH1RqCMuM" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><div class="segs"><p>⏱ קטעים בשיעור — לחצי כדי לקפוץ ישר לקטע:</p><button type="button" class="seg" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',0)"><b>0:00</b> · מההתחלה: נבות והכרם — אחאב מבקש את הכרם</button><button type="button" class="seg" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',146)"><b>2:26</b> · נבות מסרב: ״חלילה לי... נחלת אבותי״</button><button type="button" class="seg" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',235)"><b>3:55</b> · אחאב סר וזעף; איזבל מבטיחה את הכרם</button><button type="button" class="seg" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',417)"><b>6:57</b> · מזימת איזבל: הספרים ושני עדי השקר</button><button type="button" class="seg" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',552)"><b>9:12</b> · אנשי העיר עושים כדבריה: צום וסקילה</button><button type="button" class="seg" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',688)"><b>11:28</b> · אחאב יורש את הכרם</button><button type="button" class="seg" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',722)"><b>12:02</b> · אליהו: ״הרצחת וגם ירשת״</button><button type="button" class="seg" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',779)"><b>12:59</b> · ״המצאתני אויבי?״ — הנבואה על בית אחאב</button><button type="button" class="seg" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',1058)"><b>17:38</b> · אחאב קורע בגדיו וצם — והעונש נדחה</button><button type="button" class="seg" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',1176)"><b>19:36</b> · סיכום והרחבה: שאלות על הפרק</button></div>
+<div class="vidwrap"><iframe loading="lazy" id="vid21" src="https://www.youtube.com/embed/bkMH1RqCMuM" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><div class="segs"><p>⏱ קטעים בשיעור — לחצי כדי לקפוץ ישר לקטע:</p><button type="button" class="seg" aria-label="קפוץ לקטע: 0:00 · מההתחלה: נבות והכרם — אחאב מבקש את הכרם" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',0)"><b>0:00</b> · מההתחלה: נבות והכרם — אחאב מבקש את הכרם</button><button type="button" class="seg" aria-label="קפוץ לקטע: 2:26 · נבות מסרב: ״חלילה לי... נחלת אבותי״" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',146)"><b>2:26</b> · נבות מסרב: ״חלילה לי... נחלת אבותי״</button><button type="button" class="seg" aria-label="קפוץ לקטע: 3:55 · אחאב סר וזעף; איזבל מבטיחה את הכרם" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',235)"><b>3:55</b> · אחאב סר וזעף; איזבל מבטיחה את הכרם</button><button type="button" class="seg" aria-label="קפוץ לקטע: 6:57 · מזימת איזבל: הספרים ושני עדי השקר" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',417)"><b>6:57</b> · מזימת איזבל: הספרים ושני עדי השקר</button><button type="button" class="seg" aria-label="קפוץ לקטע: 9:12 · אנשי העיר עושים כדבריה: צום וסקילה" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',552)"><b>9:12</b> · אנשי העיר עושים כדבריה: צום וסקילה</button><button type="button" class="seg" aria-label="קפוץ לקטע: 11:28 · אחאב יורש את הכרם" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',688)"><b>11:28</b> · אחאב יורש את הכרם</button><button type="button" class="seg" aria-label="קפוץ לקטע: 12:02 · אליהו: ״הרצחת וגם ירשת״" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',722)"><b>12:02</b> · אליהו: ״הרצחת וגם ירשת״</button><button type="button" class="seg" aria-label="קפוץ לקטע: 12:59 · ״המצאתני אויבי?״ — הנבואה על בית אחאב" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',779)"><b>12:59</b> · ״המצאתני אויבי?״ — הנבואה על בית אחאב</button><button type="button" class="seg" aria-label="קפוץ לקטע: 17:38 · אחאב קורע בגדיו וצם — והעונש נדחה" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',1058)"><b>17:38</b> · אחאב קורע בגדיו וצם — והעונש נדחה</button><button type="button" class="seg" aria-label="קפוץ לקטע: 19:36 · סיכום והרחבה: שאלות על הפרק" onclick="segJump('vid21','https://www.youtube.com/embed/bkMH1RqCMuM',1176)"><b>19:36</b> · סיכום והרחבה: שאלות על הפרק</button></div>
 <p style="font-size:.9em;margin:8px 0 0">לא נפתח? <a href="https://www.youtube.com/watch?v=bkMH1RqCMuM" target="_blank" rel="noopener">צפייה ביוטיוב</a></p></div>
 </details>
 
@@ -429,10 +463,10 @@ footer{text-align:center;color:#64748b;padding:20px;font-size:.9em}
 <div class="bar"><i id="bar"></i></div>
 <p><span id="prog"></span> &nbsp;|&nbsp; <span class="score" id="score"></span></p>
 <div class="qcard" id="qcard"></div>
-<button class="btn" id="nextBtn" onclick="nextQ()" style="display:none">שאלה הבאה ⏭</button>
-<button class="btn" id="skipBtn" onclick="skipQ()" style="display:none">⏭ דלג על השאלה</button>
+<button class="btn-primary" id="nextBtn" onclick="nextQ()" style="display:none">שאלה הבאה ⏭</button>
+<button class="btn" id="skipBtn" onclick="skipQ()" style="display:none" aria-label="דלג על השאלה">⏭ דלג על השאלה</button>
 <button class="btn" id="againBtn" onclick="startQuiz(true)" style="display:none">🔄 סבב חדש</button>
-<button class="btn btn-danger" id="resetBtn" onclick="resetProgress()">🗑 איפוס התקדמות</button>
+<button class="btn-danger" id="resetBtn" onclick="resetProgress()">🗑 איפוס התקדמות</button>
 </section>
 
 <section id="all">
@@ -689,7 +723,9 @@ function segJump(frameId, base, sec){
   const f = document.getElementById(frameId);
   if(!f) return;
   f.src = base + '?start=' + sec + '&autoplay=1';
-  f.scrollIntoView({behavior:'smooth', block:'center'});
+  /* STAGE 5: respect prefers-reduced-motion for the scroll-into-view (timestamps untouched) */
+  const smooth = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+  f.scrollIntoView({behavior: smooth, block:'center'});
 }
 
 function buildFilters(){
@@ -852,11 +888,11 @@ function renderQ(){
     if(reviewMode){
       html += '<button class="btn" onclick="startQuiz(true)">🎯 חזרה לסבב הרגיל</button>';
     } else if(typeof filter === 'number' && filter >= 17 && filter < 22){
-      html += '<button class="btn" onclick="nextChapter()">➡ המשך לפרק ' + CH_NAMES[filter + 1] + '</button>';
+      html += '<button class="btn-primary" onclick="nextChapter()">➡ המשך לפרק ' + CH_NAMES[filter + 1] + '</button>';
     } else if(filter === 22){
-      html += '<button class="btn" onclick="nextChapter()">🔄 חזרה לפרק י״ז</button>';
+      html += '<button class="btn-primary" onclick="nextChapter()">🔄 חזרה לפרק י״ז</button>';
     } else {
-      html += '<button class="btn" onclick="startTen()">🎯 עוד סבב קצר — 10 שאלות</button>';
+      html += '<button class="btn-primary" onclick="startTen()">🎯 עוד סבב קצר — 10 שאלות</button>';
     }
     html += '<button class="btn" onclick="backToSummary()">📚 חזרה לסיכום</button>';
     html += '</div>';
