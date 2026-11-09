@@ -139,10 +139,21 @@
 .h-head{text-align:center;padding:18px 8px 4px}
 .h-head h1{font-size:26px;margin:4px 0}
 .h-head p{margin:2px 0;color:var(--ink-soft)}
-.h-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
+.h-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:24px}
 .h-scard{background:var(--card);border:2px solid var(--line);border-radius:24px;padding:20px 16px;min-height:170px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;font-family:inherit;text-align:center;box-shadow:0 2px 12px rgba(30,70,50,.08);transition:transform .08s,border-color .15s}
 .h-scard:hover{transform:translateY(-2px);border-color:var(--accent)}
 .h-semoji{font-size:40px}
+/* ---- illustrations 2026-11-08 ---- */
+.h-art{width:88px;height:88px;display:block;margin:0 auto}
+.h-art.h-art-mini{width:30px;height:30px;vertical-align:-8px;margin:0 0 0 6px;display:inline-block}
+.h-mascot{width:104px;height:104px;display:block;margin:0 auto}
+.h-mascot.h-mascot-small{width:54px;height:54px}
+.h-empty-art{width:110px;height:110px}
+#hubLvlHint{text-wrap:balance}
+#hubTopCoins{padding:8px 12px}
+.h-weekstrip{margin-top:14px}
+.h-foot-parent{margin-top:18px;text-align:center}
+@media (max-width: 639px){.h-art{width:72px;height:72px}.h-mascot{width:88px;height:88px}}
 .h-sname{font-size:20px;font-weight:800;margin-top:4px}
 .h-ssub{font-size:12.5px;color:var(--ink-soft);margin-top:3px;line-height:1.45}
 .h-sprog{font-size:13px;color:var(--muted);margin-top:3px;line-height:1.45}
@@ -159,7 +170,7 @@
 .h-rowbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .h-mission{display:block;width:100%;text-align:right;background:var(--card);border:2px solid var(--line);border-radius:16px;padding:13px 15px;font-size:16.5px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:10px}
 .h-daily{background:var(--card);border-color:var(--line)}
-.h-tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px}
+.h-tgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:8px}
 .h-tcard{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:16px 10px;min-height:110px;cursor:pointer;font-family:inherit;text-align:center}
 .h-tcard.h-active{border-color:var(--accent-deep);background:var(--accent-soft)}
 .h-temoji{font-size:30px}
@@ -226,6 +237,7 @@
 }
 @media (max-width: 479px){
   .h-grid{grid-template-columns:1fr;}
+  .h-tgrid{grid-template-columns:1fr;}
   .h-top-full{display:none;}
   .h-top-short{display:inline;}
 }
@@ -237,13 +249,13 @@
   <nav class="h-top-nav">
     <button class="h-top-btn" onclick="hubHomeFromEnd()">🏠 <span>בית</span></button>
     <button class="h-top-btn" onclick="hubOpenMap()">🗺️ <span>מפה</span></button>
-    <button class="h-top-btn" onclick="hubOpenParent()">👨‍👧 <span>הורה</span></button>
   </nav>
-  <span id="hubTopCoins" class="h-top-coins">🪙 0</span>
+  <button id="hubTopCoins" class="h-top-btn h-top-coins" onclick="hubOpenParent()" aria-label="מטבעות — מסך הורה">🪙 0</button>
 </div></header>
 
 <div id="hubHome" class="h-wrap">
   <div class="h-head">
+    <div id="hubMascot" aria-hidden="true"></div>
     <h1>מרכז הלמידה — כיתה ו׳</h1>
     <p>כל המקצועות, לפי ספרי הלימוד של בית הספר · אימונים, מבחנים והכנה כוללת</p>
   </div>
@@ -260,6 +272,7 @@
       <a class="btn" id="hubShareMail">✉️ מייל</a>
     </div>
   </div>
+  <div class="h-foot-parent"><button class="btn btn-ghost" onclick="hubOpenParent()">👨‍👧 מסך הורה</button></div>
 </div>
 
 <div id="hubProfiles" class="h-wrap h-hidden">
@@ -1166,6 +1179,25 @@ const HUB_SUBJECTS=[
   {id:'history',emoji:'🏛️',name:'היסטוריה',books:[DATA_HISTORY]},
   {id:'english',emoji:'🇬🇧',name:'אנגלית',books:[DATA_ENG_STUDENT,DATA_ENG_WB,DATA_ENG_GRAMMAR]}
 ];
+// ---------- illustrations (flat, warm; inline SVG, no external assets) ----------
+const HUB_ART={
+  'math':'<svg class="h-art" data-art="math" viewBox="0 0 100 100" role="img" aria-label="חשבון"><circle cx="50" cy="50" r="46" fill="#EAF4E6"/><rect x="22" y="24" width="22" height="22" rx="6" fill="#F59E0B"/><text x="33" y="40" text-anchor="middle" font-size="16" font-weight="800" fill="#1E4634">3</text><circle cx="68" cy="35" r="12" fill="#2E7D4F"/><text x="68" y="40" text-anchor="middle" font-size="15" font-weight="800" fill="#fff">7</text><path d="M46 56 L64 80 L28 80 Z" fill="#fff" stroke="#1E4634" stroke-width="2.5" stroke-linejoin="round"/><text x="46" y="76" text-anchor="middle" font-size="13" font-weight="800" fill="#1E4634">5</text><path d="M72 62 v12 M66 68 h12" stroke="#D97706" stroke-width="3.5" stroke-linecap="round"/></svg>',
+  'torah':'<svg class="h-art" data-art="torah" viewBox="0 0 100 100" role="img" aria-label="תורה"><circle cx="50" cy="50" r="46" fill="#EAF4E6"/><path d="M42 30 L45 21 L50 27 L55 21 L58 30 Z" fill="#F59E0B"/><rect x="20" y="36" width="60" height="30" rx="5" fill="#FFFDF7" stroke="#1E4634" stroke-width="2.5"/><rect x="16" y="32" width="6" height="38" rx="3" fill="#D97706"/><rect x="78" y="32" width="6" height="38" rx="3" fill="#D97706"/><path d="M28 46 h44 M28 54 h44 M28 62 h28" stroke="#7A8B7F" stroke-width="2" stroke-linecap="round"/></svg>',
+  'navi':'<svg class="h-art" data-art="navi" viewBox="0 0 100 100" role="img" aria-label="נביא"><circle cx="50" cy="50" r="46" fill="#EAF4E6"/><circle cx="70" cy="30" r="10" fill="#F59E0B"/><path d="M70 16 v4 M70 40 v4 M56 30 h4 M80 30 h4" stroke="#D97706" stroke-width="2.5" stroke-linecap="round"/><path d="M16 72 L38 44 L52 62 L64 48 L84 72 Z" fill="#2E7D4F" stroke="#1E4634" stroke-width="2.5" stroke-linejoin="round"/><path d="M14 72 h72" stroke="#1E4634" stroke-width="2.5" stroke-linecap="round"/></svg>',
+  'mishna':'<svg class="h-art" data-art="mishna" viewBox="0 0 100 100" role="img" aria-label="משנה"><circle cx="50" cy="50" r="46" fill="#EAF4E6"/><path d="M50 34 C40 26 28 26 22 30 L22 68 C28 64 40 64 50 72 C60 64 72 64 78 68 L78 30 C72 26 60 26 50 34 Z" fill="#FFFDF7" stroke="#1E4634" stroke-width="2.5" stroke-linejoin="round"/><path d="M50 34 L50 72" stroke="#1E4634" stroke-width="2.5"/><path d="M28 40 C34 38 40 38 45 41 M28 50 C34 48 40 48 45 51 M55 41 C60 38 66 38 72 40 M55 51 C60 48 66 48 72 50" stroke="#7A8B7F" stroke-width="2" fill="none" stroke-linecap="round"/></svg>',
+  'halacha':'<svg class="h-art" data-art="halacha" viewBox="0 0 100 100" role="img" aria-label="הלכה"><circle cx="50" cy="50" r="46" fill="#EAF4E6"/><rect x="24" y="76" width="52" height="5" rx="2.5" fill="#D97706"/><rect x="34" y="46" width="8" height="30" rx="3" fill="#FFFDF7" stroke="#1E4634" stroke-width="2.5"/><rect x="58" y="46" width="8" height="30" rx="3" fill="#FFFDF7" stroke="#1E4634" stroke-width="2.5"/><path d="M38 33 C34 39 34 44 38 44 C42 44 42 39 38 33 Z" fill="#F59E0B"/><path d="M62 33 C58 39 58 44 62 44 C66 44 66 39 62 33 Z" fill="#F59E0B"/><circle cx="38" cy="41" r="2" fill="#D97706"/><circle cx="62" cy="41" r="2" fill="#D97706"/></svg>',
+  'hal-weekly':'<svg class="h-art" data-art="hal-weekly" viewBox="0 0 100 100" role="img" aria-label="הלכה שבועית"><circle cx="50" cy="50" r="46" fill="#EAF4E6"/><path d="M34 24 v8 M66 24 v8" stroke="#1E4634" stroke-width="3" stroke-linecap="round"/><rect x="24" y="28" width="52" height="46" rx="8" fill="#FFFDF7" stroke="#1E4634" stroke-width="2.5"/><path d="M24 42 h52" stroke="#1E4634" stroke-width="2"/><circle cx="34" cy="53" r="2.5" fill="#2E7D4F"/><circle cx="46" cy="53" r="2.5" fill="#7A8B7F"/><circle cx="58" cy="53" r="2.5" fill="#7A8B7F"/><circle cx="34" cy="64" r="2.5" fill="#7A8B7F"/><circle cx="46" cy="64" r="2.5" fill="#7A8B7F"/><path d="M64 56 l2 4 4 .5 -3 3 .8 4 -3.8-2 -3.8 2 .8-4 -3-3 4-.5 Z" fill="#F59E0B"/></svg>',
+  'tefilla':'<svg class="h-art" data-art="tefilla" viewBox="0 0 100 100" role="img" aria-label="תפילה"><circle cx="50" cy="50" r="46" fill="#EAF4E6"/><path d="M32 78 V54 a18 18 0 0 1 36 0 V78 Z" fill="#FFFDF7" stroke="#1E4634" stroke-width="2.5"/><path d="M50 44 L56 55 L44 55 Z M50 63 L44 52 L56 52 Z" fill="none" stroke="#D97706" stroke-width="2" stroke-linejoin="round"/><path d="M24 78 h52" stroke="#1E4634" stroke-width="2.5" stroke-linecap="round"/><circle cx="50" cy="26" r="3" fill="#F59E0B"/></svg>',
+  'hebrew':'<svg class="h-art" data-art="hebrew" viewBox="0 0 100 100" role="img" aria-label="עברית"><circle cx="50" cy="50" r="46" fill="#EAF4E6"/><circle cx="34" cy="46" r="16" fill="#FFFDF7" stroke="#1E4634" stroke-width="2.5"/><circle cx="68" cy="56" r="16" fill="#F59E0B"/><text x="34" y="54" text-anchor="middle" font-size="22" font-weight="800" fill="#1E4634">א</text><text x="68" y="64" text-anchor="middle" font-size="22" font-weight="800" fill="#fff">ב</text><circle cx="24" cy="76" r="3" fill="#2E7D4F"/><circle cx="78" cy="28" r="3" fill="#2E7D4F"/></svg>',
+  'science':'<svg class="h-art" data-art="science" viewBox="0 0 100 100" role="img" aria-label="מדע"><circle cx="50" cy="50" r="46" fill="#EAF4E6"/><path d="M50 32 C50 24 46 19 40 19 C40 25 44 29 50 32 Z" fill="#2E7D4F"/><path d="M50 32 C50 24 54 19 60 19 C60 25 56 29 50 32 Z" fill="#7BAF8A"/><path d="M44 30 h12 M46 30 v16 L34 66 a6 6 0 0 0 5 9 h22 a6 6 0 0 0 5-9 L54 46 V30" fill="#FFFDF7" stroke="#1E4634" stroke-width="2.5" stroke-linejoin="round"/><path d="M39 60 h22 l3 5 a5 5 0 0 1-4 7 H40 a5 5 0 0 1-4-7 Z" fill="#2E7D4F"/><circle cx="46" cy="66" r="2" fill="#fff"/><circle cx="55" cy="68" r="1.6" fill="#fff"/></svg>',
+  'history':'<svg class="h-art" data-art="history" viewBox="0 0 100 100" role="img" aria-label="היסטוריה"><circle cx="50" cy="50" r="46" fill="#EAF4E6"/><rect x="22" y="30" width="56" height="40" rx="5" fill="#FFFDF7" stroke="#1E4634" stroke-width="2.5"/><path d="M28 44 C36 38 44 50 52 44 S66 40 70 46" stroke="#D97706" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="4 3"/><circle cx="30" cy="62" r="3" fill="#2E7D4F"/><circle cx="64" cy="60" r="9" fill="#EAF4E6" stroke="#1E4634" stroke-width="2"/><path d="M64 53 L67 60 L64 67 L61 60 Z" fill="#D97706"/><circle cx="64" cy="60" r="1.5" fill="#1E4634"/></svg>',
+  'english':'<svg class="h-art" data-art="english" viewBox="0 0 100 100" role="img" aria-label="אנגלית"><circle cx="50" cy="50" r="46" fill="#EAF4E6"/><text x="20" y="28" font-size="15" font-weight="800" fill="#D97706">A</text><text x="70" y="28" font-size="15" font-weight="800" fill="#2E7D4F">B</text><text x="76" y="82" font-size="15" font-weight="800" fill="#D97706">C</text><circle cx="50" cy="52" r="24" fill="#7FB3D5" stroke="#1E4634" stroke-width="2.5"/><path d="M32 44 a24 24 0 0 1 12-9 a10 10 0 0 1 5 9 a8 8 0 0 1-8 6 Z" fill="#2E7D4F"/><path d="M56 62 a24 24 0 0 0 12 3 a8 8 0 0 0 2-8 a10 10 0 0 0-9-4 Z" fill="#2E7D4F"/><ellipse cx="50" cy="52" rx="24" ry="9" fill="none" stroke="#1E4634" stroke-width="1.5"/></svg>',
+};
+const HUB_MASCOT='<svg class="h-mascot" data-art="mascot" viewBox="0 0 120 120" role="img" aria-label="הינשוף שלנו"><path d="M44 34 L48 22 L55 32 Z" fill="#7BAF8A" stroke="#1E4634" stroke-width="2" stroke-linejoin="round"/><path d="M65 32 L72 22 L76 34 Z" fill="#7BAF8A" stroke="#1E4634" stroke-width="2" stroke-linejoin="round"/><path d="M30 58 C16 50 12 38 20 30" fill="none" stroke="#1E4634" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="60" cy="66" rx="34" ry="36" fill="#7BAF8A" stroke="#1E4634" stroke-width="3"/><ellipse cx="60" cy="80" rx="20" ry="17" fill="#FFFDF7"/><circle cx="48" cy="52" r="11" fill="#fff" stroke="#1E4634" stroke-width="2.5"/><circle cx="72" cy="52" r="11" fill="#fff" stroke="#1E4634" stroke-width="2.5"/><circle cx="50" cy="54" r="5" fill="#1E4634"/><circle cx="74" cy="54" r="5" fill="#1E4634"/><circle cx="52" cy="52" r="1.8" fill="#fff"/><circle cx="76" cy="52" r="1.8" fill="#fff"/><path d="M56 62 L64 62 L60 69 Z" fill="#F59E0B" stroke="#1E4634" stroke-width="2" stroke-linejoin="round"/><rect x="80" y="78" width="22" height="16" rx="3" fill="#F59E0B" stroke="#1E4634" stroke-width="2"/><path d="M86 82 h10 M86 87 h10" stroke="#1E4634" stroke-width="1.8" stroke-linecap="round"/><path d="M48 102 v4 M58 102 v4 M68 102 v4" stroke="#D97706" stroke-width="3" stroke-linecap="round"/></svg>';
+const HUB_ART_EMPTY='<svg class="h-art h-empty-art" data-art="empty-done" viewBox="0 0 100 100" role="img" aria-label="הכל בוצע"><circle cx="50" cy="50" r="46" fill="#EAF4E6"/><circle cx="72" cy="28" r="9" fill="#F59E0B"/><path d="M72 14 v4 M72 38 v4 M58 28 h4 M82 28 h4" stroke="#D97706" stroke-width="2.5" stroke-linecap="round"/><path d="M16 76 a34 34 0 0 1 68 0 Z" fill="#2E7D4F"/><circle cx="50" cy="50" r="16" fill="#fff" stroke="#1E4634" stroke-width="2.5"/><path d="M43 50 l5 5 l9 -10" stroke="#2E7D4F" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const HUB_ART_CELEB='<svg class="h-art h-empty-art" data-art="week-done" viewBox="0 0 100 100" role="img" aria-label="היעד הושג"><circle cx="50" cy="50" r="46" fill="#EAF4E6"/><path d="M38 34 h24 v10 a12 12 0 0 1-24 0 Z" fill="#F59E0B" stroke="#1E4634" stroke-width="2.5"/><path d="M38 38 h-8 a6 6 0 0 0 6 8 M62 38 h8 a6 6 0 0 1-6 8" fill="none" stroke="#1E4634" stroke-width="2.5"/><path d="M50 66 v8 M42 78 h16" stroke="#1E4634" stroke-width="2.5" stroke-linecap="round"/><path d="M26 30 l2 4 4 .5 -3 3 .8 4 -3.8-2 -3.8 2 .8-4 -3-3 4-.5 Z" fill="#2E7D4F"/><path d="M74 26 l1.6 3.2 3.4 .5 -2.5 2.4 .6 3.4 -3.1-1.6 -3.1 1.6 .6-3.4 -2.5-2.4 3.4-.5 Z" fill="#D97706"/><circle cx="24" cy="62" r="2.5" fill="#D97706"/><circle cx="78" cy="58" r="2.5" fill="#2E7D4F"/><circle cx="70" cy="84" r="2.5" fill="#F59E0B"/></svg>';
+function hubArt(id){return HUB_ART[id]||'';}
+function hubArtMini(id){return hubArt(id).replace('class="h-art"','class="h-art h-art-mini"');}
 const LV_NAMES={1:'🌱 מתחילים',2:'🌿 צומחים',3:'🌳 מתחזקים',4:'⭐ כוכבים',5:'🔥 מתקדמים',6:'💎 יהלומים',7:'🏆 אתגר מתקדם',8:'👑 שיא האתגר'};
 function hubFamily(q){const t=q.type||'כללי';
   if(/פיסוק|כתיב/.test(t))return 'פיסוק וכתיב';
@@ -1250,7 +1282,7 @@ function hubStartFocus(){
   const qs=hubDrawType(t,hubFocusCtx.family,10,hubFocusCtx.level);
   if(!qs.length)return;
   hubS={mode:'focus',topic:t,level:hubFocusCtx.level,qs,idx:0,correct:0,selected:-1,checked:false,answers:[]};
-  hEl('hubQuizTitle').textContent=(hubSubj.emoji+' '+t.name);
+  hEl('hubQuizTitle').innerHTML=hubArtMini(hubSubj?hubSubj.id:'torah')+hEsc(t.name);
   hEl('hubQuizMode').textContent='סבב ממוקד · '+hubFocusCtx.family;
   hubShow('hubQuiz');hubRenderQ();
 }
@@ -1344,7 +1376,7 @@ function hubReqReward(){
   if(hubBank.coins<50||hubBank.reqs.some(r=>r.st==='pending'))return;
   hubBank.reqs.unshift({d:hubToday(),st:'pending'});hubSave();hubRenderHome();
 }
-function hubApproveReq(i){const r=hubBank.reqs[i];if(!r||r.st!=='pending'||hubBank.coins<50)return;r.st='done';hubBank.coins-=50;hubSave();hubRenderParent();}
+function hubApproveReq(i){if(window.hubGuest)return;const r=hubBank.reqs[i];if(!r||r.st!=='pending'||hubBank.coins<50)return;r.st='done';hubBank.coins-=50;hubSave();hubRenderParent();}
 function hubBurst(){
   const host=hEl('hubEnd');if(!host)return;const em=['🎉','⭐','🪙','🎊','✨'];
   for(let i=0;i<22;i++){const s=document.createElement('span');s.className='h-burst';s.textContent=em[i%em.length];
@@ -1397,7 +1429,7 @@ function hubRenderMap(){
       html+='<div class="h-mapsec"><div class="h-maphead">🔢 חשבון</div>';
       const md=hubMathProgress();
       if(!md.rows.length&&!md.pages.length){
-        html+='<div class="h-mapnote">ההתקדמות בחשבון מתנהלת בתוך ערכת החשבון עצמה (שבילים פלוס 16 · 17 · 18).</div><div class="h-rowbtns"><button class="btn" onclick="hubOpenMath()">פתיחת ערכת החשבון 🔢</button></div>';
+        html+='<div class="center">'+HUB_ART_EMPTY+'</div><div class="h-mapnote">ההתקדמות בחשבון מתנהלת בתוך ערכת החשבון עצמה (שבילים פלוס 16 · 17 · 18).</div><div class="h-rowbtns"><button class="btn" onclick="hubOpenMath()">פתיחת ערכת החשבון 🔢</button></div>';
       }else{
         const all=md.rows.concat(md.pages);
         for(const r of all){
@@ -1417,7 +1449,7 @@ function hubRenderMap(){
   hEl('hubMapBody').innerHTML=html;
 }
 function hubMapGo(tid){const f=hubFindTopic(tid);if(!f)return;hubSubj=f.subj;hubBookIdx=f.bookIdx;hubRenderSubject();hEl('hubTopicSel').value=tid;hubTopicChanged();hubShow('hubSubject');}
-function hubOpenParent(){hubRenderParent();hubShow('hubParent');}
+function hubOpenParent(){if(window.hubGuest){alert('מסך ההורה זמין רק עם פרופיל.');return;}hubRenderParent();hubShow('hubParent');}
 function hubRenderParent(){
   hubWkReset();const ad=hubActiveDays();
   const profMsg=hubProfMsg;hubProfMsg='';
@@ -1447,7 +1479,7 @@ function hubRenderParent(){
   for(const r of mdP.rows.concat(mdP.pages))mathRows+='<div class="h-typerow"><span>🔢 '+hEsc(r.label)+'</span><span>'+(r.mastered?'👑 הושלם':r.answered>0?'רמה '+(r.level+1)+'/8':'לא התחיל')+'</span></div>';
   hEl('hubParentBody').innerHTML=
     '<div class="h-lab">פרופילים במכשיר הזה</div>'+profRows
-    +'<div class="h-rowbtns"><button class="btn" onclick="hubOpenProfiles()">👤 החלפת פרופיל / פרופיל חדש</button><button class="btn" onclick="hubImportPanel()">📥 ייבוא פרופיל מקוד</button></div>'
+    +'<div class="h-rowbtns"><button class="btn" onclick="hubImportPanel()">📥 ייבוא פרופיל מקוד</button></div>'
     +(profMsg?'<div class="fb good">'+hEsc(profMsg)+'</div>':'')
     +'<div id="hubProfPanel" class="h-sharebox h-hidden"></div>'
     +'<div class="h-bankcard"><div style="font-size:19px;font-weight:800">🏦 בנק הידע</div><div style="font-size:30px;font-weight:800;margin:4px 0">'+hubBank.coins+' מטבעות</div>'
@@ -1461,7 +1493,7 @@ function hubRenderParent(){
     +(gi?'<div class="h-typerow"><span>היעד השבועי שהוא בחר</span><span>'+hEsc(gi.g.label)+' · '+Math.min(gi.cur,gi.g.target)+'/'+gi.g.target+(gi.done?' ✔':'')+'</span></div>':'')
     +'<div class="h-lab">עליות שליטה השבוע</div>'+mg
     +'<div class="h-lab">התקדמות לפי נושא (נושאים שהתחילו)</div>'
-    +(progRows||'<div class="h-ssub">עדיין לא הושלם סבב באף נושא.</div>')
+    +(progRows||('<div class="center">'+HUB_ART_EMPTY+'<div class="h-ssub">עדיין לא הושלם סבב באף נושא — מתחילים היום?</div></div>'))
     +(mathRows?'<div class="h-lab">חשבון (מערכת החשבון)</div>'+mathRows:'')
     +'<div class="h-next">💬 לדבר עליו: '+(talk?('בנושא "'+hEsc(talk)+'" היו השבוע '+mx+' טעויות — שווה לשאול מה היה שם קשה, בלי לחץ.'):'לא נרשמו השבוע טעויות בנושא מסוים.')+'</div>'
     +(reqs?'<div class="h-lab">בקשות צ׳ופר</div>'+reqs:'')
@@ -1516,6 +1548,7 @@ function hubRenderProfiles(){
 function hubB64enc(str){const bytes=new TextEncoder().encode(str);let bin='';const CH=32768;for(let i=0;i<bytes.length;i+=CH){bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+CH));}return btoa(bin);}
 function hubB64dec(b64){const bin=atob(b64);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes);}
 function hubExportProfile(id){
+  if(window.hubGuest)return;
   const p=hubProfiles.find(x=>x.id===id);if(!p)return;
   let data=null,math=null;
   try{data=JSON.parse(localStorage.getItem(hubProfileKey(id))||'null');}catch(e){}
@@ -1551,11 +1584,13 @@ function hubImportProfile(){
   hubRegSave();hubProfMsg='פרופיל "'+name+'" נוסף בהצלחה ✅';hubRenderParent();
 }
 function hubRenameProfile(id){
+  if(window.hubGuest)return;
   const p=hubProfiles.find(x=>x.id===id);if(!p)return;
   const name=prompt('שם חדש לפרופיל:',p.name);if(name===null)return;const t=name.trim();if(!t)return;
   p.name=t.slice(0,20);hubRegSave();hubRenderParent();hubRenderHome();
 }
 function hubDeleteProfile(id){
+  if(window.hubGuest)return;
   if(hubProfiles.length<2)return;const p=hubProfiles.find(x=>x.id===id);if(!p)return;
   if(!confirm('למחוק את הפרופיל "'+p.name+'" וכל ההתקדמות שלו במכשיר הזה? אי אפשר לבטל.'))return;
   try{localStorage.removeItem(hubProfileKey(id));localStorage.removeItem(hubMathKeyFor(id));}catch(e){}
@@ -1608,6 +1643,8 @@ function hubStartDue(){
 }
 function hubRenderHome(){
   const cont=hEl('hubHomeTop');let th='';
+  var ms=hEl('hubMascot');if(ms&&!ms.innerHTML)ms.innerHTML=HUB_MASCOT;
+  var fp=document.querySelector('#hubHome .h-foot-parent');if(fp)fp.classList.toggle('h-hidden',!!window.hubGuest);
   hubWkReset();
   const wd=hubWeekDays();const ad=hubActiveDays();const gi=hubGoalInfo();
   const dots=wd.map(x=>'<span class="h-wdot'+(x.n?' on':'')+(x.future?' fut':'')+'"></span>').join('');
@@ -1616,17 +1653,14 @@ function hubRenderHome(){
   const hasCont=!!(hubLast&&hubFindTopic(hubLast.topic));
   // compact action chips only — no full-width suggestion rows on home (user feedback: visual clutter)
   let chips='';
-  const ap=hubActiveProfile();
   if(window.hubGuest)chips+='<button class="btn btn-ghost" onclick="hubExitGuest()">🎭 מצב אורח · סיום וחזרה</button>';
-  if(ap)chips+='<button class="btn btn-ghost" onclick="hubOpenProfiles()">'+ap.emoji+' '+hEsc(ap.name)+' ▾</button>';
   let quiet='<div class="h-rowbtns"><button class="btn btn-ghost" onclick="hubStartDaily()">🎯 נושא יומי</button>';
   if(dueTot>0)quiet+='<button class="btn btn-ghost" onclick="hubStartDue()">🔁 '+dueTot+' שאלות לחיזוק היום</button>';
   quiet+='</div>';
   if(hasCont){const f=hubFindTopic(hubLast.topic);const cp=hubTopicProg(f.topic.id);
-    th+='<div class="h-cont"><div style="font-size:20px;font-weight:800">▶️ ממשיכים מאיפה שהפסקת</div><div class="h-ssub" style="margin-top:4px">'+hEsc(f.topic.name)+' · רמה '+Math.min(8,cp.mastery+1)+' · '+hEsc(f.subj.name)+'</div><div class="h-rowbtns"><button class="btn btn-main h-primary-full" onclick="hubContinue()">▶️ המשך: '+hEsc(f.topic.name)+'</button></div></div>';}
+    th+='<div class="h-cont">'+HUB_MASCOT.replace('h-mascot','h-mascot h-mascot-small')+'<div style="font-size:20px;font-weight:800">▶️ ממשיכים מאיפה שהפסקת</div><div class="h-ssub" style="margin-top:4px">'+hEsc(f.topic.name)+' · רמה '+Math.min(8,cp.mastery+1)+' · '+hEsc(f.subj.name)+'</div><div class="h-rowbtns"><button class="btn btn-main h-primary-full" onclick="hubContinue()">▶️ המשך: '+hEsc(f.topic.name)+'</button></div></div>';}
   th+=quiet;
-  th+='<div class="h-bankcard">'
-    +'<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:18px;font-weight:800">🏦 בנק הידע שלי</span><span style="font-size:22px;font-weight:800">'+hubBank.coins+' 🪙</span></div>'
+  th+='<div class="h-weekstrip">'
     +'<div style="margin-top:6px">השבוע: '+dots+' <span class="h-ssub">'+ad+' ימי למידה'+(ad>=4?' · הבונוס השבועי (+20) כבר נכנס ✔':' · עוד '+(4-ad)+' ימי למידה לבונוס +20')+'</span></div>'
     +((gi&&!hubGoalPick)?'<div style="margin-top:8px">🎯 היעד שלי השבוע: <b>'+hEsc(gi.g.label)+'</b><div class="h-goalbar"><div style="width:'+Math.min(100,Math.round(gi.cur/gi.g.target*100))+'%"></div></div><span class="h-ssub">'+Math.min(gi.cur,gi.g.target)+'/'+gi.g.target+(gi.done?' · הושג! 🎉':'')+'</span> <button class="btn" onclick="hubGoalSwap()">🔄 החלף יעד</button></div>'
        :'<div style="margin-top:8px"><span class="h-ssub">🎯 '+((hubGoal&&hubGoal.wk===hubWeekKey())?'בחירת יעד אחר:':'יעד לשבוע הזה:')+'</span> <span class="h-rowbtns" style="display:inline-flex;margin-top:0;vertical-align:middle">'+((hubGoal&&hubGoal.wk===hubWeekKey())?'<button class="btn" onclick="hubGoalCancel()">↩️ בלי שינוי</button>':'')+dailies.slice(0,1).map(dt=>'<button class="btn" onclick="hubSetGoal(\'topic\',\''+dt.id+'\')">לעלות רמה ב'+hEsc(dt.name)+'</button>').join('')+'<button class="btn" onclick="hubSetGoal(\'grads\')">15 שאלות שיבוגרו</button><button class="btn" onclick="hubSetGoal(\'rounds\')">8 סבבים</button></span></div>')
@@ -1634,11 +1668,12 @@ function hubRenderHome(){
     +'<div class="h-rowbtns">'+chips+''
     +(window.hubGuest?'':(hubBank.reqs.some(r=>r.st==='pending')?'<span class="h-ssub" style="align-self:center">🎁 בקשת הצ׳ופר ממתינה לאישור הורה</span>':(hubBank.coins>=50?'<button class="btn btn-ghost" onclick="hubReqReward()">🎁 בקש צ׳ופר (50 🪙)</button>':'')))
     +'</div></div>';
+  if(gi&&gi.done)th+='<div class="center">'+HUB_ART_CELEB+'<div class="h-ssub">🎉 היעד השבועי הושג!</div></div>';
   cont.innerHTML=th;
   const grid=hEl('hubGrid');let html='';
   for(const s of HUB_SUBJECTS){
     if(s.special==='math'){
-      html+='<button class="h-scard" onclick="hubOpenMath()"><div class="h-semoji">🔢</div><div class="h-sname">חשבון</div><div class="h-ssub">3 חוברות · 21 נושאים</div></button>';
+      html+='<button class="h-scard" onclick="hubOpenMath()">'+hubArt('math')+'<div class="h-sname">חשבון</div><div class="h-ssub">3 חוברות · 21 נושאים</div></button>';
       continue;
     }
     const books=s.books.length;
@@ -1646,10 +1681,10 @@ function hubRenderHome(){
     let started=0,maxLv=0;
     for(const b of s.books)for(const t of b.topics){const p=hubTopicProg(t.id);if(p.rounds||p.mastery){started++;maxLv=Math.max(maxLv,Math.min(8,p.mastery+1));}}
     const progLine=started?('התחלת '+started+' מתוך '+topics+' נושאים · רמה '+maxLv):'עדיין לא התחלת';
-    html+='<button class="h-scard" onclick="hubOpenSubject(\''+s.id+'\')"><div class="h-semoji">'+s.emoji+'</div><div class="h-sname">'+hEsc(s.name)+'</div><div class="h-ssub">'+(books>1?books+' ספרים · ':'')+topics+' נושאים</div><div class="h-sprog">'+progLine+'</div></button>';
+    html+='<button class="h-scard" onclick="hubOpenSubject(\''+s.id+'\')">'+hubArt(s.id)+'<div class="h-sname">'+hEsc(s.name)+'</div><div class="h-ssub">'+(books>1?books+' ספרים · ':'')+topics+' נושאים</div><div class="h-sprog">'+progLine+'</div></button>';
   }
   grid.innerHTML=html;
-  var tc=document.getElementById('hubTopCoins');if(tc)tc.textContent=window.hubGuest?'🎭 אורח':'🪙 '+hubBank.coins;
+  var tc=document.getElementById('hubTopCoins');if(tc){tc.classList.toggle('h-hidden',!!window.hubGuest);tc.textContent=window.hubGuest?'🎭 אורח':'🪙 '+hubBank.coins;}
 }
 
 function hubContinue(){
@@ -1717,7 +1752,7 @@ function hubTopicChanged(){
   const maxL=Math.min(8,p.mastery+2);
   for(const o of hEl('hubLvlSel').options)o.disabled=(+o.value)>maxL;
   hEl('hubLvlSel').value=String(startLvl);
-  hEl('hubLvlHint').textContent=maxL<8?'⭐ 5 כוכבים או רצף של 3 נכונות מעלים רמה מיד · טעות מאפסת רק את הרצף — הרמה אף פעם לא יורדת · רמות עד '+maxL+' פתוחות · מבחן בציון 80%+ מקפיץ קדימה':'🎉 כל הרמות פתוחות · ⭐ 5 כוכבים או רצף של 3 נכונות מעלים רמה מיד · טעות מאפסת רק את הרצף';
+  hEl('hubLvlHint').textContent=maxL<8?'⭐ 5 כוכבים או רצף של 3 נכונות מעלים רמה · טעות מאפסת רק את הרצף · רמות עד '+maxL+' פתוחות · מבחן 80%+ מקפיץ קדימה':'🎉 כל הרמות פתוחות · ⭐ 5 כוכבים או רצף של 3 מעלים רמה · טעות מאפסת רק את הרצף';
   const up=hEl('hubPrepUpTo');
   up.innerHTML=hubBook().topics.map(x=>'<option value="'+x.id+'"'+(x.id===t.id?' selected':'')+'>עד וכולל: '+x.emoji+' '+hEsc(x.name)+'</option>').join('');
 }
@@ -1735,7 +1770,7 @@ function hubOpenLearn(){
 }
 function hubRenderLearn(){
   const L=hubL;const box=hEl('hubLearnCheck');box.innerHTML='';
-  hEl('hubLearnTitle').textContent=L.topic.emoji+' '+L.topic.name+' · לימוד';
+  hEl('hubLearnTitle').innerHTML=hubArtMini(hubSubj?hubSubj.id:'torah')+hEsc(L.topic.name)+' · לימוד';
   {const lf=hubFindTopic(L.topic.id);if(lf)hEl('hubLearnCardT').style.borderColor='';}
   if(L.phase==='cards'){
     const c=L.topic.learn[L.idx];
@@ -1805,7 +1840,7 @@ function hubStart(mode){
     qs.sort((a,b)=>((miss[a.q].due||0)-(miss[b.q].due||0)));
     qs=qs.slice(0,10);
     label='חיזוק · '+qs.length+' שאלות ששווה לראות שוב';
-    if(!qs.length)return;
+    if(!qs.length){hEl('hubTopicDesc').innerHTML='<div class="center">'+HUB_ART_EMPTY+'<div>🎉 אין שאלות לחיזוק — הכול בוגר ומוכן!</div></div>';window.scrollTo(0,0);return;}
   }else if(mode==='train'){
     qs=hubDraw(t,[lvl],10);
     const widened=qs.some(q=>q.lvl!==lvl);
@@ -1838,7 +1873,7 @@ function hubStart(mode){
   }
   if(!qs.length){hEl('hubTopicDesc').textContent='⚠️ אין עדיין שאלות במצב הזה בנושא הזה — נסו רמה אחרת או מצב אחר.';window.scrollTo(0,0);return;}
   hubS={mode,topic:t,level:lvl,qs,idx:0,correct:0,selected:-1,checked:false,answers:[],testTop,_lastPsg:-1,_psgOpen:false,_spoke:-1,_c0:hubBank.coins,stars:0};
-  hEl('hubQuizTitle').textContent=(hubSubj.emoji+' '+t.name);
+  hEl('hubQuizTitle').innerHTML=hubArtMini(hubSubj?hubSubj.id:'torah')+hEsc(t.name);
   hEl('hubQuizMode').textContent=label;
   hubShow('hubQuiz');hubRenderQ();
 }
