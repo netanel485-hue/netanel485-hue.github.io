@@ -36,6 +36,155 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Adi's English Game</title>
 <style>
+/* DESIGN-TOKENS-START */
+/* ==========================================================================
+   DESIGN TOKENS — מקור אמת אחד לכל מוצרי הלמידה
+   --------------------------------------------------------------------------
+   הפלטה הקנונית היא פלטת grade6 אחרי העיצוב המחודש (8/11/2026):
+   רקע קרם, כרטיסים ירוקים בהירים, טקסט ירוק כהה, מבטא אחד צהוב-כתום.
+   הערכים כאן מועתקים בדיוק מ־grade6 — אין לעצב מחדש בקובץ הזה.
+
+   כלל ברזל: לא עורכים את הבלוק המוזרק בתוך קובץ מוצר.
+   שינוי טוקן נעשה כאן בלבד, ואז מריצים:
+     node ~/workspace/hub-audit/inject-tokens.js <קובץ מוצר>
+   ובודקים סטייה לפני כל פרסום:
+     node ~/workspace/hub-audit/check-tokens-drift.js
+   אין תלות ריצה: אחרי ההזרקה הטוקנים חיים בתוך כל קובץ מוצר.
+   אין פונטים חיצוניים, אין URL-ים, אין תמונות.
+   ========================================================================== */
+
+:root {
+  /* --- צבעי רקע --- */
+  --bg: #FAF6EB;          /* רקע הדף — קרם */
+  --bar: #FFFDF7;         /* סרגל עליון — קרם בהיר יותר */
+  --card: #EAF4E6;        /* כרטיס — ירוק בהיר רך */
+  --card-focus: #FFFFFF;  /* כרטיס במוקד (שאלה פעילה) — לבן */
+
+  /* --- צבעי טקסט --- */
+  --ink: #1E4634;         /* טקסט ראשי — ירוק כהה */
+  --ink-soft: #4F6B5D;    /* טקסט משני — ירוק-אפור */
+  --muted: #7A8B7F;       /* טקסט חלש / כיתוב קטן */
+
+  /* --- קווים וגבולות --- */
+  --line: #D8E4D4;        /* גבול כרטיסים וכפתורים */
+
+  /* --- מבטא — צהוב-כתום אחד בלבד --- */
+  --accent: #F59E0B;      /* מבטא ראשי (מוקד, פס התקדמות) */
+  --accent-deep: #D97706; /* מבטא כהה — כפתורים ראשיים */
+  --accent-soft: #FDF3DC; /* רקע רך למבטא (בחירה, טיפ) */
+
+  /* --- מצבים: הצלחה / שגיאה / אזהרה --- */
+  --good: #2E7D4F;        /* ירוק הצלחה */
+  --good-bg: #DFF0E3;     /* רקע הצלחה */
+  --bad: #B3382E;         /* אדום שגיאה */
+  --bad-bg: #FBE7E3;      /* רקע שגיאה */
+  /* אזהרה: אין גוון חדש בפלטה — משתמשים במשפחת המבטא בלבד */
+  --warn: #D97706;        /* = --accent-deep */
+  --warn-bg: #FDF3DC;     /* = --accent-soft */
+
+  /* --- מצב מושבת (מועתק מחוקי הכפתורים ב־grade6) --- */
+  --disabled-bg: #E7EDE6;
+  --disabled-ink: #8A9A8F;
+
+  /* --- צל --- */
+  --shadow-card: 0 2px 12px rgba(30, 70, 50, .08);
+
+  /* --- רדיוסים (מועתקים מ־grade6) --- */
+  --radius-card: 24px;    /* כרטיס גדול */
+  --radius-md: 20px;      /* כרטיס נושא / חלונית */
+  --radius-btn: 16px;     /* כפתור ואפשרות תשובה */
+  --radius-sm: 12px;      /* שדה קלט / משוב */
+  --radius-pill: 999px;   /* צ'יפ / פס התקדמות */
+
+  /* --- מרווחים (סקאלה, מבוססת על הערכים הנפוצים ב־grade6) --- */
+  --sp-xs: 8px;
+  --sp-sm: 12px;
+  --sp-md: 16px;
+  --sp-lg: 20px;
+  --sp-xl: 28px;
+}
+
+/* ==========================================================================
+   שפת כפתורים משותפת — class-ים עצמאיים, לא דורסים class-ים קיימים.
+   .btn-primary / .btn-secondary / .btn-ghost / .btn-danger הם שמות חדשים
+   (אין אף מוצר שמגדיר אותם היום), והערכים מועתקים מ־grade6:
+   .btn-primary = .btn-main, .btn-secondary = .btn, .btn-ghost = .btn-ghost.
+   כפתור מסוכן (.btn-danger) חדש — משתמש ב־--bad הקיים, בלי גוון חדש.
+   ========================================================================== */
+
+/* בסיס משותף לכל הכפתורים */
+.btn-primary,
+.btn-secondary,
+.btn-ghost,
+.btn-danger {
+  display: inline-block;
+  border-radius: var(--radius-btn);
+  padding: 13px 26px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  min-height: 52px;
+  touch-action: manipulation;
+  text-align: center;
+}
+
+/* ראשי — הפעולה החשובה בעמוד (התחל / בדוק / המשך) */
+.btn-primary {
+  background: var(--accent-deep);
+  color: #fff;
+  border: none;
+  font-size: 17px;
+  font-weight: 800;
+  min-height: 54px;
+  padding: 14px 28px;
+}
+
+/* משני — פעולה רגילה (חזרה / דלג / ביטול) */
+.btn-secondary {
+  background: #FFFFFF;
+  color: var(--ink);
+  border: 2px solid var(--line);
+}
+
+/* שקט — פעולה זניחה, בלי מסגרת בולטת (סגירה / פרטים) */
+.btn-ghost {
+  background: transparent;
+  border: 2px solid var(--line);
+  color: var(--ink-soft);
+  padding: 10px 16px;
+  font-size: 15px;
+  min-height: 48px;
+}
+
+/* מסוכן — פעולה הרסנית / בלתי הפיכה (מחיקת פרופיל) */
+.btn-danger {
+  background: var(--bad);
+  color: #fff;
+  border: none;
+}
+
+/* מצב מושבת — זהה לכל הכפתורים */
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-ghost:disabled,
+.btn-danger:disabled {
+  background: var(--disabled-bg);
+  color: var(--disabled-ink);
+  border: 2px solid var(--disabled-bg);
+  cursor: not-allowed;
+}
+
+/* מוקד מקלדת נראה — אותו כלל כמו ב־grade6 */
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+/* DESIGN-TOKENS-END */
   * { box-sizing: border-box; }
   body { font-family: system-ui, "Segoe UI", Arial, sans-serif; background: #FFF7E6; color: #222; margin: 0; padding: 0 12px 40px; text-align: center; }
   header { padding: 18px 8px 4px; }
