@@ -94,6 +94,15 @@ table.ptable td,table.ptable th{border-bottom:1px solid #eee;padding:7px 4px;tex
 .page-btn .spkbadge{position:absolute;top:4px;right:4px;inset-inline-start:4px;font-size:14px;line-height:1;background:#fff3cd;border:2px solid #ffca28;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center}
 .page-btn.speaking{border-color:#ffb800;background:#fff8e1}
 .bigbtn.speaking{background:#ffe29a;border-color:#ffb800;color:#7a5b00}
+/* ---- STAGE 3.6: continue card + folded home controls ---- */
+.continuecard{background:linear-gradient(135deg,#ffe9f4,#efeaff);border:3px solid var(--pink);border-radius:22px;padding:16px 14px 12px;margin:6px 0 14px;text-align:center;box-shadow:0 4px 14px rgba(255,107,157,.25)}
+.continuecard .cc-label{font-size:19px;font-weight:800;color:var(--purple)}
+.continuecard .cc-title{font-size:24px;font-weight:800;margin:6px 0 2px}
+.continuecard .cc-sub{font-size:16px;color:#6a6590;margin-bottom:6px}
+.continuecard .bigbtn{margin:8px 0 4px}
+.homefold{margin:14px 0 4px}
+.homefold>summary{cursor:pointer;font-size:18px;font-weight:800;color:var(--purple);text-align:center;padding:10px;list-style:none}
+.focusbox>summary{cursor:pointer;list-style:none}
 </style>
 </head>
 <body>
@@ -102,21 +111,29 @@ table.ptable td,table.ptable th{border-bottom:1px solid #eee;padding:7px 4px;tex
   <div id="screen-home">
     <h1>🌸 המרכז של עדי 🌸</h1>
     <p class="sub">לומדים לקרוא עם "צלילים מספרים"</p>
+    <div class="continuecard" id="continueCard">
+      <div class="cc-label">💪 המשיכי מאיפה שהפסקת</div>
+      <div class="cc-title" id="ccTitle"></div>
+      <div class="cc-sub" id="ccSub"></div>
+      <button class="bigbtn" id="btnContinue">▶️ ממשיכים!</button>
+    </div>
     <div class="bank">
       <div><div class="coins">🪙 <span id="bankCoins">0</span></div><div class="note">מטבעות בבנק הידע</div></div>
       <div class="goal"><div id="goalText"></div><div class="dots" id="weekDots"></div></div>
     </div>
     <div class="motiv" id="motivRow"></div>
-    <button class="bigbtn purple" id="btnReview">🔀 חזרה על הכול</button>
     <div class="tabs" id="homeTabs">
       <button class="tabbtn" id="tabHe"><span class="emo">📖</span><span>עברית</span></button>
       <button class="tabbtn" id="tabMath"><span class="emo">🔢</span><span>חשבון</span></button>
       <button class="tabbtn" id="tabEng"><span class="emo">🔤</span><span>אנגלית</span></button>
     </div>
-    <button class="bigbtn ghost" id="btnNavSay">🔊 תקשיבי לכל האפשרויות</button>
     <div id="booklets"></div>
+    <details class="homefold" id="homeMore"><summary>⚙️ עוד אפשרויות</summary>
+    <button class="bigbtn purple" id="btnReview">🔀 חזרה על הכול</button>
+    <button class="bigbtn ghost" id="btnNavSay">🔊 תקשיבי לכל האפשרויות</button>
     <button class="bigbtn ghost" id="btnGoal">🎯 היעד השבועי שלי</button>
     <button class="bigbtn ghost" id="btnParent">👨‍👩‍👧 מסך הורים</button>
+    </details>
   </div>
 
   <!-- LEARN -->
@@ -534,8 +551,8 @@ function renderFocus(host) {
   var foc = currentFocus();
   [['he', foc.he], ['math', foc.math]].forEach(function (pair) {
     var tab = pair[0], ids = pair[1];
-    var box = document.createElement('div'); box.className = 'focusbox'; box.setAttribute('data-tab', tab);
-    var head = document.createElement('div'); head.className = 'focushead'; head.textContent = '🌟 לומדים עכשיו בכיתה';
+    var box = document.createElement('details'); box.className = 'focusbox'; box.setAttribute('data-tab', tab);
+    var head = document.createElement('summary'); head.className = 'focushead'; head.textContent = '🌟 לומדים עכשיו בכיתה';
     box.appendChild(head);
     var grid = document.createElement('div'); grid.className = 'pages';
     ids.forEach(function (id) {
@@ -582,9 +599,32 @@ function renderEng(host) {
     + '<div style="font-size:13px;color:#777;margin-top:4px">המשחק נפתח בלשונית חדשה — כל הכוכבים שלך נשמרים</div></div>';
   host.appendChild(wrap);
 }
+/* ================= continue card (STAGE 3.6: resume from EXISTING prog.pages only, no new keys) ================= */
+function continueTargetIdx() {
+  var last = -1;
+  DATA.PAGES.forEach(function (p, i) { if (prog.pages[p.id] && prog.pages[p.id].best !== undefined) last = i; });
+  if (last < 0) return 0;
+  if (!(prog.pages[DATA.PAGES[last].id] || {}).mastered) return last;
+  var i;
+  for (i = last + 1; i < DATA.PAGES.length; i++) { if (!(prog.pages[DATA.PAGES[i].id] || {}).mastered) return i; }
+  for (i = 0; i < DATA.PAGES.length; i++) { if (!(prog.pages[DATA.PAGES[i].id] || {}).mastered) return i; }
+  return 0; // everything mastered — start again from the top
+}
+function renderContinue() {
+  var idx = continueTargetIdx();
+  var pg = DATA.PAGES[idx];
+  var st = prog.pages[pg.id] || {};
+  var allDone = DATA.PAGES.every(function (p) { return (prog.pages[p.id] || {}).mastered; });
+  el('ccTitle').textContent = pg.icon + ' ' + pg.title + (pg.page ? ' — עמוד ' + pg.page : '');
+  var stars = st.best === undefined ? '' : (st.best >= 8 ? '⭐⭐⭐' : st.best >= 6 ? '⭐⭐' : st.best >= 4 ? '⭐' : '🌱');
+  el('ccSub').textContent = allDone ? 'סיימת את כל העמודים! אפשר לשחק שוב מההתחלה 🎉'
+    : st.best === undefined ? 'עוד לא התחלנו את העמוד הזה — בואי נתחיל! 🌟'
+    : 'כבר התחלנו — ' + stars + ' — ממשיכים מאיפה שהפסקנו 💪';
+}
 function renderHome() {
   el('bankCoins').textContent = prog.bank;
   renderMotiv();
+  renderContinue();
   var wk = weekKey(); var donePages = 0;
   Object.keys(prog.pages).forEach(function (k) { if (prog.pages[k].wk === wk) donePages++; });
   el('goalText').innerHTML = 'היעד: ' + prog.goalPages + ' עמודים השבוע<br>סיימתי: ' + donePages + ' 📄';
@@ -1198,6 +1238,7 @@ el('parentBack').onclick = renderHome;
 el('btnParent').onclick = askParentGate; // STAGE 0: parent screen behind the grown-ups gate (was: renderParent directly)
 el('learnStart').onclick = function () { startRound(curPage, false); };
 el('btnReview').onclick = function () { navStopReadAll(); var my = ++navTapSeq; navSay('חזרה על הכל', function () { if (my !== navTapSeq) return; startRound(DATA.PAGES.length - 1, true); }); };
+el('btnContinue').onclick = function () { navStopReadAll(); var my = ++navTapSeq; var idx = continueTargetIdx(); navSay(navPageLabel(DATA.PAGES[idx]), function () { if (my !== navTapSeq) return; openLearn(idx); }); };
 el('tabHe').onclick = function () { navStopReadAll(); navSay('עברית'); setTab('he'); };
 el('tabMath').onclick = function () { navStopReadAll(); navSay('חשבון'); setTab('math'); };
 el('tabEng').onclick = function () { navStopReadAll(); navSay('אנגלית'); setTab('eng'); };
