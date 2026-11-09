@@ -329,6 +329,69 @@ a:focus-visible {
   details.homefold>summary { cursor:pointer; font-size:18px; font-weight:800; color:#14532d; text-align:center; padding:10px 4px; }
   details.homefold .planbtn, details.homefold .tourbtn { margin-top:10px; }
   .rzfold>summary { cursor:pointer; font-weight:700; }
+
+  /* ---- STAGE 5 (9/11/2026) — polish: mobile math wrapping, a11y, unified buttons ----
+     CSS-only except two HTML attributes (aria-labels) + one class swap (reset = danger).
+     No content / bank / engine / storage-key changes. Tokens block untouched. */
+
+  /* 5.1 — math expressions wrap instead of clipping (fixes the CAUSE).
+     BEFORE: .m{white-space:nowrap} made each whole expression one unbreakable
+     box; on a 360px screen a long expression overflowed its card and was cut
+     off by html,body{overflow-x:hidden} with no way to see it. Now the
+     expression itself wraps (at spaces first; overflow-wrap:anywhere only
+     breaks a long digit run when nothing else fits), options can wrap too
+     (.opt is a flex row — it also needs flex-wrap + min-width:0), fractions
+     and figure SVGs are capped at the card width, and narrow screens get a
+     slightly smaller question/option size + slimmer card padding. */
+  .m { white-space: normal; overflow-wrap: anywhere; }
+  .qtext, .explain, .learncard .lx, .learncard .ex, .stepsbox, .step1box, .hintbox, .fadeSteps, .breakdown, .daycard .dd { overflow-wrap: break-word; }
+  .opt { min-width: 0; flex-wrap: wrap; overflow-wrap: anywhere; }
+  .opt .m { overflow-wrap: anywhere; }
+  .frac { max-width: 100%; }
+  .frac .top, .frac .bot { padding: 0 3px; overflow-wrap: anywhere; }
+  .qfig svg, .viz svg { max-width: 100%; height: auto; }
+  .card, .qtext, .tcard { min-width: 0; overflow-wrap: break-word; }
+  .topicbar, .bar, .sessbar { flex-wrap: wrap; }
+  @media (max-width: 420px) {
+    .qtext { font-size: 17px; }
+    .opt { font-size: 18px; }
+    .card { padding: 16px 14px; }
+    .frac { margin: 0 1px; }
+  }
+
+  /* 5.2 — visible keyboard focus. The tokens block already gives :focus-visible
+     to button/select/input/textarea/a; <summary> is the only remaining
+     interactive element, so it gets the same ring here. */
+  summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  /* 5.3 — honour reduced-motion: no CSS animation / transition at all. */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+    .celeb-box { animation: none; }
+  }
+
+  /* 5.5 — four button roles only (token values). Primary = one yellow-orange
+     accent, solid --accent-deep (no gradients). Secondary = white + line
+     border. Ghost = transparent + line border. Danger = --bad.
+     Re-skin only: no button is created, removed or re-wired.
+     Answer options (.opt), topic cards (.tcard) and ramzor choices (.rz) keep
+     their own state styling — they are options/cards, not buttons in this sense.
+     .sharebtn is deliberately NOT re-skinned: it sits in the dark header in
+     math-test-prep, where a ghost style would destroy contrast. */
+  .btn { background: #fff; color: var(--ink); border: 2px solid var(--line); }
+  .btn-main, .btn-new, .bigbtn, .planbtn, .continuebtn { background: var(--accent-deep); background-image: none; color: #fff; border: none; box-shadow: none; }
+  .btn-main:disabled, .btn-new:disabled { background: var(--disabled-bg); color: var(--disabled-ink); border: 2px solid var(--disabled-bg); cursor: not-allowed; }
+  .tourbtn { background: #fff; color: var(--ink); border: 2px solid var(--line); box-shadow: none; }
+  .tab { background: #fff; border: 2px solid var(--line); color: var(--ink); }
+  .tab.active { background: var(--accent-deep); background-image: none; color: #fff; border-color: transparent; }
+  .btn-ghost { background: transparent; border: 2px solid var(--line); color: var(--ink-soft); }
+  .tts-toggle { background: #fff; border: 2px solid var(--line); color: var(--ink); }
+  .tts-toggle.off { background: var(--disabled-bg); color: var(--disabled-ink); border-color: var(--disabled-bg); }
+  .ttsbtn, .tts-replay { background: #fff; border: 2px solid var(--line); color: var(--ink); }
+  .ttsbtn:active, .tts-replay:active { background: var(--accent-soft); }
+  .hintbtn { background: #fff; border: 2px solid var(--line); color: var(--ink); }
+  .btn-danger { background: var(--bad); color: #fff; border: none; }
+
 </style>
 </head>
 <body>
@@ -337,7 +400,7 @@ a:focus-visible {
     <h1>🧮 ערכת חזרה למבחן במתמטיקה — כיתה ו׳</h1>
     <p>הכנה למבחן של אריאל · לפי ערכת החזרה של בית הספר · גאומטריה, חישוב, בעיות מילוליות והעשרה</p>
     <button class="sharebtn" onclick="shareApp()">📤 שיתוף</button>
-    <button class="tts-toggle" id="ttsToggle" onclick="ttsToggle()">🔊 הקראה פעילה</button>
+    <button class="tts-toggle" id="ttsToggle" aria-label="הקראה" onclick="ttsToggle()">🔊 הקראה פעילה</button>
   </header>
 
   <div id="topicPane">
@@ -352,7 +415,7 @@ a:focus-visible {
       <h2 style="margin:8px 0">שלום אריאל! מתכוננים למבחן ביחד</h2>
       <p style="margin:0;color:#5a6b7d">בכל נושא יש <b>📖 למידה</b> קצרה, <b>🏋️ אימון רמות</b> עם כוכבים ו<b>📝 מבחן</b> של 10 שאלות.<br>
       בכל נושא מחכות לך <b>150 שאלות</b> — ובסך הכול <b id="totalBankLbl">3,150</b> שאלות בערכה!</p>
-      <div class="center" style="margin-top:12px"><button class="ttsbtn" onclick="speakText(document.getElementById('homeIntro').innerText)" title="השמעת ההסבר">🔊</button></div>
+      <div class="center" style="margin-top:12px"><button class="ttsbtn" onclick="speakText(document.getElementById('homeIntro').innerText)" title="השמעת ההסבר" aria-label="השמעת ההסבר">🔊</button></div>
     </div>
     <details class="homefold meterfold"><summary>📊 ההתקדמות שלי</summary>
     <div class="card">
@@ -417,7 +480,7 @@ a:focus-visible {
           <div>💚 טעות? רואים את הצעד הראשון ומנסים שוב פעם אחת</div>
           <div>🏆 יש <b>3 רמות</b> — מהקל לקשה ביותר!</div>
         </div>
-        <div class="center" style="margin-bottom:12px"><button class="ttsbtn" onclick="speakText(document.getElementById('tIntro').innerText)" title="השמעת ההסבר">🔊</button></div>
+        <div class="center" style="margin-bottom:12px"><button class="ttsbtn" onclick="speakText(document.getElementById('tIntro').innerText)" title="השמעת ההסבר" aria-label="השמעת ההסבר">🔊</button></div>
         <button class="btn btn-new" onclick="acceptIntro()">הבנתי, מתחילים! 🎉</button>
       </div>
       <div id="tMain" style="display:none">
@@ -438,7 +501,7 @@ a:focus-visible {
         <h2 style="margin:8px 0">אלוף האלופים!</h2>
         <p class="msg">סיימת את כל 3 הרמות בנושא הזה! 🎉</p>
         <p id="masteryStats" style="font-size:17px"></p>
-        <div class="center" style="margin:8px 0"><button class="ttsbtn" onclick="speakText(document.getElementById('tMastery').innerText)" title="השמעה">🔊</button></div>
+        <div class="center" style="margin:8px 0"><button class="ttsbtn" onclick="speakText(document.getElementById('tMastery').innerText)" title="השמעה" aria-label="השמעה">🔊</button></div>
         <button class="btn btn-new" onclick="showTest()">עכשיו למבחן! 📝</button>
         <div style="margin-top:10px"><button class="btn-ghost" onclick="restartTrain()">🔄 עוד אימון</button></div>
       </div>
@@ -454,7 +517,7 @@ a:focus-visible {
         <div class="mini-illus" id="scoreIllus"></div>
         <div class="score" id="scoreNum"></div>
         <div class="msg" id="scoreMsg"></div>
-        <div class="center" style="margin-top:8px"><button class="ttsbtn" onclick="speakText('הציון שלך: ' + document.getElementById('scoreNum').textContent + '. ' + document.getElementById('scoreMsg').textContent)" title="השמעת הציון">🔊</button></div>
+        <div class="center" style="margin-top:8px"><button class="ttsbtn" onclick="speakText('הציון שלך: ' + document.getElementById('scoreNum').textContent + '. ' + document.getElementById('scoreMsg').textContent)" title="השמעת הציון" aria-label="השמעת הציון">🔊</button></div>
         <div id="scoreDetail" style="margin-top:8px"></div>
         <div style="margin-top:12px">
           <button class="btn btn-new" onclick="showTest()">📝 מבחן חדש</button>
@@ -502,7 +565,7 @@ a:focus-visible {
       <div class="mini-illus" id="mockIllus"></div>
       <div class="score" id="mockScoreNum"></div>
       <div class="msg" id="mockScoreMsg"></div>
-      <div class="center" style="margin-top:8px"><button class="ttsbtn" onclick="speakText('הציון שלך: ' + document.getElementById('mockScoreNum').textContent + '. ' + document.getElementById('mockScoreMsg').textContent)" title="השמעת הציון">🔊</button></div>
+      <div class="center" style="margin-top:8px"><button class="ttsbtn" onclick="speakText('הציון שלך: ' + document.getElementById('mockScoreNum').textContent + '. ' + document.getElementById('mockScoreMsg').textContent)" title="השמעת הציון" aria-label="השמעת הציון">🔊</button></div>
       <div id="mockBreakdown" class="breakdown" style="margin-top:10px"></div>
       <div style="margin-top:12px">
         <button class="btn btn-new" onclick="startMock()">🎓 מבחן מדומה חדש</button>
@@ -516,7 +579,7 @@ a:focus-visible {
   <div class="celeb-box">
     <div style="font-size:52px" id="celebEmoji">🎉</div>
     <div id="celebText"></div>
-    <div><button class="ttsbtn" onclick="speakText(document.getElementById('celebText').textContent)" title="השמעה">🔊</button></div>
+    <div><button class="ttsbtn" onclick="speakText(document.getElementById('celebText').textContent)" title="השמעה" aria-label="השמעה">🔊</button></div>
     <div class="mini-illus" id="celebIllus"></div>
     <div><button class="btn btn-new" style="margin-top:14px" onclick="hideCeleb()">ממשיכים! 🚀</button></div>
   </div>
@@ -3104,7 +3167,7 @@ function renderPlanSetup(){
   $("planHost").innerHTML=`
   <div class="card" id="planSetupCard">
     <h3 style="margin-top:0">📅 איך זה עובד?</h3>
-    <div class="center"><button class="ttsbtn" onclick="speakText(document.getElementById('planSetupCard').innerText)" title="השמעת ההסבר">🔊</button></div>
+    <div class="center"><button class="ttsbtn" onclick="speakText(document.getElementById('planSetupCard').innerText)" title="השמעת ההסבר" aria-label="השמעת ההסבר">🔊</button></div>
     <div style="line-height:1.75">
       1️⃣ <b>אבחון פתיחה</b> — 21 שאלות קצרות, אחת מכל נושא. ככה נדע בדיוק מה חזק ומה צריך חיזוק.<br>
       2️⃣ <b>שיעור אחד ביום</b> (~20–25 דקות): חימום חוזר על טעויות ועל שאלות שהגיע זמנן, נושאי היום עם דוגמאות שצעדיהן נמוגים,
@@ -3167,7 +3230,7 @@ function renderPlanHome(){
   const reds=TOPICS.filter(t=> plan.topicState[t.id].status==="red").length;
   let html=`<div class="card" id="planHomeCard">
     <h3 style="margin:0 0 6px">🗓️ היום: יום ${today} מתוך ${plan.totalDays} · נשארו ${daysLeftToExam()} ימים למבחן</h3>
-    <div class="center"><button class="ttsbtn" onclick="speakText(document.getElementById('planHomeCard').innerText)" title="השמעת התוכנית">🔊</button></div>
+    <div class="center"><button class="ttsbtn" onclick="speakText(document.getElementById('planHomeCard').innerText)" title="השמעת התוכנית" aria-label="השמעת התוכנית">🔊</button></div>
     <div class="bigbar"><div style="width:${readinessPct()}%"></div></div>
     <div style="color:#5a6b7d;font-size:14.5px;margin-top:4px">מוכנות: ${greens} מתוך ${TOPICS.length} נושאים במצב 🟢 שולט · 🟡 ${yellows} בדרך · 🔴 ${reds} צריכים חיזוק</div>
     <div class="center" style="margin-top:12px">
@@ -3193,7 +3256,7 @@ function renderPlanHome(){
   html+=`<div class="parentpanel"><b>👨‍👩‍👦 מבט להורים:</b><br>
     שיעור היום: ${plan.sessionsDone[today]? "הושלם ✅":"טרם בוצע"} · נושאים: 🟢 ${greens} שולטים, 🟡 ${yellows} בתהליך, 🔴 ${reds} לחיזוק · ימים למבחן: ${daysLeftToExam()} · שאלות פתוחות למחזור טעויות: ${unres}.<br>
     💡 טיפ היום: ${PLAN_TIPS[(today-1)%PLAN_TIPS.length]}
-    <div style="margin-top:10px"><button class="btn-ghost" onclick="resetPlan()">↺ התחלה מחדש של המסלול (איפוס תוכנית)</button></div>
+    <div style="margin-top:10px"><button class="btn-danger" onclick="resetPlan()">↺ התחלה מחדש של המסלול (איפוס תוכנית)</button></div>
   </div>`;
   $("planHost").innerHTML=html;
 }
