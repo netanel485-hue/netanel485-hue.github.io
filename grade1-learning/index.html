@@ -34,7 +34,7 @@ h1{font-size:30px;text-align:center;margin:8px 0 2px}
 .focushead{font-size:20px;font-weight:800;text-align:center;margin-bottom:8px}
 .celeb{font-size:24px;font-weight:800;text-align:center;margin:10px 0}
 .pages{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px}
-.page-btn{background:var(--card);border:3px solid #e7e2ff;border-radius:18px;padding:12px 6px;text-align:center;cursor:pointer;box-shadow:0 3px 8px rgba(60,50,140,.08)}
+.page-btn{position:relative;background:var(--card);border:3px solid #e7e2ff;border-radius:18px;padding:12px 6px;text-align:center;cursor:pointer;box-shadow:0 3px 8px rgba(60,50,140,.08)}
 .page-btn:active{transform:scale(.97)}
 .page-btn .big{font-size:34px;display:block}
 .page-btn .ttl{font-size:14px;font-weight:700;display:block;margin-top:2px}
@@ -88,6 +88,12 @@ table.ptable td,table.ptable th{border-bottom:1px solid #eee;padding:7px 4px;tex
 .eq{font-size:42px;font-weight:800;text-align:center;margin:8px 0;direction:ltr}
 .gone{filter:grayscale(1);opacity:.35}
 .shpbtn{display:inline-flex;flex-direction:column;align-items:center;gap:2px;margin:4px}
+/* ---- navigation illustrations + read-aloud (STAGE 2.2) ---- */
+.navart{display:block;height:46px;margin:2px auto 0}
+.navart svg{height:46px;width:46px}
+.page-btn .spkbadge{position:absolute;top:4px;right:4px;inset-inline-start:4px;font-size:14px;line-height:1;background:#fff3cd;border:2px solid #ffca28;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center}
+.page-btn.speaking{border-color:#ffb800;background:#fff8e1}
+.bigbtn.speaking{background:#ffe29a;border-color:#ffb800;color:#7a5b00}
 </style>
 </head>
 <body>
@@ -107,6 +113,7 @@ table.ptable td,table.ptable th{border-bottom:1px solid #eee;padding:7px 4px;tex
       <button class="tabbtn" id="tabMath"><span class="emo">🔢</span><span>חשבון</span></button>
       <button class="tabbtn" id="tabEng"><span class="emo">🔤</span><span>אנגלית</span></button>
     </div>
+    <button class="bigbtn ghost" id="btnNavSay">🔊 תקשיבי לכל האפשרויות</button>
     <div id="booklets"></div>
     <button class="bigbtn ghost" id="btnGoal">🎯 היעד השבועי שלי</button>
     <button class="bigbtn ghost" id="btnParent">👨‍👩‍👧 מסך הורים</button>
@@ -204,6 +211,215 @@ function speakSeq(keys, delay) {
   step(0);
 }
 function praise() { speak('praise|' + Math.floor(Math.random() * 4)); }
+
+/* ================= navigation illustrations + read-aloud (STAGE 2.2, 9/11/2026) =================
+   Finding א־ק1: a 6-year-old who cannot read fluently could not navigate the home index
+   (text only, no pictures, no spoken labels). This block is ADDITIVE only:
+   - every home navigation button (48 pages + the class-focus duplicates) gets a small
+     flat inline-SVG picture in the hub palette (no external images, no base64);
+   - tapping a button reads its label aloud in Hebrew, THEN opens the page
+     (navigation is never blocked: speech ends, fails, or hits the 4s hard cap);
+   - a big "🔊 תקשיבי לכל האפשרויות" button on the home screen reads the visible
+     tab's options aloud one by one; tapping it again (or any nav item) stops it.
+   Voice: Google Translate TTS (tl=he) — the same primary voice as the grade-2 kit —
+   with device speechSynthesis as FALLBACK only (its Hebrew accent is wrong).
+   Nothing is persisted, no storage keys, no content/question/audio-clip changes. */
+
+/* ---- shared SVG builders (flat, hub palette) ---- */
+function artBook(color){ return '<path d="M32 14c-6-5-14-6-20-4v40c6-2 14-1 20 4 6-5 14-6 20-4V10c-6-2-14-1-20 4Z" fill="' + color + '"/><path d="M32 14v40" stroke="#fff" stroke-width="2"/><path d="M18 22h8M18 30h8M38 22h8M38 30h8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>'; }
+function artNote(color){ return '<path d="M24 44V14l24-6v30" stroke="' + color + '" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="19" cy="44" rx="7" ry="5" fill="' + color + '"/><ellipse cx="43" cy="38" rx="7" ry="5" fill="' + color + '"/>'; }
+function artSpeaker(color){ return '<path d="M10 26h10l12-10v32L20 38H10z" fill="' + color + '"/><path d="M38 22a10 10 0 0 1 0 20M44 16a18 18 0 0 1 0 32" stroke="' + color + '" stroke-width="4" fill="none" stroke-linecap="round"/>'; }
+var A_APPLE = '<circle cx="32" cy="36" r="18" fill="#ff5a5a"/><path d="M32 20c0-6 2-9 6-11" stroke="#8b5a2b" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M36 12c6-3 10 0 11 4-4 3-10 1-11-4Z" fill="#2fbf71"/>';
+
+/* ---- one picture per page id (48) — keyed by DATA.PAGES id ---- */
+var NAV_ART = {
+  'א1': '<path d="M32 8C32 8 16 28 16 40a16 16 0 0 0 32 0C48 28 32 8 32 8Z" fill="#4aa8ff"/><path d="M24 42a8 8 0 0 0 8 8" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>',
+  'א2': '<path d="M32 6c5 7 6 10 6 13a6 6 0 1 1-12 0c0-3 1-6 6-13Z" fill="#ffb800"/><rect x="25" y="26" width="14" height="28" rx="5" fill="#ff6b9d"/><rect x="25" y="26" width="14" height="9" rx="4" fill="#ff8fb5"/><rect x="30" y="54" width="4" height="4" fill="#8b5a2b"/>',
+  'א3': '<path d="M18 26 15 9l15 9zM46 26l3-17-15 9z" fill="#ffb347"/><circle cx="32" cy="36" r="18" fill="#ffb347"/><circle cx="25" cy="34" r="2.6" fill="#33305e"/><circle cx="39" cy="34" r="2.6" fill="#33305e"/><path d="M28 44q4 4 8 0" stroke="#33305e" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M8 34h9M47 34h9M9 43l8-3M47 40l8 3" stroke="#33305e" stroke-width="2" stroke-linecap="round"/>',
+  'א4': '<path d="M8 32 32 10l24 22z" fill="#e74c3c"/><rect x="14" y="30" width="36" height="24" fill="#ffd166"/><rect x="27" y="40" width="10" height="14" fill="#7c5cbf"/><rect x="18" y="35" width="8" height="8" fill="#bfe3ff"/><rect x="38" y="35" width="8" height="8" fill="#bfe3ff"/>',
+  'א5': '<circle cx="32" cy="32" r="20" fill="#ffd166"/><circle cx="25" cy="27" r="4" fill="#f0b429"/><circle cx="39" cy="38" r="3" fill="#f0b429"/><path d="M50 8l1.8 4.5L56 14l-4.2 1.5L50 20l-1.8-4.5L44 14l4.2-1.5z" fill="#ff6b9d"/>',
+  'א6': '<path d="M22 24h20l-9 28a2.5 2.5 0 0 1-4 0z" fill="#ff7b2e"/><path d="M27 33h9M29 41h6" stroke="#e05e00" stroke-width="2" stroke-linecap="round"/><path d="M32 22c-2-6-6-8-10-9 3 5 2 8 2 9M32 22c0-6 2-9 6-11-1 5-1 8-2 11M32 22c2-4 6-6 9-6-3 4-5 6-6 7" stroke="#2fbf71" stroke-width="3" fill="none" stroke-linecap="round"/>',
+  'א7': '<rect x="10" y="16" width="44" height="28" rx="7" fill="#3498db"/><rect x="16" y="23" width="11" height="9" rx="2" fill="#bfe3ff"/><rect x="30" y="23" width="11" height="9" rx="2" fill="#bfe3ff"/><rect x="8" y="42" width="48" height="4" rx="2" fill="#7c5cbf"/><circle cx="20" cy="50" r="5" fill="#33305e"/><circle cx="44" cy="50" r="5" fill="#33305e"/>',
+  'א8': '<circle cx="32" cy="32" r="14" fill="#ffb800"/><path d="M32 8v8M32 48v8M8 32h8M48 32h8M15 15l6 6M43 43l6 6M49 15l-6 6M21 43l-6 6" stroke="#ffb800" stroke-width="4" stroke-linecap="round"/>',
+  'א9': '<path d="M4 54 26 14l12 20 8-10 14 30z" fill="#8e6cc8"/><path d="M26 14l5 8-5 4-5-4z" fill="#fff"/><circle cx="52" cy="14" r="7" fill="#ffb800"/>',
+  'א10': '<path d="M8 22a24 24 0 0 0 48 0z" fill="#2fbf71"/><path d="M12 22a20 20 0 0 0 40 0z" fill="#fff"/><path d="M16 22a16 16 0 0 0 32 0z" fill="#ff5a5a"/><circle cx="26" cy="30" r="1.8" fill="#33305e"/><circle cx="38" cy="30" r="1.8" fill="#33305e"/><circle cx="32" cy="36" r="1.8" fill="#33305e"/>',
+  'א11': '<ellipse cx="30" cy="32" rx="18" ry="12" fill="#ff9f1c"/><path d="M46 32 60 20v24z" fill="#ff9f1c"/><circle cx="20" cy="30" r="3" fill="#33305e"/><path d="M30 22q6 10 0 20" stroke="#e07f00" stroke-width="2" fill="none"/>',
+  'א12': '<circle cx="32" cy="26" r="10" fill="#ff6b9d"/><circle cx="32" cy="26" r="4" fill="#ffb800"/><path d="M32 36v18" stroke="#2fbf71" stroke-width="4" stroke-linecap="round"/><path d="M32 46c-6-3-11 0-12 5 4 3 10 1 12-5ZM32 46c6-3 11 0 12 5-4 3-10 1-12-5Z" fill="#2fbf71"/>',
+  'א13': '<path d="M32 6c8 8 10 16 10 24H22c0-8 2-16 10-24Z" fill="#e7e2ff"/><circle cx="32" cy="22" r="5" fill="#4aa8ff"/><path d="M22 26 12 38h10zM42 26l10 12H42z" fill="#ff5a5a"/><path d="M28 38h8l-2 10h-4z" fill="#ffb800"/><path d="M32 50c-2 4-2 6 0 8 2-2 2-4 0-8Z" fill="#ff7b2e"/>',
+  'א14': '<path d="M8 26q8-8 16 0t16 0 16 0" stroke="#4aa8ff" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M8 40q8-8 16 0t16 0 16 0" stroke="#4aa8ff" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="50" cy="12" r="7" fill="#ffb800"/>',
+  'א15': '<circle cx="32" cy="32" r="20" fill="#ff6b9d"/><path d="M14 26q18 10 36 0" stroke="#fff" stroke-width="4" fill="none"/><path d="M14 38q18 10 36 0" stroke="#fff" stroke-width="4" fill="none"/>',
+  'א16': artBook('#7c5cbf'),
+  'א17': '<circle cx="32" cy="24" r="16" fill="#2fbf71"/><circle cx="20" cy="32" r="10" fill="#37d67f"/><circle cx="44" cy="32" r="10" fill="#37d67f"/><rect x="29" y="36" width="6" height="16" fill="#8b5a2b"/><circle cx="26" cy="20" r="3" fill="#ff5a5a"/><circle cx="38" cy="27" r="3" fill="#ff5a5a"/>',
+  'א18': '<path d="M22 8h20v10a10 10 0 0 1-20 0z" fill="#ffb800"/><path d="M22 12H12a8 8 0 0 0 8 10M42 12h10a8 8 0 0 1-8 10" stroke="#ffb800" stroke-width="4" fill="none"/><rect x="29" y="28" width="6" height="10" fill="#f0b429"/><rect x="22" y="38" width="20" height="6" rx="3" fill="#f0b429"/>',
+  'ב1': '<circle cx="26" cy="36" r="14" fill="#7fb069"/><circle cx="46" cy="44" r="10" fill="#8bc34a"/><path d="M26 22c0-7 4-11 10-13" stroke="#2fbf71" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M36 9c6-1 10 2 11 6-4 3-10 1-11-6Z" fill="#2fbf71"/>',
+  'ב2': '<ellipse cx="22" cy="26" rx="10" ry="14" fill="#ff6b9d" transform="rotate(-20 22 26)"/><ellipse cx="42" cy="26" rx="10" ry="14" fill="#ff6b9d" transform="rotate(20 42 26)"/><ellipse cx="24" cy="44" rx="8" ry="9" fill="#ffb800" transform="rotate(-15 24 44)"/><ellipse cx="40" cy="44" rx="8" ry="9" fill="#ffb800" transform="rotate(15 40 44)"/><rect x="29" y="18" width="6" height="28" rx="3" fill="#33305e"/><circle cx="32" cy="15" r="4" fill="#33305e"/>',
+  'ב3': '<ellipse cx="30" cy="34" rx="16" ry="12" fill="#4aa8ff"/><circle cx="42" cy="24" r="10" fill="#4aa8ff"/><path d="M51 24l8 3-8 4z" fill="#ffb800"/><circle cx="45" cy="22" r="2" fill="#33305e"/><path d="M22 30q8-8 16 0" stroke="#2f7fd0" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M20 46l5-6M28 46l4-6" stroke="#ffb800" stroke-width="3" stroke-linecap="round"/>',
+  'ב4': '<path d="M10 50a22 22 0 0 1 44 0" stroke="#ff5a5a" stroke-width="6" fill="none"/><path d="M16 50a16 16 0 0 1 32 0" stroke="#ffb800" stroke-width="6" fill="none"/><path d="M22 50a10 10 0 0 1 20 0" stroke="#2fbf71" stroke-width="6" fill="none"/><ellipse cx="10" cy="52" rx="9" ry="5" fill="#fff"/><ellipse cx="54" cy="52" rx="9" ry="5" fill="#fff"/><circle cx="52" cy="14" r="6" fill="#ffd166"/>',
+  'ב5': A_APPLE,
+  'ב6': '<rect x="20" y="8" width="4" height="48" fill="#8b5a2b"/><path d="M24 10h28l-6 8 6 8H24z" fill="#2fbf71"/><circle cx="38" cy="18" r="4" fill="#fff"/>',
+  'ב7': artNote('#7c5cbf'),
+  'ב8': artNote('#ff6b9d') + '<path d="M50 6l1.8 4.5L56 12l-4.2 1.5L50 18l-1.8-4.5L44 12l4.2-1.5z" fill="#ffb800"/>',
+  'ב9': artNote('#ff9f1c') + '<circle cx="52" cy="12" r="7" fill="#ffd166"/><circle cx="49" cy="10" r="2" fill="#f0b429"/>',
+  'ב10': artNote('#2fbf71') + '<circle cx="50" cy="10" r="3" fill="#ff6b9d"/><circle cx="56" cy="18" r="3" fill="#ff6b9d"/>',
+  'ב11': '<path d="M10 14h44v28H28l-10 8v-8H10z" fill="#bfe3ff"/><circle cx="22" cy="28" r="3" fill="#33305e"/><circle cx="32" cy="28" r="3" fill="#33305e"/><circle cx="42" cy="28" r="3" fill="#33305e"/>',
+  'ב12': artBook('#ff6b9d'),
+  'ב13': artBook('#ff6b9d'),
+  'ב14': '<circle cx="32" cy="26" r="16" fill="#ffb800"/><circle cx="32" cy="26" r="11" fill="#ffd166"/><path d="M32 18l2.5 5 5.5.8-4 3.9.9 5.5-4.9-2.6-4.9 2.6.9-5.5-4-3.9 5.5-.8z" fill="#fff"/><path d="M22 38 16 56l10-4zM42 38l6 18-10-4z" fill="#ff5a5a"/>',
+  'm0': '<circle cx="16" cy="40" r="11" fill="#ff5a5a"/><circle cx="32" cy="30" r="11" fill="#ff5a5a"/><circle cx="48" cy="40" r="11" fill="#ff5a5a"/><path d="M16 29c0-3 2-5 4-5M32 19c0-3 2-5 4-5M48 29c0-3 2-5 4-5" stroke="#8b5a2b" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M20 27c3-2 6-1 7 1-3 2-6 1-7-1ZM36 17c3-2 6-1 7 1-3 2-6 1-7-1ZM52 27c3-2 6-1 7 1-3 2-6 1-7-1Z" fill="#2fbf71"/>',
+  'm1': artSpeaker('#7c5cbf'),
+  'm2': '<ellipse cx="24" cy="22" rx="12" ry="15" fill="#ff6b9d"/><ellipse cx="44" cy="26" rx="12" ry="15" fill="#4aa8ff"/><path d="M24 37c-2 6 2 8 0 14M44 41c-2 6 2 8 0 14" stroke="#33305e" stroke-width="2" fill="none" stroke-linecap="round"/>',
+  'm3': '<circle cx="32" cy="32" r="22" fill="#eafff3"/><path d="M32 22v20M22 32h20" stroke="#2fbf71" stroke-width="7" stroke-linecap="round"/>',
+  'm4': '<circle cx="32" cy="32" r="22" fill="#ffecec"/><path d="M22 32h20" stroke="#ff5a5a" stroke-width="7" stroke-linecap="round"/>',
+  'm5': '<circle cx="21" cy="32" r="13" fill="#eafff3"/><path d="M21 26v12M15 32h12" stroke="#2fbf71" stroke-width="4" stroke-linecap="round"/><circle cx="44" cy="32" r="13" fill="#ffecec"/><path d="M38 32h12" stroke="#ff5a5a" stroke-width="4" stroke-linecap="round"/>',
+  'm6': '<path d="M32 10v38M14 52h36" stroke="#8b5a2b" stroke-width="4" stroke-linecap="round"/><path d="M12 14h40" stroke="#8b5a2b" stroke-width="4" stroke-linecap="round"/><path d="M12 14 5 32h14zM52 14l-7 18h14z" fill="#ffd166"/><path d="M5 32h14M45 32h14" stroke="#8b5a2b" stroke-width="3" stroke-linecap="round"/>',
+  'm7': '<circle cx="18" cy="42" r="11" fill="#e74c3c"/><rect x="34" y="12" width="20" height="20" rx="3" fill="#3498db"/><path d="M28 54 40 32l12 22z" fill="#f39c12"/>',
+  'm8': '<circle cx="32" cy="34" r="20" fill="#eafff3"/><path d="M32 25v18M23 34h18" stroke="#2fbf71" stroke-width="6" stroke-linecap="round"/><path d="M12 12l1.5 4 4 1.5-4 1.5L12 23l-1.5-4-4-1.5 4-1.5zM52 8l1.5 4 4 1.5-4 1.5L52 22l-1.5-4-4-1.5 4-1.5z" fill="#ffb800"/>',
+  'm9': '<circle cx="32" cy="34" r="20" fill="#ffecec"/><path d="M23 34h18" stroke="#ff5a5a" stroke-width="6" stroke-linecap="round"/><path d="M12 12l1.5 4 4 1.5-4 1.5L12 23l-1.5-4-4-1.5 4-1.5zM52 8l1.5 4 4 1.5-4 1.5L52 22l-1.5-4-4-1.5 4-1.5z" fill="#ffb800"/>',
+  'm10': artSpeaker('#ff6b9d'),
+  'm11': '<rect x="10" y="12" width="44" height="11" rx="3" fill="#ff9f1c"/><rect x="10" y="27" width="44" height="11" rx="3" fill="#4aa8ff"/><rect x="10" y="42" width="44" height="11" rx="3" fill="#2fbf71"/>',
+  'm12': '<path d="M10 24h30M32 14l12 10-12 10" stroke="#7c5cbf" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M54 40H24M32 30l-12 10 12 10" stroke="#ff6b9d" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+  'm13': '<rect x="8" y="24" width="48" height="16" rx="4" fill="#ffd166"/><path d="M18 24v7M26 24v9M34 24v7M42 24v9M50 24v7" stroke="#33305e" stroke-width="2"/>',
+  'm14': '<path d="M32 10 54 26 46 52 18 52 10 26Z" fill="#e67e22"/><circle cx="32" cy="31" r="6" fill="#fff"/>',
+  'm15': '<path d="M18 14 46 32 18 50" stroke="#7c5cbf" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="52" cy="32" r="4" fill="#ffb800"/>'
+};
+function navArt(id){
+  var inner = NAV_ART[id];
+  if (!inner) return '';
+  return '<svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">' + inner + '</svg>';
+}
+function navPageLabel(pg){
+  if (pg.math) return pg.title;
+  if (pg.page) return 'עמוד ' + pg.page + ', ' + pg.title;
+  return pg.title;
+}
+function navBtnHtml(pg, stars){
+  var main = pg.math
+    ? '<span class="big">' + pg.icon + '</span><span class="ttl">' + pg.title + '</span>'
+    : '<span class="big">' + pg.icon + '</span><span class="ttl">עמוד ' + pg.page + '<br>' + pg.title + '</span>';
+  return '<span class="navart">' + navArt(pg.id) + '</span>'
+    + '<span class="spkbadge" aria-hidden="true">🔊</span>'
+    + main + '<span class="stars">' + stars + '</span>';
+}
+
+/* ---- navigation read-aloud: Google TTS (tl=he) primary, device voice fallback ---- */
+var navTtsAudio = null;
+var navTtsSeq = 0;
+var navTapSeq = 0;
+function navStripNikud(s){ return String(s || '').replace(/[\u0591-\u05BD\u05BF\u05C1-\u05C2\u05C4-\u05C5\u05C7]/g, ''); }
+function navCleanLabel(s){
+  var t = navStripNikud(s);
+  t = t.replace(/[·—–:]/g, ', ');
+  t = t.replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}\u{FE0F}\u{200D}]/gu, ' ');
+  t = t.replace(/\s+/g, ' ').trim();
+  return t;
+}
+function navTtsStop(){
+  navTtsSeq++;
+  if (navTtsAudio) { try { navTtsAudio.pause(); } catch (e) {} navTtsAudio = null; }
+  try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {}
+}
+function navTtsSpeakDevice(text, seq, done){
+  var finished = false;
+  var finish = function(){ if (finished) return; finished = true; done(); };
+  if (!('speechSynthesis' in window)) { finish(); return; }
+  var wd = setTimeout(function(){ try { speechSynthesis.cancel(); } catch (e) {} finish(); }, 6000);
+  try {
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = 'he-IL'; u.rate = 0.9;
+    try {
+      var vs = speechSynthesis.getVoices() || [];
+      for (var i = 0; i < vs.length; i++) { if (/^he/i.test(vs[i].lang || '')) { u.voice = vs[i]; break; } }
+    } catch (e) {}
+    u.onend = function(){ clearTimeout(wd); finish(); };
+    u.onerror = function(){ clearTimeout(wd); finish(); };
+    if (seq !== navTtsSeq) { clearTimeout(wd); finish(); return; }
+    try { speechSynthesis.cancel(); } catch (e) {}
+    setTimeout(function(){
+      if (seq !== navTtsSeq) { clearTimeout(wd); finish(); return; }
+      try { speechSynthesis.speak(u); } catch (e) { clearTimeout(wd); finish(); }
+    }, 60);
+  } catch (e) { clearTimeout(wd); finish(); }
+}
+/* Speaks one short label; done() always runs — after speech, on error, or at the 4s hard cap. */
+function navSay(text, done){
+  var clean = navCleanLabel(text);
+  var finished = false;
+  var finish = function(){ if (finished) return; finished = true; if (done) done(); };
+  if (!clean) { finish(); return; }
+  var seq = ++navTtsSeq;
+  if (navTtsAudio) { try { navTtsAudio.pause(); } catch (e) {} navTtsAudio = null; }
+  try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {}
+  var cap = setTimeout(function(){ if (seq === navTtsSeq) navTtsStop(); finish(); }, 4000);
+  var url = 'https://translate.google.com/translate_tts?ie=UTF-8&tl=he&client=tw-ob&q=' + encodeURIComponent(clean);
+  var a = new Audio(url);
+  navTtsAudio = a;
+  a.onended = function(){ clearTimeout(cap); if (navTtsAudio === a) navTtsAudio = null; finish(); };
+  a.onerror = function(){ clearTimeout(cap); navTtsSpeakDevice(clean, seq, finish); };
+  var pr = null;
+  try { pr = a.play(); } catch (e) { clearTimeout(cap); navTtsSpeakDevice(clean, seq, finish); return; }
+  if (pr && pr.catch) pr.catch(function(){ clearTimeout(cap); navTtsSpeakDevice(clean, seq, finish); });
+}
+/* Tap a nav button: announce its label, then open it (latest tap wins). */
+function navBtnClick(b, idx){
+  b.onclick = function(){
+    navStopReadAll();
+    var my = ++navTapSeq;
+    b.classList.add('speaking');
+    navSay(navPageLabel(DATA.PAGES[idx]), function(){
+      b.classList.remove('speaking');
+      if (my !== navTapSeq) return;
+      openLearn(idx);
+    });
+  };
+}
+
+/* ---- read all options on the home screen ---- */
+var navReadAllOn = false;
+var navReadAllSeq = 0;
+function updateNavSayBtn(){
+  var b = el('btnNavSay');
+  if (!b) return;
+  b.textContent = navReadAllOn ? '⏹ עצרי — מקריאה עכשיו' : '🔊 תקשיבי לכל האפשרויות';
+  b.classList.toggle('speaking', navReadAllOn);
+}
+function navStopReadAll(){
+  navReadAllOn = false;
+  navReadAllSeq++;
+  updateNavSayBtn();
+}
+function visibleNavLabels(){
+  var out = [];
+  if (curTab === 'eng') { out.push('משחק האנגלית של עדי'); return out; }
+  if (curTab === 'math') {
+    out.push('חשבון');
+    DATA.PAGES.forEach(function(pg){ if (pg.booklet === 'M') out.push(navPageLabel(pg)); });
+    return out;
+  }
+  out.push('חוברת א');
+  DATA.PAGES.forEach(function(pg){ if (pg.booklet === 'א') out.push(navPageLabel(pg)); });
+  out.push('חוברת ב');
+  DATA.PAGES.forEach(function(pg){ if (pg.booklet === 'ב') out.push(navPageLabel(pg)); });
+  return out;
+}
+function navReadAll(){
+  if (navReadAllOn) { navReadAllOn = false; navTtsStop(); updateNavSayBtn(); return; }
+  navReadAllOn = true;
+  updateNavSayBtn();
+  var my = ++navReadAllSeq;
+  var items = visibleNavLabels();
+  var i = 0;
+  var step = function(){
+    if (!navReadAllOn || my !== navReadAllSeq) return;
+    if (i >= items.length) { navReadAllOn = false; updateNavSayBtn(); return; }
+    var label = items[i++];
+    navSay(label, function(){
+      if (!navReadAllOn || my !== navReadAllSeq) return;
+      setTimeout(step, 350);
+    });
+  };
+  step();
+}
+
 
 /* ================= helpers ================= */
 var FINAL = {'מ':'ם','נ':'ן','פ':'ף','צ':'ץ','כ':'ך'};
@@ -331,10 +547,8 @@ function renderFocus(host) {
       var b = document.createElement('div');
       b.className = 'page-btn' + (st.best >= 6 ? ' done' : '');
       var stars = st.best === undefined ? '' : (st.best >= 8 ? '⭐⭐⭐' : st.best >= 6 ? '⭐⭐' : st.best >= 4 ? '⭐' : '🌱');
-      b.innerHTML = pg.math
-        ? '<span class="big">' + pg.icon + '</span><span class="ttl">' + pg.title + '</span><span class="stars">' + stars + '</span>'
-        : '<span class="big">' + pg.icon + '</span><span class="ttl">עמוד ' + pg.page + '<br>' + pg.title + '</span><span class="stars">' + stars + '</span>';
-      b.onclick = (function (i) { return function () { openLearn(i); }; })(idx);
+      b.innerHTML = navBtnHtml(pg, stars);
+      navBtnClick(b, idx);
       grid.appendChild(b);
     });
     box.appendChild(grid);
@@ -392,10 +606,8 @@ function renderHome() {
     var b = document.createElement('div');
     b.className = 'page-btn' + (st.best >= 6 ? ' done' : '');
     var stars = st.best === undefined ? '' : (st.best >= 8 ? '⭐⭐⭐' : st.best >= 6 ? '⭐⭐' : st.best >= 4 ? '⭐' : '🌱');
-    b.innerHTML = pg.math
-      ? '<span class="big">' + pg.icon + '</span><span class="ttl">' + pg.title + '</span><span class="stars">' + stars + '</span>'
-      : '<span class="big">' + pg.icon + '</span><span class="ttl">עמוד ' + pg.page + '<br>' + pg.title + '</span><span class="stars">' + stars + '</span>';
-    b.onclick = (function (i) { return function () { openLearn(i); }; })(idx);
+    b.innerHTML = navBtnHtml(pg, stars);
+    navBtnClick(b, idx);
     el('grid-' + curBooklet).appendChild(b);
   });
   try { renderEng(host); } catch (e) {}
@@ -991,11 +1203,12 @@ el('quizBack').onclick = function () { seqToken++; try { if (curAudio) curAudio.
 el('parentBack').onclick = renderHome;
 el('btnParent').onclick = askParentGate; // STAGE 0: parent screen behind the grown-ups gate (was: renderParent directly)
 el('learnStart').onclick = function () { startRound(curPage, false); };
-el('btnReview').onclick = function () { startRound(DATA.PAGES.length - 1, true); };
-el('tabHe').onclick = function () { setTab('he'); };
-el('tabMath').onclick = function () { setTab('math'); };
-el('tabEng').onclick = function () { setTab('eng'); };
+el('btnReview').onclick = function () { navStopReadAll(); var my = ++navTapSeq; navSay('חזרה על הכל', function () { if (my !== navTapSeq) return; startRound(DATA.PAGES.length - 1, true); }); };
+el('tabHe').onclick = function () { navStopReadAll(); navSay('עברית'); setTab('he'); };
+el('tabMath').onclick = function () { navStopReadAll(); navSay('חשבון'); setTab('math'); };
+el('tabEng').onclick = function () { navStopReadAll(); navSay('אנגלית'); setTab('eng'); };
 el('endAgain').onclick = function () { startRound(roundPage, roundReview); };
+el('btnNavSay').onclick = navReadAll;
 el('endHome').onclick = renderHome;
 el('btnGoal').onclick = function () {
   var opts = [2, 3, 4, 5];
