@@ -7,13 +7,13 @@
 | פרויקט | מה זה | קישור חי |
 | --- | --- | --- |
 | מרכזי הלמידה | דף הבית — בחירת כיתה | https://netanel485-hue.github.io/ |
-| כיתה א׳ | המרכז של עדי — קריאה, אותיות ומשחקים | https://netanel485-hue.github.io/grade1-learning/ |
-| כיתה ד׳ | המרכז של איתי | https://netanel485-hue.github.io/grade4-learning/ |
-| כיתה ו׳ | המרכז של אריאל | https://netanel485-hue.github.io/grade6-learning/ |
+| כיתה א׳ | קריאה, אותיות ומשחקים | https://netanel485-hue.github.io/grade1-learning/ |
+| כיתה ד׳ | מרכז הלמידה | https://netanel485-hue.github.io/grade4-learning/ |
+| כיתה ו׳ | מרכז הלמידה | https://netanel485-hue.github.io/grade6-learning/ |
 | מתמטיקה | מסלול השבוע למבחן — כיתה ו׳ | https://netanel485-hue.github.io/math-test-prep/ |
 | חזרה למבדק | חזרה למבדק תחילת שנה — כיתה ד׳ | https://netanel485-hue.github.io/grade4-mivdak/ |
-| האנגלית של עדי | משחק אנגלית — אותיות ומילים | https://netanel485-hue.github.io/adi-english-game/ |
-| מלכים א׳ | ערכת למידה לדביר — פרקים י״ז–כ״ב | https://netanel485-hue.github.io/dvir-melachim/ |
+| משחק אנגלית | משחק אנגלית — אותיות ומילים | https://netanel485-hue.github.io/adi-english-game/ |
+| מלכים א׳ | ערכת למידה — פרקים י״ז–כ״ב | https://netanel485-hue.github.io/dvir-melachim/ |
 | מדריך Claude Code | מדריך בעברית — מתחילים בלי לדעת לתכנת | https://netanel485-hue.github.io/mdryk-claude-code.html |
 
 ## איך זה בנוי

@@ -2,6 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>מרכז הלמידה — כיתה ד׳</title>
 <link rel="manifest" href="manifest.webmanifest">
@@ -349,7 +350,7 @@ a:focus-visible {
 .h-learnbody li{margin:4px 0}
 
 /* ---- redesign 2026-11-08: topbar, quiz grid, continue card, responsive ---- */
-#hubTopbar{position:fixed;top:0;right:0;left:0;height:56px;background:var(--bar);border-bottom:1px solid var(--line);box-shadow:0 2px 12px rgba(30,70,50,.10);z-index:40;}
+#hubTopbar{position:fixed;top:0;right:0;left:0;height:56px;padding:0;border-radius:0;background:var(--bar);border-bottom:1px solid var(--line);box-shadow:0 2px 12px rgba(30,70,50,.10);z-index:40;}
 .h-top-inner{max-width:860px;margin:0 auto;height:56px;display:flex;align-items:center;gap:8px;padding:0 12px;}
 .h-top-logo{background:transparent;border:none;font-size:17px;font-weight:800;color:var(--ink);cursor:pointer;font-family:inherit;padding:8px 4px;min-height:40px;white-space:nowrap;}
 .h-top-nav{margin-inline-start:auto;display:flex;gap:6px;}
@@ -42788,6 +42789,7 @@ function fmtT(t){const neg=t<0;t=Math.abs(t);const ip=Math.floor(t/1000);const f
 function decOf(n100){const ip=Math.floor(n100/100),fr=n100%100;if(fr===0)return String(ip);if(fr%10===0)return ip+'.'+(fr/10);return ip+'.'+String(fr).padStart(2,'0');}
 function denPool(s){return s<=2?[2,3,4]:s<=4?[2,3,4,6,8]:s<=6?[2,3,4,5,6,8]:[2,3,4,5,6,8,10,12];}
 const NAMES=['דנה','נועם','מיכל','איתי','יעל','אורי','תמר','עומר'];
+const NAMES_M=['נועם','איתי','אורי','עומר'],NAMES_F=['דנה','מיכל','יעל','תמר']; // התאמת מגדר: תבנית בלשון זכר/נקבה מקבלת שם מתאים
 function _numStr(L){let s='';for(let i=0;i<L;i++)s+=String(i===0?rnd(1,9):rnd(0,9));return s;}
 function _fmtTime(h,m){return h+':'+String(m).padStart(2,'0');}
 
@@ -42829,7 +42831,7 @@ function n10Build(cfg,kind){
   const vals=[];if(t)vals.push(t*1000);if(h)vals.push(h*100);if(te)vals.push(te*10);if(o)vals.push(o);
   const list=parts.join(', ');
   const text=kind==='word'
-    ?`${pick(NAMES)} חשב מספר שמורכב מ־${list}. איזה מספר זה?`
+    ?`${pick(NAMES_M)} חשב מספר שמורכב מ־${list}. איזה מספר זה?`
     :`איזה מספר מורכב מ־${list}?`;
   const ans=String(n);
   const swapStr=String(t)+String(te)+String(h)+String(o);
@@ -42888,7 +42890,7 @@ function a10Add(cfg,kind){
   let text;
   if(kind==='word')text=pick([
     `בספריית בית הספר היו ${a} ספרים. הגיעו עוד ${b} ספרים חדשים. כמה ספרים יש בספרייה עכשיו?`,
-    `ל${pick(NAMES)} יש ${a} שקלים בחיסכון, והיא חסכה עוד ${b} שקלים. כמה שקלים יש לה עכשיו?`,
+    `ל${pick(NAMES_F)} יש ${a} שקלים בחיסכון, והיא חסכה עוד ${b} שקלים. כמה שקלים יש לה עכשיו?`,
     `במפעל ייצרו ביום ראשון ${a} בקבוקים וביום שני ${b} בקבוקים. כמה בקבוקים ייצרו בשני הימים?`]);
   else text=`חשבו: ${a} + ${b} = ?`;
   return{text,options:makeOptions(A,uniqWrongs(A,[String(ans+10),String(ans-10),String(ans+100),String(ans-100),String(ans+1)])),answer:A,
@@ -42903,7 +42905,7 @@ function a10Sub(cfg,kind){
   const ans=a-b,A=String(ans);
   let text;
   if(kind==='word')text=pick([
-    `ל${pick(NAMES)} היו ${a} שקלים. היא קנתה משחק ב־${b} שקלים. כמה שקלים נשארו לה?`,
+    `ל${pick(NAMES_F)} היו ${a} שקלים. היא קנתה משחק ב־${b} שקלים. כמה שקלים נשארו לה?`,
     `במחסן היו ${a} קופסאות. שלחו לחנות ${b} קופסאות. כמה קופסאות נשארו במחסן?`,
     `בבית הספר ${a} תלמידים. היום נעדרו ${b} תלמידים. כמה תלמידים הגיעו?`]);
   else text=`חשבו: ${a} - ${b} = ?`;
@@ -42915,7 +42917,7 @@ function a10TwoStep(cfg,kind){
   const x=s<=3?rnd(300,1500):rnd(1000,6000),y=rnd(100,900),z=rnd(50,x+y-150);
   const ans=x+y-z,A=String(ans);
   let text;
-  if(kind==='word')text=`ל${pick(NAMES)} היו ${x} מדבקות. היא קיבלה עוד ${y} מדבקות, ואחר כך נתנה לחברה ${z} מדבקות. כמה מדבקות נשארו לה?`;
+  if(kind==='word')text=`ל${pick(NAMES_F)} היו ${x} מדבקות. היא קיבלה עוד ${y} מדבקות, ואחר כך נתנה לחברה ${z} מדבקות. כמה מדבקות נשארו לה?`;
   else text=`חשבו: ${x} + ${y} - ${z} = ?`;
   return{text,options:makeOptions(A,uniqWrongs(A,[String(x+y),String(ans+z),String(ans-z>0?ans-z:ans+2*z),String(ans+10),String(ans-10)])),answer:A,
     explain:`שלב ראשון: ${x} + ${y} = ${x+y}. שלב שני: ${x+y} - ${z} = ${ans}.`};
@@ -43117,7 +43119,7 @@ function m2Word(cfg,kind){
   else if(scen==='price'){a=rnd(3,9);b=rnd(15,60);ans=a*b;
     text=kind==='word'?`מחירו של משחק הוא ${b} שקלים. כמה עולים ${a} משחקים כאלה?`:`משחק עולה ${b} שקלים. מה מחירם של ${a} משחקים?`;}
   else{a=rnd(11,25);b=rnd(4,9);ans=a*b;
-    text=kind==='word'?`${pick(NAMES)} קורא ${b} עמודים בכל יום. כמה עמודים יקרא ב־${a} ימים?`:`קוראים ${b} עמודים ביום. כמה עמודים קוראים ב־${a} ימים?`;}
+    text=kind==='word'?`${pick(NAMES_M)} קורא ${b} עמודים בכל יום. כמה עמודים יקרא ב־${a} ימים?`:`קוראים ${b} עמודים ביום. כמה עמודים קוראים ב־${a} ימים?`;}
   const A=String(ans);
   return{text,options:makeOptions(A,uniqWrongs(A,[String(a*(b-1)),String(a*(b+1)),String((a+1)*b),String(ans+10),String(ans-10>0?ans-10:ans+20)])),answer:A,
     explain:`כופלים: ${a} × ${b} = ${ans}.`};
@@ -43169,7 +43171,7 @@ function dlWord(cfg,kind){
 function oCalc(cfg,kind){
   const s=cfg.s,forms=[];
   forms.push(()=>{const a=rnd(3,40),b=rnd(2,9),c=rnd(2,9);return{e:`${a} + ${b} × ${c}`,v:a+b*c,w:(a+b)*c,rule:'קודם כפל, אחר כך חיבור',
-    story:kind==='word'?`ל${pick(NAMES)} יש ${a} מדבקות. היא קנתה ${b} חבילות של ${c} מדבקות. כמה מדבקות יש לה עכשיו?`:null};});
+    story:kind==='word'?`ל${pick(NAMES_F)} יש ${a} מדבקות. היא קנתה ${b} חבילות של ${c} מדבקות. כמה מדבקות יש לה עכשיו?`:null};});
   forms.push(()=>{const a=rnd(3,9),b=rnd(3,9),c=rnd(2,a*b-1);return{e:`${a} × ${b} - ${c}`,v:a*b-c,w:a*b+c,rule:'קודם כפל, אחר כך חיסור',story:null};});
   forms.push(()=>{const a=rnd(2,20),b=rnd(2,9),c=rnd(2,9);return{e:`${a} × ${b} + ${c}`,v:a*b+c,w:a*(b+c),rule:'קודם כפל, אחר כך חיבור',story:null};});
   if(s>=3)forms.push(()=>{const b=rnd(2,9),q=rnd(2,12),a=b*q,c=rnd(2,40);return{e:`${a} ÷ ${b} + ${c}`,v:q+c,w:q*c,rule:'קודם חילוק, אחר כך חיבור',story:null};});
@@ -43230,7 +43232,7 @@ function wShop(cfg,kind){
   if(Math.random()<0.5){
     const A=String(total);
     const text=kind==='word'
-      ?`${pick(NAMES)} קנה ${n1} ${it1[0]} במחיר ${p1} שקלים לאחד, ו־${n2} ${it2[0]} במחיר ${p2} שקלים לאחד. כמה שילם בסך הכל?`
+      ?`${pick(NAMES_M)} קנה ${n1} ${it1[0]} במחיר ${p1} שקלים לאחד, ו־${n2} ${it2[0]} במחיר ${p2} שקלים לאחד. כמה שילם בסך הכל?`
       :`קונים ${n1} פריטים במחיר ${p1} שקלים לאחד ו־${n2} פריטים במחיר ${p2} שקלים לאחד. כמה משלמים בסך הכל?`;
     return{text,options:makeOptions(A,uniqWrongs(A,[String(n1*p1),String(n2*p2),String(total+10),String(total-10>0?total-10:total+20),String(n1*p1+n2)])),answer:A,
       explain:`שלב ראשון: ${n1} × ${p1} = ${n1*p1}. שלב שני: ${n2} × ${p2} = ${n2*p2}. מחברים: ${n1*p1} + ${n2*p2} = ${total}.`};
@@ -43238,7 +43240,7 @@ function wShop(cfg,kind){
   const note=total<=100?200:total<=200?200:500;
   const change=note-total,A=String(change);
   const text=kind==='word'
-    ?`${pick(NAMES)} קנה ${n1} ${it1[0]} במחיר ${p1} שקלים לאחד, ו־${n2} ${it2[0]} במחיר ${p2} שקלים לאחד. הוא שילם בשטר של ${note} שקלים. כמה עודף קיבל?`
+    ?`${pick(NAMES_M)} קנה ${n1} ${it1[0]} במחיר ${p1} שקלים לאחד, ו־${n2} ${it2[0]} במחיר ${p2} שקלים לאחד. הוא שילם בשטר של ${note} שקלים. כמה עודף קיבל?`
     :`קנייה של ${n1} פריטים ב־${p1} שקלים לאחד ו־${n2} פריטים ב־${p2} שקלים לאחד. משלמים בשטר של ${note} שקלים. כמה עודף מקבלים?`;
   return{text,options:makeOptions(A,uniqWrongs(A,[String(total),String(note-n1*p1),String(change+10),String(change-10>0?change-10:change+20),String(note-total+50)])),answer:A,
     explain:`שלב ראשון — מחיר הקנייה: ${n1} × ${p1} + ${n2} × ${p2} = ${n1*p1} + ${n2*p2} = ${total}. שלב שני — עודף: ${note} - ${total} = ${change}.`};
@@ -43383,7 +43385,7 @@ function tmMoney(cfg,kind){
   }else if(mode==='change'){
     const price=rnd(12,180);
     const note=[50,100,200,500].find(nt=>nt>price)||500,change=note-price;ans=`${change} שקלים`;
-    text=kind==='word'?`${pick(NAMES)} קנתה משחק ב־${price} שקלים ושילמה בשטר של ${note} שקלים. כמה עודף קיבלה?`:`קנייה של ${price} שקלים. משלמים בשטר של ${note} שקלים. כמה עודף מקבלים?`;
+    text=kind==='word'?`${pick(NAMES_F)} קנתה משחק ב־${price} שקלים ושילמה בשטר של ${note} שקלים. כמה עודף קיבלה?`:`קנייה של ${price} שקלים. משלמים בשטר של ${note} שקלים. כמה עודף מקבלים?`;
     wrongs=[`${change+10} שקלים`,`${change-10>0?change-10:change+20} שקלים`,`${price} שקלים`,`${note-change} שקלים`];
     explain=`עודף = מה ששולם פחות המחיר: ${note} - ${price} = ${change} שקלים.`;
   }else if(mode==='coins'){
@@ -43544,7 +43546,7 @@ function gsTri(cfg,kind){
     else if(pat==='iso'){x=rnd(4,9);y=rnd(3,2*x-1);if(y===x)y=x+1;sides=[x,x,y];label='משולש שווה־שוקיים';explain=`שתי צלעות שוות (${x} ס״מ) ואחת שונה (${y} ס״מ) — זהו משולש שווה־שוקיים.`;}
     else{let guard=0;do{x=rnd(3,10);y=rnd(3,10);z=rnd(3,10);guard++;}while(guard<60&&(new Set([x,y,z]).size<3||x+y<=z||x+z<=y||y+z<=x));sides=[x,y,z];label='משולש שונה־צלעות';explain=`כל הצלעות שונות: ${x}, ${y} ו־${z} ס״מ — זהו משולש שונה־צלעות.`;}
     const text=kind==='word'
-      ?`${pick(NAMES)} מדד משולש ומצא שצלעותיו הן ${sides[0]} ס״מ, ${sides[1]} ס״מ ו־${sides[2]} ס״מ. איזה משולש זה?`
+      ?`${pick(NAMES_M)} מדד משולש ומצא שצלעותיו הן ${sides[0]} ס״מ, ${sides[1]} ס״מ ו־${sides[2]} ס״מ. איזה משולש זה?`
       :`צלעותיו של משולש הן ${sides[0]} ס״מ, ${sides[1]} ס״מ ו־${sides[2]} ס״מ. איזה משולש זה?`;
     const all=['משולש שווה־צלעות','משולש שווה־שוקיים','משולש שונה־צלעות','משולש ישר־זווית'];
     return{text,options:makeOptions(label,uniqWrongs(label,all)),answer:label,explain};
@@ -43576,7 +43578,7 @@ function gsCount(cfg,kind){
   const [name,n]=pick(POLY_COUNT);
   const what=pick(['צלעות','קודקודים','זוויות']);
   const text=kind==='word'
-    ?`${pick(NAMES)} צייר ${name}. כמה ${what} יש לצורה שצייר?`
+    ?`${pick(NAMES_M)} צייר ${name}. כמה ${what} יש לצורה שצייר?`
     :`כמה ${what} יש ל${name}?`;
   const ans=String(n);
   return{text,options:makeOptions(ans,uniqWrongs(ans,[String(n+1),String(n-1>0?n-1:n+3),String(n+2),String(n+3)])),answer:ans,
@@ -43658,7 +43660,7 @@ const SYM_POOL=[
 function syCount(cfg,kind){
   if(Math.random()<0.15){
     const ans='אינסוף — המון קווי סימטריה';
-    const text=kind==='word'?`${pick(NAMES)} צייר עיגול. כמה קווי סימטריה יש לעיגול?`:`כמה קווי סימטריה יש לעיגול?`;
+    const text=kind==='word'?`${pick(NAMES_M)} צייר עיגול. כמה קווי סימטריה יש לעיגול?`:`כמה קווי סימטריה יש לעיגול?`;
     return{text,options:makeOptions(ans,uniqWrongs(ans,['4','2','1','0'])),answer:ans,
       explain:`כל קו שעובר דרך מרכז העיגול הוא קו סימטריה, ויש אינסוף קווים כאלה.`};
   }
@@ -43711,7 +43713,7 @@ function fwIdentify(cfg,kind){
   if(kind==='word')text=pick([
     `חילקו פיצה ל־${b} חלקים שווים, ו־${a} מהם נאכלו. איזה שבר מציין את החלק שנאכל?`,
     `חפיסת שוקולד מחולקת ל־${b} קוביות שוות, ו־${a} מהן נאכלו. איזה שבר מציין את החלק שנאכל?`,
-    `עוגה חולקה ל־${b} פרוסות שוות. ${pick(NAMES)} אכל ${a} פרוסות. איזה שבר מהעוגה הוא אכל?`]);
+    `עוגה חולקה ל־${b} פרוסות שוות. ${pick(NAMES_M)} אכל ${a} פרוסות. איזה שבר מהעוגה הוא אכל?`]);
   else text=`איזה שבר מתאר את החלק הצבוע בתמונה?`;
   const ans=optLabel(a,b);
   return{text,viz,options:makeOptions(ans,uniqWrongs(ans,[optLabel(b,a),optLabel(a+1,b),optLabel(b-a,b),optLabel(a,b+1)])),answer:ans,
@@ -43720,7 +43722,7 @@ function fwIdentify(cfg,kind){
 function fwBuild(cfg,kind){
   const b=pick(denPool(cfg.s)),a=rnd(1,b-1);
   let text;
-  if(kind==='word')text=`בצלחת יש ${b} עוגיות שוות בגודלן. ${pick(NAMES)} לקח ${a} עוגיות. איזה חלק מהעוגיות הוא לקח?`;
+  if(kind==='word')text=`בצלחת יש ${b} עוגיות שוות בגודלן. ${pick(NAMES_M)} לקח ${a} עוגיות. איזה חלק מהעוגיות הוא לקח?`;
   else text=`כתבו את השבר המתאים: ${a} מתוך ${b} חלקים שווים.`;
   const ans=optLabel(a,b);
   return{text,options:makeOptions(ans,uniqWrongs(ans,[optLabel(b,a),optLabel(a+1,b),optLabel(a,b+1),optLabel(Math.max(1,a-1),b)])),answer:ans,
@@ -43755,7 +43757,7 @@ function fqUnit(cfg,kind){
   const b=pick(denPool(cfg.s)),unit=rnd(2,5+cfg.s),total=b*unit,ans=String(unit);
   let text;
   if(kind==='word')text=pick([
-    `בשקית יש ${total} סוכריות. ${pick(NAMES)} לקח ${frac(1,b)} מהסוכריות. כמה סוכריות הוא לקח?`,
+    `בשקית יש ${total} סוכריות. ${pick(NAMES_M)} לקח ${frac(1,b)} מהסוכריות. כמה סוכריות הוא לקח?`,
     `בכיתה יש ${total} תלמידים. ${frac(1,b)} מהתלמידים יצאו לחצר. כמה תלמידים יצאו?`]);
   else text=`כמה הם ${frac(1,b)} מתוך ${total}?`;
   return{text,options:makeOptions(ans,uniqWrongs(ans,[String(total),String(unit*b),String(unit+1),String(unit-1>0?unit-1:unit+2),String(2*unit)])),answer:ans,
@@ -43878,7 +43880,7 @@ function faAdd(cfg,kind){
   let text;
   if(kind==='word')text=pick([
     `בבוקר אכלו ${frac(a,b)} מהעוגה, ובערב אכלו עוד ${frac(c,b)} מהעוגה. איזה שבר מהעוגה נאכל בסך הכל?`,
-    `${pick(NAMES)} צבע ${frac(a,b)} מהדף בצבע אחד, ו־${frac(c,b)} מהדף בצבע אחר. איזה שבר מהדף צבוע בסך הכל?`]);
+    `${pick(NAMES_M)} צבע ${frac(a,b)} מהדף בצבע אחד, ו־${frac(c,b)} מהדף בצבע אחר. איזה שבר מהדף צבוע בסך הכל?`]);
   else text=`חשבו: ${frac(a,b)} + ${frac(c,b)} = ?`;
   return{text,options:makeOptions(ans,uniqWrongs(ans,[optLabel(a,b),optLabel(sum,2*b),optLabel(sum+1,b),optLabel(a*c,b),optLabel(sum,b+1)])),answer:ans,
     explain:`המכנים שווים, ולכן מחברים רק את המונים: ${a} + ${c} = ${sum}, והמכנה נשאר ${b}. תוצאה: ${valStr(sum,b)}. (טעות נפוצה: לחבר גם את המכנים.)`};
@@ -43888,7 +43890,7 @@ function faSub(cfg,kind){
   const a=rnd(2,b-1),c=rnd(1,a-1),dif=a-c,ans=optLabel(dif,b);
   let text;
   if(kind==='word')text=pick([
-    `על הצלחת היו ${frac(a,b)} פיצה. ${pick(NAMES)} אכל ${frac(c,b)} מהפיצה. איזה שבר מהפיצה נשאר?`,
+    `על הצלחת היו ${frac(a,b)} פיצה. ${pick(NAMES_M)} אכל ${frac(c,b)} מהפיצה. איזה שבר מהפיצה נשאר?`,
     `בבקבוק היו ${frac(a,b)} ליטר מים. שתו ${frac(c,b)} ליטר. כמה ליטר נשארו?`]);
   else text=`חשבו: ${frac(a,b)} - ${frac(c,b)} = ?`;
   return{text,options:makeOptions(ans,uniqWrongs(ans,[optLabel(a+c,b),optLabel(Math.max(1,dif-1),b),optLabel(dif+1,b),optLabel(c,b),optLabel(dif,2*b)])),answer:ans,
@@ -43899,7 +43901,7 @@ function faWord(cfg,kind){
   if(Math.random()<0.5){
     const left=b-a,ans=optLabel(left,b);
     const text=kind==='word'
-      ?`הייתה עוגה שלמה. ${pick(NAMES)} אכל ${frac(a,b)} מהעוגה. איזה שבר מהעוגה נשאר?`
+      ?`הייתה עוגה שלמה. ${pick(NAMES_M)} אכל ${frac(a,b)} מהעוגה. איזה שבר מהעוגה נשאר?`
       :`חשבו: 1 - ${frac(a,b)} = ?`;
     return{text,options:makeOptions(ans,uniqWrongs(ans,[optLabel(a,b),optLabel(left+1,b),optLabel(left,b+1),optLabel(b,a)])),answer:ans,
       explain:`עוגה שלמה היא ${b}/${b}. מחסרים: ${b} - ${a} = ${left}, ולכן נשאר ${left}/${b}.`};
@@ -43907,7 +43909,7 @@ function faWord(cfg,kind){
   const c=rnd(1,b-a),sum2=a+c;
   const total=sum2,ans=optLabel(total,b);
   const text=kind==='word'
-    ?`${pick(NAMES)} שתה בבוקר ${frac(a,b)} ליטר מיץ, ואחר הצהריים עוד ${frac(c,b)} ליטר. כמה ליטר שתה בסך הכל, כשבר מליטר שלם?`
+    ?`${pick(NAMES_M)} שתה בבוקר ${frac(a,b)} ליטר מיץ, ואחר הצהריים עוד ${frac(c,b)} ליטר. כמה ליטר שתה בסך הכל, כשבר מליטר שלם?`
     :`חשבו: ${frac(a,b)} + ${frac(c,b)} = ?`;
   return{text,options:makeOptions(ans,uniqWrongs(ans,[optLabel(sum2,2*b),optLabel(Math.max(1,total-1),b),optLabel(total+1,b),optLabel(a*c,b)])),answer:ans,
     explain:`מחברים את המונים: ${a} + ${c} = ${sum2}. המכנה נשאר ${b}. תוצאה: ${valStr(total,b)}.`};
@@ -44186,7 +44188,7 @@ function tpDen915(cfg,kind){
       const text=pick([
         'חילקו פיצה ל־'+b+' חלקים שווים, ו־'+a+' מהם נאכלו. איזה שבר מציין את החלק שנאכל?',
         'חפיסת שוקולד מחולקת ל־'+b+' קוביות שוות, ו־'+a+' מהן נאכלו. איזה שבר מציין את החלק שנאכל?',
-        'עוגה חולקה ל־'+b+' פרוסות שוות. '+pick(NAMES)+' אכל '+a+' פרוסות. איזה שבר מהעוגה הוא אכל?']);
+        'עוגה חולקה ל־'+b+' פרוסות שוות. '+pick(NAMES_M)+' אכל '+a+' פרוסות. איזה שבר מהעוגה הוא אכל?']);
       const ans=a+'/'+b;
       return{text,options:makeOptions(ans,tpPickWrongs(a,b,[[a-1,b],[a+1,b],[a-2,b],[a+2,b],[b-a,b],[a,otherB]])),answer:ans,
         explain:'השלם חולק ל־'+b+' חלקים שווים, ו־'+a+' מהם הם החלק המדובר — לכן השבר הוא '+a+'/'+b+'.'};
@@ -44342,7 +44344,7 @@ function tpDiffDen(cfg,kind){
       return{text,options:makeOptions(ans,tpPickWrongs(rem,B,[[sum,B],[rem+1,B],[rem-1,B],[a,B],[c,B]])),answer:ans,
         explain:conv+' '+a+'/'+B+' + '+(c*k)+'/'+B+' = '+sum+'/'+B+' צבוע. מהשלם נשאר '+B+'/'+B+' פחות '+sum+'/'+B+' = '+rem+'/'+B+'.'};
     }
-    const text=pick(NAMES)+' צבע '+a+'/'+B+' מהדף בצבע אחד ו־'+c+'/'+b+' מהדף בצבע אחר. איזה חלק מהדף צבוע בסך הכל?';
+    const text=pick(NAMES_M)+' צבע '+a+'/'+B+' מהדף בצבע אחד ו־'+c+'/'+b+' מהדף בצבע אחר. איזה חלק מהדף צבוע בסך הכל?';
     const ans=sum+'/'+B;
     return{text,options:makeOptions(ans,tpPickWrongs(sum,B,[[rem,B],[sum+1,B],[sum-1,B],[a+c,B]])),answer:ans,
       explain:conv+' '+a+'/'+B+' + '+(c*k)+'/'+B+' = '+sum+'/'+B+' צבוע בסך הכל.'};
