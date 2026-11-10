@@ -142,6 +142,41 @@ h1{font-size:clamp(24px,7vw,30px)}
 .syl{font-size:30px}
 }
 </style>
+<style id="g1-fun-css">
+/* ==========================================================================
+   G1-FUN — שכבת עיצוב לכיתה א׳ (גילאי 6–7). 11/11/2026
+   רק משוב ויזואלי: המשוב הקולי ("כל הכבוד", "נסי שוב") כבר קיים, לכן אין כאן צלילים.
+   להסרה: למחוק את תגית ה-style עם id=g1-fun-css ואת תגית ה-script עם id=g1-fun-js.
+   ========================================================================== */
+/* תשובה נכונה: קפיצה גדולה וזוהר */
+.opt.right{animation:g1pop .55s cubic-bezier(.2,1.7,.4,1);box-shadow:0 0 0 6px rgba(47,191,113,.25)}
+.slot.filled{animation:g1pop .4s cubic-bezier(.2,1.7,.4,1)}
+@keyframes g1pop{0%{transform:scale(1)}35%{transform:scale(1.14) rotate(-2deg)}65%{transform:scale(.97) rotate(1deg)}100%{transform:scale(1)}}
+/* כפתורים מרגישים "לחיצים" */
+.opt,.tile,.page-btn,.wcard,.syl{transition:transform .1s ease}
+.opt:active:not(:disabled),.tile:active,.wcard:active{transform:scale(.94)}
+.opt{box-shadow:0 5px 0 #e7e2ff}
+.opt.right{box-shadow:0 5px 0 #8fe0b3,0 0 0 6px rgba(47,191,113,.22)}
+/* פס התקדמות: שביל עם כוכב שמתקדם */
+.prog{height:20px;overflow:visible;position:relative;background:#eee9ff;border-radius:999px}
+.prog>div{position:relative;border-radius:999px;background:linear-gradient(90deg,#ffb800,#ff6b9d);
+  transition:width .5s cubic-bezier(.3,1.5,.5,1)}
+.prog>div::after{content:"⭐";position:absolute;left:-14px;top:50%;transform:translateY(-50%);font-size:26px;line-height:1;
+  filter:drop-shadow(0 2px 0 rgba(0,0,0,.12))}
+/* מסך סיום: הכוכבים נכנסים בקפיצה */
+.endbox .stars{animation:g1stars .8s cubic-bezier(.2,1.6,.4,1) both}
+.endbox .msg{animation:g1in .5s .25s ease both}
+@keyframes g1stars{0%{transform:scale(0) rotate(-20deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes g1in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+/* דף שהושלם בוהק קצת */
+.page-btn.done{box-shadow:0 0 0 3px rgba(47,191,113,.18),0 3px 8px rgba(60,50,140,.08)}
+/* פיצוץ אימוג׳ים */
+.g1-p{position:fixed;z-index:80;pointer-events:none;font-size:28px;line-height:1;will-change:transform,opacity;
+  animation:g1p .9s cubic-bezier(.15,.7,.3,1) forwards}
+@keyframes g1p{0%{opacity:1;transform:translate(-50%,-50%) scale(.4)}70%{opacity:1}
+  100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.1) rotate(var(--r))}}
+</style>
+
 </head>
 <body>
 <div class="wrap">
@@ -1338,5 +1373,53 @@ el('btnGoal').onclick = function () {
 };
 renderHome();
 </script>
+<script id="g1-fun-js">
+/* G1-FUN — פיצוץ אימוג׳ים כשעונים נכון / משלימים מילה / מסיימים סבב.
+   מאזין לשינויים במסך בלבד, לא משנה את המנוע. כל כשל משאיר את האתר כמו שהיה. */
+(function(){
+  'use strict';
+  try{
+    if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    var SETS=[['⭐','✨','🌟','💖','🎉'],['🌸','✨','💜','⭐','🦋'],['🎈','⭐','✨','🍭','🌈']];
+    function burst(el,n){
+      try{
+        var r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2,set=SETS[(Math.random()*SETS.length)|0];
+        for(var i=0;i<n;i++){
+          var d=document.createElement('div'),a=(Math.PI*2*i/n)+Math.random()*.5,dist=70+Math.random()*60;
+          d.className='g1-p';d.textContent=set[i%set.length];
+          d.style.left=x+'px';d.style.top=y+'px';
+          d.style.setProperty('--dx',Math.round(Math.cos(a)*dist)+'px');
+          d.style.setProperty('--dy',Math.round(Math.sin(a)*dist-30)+'px');
+          d.style.setProperty('--r',Math.round(Math.random()*120-60)+'deg');
+          document.body.appendChild(d);
+          (function(el2){setTimeout(function(){el2.remove();},1000);})(d);
+        }
+      }catch(e){}
+    }
+    var quiz=document.getElementById('screen-quiz'),end=document.getElementById('screen-end');
+    if(quiz&&window.MutationObserver){
+      new MutationObserver(function(ms){
+        for(var i=0;i<ms.length;i++){
+          var t=ms[i].target;
+          if(ms[i].type!=='attributes'||!t.classList)continue;
+          if(t.classList.contains('opt')&&t.classList.contains('right')&&!t._g1){t._g1=1;burst(t,10);}
+          else if(t.classList.contains('slot')&&t.classList.contains('filled')&&!t._g1){
+            t._g1=1;var all=t.parentNode&&t.parentNode.children,done=true;
+            if(all)for(var k=0;k<all.length;k++)if(!all[k].classList.contains('filled'))done=false;
+            if(done)burst(t.parentNode,12);
+          }
+        }
+      }).observe(quiz,{subtree:true,attributes:true,attributeFilter:['class']});
+    }
+    if(end&&window.MutationObserver){
+      new MutationObserver(function(){
+        if(!end.classList.contains('hidden')){var st=document.getElementById('endStars');
+          if(st&&/⭐/.test(st.textContent))setTimeout(function(){burst(st,16);},350);}
+      }).observe(end,{attributes:true,attributeFilter:['class']});
+    }
+  }catch(e){}
+})();
+</script>
+
 </body>
 </html>
