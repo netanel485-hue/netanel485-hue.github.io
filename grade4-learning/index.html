@@ -430,7 +430,7 @@ a:focus-visible {
 .pv-meter{display:grid;grid-template-columns:minmax(90px,30%) 1fr auto;align-items:center;gap:8px 10px;padding:7px 0;border-bottom:1px solid var(--pv-grid);font-size:15px}
 .pv-meter:last-child{border-bottom:none}
 .pv-meter .n{font-weight:700;color:var(--ink)}
-.pv-meter .t{height:12px;background:#EEF1EC;border-radius:999px;overflow:hidden}
+.pv-meter .t{height:12px;background:#EEF1EC;border-radius:999px;overflow:hidden;display:flex;direction:rtl;justify-content:flex-start}
 .pv-meter .t>div{height:100%;background:var(--series-1);border-radius:999px}
 .pv-meter .f{font-weight:800;color:var(--ink);min-width:88px;text-align:left;direction:rtl}
 .pv-meter .f small{font-weight:600;color:var(--muted)}
@@ -45368,7 +45368,7 @@ showTopics();
     else html+='<div class="pv-empty">עדיין אין תשובות. אחרי הסבב הראשון יופיע כאן הדיוק בכל מקצוע.</div>';
     html+='</div>';
     // weak topics
-    html+='<div class="pv"><h3>לחזק השבוע</h3><div class="pv-sub">הנושאים עם הכי הרבה שאלות שנטעו בהן ועוד לא חוזקו</div>';
+    html+='<div class="pv"><h3>לחזק השבוע</h3><div class="pv-sub">הנושאים עם הכי הרבה שאלות שטעו בהן ועוד לא חוזקו</div>';
     if(weak.length)weak.slice(0,5).forEach(function(w){html+='<div class="pv-weak"><span>'+esc(w.emoji+' '+w.name)+' <small style="color:var(--muted)">· '+esc(w.sub)+'</small></span><b>'+w.n+'</b></div>';});
     else html+='<div class="pv-empty">אין כרגע שאלות לחיזוק 👏</div>';
     html+='</div>';
