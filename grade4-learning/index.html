@@ -401,6 +401,98 @@ a:focus-visible {
   #tpCheck { display: block; margin: 4px auto 0; }
 
 </style>
+<style id="g4-fun-css">
+/* ==========================================================================
+   G4-FUN — שכבת פיילוט לכיתה ד׳ (גילאי 9–10). 10/11/2026
+   שכבה נפרדת: לא נוגעת בבלוק DESIGN-TOKENS, רק דורסת מעליו.
+   להסרה: למחוק את תגית ה-style עם id=g4-fun-css ואת תגית ה-script עם id=g4-fun-js.
+   ========================================================================== */
+:root{
+  --fun-math:#3B6FE0; --fun-torah:#C2410C; --fun-navi:#0F766E; --fun-mishna:#7C3AED;
+  --fun-halacha:#B45309; --fun-tefilla:#2563EB; --fun-hebrew:#DB2777; --fun-science:#059669; --fun-english:#EA580C;
+}
+/* ---- הסברים אחרי תשובה: היו מוסתרים (‎.explain{display:none}‎) ---- */
+#hubQFb .explain{display:block;font-size:16px;line-height:1.55}
+
+/* ---- כרטיסי מקצוע: צבע לכל מקצוע ---- */
+.h-scard{--c:var(--accent-deep);position:relative;overflow:hidden;background:#fff;border-color:transparent;
+  box-shadow:0 3px 0 color-mix(in srgb,var(--c) 35%,transparent),0 6px 18px rgba(30,70,50,.08)}
+.h-scard::before{content:"";position:absolute;inset:0 0 auto 0;height:7px;background:var(--c)}
+.h-scard::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 70% at 50% 0%,color-mix(in srgb,var(--c) 13%,transparent),transparent 70%)}
+.h-scard>*{position:relative;z-index:1}
+.h-scard .h-sname{color:color-mix(in srgb,var(--c) 70%,var(--ink));font-weight:800}
+.h-scard:hover{border-color:var(--c)}
+.h-scard[onclick*="hubOpenMath"]{--c:var(--fun-math)}
+.h-scard[onclick*="'torah'"]{--c:var(--fun-torah)}
+.h-scard[onclick*="'navi'"]{--c:var(--fun-navi)}
+.h-scard[onclick*="'mishna'"]{--c:var(--fun-mishna)}
+.h-scard[onclick*="'halacha'"]{--c:var(--fun-halacha)}
+.h-scard[onclick*="'tefilla'"]{--c:var(--fun-tefilla)}
+.h-scard[onclick*="'hebrew'"]{--c:var(--fun-hebrew)}
+.h-scard[onclick*="'science'"]{--c:var(--fun-science)}
+.h-scard[onclick*="'english'"]{--c:var(--fun-english)}
+/* לחיצה מרגישה "אמיתית" */
+.h-scard,.h-tcard,.opt,.btn-primary,.btn-main,.btn-secondary,.h-mission{transition:transform .1s ease,box-shadow .1s ease,background .15s,border-color .15s}
+.h-scard:active,.h-tcard:active,.opt:active:not(:disabled),.btn-primary:active,.btn-main:active,.h-mission:active{transform:translateY(2px) scale(.98)}
+
+/* ---- טלפון: שני כרטיסים בשורה, חשבון לרוחב מלא ---- */
+@media (max-width:479px){
+  .h-grid{grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+  .h-grid>div{grid-column:1/-1}
+  .h-scard{min-height:128px;padding:16px 8px 12px;border-radius:20px}
+  .h-scard .h-art{width:58px;height:58px}
+  .h-scard .h-sname{font-size:18px}
+  .h-scard .h-ssub{font-size:12.5px}
+  .h-scard .h-sprog{font-size:12px;margin-top:1px}
+  .h-head{padding-top:6px}
+  .h-head p{font-size:14px}
+}
+
+/* ---- מסך שאלה ---- */
+#hubQuiz .qtext{font-size:21px;font-weight:700;line-height:1.5;color:var(--ink)}
+#hubQuiz .opts{gap:10px}
+#hubQuiz .opt{min-height:62px;font-size:19px;font-weight:600;border-width:2.5px;box-shadow:0 3px 0 var(--line)}
+#hubQuiz .opt:hover:not(:disabled){border-color:var(--accent-deep)}
+#hubQuiz .opt.correct{box-shadow:0 3px 0 color-mix(in srgb,var(--good) 45%,transparent);animation:g4pop .45s cubic-bezier(.2,1.6,.4,1)}
+#hubQuiz .opt.wrong{box-shadow:0 3px 0 color-mix(in srgb,var(--bad) 40%,transparent);animation:g4shake .4s ease}
+#hubQuiz .opt:disabled:not(.correct):not(.wrong){opacity:.55}
+@keyframes g4pop{0%{transform:scale(1)}40%{transform:scale(1.06)}100%{transform:scale(1)}}
+@keyframes g4shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+#hubQFb .fb{font-size:17px;animation:g4in .25s ease}
+@keyframes g4in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* פס התקדמות */
+#hubQuiz .progress{height:14px;background:#E6ECE2}
+#hubQuiz .progress>div{background:linear-gradient(90deg,#FBBF24,var(--accent-deep));border-radius:99px;transition:width .45s cubic-bezier(.3,1.4,.5,1)}
+#hubQuiz #hubQNum,#hubQuiz #hubScore{font-weight:800}
+#hubQuiz #hubQNum{margin-inline-end:10px}
+/* "דיווח על שאלה" — קטן ולא מתחרה בשאלה */
+#hubQuiz button[onclick="hubReportToggle()"]{min-height:0;padding:6px 8px;font-size:13px;font-weight:600;border:none;background:none;color:var(--muted);box-shadow:none}
+/* תשובה בלחיצה אחת: כפתור "בדיקה" מיותר, "הבא" נדבק לתחתית */
+body.g4-tap #hubCheckBtn{display:none!important}
+#hubQuiz .h-rowbtns:has(#hubNextBtn:not(.h-hidden)){position:sticky;bottom:0;z-index:6;margin:10px -4px 0;padding:12px 4px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top,var(--card-focus) 70%,rgba(255,255,255,0))}
+#hubNextBtn{width:100%;font-size:19px;min-height:58px;box-shadow:0 4px 0 color-mix(in srgb,var(--accent-deep) 60%,#000)}
+
+/* ---- כוכב מעופף, הודעת רצף ---- */
+.g4-fly{position:fixed;z-index:60;pointer-events:none;font-size:30px;font-weight:900;color:var(--accent-deep);
+  animation:g4fly .9s ease-out forwards;text-shadow:0 2px 0 #fff}
+@keyframes g4fly{0%{opacity:0;transform:translate(-50%,0) scale(.6)}20%{opacity:1;transform:translate(-50%,-14px) scale(1.15)}100%{opacity:0;transform:translate(-50%,-80px) scale(1)}}
+.g4-toast{position:fixed;left:50%;top:76px;z-index:61;transform:translateX(-50%);background:var(--ink);color:#fff;
+  font-weight:800;font-size:18px;padding:10px 20px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.2);animation:g4toast 1.8s ease forwards;white-space:nowrap}
+@keyframes g4toast{0%{opacity:0;transform:translate(-50%,-10px) scale(.9)}12%{opacity:1;transform:translate(-50%,0) scale(1.04)}20%{transform:translate(-50%,0) scale(1)}85%{opacity:1}100%{opacity:0}}
+/* כפתור צליל בסרגל העליון */
+#g4SoundBtn{font-size:18px}
+/* ---- טלפון: פחות "כרום" מעל השאלה, השאלה עולה למעלה ---- */
+@media (max-width:479px){
+  #hubQuiz>.btn-ghost{min-height:40px;padding:6px 12px;font-size:14px;margin-top:2px}
+  #hubQuiz>.card{margin-top:8px!important;padding:14px 12px}
+  #hubQuiz #hubQuizTitle{font-size:18px}
+  #hubQuiz .progress{margin-top:6px!important;margin-bottom:6px}
+}
+@media (prefers-reduced-motion:reduce){.g4-fly,.g4-toast{animation-duration:1.2s!important}}
+</style>
+
 </head>
 <body>
 <header id="hubTopbar"><div class="h-top-inner">
@@ -42308,9 +42400,11 @@ function hubRenderQ(){
   hEl('hubQType').textContent=(q._topic&&S.mode==='prep'?'📌 '+q._topic.name+' · ':'')+(q.type||'')+' · רמה '+q.lvl;
   const qt=hEl('hubQText');qt.textContent=q.q;qt.setAttribute('dir','auto');
   const tpc=q._topic||S.topic;const psg=hEl('hubQPsg');const tg=hEl('hubPsgToggle');
-  if(q.psg!==undefined&&tpc.passages&&tpc.passages[q.psg]){
-    psg.textContent=tpc.passages[q.psg];psg.classList.remove('h-hidden');
-    const same=S._lastPsg===q.psg;S._lastPsg=q.psg;
+  // psg יכול להיות אינדקס ל-passages של הנושא, או טקסט הקטע עצמו (כך בנויות 450 שאלות הבנת הנקרא בכיתה ד׳)
+  const psgText=typeof q.psg==='string'?q.psg:(q.psg!==undefined&&tpc.passages?tpc.passages[q.psg]:'');
+  if(psgText){
+    psg.textContent=psgText;psg.classList.remove('h-hidden');
+    const same=S._lastPsg===psgText;S._lastPsg=psgText;
     if(same&&!S._psgOpen){psg.classList.add('closed');tg.classList.remove('h-hidden');tg.textContent='📖 הצגת הקטע';}
     else{psg.classList.remove('closed');tg.classList.add('h-hidden');S._psgOpen=false;}
   }else{psg.classList.add('h-hidden');tg.classList.add('h-hidden');S._lastPsg=-1;}
@@ -45103,5 +45197,83 @@ showTopics();
 
 </script>
 <script>if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0){navigator.serviceWorker.register('sw.js').catch(function(){});}</script>
+<script id="g4-fun-js">
+/* G4-FUN — שכבת פיילוט לכיתה ד׳: תשובה בלחיצה אחת, צלילים, כוכב מעופף, הודעת רצף.
+   עוטפת את המנוע הקיים בלי לשנות אותו. כל כשל כאן משאיר את האתר כמו שהיה. */
+(function(){
+  'use strict';
+  try{
+    var opts=document.getElementById('hubOpts');
+    if(!opts||typeof window.hubCheck!=='function')return;
+    var KEY='g4fun.sound';
+    function soundOn(){try{return localStorage.getItem(KEY)!=='0';}catch(e){return true;}}
+    var AC=null;
+    function tone(seq,step,type,vol){
+      if(!soundOn())return;
+      try{
+        AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+        if(AC.state==='suspended')AC.resume();
+        var t=AC.currentTime+0.01;
+        seq.forEach(function(f,i){
+          var o=AC.createOscillator(),g=AC.createGain(),s=t+i*step;
+          o.type=type||'triangle';o.frequency.value=f;
+          g.gain.setValueAtTime(0.0001,s);g.gain.exponentialRampToValueAtTime(vol||0.16,s+0.015);
+          g.gain.exponentialRampToValueAtTime(0.0001,s+step*1.6);
+          o.connect(g);g.connect(AC.destination);o.start(s);o.stop(s+step*1.7);
+        });
+      }catch(e){}
+    }
+    var sGood=function(){tone([784,1047],.085);},
+        sBad=function(){tone([330,262],.13,'sine',0.12);},
+        sCombo=function(){tone([523,659,784,1047,1319],.07);};
+
+    // כפתור צליל בסרגל העליון
+    var nav=document.querySelector('#hubTopbar .h-top-nav');
+    if(nav){
+      var sb=document.createElement('button');
+      sb.id='g4SoundBtn';sb.className='h-top-btn';sb.type='button';
+      var paint=function(){var on=soundOn();sb.textContent=on?'🔊':'🔇';sb.setAttribute('aria-label',on?'צלילים פועלים — לחיצה להשתקה':'צלילים מושתקים — לחיצה להפעלה');};
+      sb.onclick=function(){try{localStorage.setItem(KEY,soundOn()?'0':'1');}catch(e){}paint();if(soundOn())sGood();};
+      paint();nav.appendChild(sb);
+    }
+
+    function fly(el,txt){
+      try{
+        var r=el.getBoundingClientRect(),d=document.createElement('div');
+        d.className='g4-fly';d.textContent=txt;d.style.left=(r.left+r.width/2)+'px';d.style.top=(r.top+4)+'px';
+        document.body.appendChild(d);setTimeout(function(){d.remove();},1000);
+      }catch(e){}
+    }
+    function toast(txt){
+      var old=document.querySelector('.g4-toast');if(old)old.remove();
+      var d=document.createElement('div');d.className='g4-toast';d.setAttribute('role','status');d.textContent=txt;
+      document.body.appendChild(d);setTimeout(function(){d.remove();},1900);
+    }
+
+    document.body.classList.add('g4-tap');
+    var streak=0;
+    opts.addEventListener('click',function(e){
+      var b=e.target.closest&&e.target.closest('.opt');
+      if(!b||!opts.contains(b)||b.disabled)return;
+      var cb=document.getElementById('hubCheckBtn');
+      if(!cb||cb.classList.contains('h-hidden')||!b.classList.contains('sel'))return;
+      if(/שאלה 1 מתוך/.test((document.getElementById('hubQNum')||{}).textContent||''))streak=0;
+      window.hubCheck();
+      if(!b.disabled)return; // הבדיקה לא רצה
+      var ok=b.classList.contains('correct');
+      if(ok){
+        streak++;fly(b,'+⭐');
+        if(streak===3||streak===5||streak===10){sCombo();toast('🔥 '+streak+' ברצף!');}else sGood();
+        try{if(navigator.vibrate)navigator.vibrate(15);}catch(e){}
+      }else{
+        streak=0;sBad();
+      }
+      var nb=document.getElementById('hubNextBtn');
+      if(nb&&nb.getBoundingClientRect().top>innerHeight)nb.scrollIntoView({block:'nearest',behavior:'smooth'});
+    });
+  }catch(e){/* השכבה כשלה — האתר ממשיך לעבוד כרגיל */}
+})();
+</script>
+
 </body>
 </html>
