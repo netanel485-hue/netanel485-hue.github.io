@@ -45325,13 +45325,14 @@ showTopics();
   'use strict';
 
   function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-  function dayStr(off){var d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-off);
-    var y=d.getFullYear(),m=('0'+(d.getMonth()+1)).slice(-2),dd=('0'+d.getDate()).slice(-2);return {ds:y+'-'+m+'-'+dd,d:d};}
+  // ימים נגזרים מ-hubToday של המנוע (כמו hubWeekDays), כדי שלא יהיו פערי אזור זמן
+  function dayStr(today,off){var d=new Date((today||new Date().toISOString().slice(0,10))+'T12:00:00Z');d.setUTCDate(d.getUTCDate()-off);
+    return {ds:d.toISOString().slice(0,10),dow:d.getUTCDay(),dm:d.getUTCDate()+'.'+(d.getUTCMonth()+1)};}
   var DN=['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳'];
   function build(D){
     var days=D.days||{},prog=D.prog||{},miss=D.miss||{},subs=D.subjects||[];
     // ---- 14 days ----
-    var arr=[];for(var i=13;i>=0;i--){var x=dayStr(i);if(i===0&&D.today)x.ds=D.today;arr.push({ds:x.ds,dn:DN[x.d.getDay()],dm:x.d.getDate()+'.'+(x.d.getMonth()+1),n:+days[x.ds]||0,today:i===0});}
+    var arr=[];for(var i=13;i>=0;i--){var x=dayStr(D.today,i);arr.push({ds:x.ds,dn:DN[x.dow],dm:x.dm,n:+days[x.ds]||0,today:i===0});}
     var mx=Math.max.apply(null,arr.map(function(a){return a.n;}).concat([1]));
     var active7=arr.slice(7).filter(function(a){return a.n>0;}).length;
     // ---- subjects ----
