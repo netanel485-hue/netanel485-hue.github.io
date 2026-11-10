@@ -1825,6 +1825,8 @@ function hubRenderParent(){
     +(reqs?'<div class="h-lab">בקשות צ׳ופר</div>'+reqs:'')
     +(log?'<div class="h-lab">תנועות אחרונות בבנק</div>'+log:'')
     +'<div class="h-ssub" style="margin-top:10px">המידע נשמר במכשיר הזה בלבד. הילד רואה בדיוק את אותם נתונים — אין מעקב נסתר.</div>';
+  // גרפים להורה (שכבת hub-parent-viz) — קריאה בלבד
+  try{if(typeof window.hubParentViz==='function')window.hubParentViz({days:hubDays,prog:hubProg,miss:hubMiss,subjects:HUB_SUBJECTS,today:hubToday()});}catch(e){}
 }
 // ---------- profiles: picker, switch, parent management, transfer code ----------
 const HUB_EMOJIS=['😊','😎','🤩','🦁','🐯','🦊','🐼','🦄','⚽','🎸','🚀','🌸'];
@@ -4542,20 +4544,18 @@ showTopics();
 </script>
 <script id="hub-parent-viz-js">
 /* מסך הורה — גרפים: ימי למידה (14 יום), דיוק לפי מקצוע, נושאים לחיזוק.
-   עוטף את hubRenderParent הקיים ומוסיף מעליו; לא משנה נתונים. כל כשל משאיר את המסך כמו שהיה. */
+   hubRenderParent קורא ל-window.hubParentViz עם הנתונים (קריאה בלבד). כל כשל משאיר את המסך כמו שהיה. */
 (function(){
   'use strict';
-  if(typeof window.hubRenderParent!=='function')return;
-  var orig=window.hubRenderParent;
+
   function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function dayStr(off){var d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-off);
     var y=d.getFullYear(),m=('0'+(d.getMonth()+1)).slice(-2),dd=('0'+d.getDate()).slice(-2);return {ds:y+'-'+m+'-'+dd,d:d};}
   var DN=['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳'];
-  function build(){
-    var days=(typeof hubDays!=='undefined'&&hubDays)||{},prog=(typeof hubProg!=='undefined'&&hubProg)||{},miss=(typeof hubMiss!=='undefined'&&hubMiss)||{};
-    var subs=(typeof HUB_SUBJECTS!=='undefined'&&HUB_SUBJECTS)||[];
+  function build(D){
+    var days=D.days||{},prog=D.prog||{},miss=D.miss||{},subs=D.subjects||[];
     // ---- 14 days ----
-    var arr=[];for(var i=13;i>=0;i--){var x=dayStr(i);try{if(typeof hubToday==='function'&&i===0)x.ds=hubToday();}catch(e){}arr.push({ds:x.ds,dn:DN[x.d.getDay()],dm:x.d.getDate()+'.'+(x.d.getMonth()+1),n:+days[x.ds]||0,today:i===0});}
+    var arr=[];for(var i=13;i>=0;i--){var x=dayStr(i);if(i===0&&D.today)x.ds=D.today;arr.push({ds:x.ds,dn:DN[x.d.getDay()],dm:x.d.getDate()+'.'+(x.d.getMonth()+1),n:+days[x.ds]||0,today:i===0});}
     var mx=Math.max.apply(null,arr.map(function(a){return a.n;}).concat([1]));
     var active7=arr.slice(7).filter(function(a){return a.n>0;}).length;
     // ---- subjects ----
@@ -4605,15 +4605,13 @@ showTopics();
     cols.addEventListener('pointerleave',hide);
     return box;
   }
-  window.hubRenderParent=function(){
-    var r=orig.apply(this,arguments);
+  window.hubParentViz=function(D){
     try{
-      var body=document.getElementById('hubParentBody');if(!body)return r;
+      var body=document.getElementById('hubParentBody');if(!body)return;
       var old=document.getElementById('hubParentViz');if(old)old.remove();
-      var v=build(),bank=body.querySelector('.h-bankcard');
+      var v=build(D),bank=body.querySelector('.h-bankcard');
       if(bank&&bank.parentNode)bank.parentNode.insertBefore(v,bank);else body.insertBefore(v,body.firstChild);
     }catch(e){}
-    return r;
   };
 })();
 </script>
