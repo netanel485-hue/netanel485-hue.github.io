@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- הקראה: Google TTS דוחה בקשות עם Referer של צד שלישי; בלי השורה הזאת ההקראה נכשלת -->
+<meta name="referrer" content="no-referrer">
 <title>מרכז הלמידה — כיתה ו׳</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#1E4634">
@@ -1868,13 +1870,12 @@ function hubRenderProfiles(){
   } else {
     html+='<div class="h-tip">עוד אין פרופילים במכשיר הזה. יוצרים את הראשון — כל ההתקדמות שלו תישמר בנפרד.</div>';
   }
-  html+='<div class="h-lab">או פשוט בלי פרופיל:</div>'
-    +'<div class="h-rowbtns"><button class="btn-ghost" onclick="hubEnterGuest()">🎭 כניסה כאורח</button></div>'
-    +'<div class="h-tip">מצב אורח לא יוצר פרופיל ולא שומר כלום — לא התקדמות, לא מטבעות ולא חשבון. גם רענון מאפס את ההתקדמות, ואף פרופיל קיים לא נפגע.</div>';
   html+='<div class="h-lab">פרופיל חדש:</div>'
     +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0">'+HUB_EMOJIS.map(e=>'<button class="btn-secondary'+(e===hubProfEmoji?' btn-primary':'')+'" aria-label="בחירת אימוג׳י '+e+'" onclick="hubSetProfEmoji(\''+e+'\')">'+e+'</button>').join('')+'</div>'
     +'<input class="h-sel" id="hubProfName" maxlength="20" placeholder="שם הילד/ה...">'
     +'<div class="h-rowbtns"><button class="btn-primary" onclick="hubCreateProfile()">➕ יצירת פרופיל</button></div>';
+  // אורח: אפשרות משנית בתחתית, כדי שילד לא ייכנס בטעות למצב שלא שומר
+  html+='<div class="h-tip" style="margin-top:22px">רק להציץ? מצב אורח <b>לא שומר כלום</b> — לא התקדמות ולא מטבעות. <button class="btn-ghost" style="min-height:40px;padding:6px 12px;font-size:14px" onclick="hubEnterGuest()">🎭 כניסה כאורח</button></div>';
   body.innerHTML=html;
 }
 function hubB64enc(str){const bytes=new TextEncoder().encode(str);let bin='';const CH=32768;for(let i=0;i<bytes.length;i+=CH){bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+CH));}return btoa(bin);}
@@ -2025,7 +2026,9 @@ function hubRenderHome(){
   let quiet='<div class="h-rowbtns"><button class="btn-ghost" onclick="hubToggleDaily()">🎯 נושא יומי</button>';
   if(dueTot>0)quiet+='<button class="btn-ghost" onclick="hubStartDue()">🔁 '+dueTot+' שאלות לחיזוק היום</button>';
   quiet+='</div>';
-  if(hasCont){const f=hubFindTopic(hubLast.topic);const cp=hubTopicProg(f.topic.id);
+  const rr=hubRoundPeek();
+  if(rr){th+='<div class="h-cont">'+HUB_MASCOT.replace('h-mascot','h-mascot h-mascot-small')+'<div style="font-size:20px;font-weight:800">▶️ הסבב שלך מחכה</div><div class="h-ssub" style="margin-top:4px">'+hEsc(rr._f.topic.name)+' · שאלה '+(rr.idx+1)+' מתוך '+rr.qs.length+' · '+hEsc(rr._f.subj.name)+'</div><div class="h-rowbtns"><button class="btn-primary h-primary-full" onclick="hubRoundResume()">▶️ ממשיכים מהשאלה שעצרת בה</button></div></div>';}
+  else if(hasCont){const f=hubFindTopic(hubLast.topic);const cp=hubTopicProg(f.topic.id);
     th+='<div class="h-cont">'+HUB_MASCOT.replace('h-mascot','h-mascot h-mascot-small')+'<div style="font-size:20px;font-weight:800">▶️ ממשיכים מאיפה שהפסקת</div><div class="h-ssub" style="margin-top:4px">'+hEsc(f.topic.name)+' · רמה '+Math.min(8,cp.mastery+1)+' · '+hEsc(f.subj.name)+'</div><div class="h-rowbtns"><button class="btn-primary h-primary-full" onclick="hubContinue()">▶️ המשך: '+hEsc(f.topic.name)+'</button></div></div>';}
   th+=quiet;
   if(!window.hubGuest){const toGo=Math.max(0,50-hubBank.coins);th+='<div class="h-tip">🪙 יש לך <b>'+hubBank.coins+' מטבעות</b>'+(toGo>0?' — עוד '+toGo+' מטבעות לצ׳ופר 🎁':' — אפשר לבקש צ׳ופר! 🎁')+' · איך מרוויחים: אימון +2, חיזוק +5 (מציון 50% ומעלה), מבחן מעל 80% +10, עליית רמה +15.</div>';}
@@ -2255,6 +2258,42 @@ function hubStart(mode){
   hEl('hubQuizMode').textContent=label;
   hubShow('hubQuiz');hubRenderQ();
 }
+// ---------- המשך סבב מאיפה שהפסקת (11/11/2026) ----------
+// הסבב הפעיל נשמר אחרי כל שאלה. יציאה באמצע (או סגירת הדפדפן) לא מאפסת אותו.
+function hubRoundKey(){return hubProfileKey(hubActiveId)+':round';}
+function hubRoundClear(){try{if(hubActiveId&&!window.hubGuest)localStorage.removeItem(hubRoundKey());}catch(e){}}
+function hubRoundSave(){
+  try{
+    const S=hubS;if(!S||window.hubGuest||!hubActiveId||S.mode==='prep'||!S.topic)return;
+    const next=S.checked?S.idx+1:S.idx;
+    if(next>=S.qs.length){hubRoundClear();return;}
+    localStorage.setItem(hubRoundKey(),JSON.stringify({v:1,ts:Date.now(),mode:S.mode,topic:S.topic.id,level:S.level,label:hEl('hubQuizMode').textContent,idx:next,correct:S.correct,stars:S.stars||0,streak:S.streak||0,testTop:S.testTop||0,qs:S.qs.map(q=>q.q),ans:S.answers.map(a=>[a.q.q,a.ok?1:0,a.sel])}));
+  }catch(e){}
+}
+function hubRoundPeek(){
+  try{
+    if(window.hubGuest||!hubActiveId)return null;
+    const d=JSON.parse(localStorage.getItem(hubRoundKey())||'null');
+    if(!d||d.v!==1||!Array.isArray(d.qs)||Date.now()-d.ts>14*864e5)return null;
+    const f=hubFindTopic(d.topic);if(!f)return null;
+    d._f=f;return d;
+  }catch(e){return null;}
+}
+function hubRoundResume(){
+  const d=hubRoundPeek();if(!d){hubRenderHome();return;}
+  const f=d._f,by=new Map(hubBuildPool(f.topic).all.map(q=>[q.q,q]));
+  const qs=d.qs.map(t=>by.get(t));
+  if(qs.some(q=>!q)||d.idx>=qs.length){hubRoundClear();hubRenderHome();return;} // התוכן השתנה מאז — מתחילים סבב חדש
+  hubSubj=f.subj;hubBookIdx=f.bookIdx;hubRenderSubject();
+  try{hEl('hubTopicSel').value=f.topic.id;hubTopicChanged();}catch(e){}
+  hubS={mode:d.mode,topic:f.topic,level:d.level,qs,idx:d.idx,correct:d.correct||0,selected:-1,checked:false,
+    answers:(d.ans||[]).map(a=>({q:by.get(a[0])||{q:a[0],type:'',lvl:1,opts:[],a:0},topic:f.topic,ok:!!a[1],sel:a[2]})),
+    testTop:d.testTop||0,_lastPsg:-1,_psgOpen:false,_spoke:-1,_c0:hubBank.coins,stars:d.stars||0,streak:d.streak||0,_awards:[]};
+  hEl('hubQuizTitle').innerHTML=hubArtMini(hubSubj?hubSubj.id:'torah')+hEsc(f.topic.name);
+  hEl('hubQuizMode').textContent=d.label||'';
+  hubShow('hubQuiz');hubRenderQ();
+}
+window.hubRoundResume=hubRoundResume;
 let hubS_prepTopics=null;
 function hubDrawLevels(topic,lvls,count,ex){
   const P=hubBuildPool(topic);let cand=[];
@@ -2281,6 +2320,7 @@ function hubRenderStarsBar(){
 }
 function hubRenderQ(){
   const S=hubS,q=S.qs[S.idx];
+  S.checked=false;hubRoundSave();
   S._justLeveledUp=null;
   S.selected=-1;S.checked=false;
   hEl('hubQNum').textContent='שאלה '+(S.idx+1)+' מתוך '+S.qs.length;
@@ -2346,6 +2386,7 @@ function hubCheck(){
     }
   }
   S.answers.push({q,topic:q._topic||S.topic,ok,sel:S.selected});
+  hubRoundSave();
   if(!ok){if(S.mode==='review')hubReviewFail((q._topic||S.topic).id,q.q);else hubAddMiss((q._topic||S.topic).id,q.q);}
   if(ok&&S.mode==='review')hubReviewSuccess((q._topic||S.topic).id,q.q);
   const opts=hEl('hubOpts').children;
@@ -2432,6 +2473,7 @@ function hubRenderCoinsBreakdown(S,bankDelta){
   }
 }
 function hubFinish(){
+  hubRoundClear();
   const S=hubS;const an=hubAnalyze(S);
   const td=hubToday();hubDays[td]=(hubDays[td]||0)+1;
   hubWkReset();hubWk.rounds++;
@@ -2523,12 +2565,43 @@ function hubCopyShare(){
   setTimeout(()=>{hEl('hubCopyBtn').textContent='📋 העתקת קישור';},1800);
 }
 // ---------- speech ----------
+// הקראה: קודם הקול של Google (עברית טבעית), ואם נכשל — קול המכשיר, רק אם יש בו קול מתאים.
+let hubTtsAudio=null,hubTtsSeq=0;
+function hubSpeakDevice(clean,lang){
+  try{
+    if(!window.speechSynthesis)return;
+    const u=new SpeechSynthesisUtterance(clean);u.lang=lang==='en'?'en-US':'he-IL';u.rate=0.95;
+    const vs=speechSynthesis.getVoices()||[];const v=vs.find(x=>new RegExp('^'+(lang==='en'?'en':'(he|iw)'),'i').test(x.lang||''));
+    if(v)u.voice=v;
+    speechSynthesis.cancel();speechSynthesis.speak(u);
+  }catch(e){}
+}
 function hubSpeak(text,el){
   try{
-    const u=new SpeechSynthesisUtterance(String(text).replace(/<[^>]+>/g,' '));
-    const heN=(String(text).match(/[\u0590-\u05FF]/g)||[]).length,laN=(String(text).match(/[a-zA-Z]/g)||[]).length;
-    u.lang=laN>heN?'en-US':'he-IL';u.rate=0.95;
-    speechSynthesis.cancel();speechSynthesis.speak(u);
+    const raw=String(text).replace(/<[^>]+>/g,' ');
+    const heN=(raw.match(/[\u0590-\u05FF]/g)||[]).length,laN=(raw.match(/[a-zA-Z]/g)||[]).length;
+    const lang=laN>heN?'en':'he';
+    const clean=raw.replace(/_{2,}/g,' ... ').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}\u{FE0F}\u{200D}]/gu,' ').replace(/\s+/g,' ').trim();
+    if(!clean)return;
+    const seq=++hubTtsSeq;
+    try{if(hubTtsAudio){hubTtsAudio.pause();hubTtsAudio=null;}if(window.speechSynthesis)speechSynthesis.cancel();}catch(e){}
+    // פיצול למקטעים קצרים (מגבלת השירות)
+    const chunks=[];let cur='';
+    for(const w of clean.split(' ')){if((cur+' '+w).trim().length>170){if(cur)chunks.push(cur);cur=w;}else cur=(cur+' '+w).trim();}
+    if(cur)chunks.push(cur);
+    let i=0;
+    const fallback=()=>{if(seq===hubTtsSeq)hubSpeakDevice(chunks.slice(i).join(' '),lang);};
+    const next=()=>{
+      if(seq!==hubTtsSeq||i>=chunks.length)return;
+      const a=new Audio();hubTtsAudio=a;
+      let dead=false;const wd=setTimeout(()=>{if(dead)return;dead=true;try{a.pause();}catch(e){}fallback();},8000);
+      a.onplaying=()=>clearTimeout(wd);
+      a.onended=()=>{if(dead)return;dead=true;clearTimeout(wd);i++;next();};
+      a.onerror=()=>{if(dead)return;dead=true;clearTimeout(wd);fallback();};
+      a.src='https://translate.google.com/translate_tts?ie=UTF-8&tl='+lang+'&client=tw-ob&q='+encodeURIComponent(chunks[i]);
+      const pr=a.play();if(pr&&pr.catch)pr.catch(()=>{if(dead)return;dead=true;clearTimeout(wd);fallback();});
+    };
+    next();
   }catch(e){}
 }
 function hubSpeakQ(){
@@ -4621,5 +4694,9 @@ showTopics();
 })();
 </script>
 
+<script id="persist-storage">
+/* מבקש מהדפדפן אחסון קבוע, כדי שההתקדמות לא תימחק כשהמכשיר מפנה מקום (11/11/2026). */
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(function(){});}catch(e){}
+</script>
 </body>
 </html>

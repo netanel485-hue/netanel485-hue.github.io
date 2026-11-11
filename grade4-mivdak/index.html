@@ -249,6 +249,7 @@ function setChapter(i){
   for(var k=0;k<tabs.length;k++)tabs[k].className='tab'+(k===i?' on':'');
   learnEl.innerHTML=CHAPTERS[i].learn;
   loadRandom();
+  saveState();
 }
 function render(){
   qtagEl.innerHTML='<span class="tag">'+curEntry.tag+'</span>';
@@ -271,6 +272,7 @@ function answer(i,btn){
   scoreEl.textContent='נכונות: '+good+' · סך הכול: '+tot;
   whyEl.innerHTML=(i===cur.a?'כל הכבוד! ':'לא נורא, ככה לומדים. ')+cur.why;
   whyEl.className='why show';
+  saveState();
   if(testMode){
     nextBtn.textContent=(testIdx>=testQueue.length-1)?'סיום המבחן':'שאלה הבאה';
   }else{
@@ -312,14 +314,35 @@ testBtn.onclick=function(){
   loadTestQ();
   document.querySelector('.qcard').scrollIntoView();
 };
+/* שמירה (11/11/2026): הניקוד, הפרק והשאלות שכבר הופיעו נשמרים במכשיר, כדי שרענון לא יאפס */
+var SAVE_KEY='mivdak4V1';
+function saveState(){
+  try{var b={};for(var k in bags)b[k]=bags[k].map(function(q){return BANK.indexOf(q)});
+    localStorage.setItem(SAVE_KEY,JSON.stringify({v:1,tot:tot,good:good,ch:curCh,bags:b}));}catch(e){}
+}
+function loadState(){
+  try{var d=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(!d||d.v!==1)return false;
+    tot=d.tot||0;good=d.good||0;
+    for(var k in (d.bags||{}))bags[k]=d.bags[k].map(function(i){return BANK[i]}).filter(Boolean);
+    scoreEl.textContent='נכונות: '+good+' · סך הכול: '+tot;
+    if(CHAPTERS[d.ch]){curCh=d.ch;return true;}
+  }catch(e){}
+  return false;
+}
 /* התחלה */
 learnEl.innerHTML=CHAPTERS[0].learn;
 (function(){
   var p=new URLSearchParams(location.search);
   var ch=p.get('ch');
+  var had=loadState();
   if(ch!==null&&CHAPTERS[+ch]){setChapter(+ch);return;}
+  if(had){setChapter(curCh);return;}
   loadRandom();
 })();
+</script>
+<script id="persist-storage">
+/* מבקש מהדפדפן אחסון קבוע, כדי שההתקדמות לא תימחק כשהמכשיר מפנה מקום (11/11/2026). */
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(function(){});}catch(e){}
 </script>
 </body>
 </html>

@@ -42,6 +42,8 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- הקראה: Google TTS דוחה בקשות עם Referer של צד שלישי; בלי השורה הזאת ההקראה נכשלת -->
+<meta name="referrer" content="no-referrer">
 <title>משחק אנגלית — אותיות ומילים</title>
 <style>
 /* DESIGN-TOKENS-START */
@@ -684,6 +686,10 @@ function finishActivity() {
 }
 
 goMap();
+</script>
+<script id="persist-storage">
+/* מבקש מהדפדפן אחסון קבוע, כדי שההתקדמות לא תימחק כשהמכשיר מפנה מקום (11/11/2026). */
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(function(){});}catch(e){}
 </script>
 </body>
 </html>
