@@ -401,6 +401,47 @@ a:focus-visible {
   #tpCheck { display: block; margin: 4px auto 0; }
 
 </style>
+<style id="hub-parent-viz-css">
+/* ==========================================================================
+   מסך הורה — גרפים (11/11/2026). שכבה נפרדת; להסרה: למחוק את תגית ה-style
+   עם id=hub-parent-viz-css ואת תגית ה-script עם id=hub-parent-viz-js.
+   צבע סדרה אחד (#2a78d6, נבדק בבודק הפלטה: ניגודיות 3:1+ מול לבן). טקסט בצבעי הטקסט בלבד.
+   ========================================================================== */
+.pv{--series-1:#2a78d6;--pv-surface:#fff;--pv-grid:#E3E8E1;background:var(--pv-surface);border:2px solid var(--line);border-radius:20px;padding:16px 14px;margin-top:12px}
+.pv h3{margin:0 0 2px;font-size:18px;color:var(--ink)}
+.pv .pv-sub{font-size:13px;color:var(--muted);margin-bottom:10px}
+.pv-kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+@media (min-width:560px){.pv-kpis{grid-template-columns:repeat(4,1fr)}}
+.pv-kpi{background:var(--pv-surface);border:2px solid var(--line);border-radius:16px;padding:10px 12px}
+.pv-kpi .v{font-size:28px;font-weight:800;color:var(--ink);line-height:1.15}
+.pv-kpi .v small{font-size:15px;font-weight:700;color:var(--ink-soft)}
+.pv-kpi .l{font-size:13px;color:var(--ink-soft);font-weight:700}
+/* עמודות: 14 ימים */
+.pv-cols{position:relative;display:flex;align-items:flex-end;gap:2px;height:120px;border-bottom:1.5px solid var(--pv-grid);direction:ltr;padding-top:6px}
+.pv-col{flex:1;display:flex;align-items:flex-end;justify-content:center;height:100%;cursor:default;position:relative}
+.pv-col .b{width:72%;max-width:22px;background:var(--series-1);border-radius:4px 4px 0 0;min-height:0}
+.pv-col.zero .b{height:3px!important;background:var(--pv-grid);border-radius:2px}
+.pv-col:hover .b,.pv-col.on .b{filter:brightness(.88)}
+.pv-xl{display:flex;gap:2px;direction:ltr;margin-top:4px}
+.pv-xl span{flex:1;text-align:center;font-size:11px;color:var(--muted)}
+.pv-xl span.today{color:var(--ink);font-weight:800}
+.pv-tip{position:absolute;z-index:5;pointer-events:none;background:var(--ink);color:#fff;font-size:13px;font-weight:700;padding:6px 9px;border-radius:10px;white-space:nowrap;transform:translate(-50%,-100%);direction:rtl}
+/* רשימת מדים: דיוק לפי מקצוע */
+.pv-meter{display:grid;grid-template-columns:minmax(90px,30%) 1fr auto;align-items:center;gap:8px 10px;padding:7px 0;border-bottom:1px solid var(--pv-grid);font-size:15px}
+.pv-meter:last-child{border-bottom:none}
+.pv-meter .n{font-weight:700;color:var(--ink)}
+.pv-meter .t{height:12px;background:#EEF1EC;border-radius:999px;overflow:hidden;display:flex;direction:rtl;justify-content:flex-start}
+.pv-meter .t>div{height:100%;background:var(--series-1);border-radius:999px}
+.pv-meter .f{font-weight:800;color:var(--ink);min-width:88px;text-align:left;direction:rtl}
+.pv-meter .f small{font-weight:600;color:var(--muted)}
+@media (max-width:420px){.pv-meter{grid-template-columns:1fr auto}.pv-meter .t{grid-column:1/-1;grid-row:2}}
+.pv-empty{font-size:14px;color:var(--muted);padding:6px 0}
+.pv details{margin-top:8px}.pv summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--ink-soft)}
+.pv table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}.pv td,.pv th{padding:4px;border-bottom:1px solid var(--pv-grid);text-align:right}
+.pv-weak{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid var(--pv-grid);font-size:15px}
+.pv-weak:last-child{border-bottom:none}
+</style>
+
 <style id="g4-fun-css">
 /* ==========================================================================
    G4-FUN — שכבת פיילוט לכיתה ד׳ (גילאי 9–10). 10/11/2026
@@ -41951,6 +41992,8 @@ function hubRenderParent(){
     +(reqs?'<div class="h-lab">בקשות צ׳ופר</div>'+reqs:'')
     +(log?'<div class="h-lab">תנועות אחרונות בבנק</div>'+log:'')
     +'<div class="h-ssub" style="margin-top:10px">המידע נשמר במכשיר הזה בלבד. הילד רואה בדיוק את אותם נתונים — אין מעקב נסתר.</div>';
+  // גרפים להורה (שכבת hub-parent-viz) — קריאה בלבד
+  try{if(typeof window.hubParentViz==='function')window.hubParentViz({days:hubDays,prog:hubProg,miss:hubMiss,subjects:HUB_SUBJECTS,today:hubToday()});}catch(e){}
 }
 // ---------- profiles: picker, switch, parent management, transfer code ----------
 const HUB_EMOJIS=['😊','😎','🤩','🦁','🐯','🦊','🐼','🦄','⚽','🎸','🚀','🌸'];
@@ -45272,6 +45315,81 @@ showTopics();
       if(nb&&nb.getBoundingClientRect().top>innerHeight)nb.scrollIntoView({block:'nearest',behavior:'smooth'});
     });
   }catch(e){/* השכבה כשלה — האתר ממשיך לעבוד כרגיל */}
+})();
+</script>
+
+<script id="hub-parent-viz-js">
+/* מסך הורה — גרפים: ימי למידה (14 יום), דיוק לפי מקצוע, נושאים לחיזוק.
+   hubRenderParent קורא ל-window.hubParentViz עם הנתונים (קריאה בלבד). כל כשל משאיר את המסך כמו שהיה. */
+(function(){
+  'use strict';
+
+  function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  // ימים נגזרים מ-hubToday של המנוע (כמו hubWeekDays), כדי שלא יהיו פערי אזור זמן
+  function dayStr(today,off){var d=new Date((today||new Date().toISOString().slice(0,10))+'T12:00:00Z');d.setUTCDate(d.getUTCDate()-off);
+    return {ds:d.toISOString().slice(0,10),dow:d.getUTCDay(),dm:d.getUTCDate()+'.'+(d.getUTCMonth()+1)};}
+  var DN=['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳'];
+  function build(D){
+    var days=D.days||{},prog=D.prog||{},miss=D.miss||{},subs=D.subjects||[];
+    // ---- 14 days ----
+    var arr=[];for(var i=13;i>=0;i--){var x=dayStr(D.today,i);arr.push({ds:x.ds,dn:DN[x.dow],dm:x.dm,n:+days[x.ds]||0,today:i===0});}
+    var mx=Math.max.apply(null,arr.map(function(a){return a.n;}).concat([1]));
+    var active7=arr.slice(7).filter(function(a){return a.n>0;}).length;
+    // ---- subjects ----
+    var rows=[],totC=0,totT=0,weak=[];
+    subs.forEach(function(s){
+      if(s.special==='math')return;var c=0,t=0;
+      (s.books||[]).forEach(function(b){(b.topics||[]).forEach(function(tp){
+        var p=prog[tp.id];if(p){c+=p.correct||0;t+=p.total||0;}
+        var m=miss[tp.id];if(m){var k=Object.keys(m).length;if(k)weak.push({name:tp.name,emoji:tp.emoji||'',sub:s.name,n:k});}
+      });});
+      totC+=c;totT+=t;if(t>0)rows.push({name:s.name,acc:Math.round(c/t*100),t:t});
+    });
+    weak.sort(function(a,b){return b.n-a.n;});
+    var missTotal=weak.reduce(function(a,w){return a+w.n;},0);
+    var html='';
+    // KPI row
+    html+='<div class="pv-kpis">'
+      +'<div class="pv-kpi"><div class="v">'+active7+' <small>/ 7</small></div><div class="l">ימי למידה ב-7 הימים האחרונים</div></div>'
+      +'<div class="pv-kpi"><div class="v">'+(totT?Math.round(totC/totT*100)+'%':'—')+'</div><div class="l">תשובות נכונות (כל המקצועות)</div></div>'
+      +'<div class="pv-kpi"><div class="v">'+totT+'</div><div class="l">שאלות שנענו</div></div>'
+      +'<div class="pv-kpi"><div class="v">'+missTotal+'</div><div class="l">שאלות שמחכות לחיזוק</div></div>'
+      +'</div>';
+    // columns
+    html+='<div class="pv"><h3>פעילות ב-14 הימים האחרונים</h3><div class="pv-sub">כמה פעולות למידה נרשמו בכל יום</div><div class="pv-cols" role="img" aria-label="'+esc('פעילות לפי יום: '+arr.map(function(a){return a.dm+' '+a.n;}).join(', '))+'">';
+    arr.forEach(function(a){html+='<div class="pv-col'+(a.n?'':' zero')+'" tabindex="0" data-tip="'+esc('יום '+a.dn+' '+a.dm+': '+a.n+(a.n===1?' פעולה':' פעולות'))+'"><div class="b" style="height:'+Math.round(a.n/mx*100)+'%"></div></div>';});
+    html+='</div><div class="pv-xl">';
+    arr.forEach(function(a){html+='<span'+(a.today?' class="today"':'')+'>'+(a.today?'היום':a.dn)+'</span>';});
+    html+='</div><details><summary>הצגה כטבלה</summary><table><tr><th>תאריך</th><th>פעולות</th></tr>'
+      +arr.map(function(a){return '<tr><td>'+a.dn+' '+a.dm+'</td><td>'+a.n+'</td></tr>';}).join('')+'</table></details></div>';
+    // meter list
+    html+='<div class="pv"><h3>דיוק לפי מקצוע</h3><div class="pv-sub">אחוז התשובות הנכונות מכל מה שנענה (בלי חשבון, שמוצג למטה)</div>';
+    if(rows.length)rows.forEach(function(r){html+='<div class="pv-meter"><span class="n">'+esc(r.name)+'</span><div class="t" role="img" aria-label="'+esc(r.name+' '+r.acc+'%')+'"><div style="width:'+r.acc+'%"></div></div><span class="f">'+r.acc+'% <small>· '+r.t+' שאלות</small></span></div>';});
+    else html+='<div class="pv-empty">עדיין אין תשובות. אחרי הסבב הראשון יופיע כאן הדיוק בכל מקצוע.</div>';
+    html+='</div>';
+    // weak topics
+    html+='<div class="pv"><h3>לחזק השבוע</h3><div class="pv-sub">הנושאים עם הכי הרבה שאלות שטעו בהן ועוד לא חוזקו</div>';
+    if(weak.length)weak.slice(0,5).forEach(function(w){html+='<div class="pv-weak"><span>'+esc(w.emoji+' '+w.name)+' <small style="color:var(--muted)">· '+esc(w.sub)+'</small></span><b>'+w.n+'</b></div>';});
+    else html+='<div class="pv-empty">אין כרגע שאלות לחיזוק 👏</div>';
+    html+='</div>';
+    var box=document.createElement('div');box.id='hubParentViz';box.innerHTML=html;
+    // tooltip
+    var cols=box.querySelector('.pv-cols'),tip=null;
+    function show(el){hide();var r=el.getBoundingClientRect(),cr=cols.getBoundingClientRect();tip=document.createElement('div');tip.className='pv-tip';tip.textContent=el.getAttribute('data-tip');
+      tip.style.left=(r.left-cr.left+r.width/2)+'px';tip.style.top=(el.querySelector('.b').getBoundingClientRect().top-cr.top-6)+'px';cols.appendChild(tip);el.classList.add('on');}
+    function hide(){if(tip){tip.remove();tip=null;}var o=cols.querySelector('.on');if(o)o.classList.remove('on');}
+    Array.prototype.forEach.call(cols.children,function(c){c.addEventListener('pointerenter',function(){show(c);});c.addEventListener('focus',function(){show(c);});c.addEventListener('click',function(){show(c);});});
+    cols.addEventListener('pointerleave',hide);
+    return box;
+  }
+  window.hubParentViz=function(D){
+    try{
+      var body=document.getElementById('hubParentBody');if(!body)return;
+      var old=document.getElementById('hubParentViz');if(old)old.remove();
+      var v=build(D),bank=body.querySelector('.h-bankcard');
+      if(bank&&bank.parentNode)bank.parentNode.insertBefore(v,bank);else body.insertBefore(v,body.firstChild);
+    }catch(e){}
+  };
 })();
 </script>
 
