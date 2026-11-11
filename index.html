@@ -21,7 +21,8 @@ body{margin:0;font-family:"Segoe UI",Arial,system-ui,sans-serif;background:var(-
 .hero h1{margin:0;font-size:30px;line-height:1.1;font-weight:800}
 .hero p{margin:8px 0 0;font-size:16px;color:#D8E9DE;max-width:30ch}
 .hero svg{position:absolute;left:-10px;top:-10px;width:170px;height:150px;opacity:.95}
-@media (max-width:420px){.hero svg{width:120px;left:-24px}}
+.hero{padding-left:150px}
+@media (max-width:420px){.hero{padding-left:96px}.hero svg{width:120px;left:-30px}.hero h1{font-size:26px}}
 .shelf{margin-top:22px}
 .shelf-h{display:flex;align-items:center;gap:10px;margin:0 2px 10px}
 .badge{flex:0 0 auto;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:22px;background:var(--c)}
@@ -36,6 +37,8 @@ a.item::before{content:"";position:absolute;inset:0 0 auto 0;height:6px;backgrou
 a.item:active{transform:translateY(2px) scale(.98)}
 a.item:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 a.item.main{grid-column:1/-1;min-height:96px;background:color-mix(in srgb,var(--c) 9%,#fff)}
+/* פריט בודד אחרי הראשי תופס שורה שלמה */
+.items>a.item.main+a.item:last-child{grid-column:1/-1;min-height:84px}
 a.item .em{font-size:30px;line-height:1;margin-bottom:auto}
 a.item b{display:block;font-size:19px;font-weight:800;margin-top:10px}
 a.item span{display:block;font-size:13.5px;color:var(--ink-soft);font-weight:600;margin-top:2px}
