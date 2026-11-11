@@ -175,6 +175,11 @@ h1{font-size:clamp(24px,7vw,30px)}
   animation:g1p .9s cubic-bezier(.15,.7,.3,1) forwards}
 @keyframes g1p{0%{opacity:1;transform:translate(-50%,-50%) scale(.4)}70%{opacity:1}
   100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.1) rotate(var(--r))}}
+
+/* ניגודיות (11/11/2026): טקסט לבן על הוורוד המקורי #ff6b9d היה 2.7:1. ורוד עמוק יותר: 4.6:1 */
+.bigbtn:not(.purple):not(.ghost):not(.speaking){background:#d6336c;box-shadow:0 5px 0 #a3214f}
+.bigbtn:not(.purple):not(.ghost):not(.speaking):active{box-shadow:0 2px 0 #a3214f}
+.btn-primary{background:#d6336c;box-shadow:0 4px 0 #a3214f}
 </style>
 
 </head>
