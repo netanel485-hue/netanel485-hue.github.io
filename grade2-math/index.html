@@ -398,6 +398,19 @@ a:focus-visible {
   .btn-danger { background: var(--bad); color: #fff; border: none; }
 
 </style>
+<style id="site-unify-css">
+/* איחוד מראה לפי מערכת העיצוב (11/11/2026): רקע, כותרת, כרטיסים וכפתורים בצבעי הטוקנים.
+   להסרה: למחוק את הבלוק הזה. */
+body{background:var(--bg)!important;color:var(--ink)!important;font-family:"Segoe UI",Arial,system-ui,sans-serif}
+header{background:var(--card)!important;border:2px solid var(--line)!important;border-radius:24px}
+header h1{color:var(--ink)!important}header p{color:var(--ink-soft)!important}
+.card{background:#fff;border:2px solid var(--line);border-radius:20px;box-shadow:var(--shadow-card)}
+.btn-main{background:#B85A0A!important;color:#fff}
+.btn-new{background:#246B42!important;color:#fff}
+.btn-ghost{background:#fff;border-color:var(--line);color:var(--ink)}
+.btn-main:disabled,.btn-new:disabled{background:var(--disabled-bg)!important;color:var(--disabled-ink)}
+</style>
+<script src="../shared/site-bar.js" defer data-label="מתמטיקה · כיתה ב׳"></script>
 </head>
 <body>
 <div class="wrap">
