@@ -539,6 +539,47 @@ body.g4-tap #hubCheckBtn{display:none!important}
 .btn-primary,.btn-main,.btn-new{background:#B85A0A}
 .fb.good{color:#246B42}
 </style>
+<style id="hub-home-simple-css">
+/* ==========================================================================
+   HUB-HOME-SIMPLE — מסך כניסה ומסך בית פשוטים (11/11/2026): כפתור אחד "ממשיכים",
+   והמערכת בוחרת מה לומדים. להסרה: למחוק את הבלוק הזה (הכרטיס עצמו נבנה ב-hubSmartCard).
+   ========================================================================== */
+#hubHome .h-head{display:none}
+#hubHome .hs-rest{display:none}
+.hs-hero{background:var(--card-focus);border:2px solid var(--line);border-radius:24px;padding:18px 16px 16px;text-align:center;box-shadow:var(--shadow-card);margin-top:6px}
+.hs-hero .h-mascot{width:84px;height:84px;margin:0 auto}
+.hs-hi{font-size:24px;font-weight:800;color:var(--ink);margin-top:4px}
+.hs-plan{font-size:15px;color:var(--ink-soft);margin-top:4px;min-height:22px}
+.hs-go{display:block;width:100%;margin-top:14px;min-height:68px;font-size:24px;font-weight:800;border:none;border-radius:20px;cursor:pointer;
+  background:#B85A0A;color:#fff;box-shadow:0 5px 0 #7c3d07;transition:transform .1s ease,box-shadow .1s ease}
+.hs-go:active{transform:translateY(3px);box-shadow:0 2px 0 #7c3d07}
+.hs-go:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.hs-mini{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.hs-mini button{min-height:40px;padding:6px 12px;font-size:14px;font-weight:700;border-radius:12px;border:2px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+.hs-lab{font-size:15px;font-weight:800;color:var(--ink-soft);margin:18px 2px 0}
+/* רשת מקצועות קומפקטית: אייקון ושם */
+#hubHome .h-grid{grid-template-columns:repeat(3,1fr)!important;gap:10px!important;margin-top:8px!important}
+#hubHome .h-grid>div{grid-column:auto!important;display:block!important}
+#hubHome .h-grid>div .h-rowbtns{display:none!important}
+#hubHome .h-scard{min-height:0!important;padding:14px 4px 10px!important;border-radius:18px!important}
+#hubHome .h-scard .h-art{width:46px!important;height:46px!important}
+#hubHome .h-scard .h-sname{font-size:15px!important;line-height:1.2;margin-top:4px}
+#hubHome .h-scard .h-ssub,#hubHome .h-scard .h-sprog{display:none!important}
+@media (min-width:640px){#hubHome .h-grid{grid-template-columns:repeat(4,1fr)!important}.hs-hero{max-width:520px;margin-inline:auto}}
+/* סרגל עליון בטלפון: בלי המפה (נשארת במחשב) */
+@media (max-width:479px){#hubTopbar button[onclick="hubOpenMap()"]{display:none}}
+/* ---- מסך "מי לומד?" ---- */
+#hubProfiles .h-head p{display:none}
+#hubProfiles .h-tcard{padding:18px 8px}
+#hubProfiles .h-temoji{font-size:44px}
+.hs-emos{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:10px 0}
+.hs-emo{min-height:48px;font-size:24px;border-radius:14px;border:2px solid var(--line);background:#fff;cursor:pointer;padding:0}
+.hs-emo.on{border-color:#B85A0A;background:var(--accent-soft);box-shadow:0 0 0 2px #B85A0A inset}
+.hs-new{display:block;margin:16px auto 0;min-height:44px;padding:8px 16px;font-size:15px;font-weight:700;border-radius:14px;border:2px dashed var(--line);background:none;color:var(--ink-soft);cursor:pointer}
+.hs-guest{margin-top:22px;text-align:center;font-size:13.5px;color:var(--ink-soft)}
+.hs-guest button{border:none;background:none;color:var(--ink-soft);text-decoration:underline;font-size:13.5px;font-weight:700;cursor:pointer;min-height:40px}
+</style>
+
 <style id="g4-simple-css">
 /* ==========================================================================
    G4-SIMPLE — מסכי הילד בכיתה ד׳: פחות טקסט, פעולה אחת, וחגיגה בסוף (11/11/2026).
@@ -42091,8 +42132,46 @@ function hubCreateProfile(){
   if(!name){if(inp)inp.focus();return;}
   const id=hubNewId();hubProfiles.push({id:id,name:name.slice(0,20),emoji:hubProfEmoji});hubActiveId=id;hubRegSave();location.reload();
 }
+// ---------- מסך בית פשוט: כפתור אחד, והמערכת בוחרת מה לומדים (11/11/2026) ----------
+// סדר העדיפויות: סבב שנעצר באמצע → שאלות שהגיע זמנן לחיזוק → הנושא האחרון → הנושא היומי.
+function hubDueTotal(){let n=0;for(const s of HUB_SUBJECTS){if(!s.books)continue;for(const b of s.books)for(const t of b.topics)n+=hubDueCount(t.id);}return n;}
+function hubSmartPlan(){
+  const rr=hubRoundPeek();
+  if(rr)return {kind:'resume',label:rr._f.topic.name+' · שאלה '+(rr.idx+1)+' מתוך '+rr.qs.length};
+  const due=hubDueTotal();
+  if(due>0)return {kind:'due',label:'קודם מחזקים '+(due===1?'שאלה אחת':due+' שאלות')+' שכדאי לראות שוב'};
+  if(hubLast&&hubFindTopic(hubLast.topic))return {kind:'cont',label:hubFindTopic(hubLast.topic).topic.name};
+  let d=null;try{d=hubDailyTopics()[0];}catch(e){}
+  return {kind:'daily',label:d?d.name:''};
+}
+function hubSmart(){
+  const p=hubSmartPlan();
+  if(p.kind==='resume')hubRoundResume();
+  else if(p.kind==='due')hubStartDue();
+  else if(p.kind==='cont')hubContinue();
+  else hubStartDaily();
+}
+function hubSmartCard(){
+  const p=hubSmartPlan(),pr=hubActiveProfile();
+  const first=p.kind==='daily'&&!hubLast;
+  let mini='';
+  if(window.hubGuest)mini+='<button onclick="hubExitGuest()">🎭 יציאה ממצב אורח</button>';
+  else if(hubBank.reqs.some(r=>r.st==='pending'))mini+='<span class="h-ssub" style="align-self:center">🎁 בקשת הצ׳ופר ממתינה להורה</span>';
+  else if(hubBank.coins>=50)mini+='<button onclick="hubReqReward()">🎁 בקש צ׳ופר</button>';
+  return '<div class="hs-hero">'+HUB_MASCOT.replace('h-mascot','h-mascot h-mascot-small')
+    +'<div class="hs-hi">'+(pr?hEsc(pr.emoji+' שלום, '+pr.name+'!'):'שלום!')+'</div>'
+    +'<div class="hs-plan">'+hEsc(p.label)+'</div>'
+    +'<button class="hs-go" onclick="hubSmart()">▶️ '+(first?'מתחילים':'ממשיכים')+'</button>'
+    +(mini?'<div class="hs-mini">'+mini+'</div>':'')+'</div>'
+    +'<div class="hs-lab">או בוחרים מקצוע:</div>';
+}
+window.hubSmart=hubSmart;
+let hubProfNewOpen=false;
+function hubProfToggleNew(){hubProfNewOpen=!hubProfNewOpen;hubRenderProfiles();const i=hEl('hubProfName');if(i&&hubProfNewOpen)i.focus();}
+window.hubProfToggleNew=hubProfToggleNew;
 function hubRenderProfiles(){
   const body=hEl('hubProfilesBody');if(!body)return;
+  const typed=(hEl('hubProfName')||{}).value||'';
   let html='';
   if(hubProfiles.length){
     html+='<div class="h-lab">בחרו מי לומד עכשיו:</div><div class="h-tgrid">';
@@ -42102,16 +42181,16 @@ function hubRenderProfiles(){
     }
     html+='</div>';
     if(hubActiveProfile())html+='<div class="h-rowbtns"><button class="btn-ghost" onclick="hubProfilesHome()">↩️ חזרה למסך הבית</button></div>';
-  } else {
-    html+='<div class="h-tip">עוד אין פרופילים במכשיר הזה. יוצרים את הראשון — כל ההתקדמות שלו תישמר בנפרד.</div>';
   }
-  html+='<div class="h-lab">פרופיל חדש:</div>'
-    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0">'+HUB_EMOJIS.map(e=>'<button class="btn-secondary'+(e===hubProfEmoji?' btn-primary':'')+'" aria-label="בחירת אימוג׳י '+e+'" onclick="hubSetProfEmoji(\''+e+'\')">'+e+'</button>').join('')+'</div>'
-    +'<input class="h-sel" id="hubProfName" maxlength="20" placeholder="שם הילד/ה...">'
-    +'<div class="h-rowbtns"><button class="btn-primary" onclick="hubCreateProfile()">➕ יצירת פרופיל</button></div>';
-  // אורח: אפשרות משנית בתחתית, כדי שילד לא ייכנס בטעות למצב שלא שומר
-  html+='<div class="h-tip" style="margin-top:22px">רק להציץ? מצב אורח <b>לא שומר כלום</b> — לא התקדמות ולא מטבעות. <button class="btn-ghost" style="min-height:40px;padding:6px 12px;font-size:14px" onclick="hubEnterGuest()">🎭 כניסה כאורח</button></div>';
+  const showNew=!hubProfiles.length||hubProfNewOpen;
+  if(!showNew)html+='<button class="hs-new" onclick="hubProfToggleNew()">➕ ילד/ה נוסף/ת</button>';
+  if(showNew)html+='<div class="h-lab">'+(hubProfiles.length?'ילד/ה נוסף/ת:':'איך קוראים לך?')+'</div>'
+    +'<input class="h-sel" id="hubProfName" maxlength="20" placeholder="השם שלי..." autocomplete="off">'
+    +'<div class="hs-emos">'+HUB_EMOJIS.map(e=>'<button class="hs-emo'+(e===hubProfEmoji?' on':'')+'" aria-label="בחירת אימוג׳י '+e+'"'+(e===hubProfEmoji?' aria-pressed="true"':'')+' onclick="hubSetProfEmoji(\''+e+'\')">'+e+'</button>').join('')+'</div>'
+    +'<div class="h-rowbtns"><button class="btn-primary h-primary-full" onclick="hubCreateProfile()">▶️ מתחילים</button></div>';
+  html+='<div class="hs-guest">רק להציץ בלי לשמור? <button onclick="hubEnterGuest()">כניסה כאורח</button></div>';
   body.innerHTML=html;
+  const ni=hEl('hubProfName');if(ni&&typed)ni.value=typed;
 }
 function hubB64enc(str){const bytes=new TextEncoder().encode(str);let bin='';const CH=32768;for(let i=0;i<bytes.length;i+=CH){bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+CH));}return btoa(bin);}
 function hubB64dec(b64){const bin=atob(b64);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes);}
@@ -42272,6 +42351,7 @@ function hubRenderHome(){
   const gi=hubGoalInfo();
   if(gi&&gi.done)th+='<div class="center">'+HUB_ART_CELEB+'<div class="h-ssub">🎉 היעד השבועי הושג!</div></div>';
   th+=(window.hubGuest?'<div style="margin-top:8px" class="h-ssub">🎭 מצב אורח — ההתקדמות, המטבעות והחשבון לא נשמרים. כדי לשמור התקדמות, צרו פרופיל. מסך להורה, סיכום שבועי ובקשת צ׳ופר זמינים רק עם פרופיל.</div>':'');
+  th=hubSmartCard()+'<div class="hs-rest">'+th+'</div>';
   cont.innerHTML=th;
   const grid=hEl('hubGrid');let html='';
   for(const s of HUB_SUBJECTS){
@@ -45384,7 +45464,16 @@ loadS();
 showTopics();
 
 </script>
-<script>if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0){navigator.serviceWorker.register('sw.js').catch(function(){});}</script>
+<script>if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0){
+  var swHad=!!navigator.serviceWorker.controller,swDone=false;
+  navigator.serviceWorker.register('sw.js').catch(function(){});
+  // גרסה חדשה נכנסה לתוקף: אם הילד במסך הבית או במסך הפרופילים, טוענים אותה מיד (לא באמצע סבב)
+  navigator.serviceWorker.addEventListener('controllerchange',function(){
+    if(!swHad){swHad=true;return;}
+    if(swDone)return;swDone=true;
+    try{var ok=['hubHome','hubProfiles'].some(function(id){var e=document.getElementById(id);return e&&!e.classList.contains('h-hidden');});if(ok)location.reload();}catch(e){}
+  });
+}</script>
 <script id="g4-fun-js">
 /* G4-FUN — שכבת פיילוט לכיתה ד׳: תשובה בלחיצה אחת, צלילים, כוכב מעופף, הודעת רצף.
    עוטפת את המנוע הקיים בלי לשנות אותו. כל כשל כאן משאיר את האתר כמו שהיה. */
