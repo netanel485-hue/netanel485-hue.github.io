@@ -69,6 +69,7 @@ for sw in glob.glob('*/sw.js'):
     w = open(sw, encoding='utf-8').read()
     if "cache:'reload'" not in w: fail(f"{sw}: ההתקנה חייבת לטעון עם {{cache:'reload'}}")
     node_check(w, sw)
+for js in glob.glob('shared/*.js'): node_check(open(js, encoding='utf-8').read(), js)
 if '--base' in sys.argv:
     base = sys.argv[sys.argv.index('--base') + 1]
     changed = subprocess.run(['git', 'diff', '--name-only', base, '--'], capture_output=True, text=True).stdout.split()
