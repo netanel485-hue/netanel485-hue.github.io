@@ -2651,5 +2651,9 @@ $("scoreIllus").innerHTML = ILLUS.medalMini;
 $("mockIllus").innerHTML = ILLUS.medalMini;
 renderHome();
 </script>
+<script id="persist-storage">
+/* מבקש מהדפדפן אחסון קבוע, כדי שההתקדמות לא תימחק כשהמכשיר מפנה מקום (11/11/2026). */
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(function(){});}catch(e){}
+</script>
 </body>
 </html>

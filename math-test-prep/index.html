@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<!-- הקראה: Google TTS דוחה בקשות עם Referer של צד שלישי; בלי השורה הזאת ההקראה נכשלת -->
+<meta name="referrer" content="no-referrer">
 <title>ערכת חזרה למבחן במתמטיקה — כיתה ו׳</title>
 <style>
 /* DESIGN-TOKENS-START */
@@ -3518,6 +3520,10 @@ $("celebIllus").innerHTML = ILLUS.starMini;
 $("scoreIllus").innerHTML = ILLUS.medalMini;
 $("mockIllus").innerHTML = ILLUS.medalMini;
 renderHome();
+</script>
+<script id="persist-storage">
+/* מבקש מהדפדפן אחסון קבוע, כדי שההתקדמות לא תימחק כשהמכשיר מפנה מקום (11/11/2026). */
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(function(){});}catch(e){}
 </script>
 </body>
 </html>
