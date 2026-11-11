@@ -41755,9 +41755,24 @@ function hubDraw(topic,wantLvls,count,extraExclude){
   let fresh=cand.filter(q=>!deck.has(q.q)&&!ex.has(q.q));
   if(fresh.length<count){deck.clear();fresh=cand.filter(q=>!ex.has(q.q));}
   if(fresh.length<count)fresh=cand.slice();
-  const picked=hShuffle(fresh).slice(0,count);
+  const picked=hubGroupByPassage(fresh,count)||hShuffle(fresh).slice(0,count);
   for(const q of picked)deck.add(q.q);
   return picked;
+}
+// הבנת הנקרא: סיפור אחד ועליו כמה שאלות ברצף, במקום סיפור חדש בכל שאלה.
+// פועל רק כשרוב השאלות נושאות קטע (psg); אחרת מחזיר null והמשיכה רגילה.
+function hubGroupByPassage(fresh,count){
+  const withP=fresh.filter(q=>typeof q.psg==='string'&&q.psg);
+  if(withP.length<fresh.length/2||withP.length<count)return null;
+  const groups=new Map();
+  for(const q of hShuffle(withP)){if(!groups.has(q.psg))groups.set(q.psg,[]);groups.get(q.psg).push(q);}
+  const per=count>=8?4:3,out=[];
+  for(const g of hShuffle([...groups.values()])){
+    if(out.length>=count)break;
+    g.sort((x,y)=>x.lvl-y.lvl);
+    out.push(...g.slice(0,Math.min(per,count-out.length)));
+  }
+  return out.length===count?out:null;
 }
 function hubDrawType(topic,family,count,maxLvl){
   const P=hubBuildPool(topic);

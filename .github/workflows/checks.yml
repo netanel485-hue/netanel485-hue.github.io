@@ -1,0 +1,21 @@
+name: בדיקות אתר
+on:
+  push:
+  pull_request:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: בדיקות תוכן, תחביר ומטמון
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            python3 tools/check.py --base origin/${{ github.base_ref }}
+          else
+            python3 tools/check.py
+          fi

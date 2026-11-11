@@ -4,46 +4,101 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1E4634">
 <title>מרכזי הלמידה</title>
 <style>
+/* דף הבית — לפי מערכת העיצוב "מרכזי הלמידה" (11/11/2026) */
+:root{
+  --bg:#FAF6EB;--card:#EAF4E6;--card-focus:#FFFFFF;--ink:#1E4634;--ink-soft:#4F6B5D;--muted:#7A8B7F;--line:#D8E4D4;
+  --accent:#F59E0B;--btn:#B85A0A;
+  --g1:#d6336c;--g2:#2E7D4F;--g4:#3B6FE0;--g6:#7C3AED;--more:#0F766E;
+  --radius-card:24px;--radius-md:20px;--radius-btn:16px;--shadow-card:0 2px 12px rgba(30,70,50,.08);
+}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#eef3ff;color:#1c2b4a}
-.wrap{max-width:520px;margin:0 auto;padding:16px 14px 48px}
-h1{font-size:26px;margin:8px 0 4px;font-weight:800;text-align:center}
-.lead{text-align:center;color:#5a6a8a;font-weight:700;margin:0 0 14px}
-h2{font-size:20px;margin:22px 0 10px;font-weight:800;text-align:center;color:#1c2b4a}
-.grades{display:flex;flex-direction:column;gap:10px}
-a.grade{display:block;background:#fff;border-radius:18px;padding:14px 16px;text-decoration:none;color:#1c2b4a;min-height:84px;box-shadow:0 3px 12px rgba(40,70,140,.08);border-right:8px solid #7c5cbf}
-a.grade .nm{display:block;font-size:22px;font-weight:800}
-a.grade small{display:block;font-weight:700;color:#5a6a8a;font-size:15px;margin-top:2px}
-a.grade.g4{border-right-color:#18a058}
-a.grade.g6{border-right-color:#4a7dff}
-a.grade.math{border-right-color:#6a4fd0}
-a.grade.eng{border-right-color:#ea580c}
-a.grade.navi{border-right-color:#0d9488}
-a.grade.mivdak{border-right-color:#e11d48}
-a.grade.guide{border-right-color:#1c1917}
-.note{color:#6a7b96;font-size:14px;line-height:1.5;margin-top:18px}
+body{margin:0;font-family:"Segoe UI",Arial,system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+.wrap{max-width:720px;margin:0 auto;padding:20px 16px 48px}
+.hero{background:var(--ink);color:#fff;border-radius:var(--radius-card);padding:22px 20px 20px;position:relative;overflow:hidden}
+.hero h1{margin:0;font-size:30px;line-height:1.1;font-weight:800}
+.hero p{margin:8px 0 0;font-size:16px;color:#D8E9DE;max-width:30ch}
+.hero svg{position:absolute;left:-10px;top:-10px;width:170px;height:150px;opacity:.95}
+.hero{padding-left:150px}
+@media (max-width:420px){.hero{padding-left:96px}.hero svg{width:120px;left:-30px}.hero h1{font-size:26px}}
+.shelf{margin-top:22px}
+.shelf-h{display:flex;align-items:center;gap:10px;margin:0 2px 10px}
+.badge{flex:0 0 auto;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:22px;background:var(--c)}
+.shelf-h h2{margin:0;font-size:21px;font-weight:800}
+.shelf-h small{display:block;font-size:13px;color:var(--ink-soft);font-weight:600}
+.items{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.items.one{grid-template-columns:1fr}
+a.item{position:relative;display:flex;flex-direction:column;justify-content:flex-end;min-height:108px;background:var(--card-focus);
+  border-radius:var(--radius-md);padding:18px 14px 14px;text-decoration:none;color:var(--ink);overflow:hidden;
+  box-shadow:0 3px 0 color-mix(in srgb,var(--c) 30%,transparent),var(--shadow-card);transition:transform .1s ease}
+a.item::before{content:"";position:absolute;inset:0 0 auto 0;height:6px;background:var(--c)}
+a.item:active{transform:translateY(2px) scale(.98)}
+a.item:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+a.item.main{grid-column:1/-1;min-height:96px;background:color-mix(in srgb,var(--c) 9%,#fff)}
+/* פריט בודד אחרי הראשי תופס שורה שלמה */
+.items>a.item.main+a.item:last-child{grid-column:1/-1;min-height:84px}
+a.item .em{font-size:30px;line-height:1;margin-bottom:auto}
+a.item b{display:block;font-size:19px;font-weight:800;margin-top:10px}
+a.item span{display:block;font-size:13.5px;color:var(--ink-soft);font-weight:600;margin-top:2px}
+a.item .go{position:absolute;left:14px;bottom:14px;font-size:20px;color:var(--c)}
+.note{color:var(--ink-soft);font-size:14px;line-height:1.6;margin-top:26px;background:var(--card);border-radius:var(--radius-md);padding:12px 14px}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>מרכזי הלמידה</h1>
-  <p class="lead">בוחרים כיתה, ונכנסים לאתר שלה</p>
-  <div class="grades">
-    <a class="grade" href="grade1-learning/"><span class="nm">כיתה א׳</span><small>קריאה, אותיות ומשחקים</small></a>
-    <a class="grade g4" href="grade4-learning/"><span class="nm">כיתה ד׳</span><small>מרכז הלמידה</small></a>
-    <a class="grade g6" href="grade6-learning/"><span class="nm">כיתה ו׳</span><small>מרכז הלמידה</small></a>
-    <a class="grade math" href="math-test-prep/"><span class="nm">מתמטיקה</span><small>כיתה ו׳ · מסלול השבוע למבחן</small></a>
-  </div>
-  <h2>עוד באתר</h2>
-  <div class="grades">
-    <a class="grade eng" href="adi-english-game/"><span class="nm">משחק אנגלית</span><small>משחק אנגלית — אותיות ומילים</small></a>
-    <a class="grade mivdak" href="grade4-mivdak/"><span class="nm">חזרה למבדק</span><small>כיתה ד׳ · חזרה למבדק תחילת שנה</small></a>
-    <a class="grade navi" href="dvir-melachim/"><span class="nm">מלכים א׳</span><small>ערכת למידה — פרקים י״ז–כ״ב</small></a>
-    <a class="grade guide" href="mdryk-claude-code.html"><span class="nm">מדריך Claude Code</span><small>מדריך בעברית למתחילים</small></a>
-  </div>
-  <p class="note">בכל כיתה בוחרים או יוצרים פרופיל. המטבעות, הרצף וההתקדמות נשמרים לפרופיל הזה במכשיר, בנפרד משאר הפרופילים.</p>
+  <header class="hero">
+    <svg viewBox="0 0 170 150" aria-hidden="true">
+      <rect x="18" y="16" width="64" height="64" rx="20" fill="#F59E0B"/>
+      <rect x="92" y="10" width="56" height="88" rx="20" fill="#3B6FE0"/>
+      <rect x="40" y="88" width="80" height="44" rx="20" fill="#d6336c"/>
+      <circle cx="140" cy="118" r="14" fill="#EAF4E6"/>
+    </svg>
+    <h1>מרכזי הלמידה</h1>
+    <p>בוחרים כיתה, נכנסים ולומדים. לחיצה אחת עונה.</p>
+  </header>
+
+  <section class="shelf" style="--c:var(--g1)">
+    <div class="shelf-h"><div class="badge">א</div><div><h2>כיתה א׳</h2><small>קריאה, אותיות ואנגלית</small></div></div>
+    <div class="items">
+      <a class="item main" href="grade1-learning/"><span class="em">📖</span><b>מרכז הלמידה</b><span>עברית, חשבון ואנגלית — עם הקראה</span><i class="go" aria-hidden="true">←</i></a>
+      <a class="item" href="adi-english-game/"><span class="em">🔤</span><b>משחק אנגלית</b><span>אותיות ומילים</span></a>
+    </div>
+  </section>
+
+  <section class="shelf" style="--c:var(--g2)">
+    <div class="shelf-h"><div class="badge">ב</div><div><h2>כיתה ב׳</h2><small>מתמטיקה</small></div></div>
+    <div class="items one">
+      <a class="item main" href="grade2-math/"><span class="em">🧮</span><b>מתמטיקה — שבילים פלוס 4</b><span>12 נושאים · חיבור, חיסור ומספרים עד 100</span><i class="go" aria-hidden="true">←</i></a>
+    </div>
+  </section>
+
+  <section class="shelf" style="--c:var(--g4)">
+    <div class="shelf-h"><div class="badge">ד</div><div><h2>כיתה ד׳</h2><small>כל המקצועות</small></div></div>
+    <div class="items">
+      <a class="item main" href="grade4-learning/"><span class="em">🎒</span><b>מרכז הלמידה</b><span>9 מקצועות · אימונים, מבחנים והכנה</span><i class="go" aria-hidden="true">←</i></a>
+      <a class="item" href="grade4-mivdak/"><span class="em">📝</span><b>חזרה למבדק</b><span>מבדק תחילת שנה · 250 שאלות</span></a>
+    </div>
+  </section>
+
+  <section class="shelf" style="--c:var(--g6)">
+    <div class="shelf-h"><div class="badge">ו</div><div><h2>כיתה ו׳</h2><small>כל המקצועות</small></div></div>
+    <div class="items">
+      <a class="item main" href="grade6-learning/"><span class="em">🎒</span><b>מרכז הלמידה</b><span>11 מקצועות · אימונים, מבחנים והכנה</span><i class="go" aria-hidden="true">←</i></a>
+      <a class="item" href="math-test-prep/"><span class="em">📐</span><b>חזרה למבחן במתמטיקה</b><span>מסלול השבוע למבחן</span></a>
+    </div>
+  </section>
+
+  <section class="shelf" style="--c:var(--more)">
+    <div class="shelf-h"><div class="badge">+</div><div><h2>עוד באתר</h2><small>ערכות נוספות</small></div></div>
+    <div class="items">
+      <a class="item" href="dvir-melachim/"><span class="em">📜</span><b>מלכים א׳</b><span>פרקים י״ז–כ״ב</span></a>
+      <a class="item" href="mdryk-claude-code.html"><span class="em">🛠️</span><b>מדריך Claude Code</b><span>למבוגרים · בעברית</span></a>
+    </div>
+  </section>
+
+  <p class="note">בכל מרכז בוחרים או יוצרים פרופיל. ההתקדמות והמטבעות נשמרים לפרופיל הזה, במכשיר הזה בלבד.</p>
 </div>
 </body>
 </html>
