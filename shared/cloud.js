@@ -127,7 +127,8 @@ window.LHCloud = {
   async create() {
     const c = newCode(); raw.set.call(LS, K_CODE, c);
     const m = meta(), now = Date.now(); Object.keys(localStorage).filter(own).forEach(k => { m[k] = m[k] || now; }); saveMeta(m);
-    try { await connect(); await push(true); emit('saved'); } catch (e) { emit('error', {message: String(e && e.message || e)}); throw e; }
+    try { await connect(); await push(true); emit('saved'); }
+    catch (e) { raw.remove.call(LS, K_CODE); emit('error', {message: String(e && e.message || e)}); throw e; }
     return pretty(c);
   },
   async join(c) {
