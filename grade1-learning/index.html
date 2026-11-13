@@ -189,6 +189,9 @@ h1{font-size:clamp(24px,7vw,30px)}
 /* G1-EXTRA — כפתור למשחק האנגלית בתוך המרכז (13/11/2026). להסרה: למחוק את הבלוק הזה ואת a#g1Extra. */
 #g1Extra{text-align:center;text-decoration:none;background:#3B6FE0;box-shadow:0 5px 0 #2a4fa6}
 #g1Extra:active{box-shadow:0 2px 0 #2a4fa6}
+/* מופיע רק בלשונית אנגלית */
+#screen-home:has(#homeTabs) #g1Extra{display:none}
+#screen-home:has(#tabEng.active) #g1Extra{display:block}
 </style>
 </head>
 <body>
@@ -213,8 +216,8 @@ h1{font-size:clamp(24px,7vw,30px)}
       <button class="tabbtn" id="tabMath"><span class="emo">🔢</span><span>חשבון</span></button>
       <button class="tabbtn" id="tabEng"><span class="emo">🔤</span><span>אנגלית</span></button>
     </div>
-    <div id="booklets"></div>
-  <a class="bigbtn" id="g1Extra" href="../adi-english-game/">🎮 משחק אנגלית</a>
+    <a class="bigbtn" id="g1Extra" href="../adi-english-game/">🎮 משחק אנגלית</a>
+<div id="booklets"></div>
     <details class="homefold" id="homeMore"><summary>⚙️ עוד אפשרויות</summary>
     <button class="bigbtn purple" id="btnReview">🔀 חזרה על הכול</button>
     <button class="bigbtn ghost" id="btnNavSay">🔊 תקשיבי לכל האפשרויות</button>
