@@ -185,6 +185,11 @@ h1{font-size:clamp(24px,7vw,30px)}
 </style>
 
 <script src="../shared/site-bar.js" defer data-label="מרכז הלמידה · כיתה א׳"></script>
+<style id="g1-extra-css">
+/* G1-EXTRA — כפתור למשחק האנגלית בתוך המרכז (13/11/2026). להסרה: למחוק את הבלוק הזה ואת a#g1Extra. */
+#g1Extra{text-align:center;text-decoration:none;background:#3B6FE0;box-shadow:0 5px 0 #2a4fa6}
+#g1Extra:active{box-shadow:0 2px 0 #2a4fa6}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -209,6 +214,7 @@ h1{font-size:clamp(24px,7vw,30px)}
       <button class="tabbtn" id="tabEng"><span class="emo">🔤</span><span>אנגלית</span></button>
     </div>
     <div id="booklets"></div>
+  <a class="bigbtn" id="g1Extra" href="../adi-english-game/">🎮 משחק אנגלית</a>
     <details class="homefold" id="homeMore"><summary>⚙️ עוד אפשרויות</summary>
     <button class="bigbtn purple" id="btnReview">🔀 חזרה על הכול</button>
     <button class="bigbtn ghost" id="btnNavSay">🔊 תקשיבי לכל האפשרויות</button>

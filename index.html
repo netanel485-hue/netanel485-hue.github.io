@@ -9,6 +9,9 @@
 <meta name="description" content="מרכזי למידה לכיתות א׳, ב׳, ד׳ ו־ו׳: אימונים, מבחנים ומשחקים בעברית, חשבון, אנגלית ועוד.">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="מרכזי הלמידה">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://netanel485-hue.github.io/">
 <meta property="og:title" content="מרכזי הלמידה">
@@ -55,7 +58,6 @@ button{font:inherit;color:inherit}
 .tile:nth-child(2) .pal{animation-delay:-.6s}.tile:nth-child(3) .pal{animation-delay:-1.2s}.tile:nth-child(4) .pal{animation-delay:-1.8s}
 .tile .let{font-size:54px;font-weight:900;line-height:1;text-shadow:0 3px 0 rgba(0,0,0,.18)}
 .tile .nm{font-size:17px;font-weight:800}
-.tile.on{outline:4px solid #fff;outline-offset:-10px}
 .tile .mine{position:absolute;top:6px;left:6px;width:34px;height:34px;background:#fff;border-radius:50%;font-size:19px;line-height:34px;text-align:center;box-shadow:0 3px 0 rgba(0,0,0,.15);display:none;animation:bob 2s ease-in-out infinite}
 .tile.mine-on .mine{display:block}
 @keyframes popin{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
@@ -63,11 +65,6 @@ button{font:inherit;color:inherit}
 .tile.wiggle .pal{animation:wiggle .5s ease}
 @keyframes wiggle{0%,100%{transform:rotate(0) scale(1)}30%{transform:rotate(-14deg) scale(1.25)}60%{transform:rotate(12deg) scale(1.15)}}
 
-/* מה שנפתח בתוך כיתה */
-.panel{margin-top:16px;border-radius:26px;padding:14px;background:color-mix(in srgb,var(--c) 14%,#fff);border:3px solid color-mix(in srgb,var(--c) 35%,#fff)}
-.js .panel{display:none}
-.js .panel.open{display:block;animation:popin .35s cubic-bezier(.3,1.5,.5,1)}
-.panel h2{margin:2px 4px 10px;font-size:20px;font-weight:800;color:color-mix(in srgb,var(--c) 70%,#000)}
 .go{display:flex;align-items:center;gap:12px;min-height:72px;margin-top:10px;padding:12px 14px;border-radius:20px;text-decoration:none;color:var(--ink);
   background:#fff;box-shadow:0 5px 0 color-mix(in srgb,var(--c) 40%,#fff);transition:transform .08s ease,box-shadow .08s ease}
 .go:active{transform:translateY(4px);box-shadow:0 1px 0 color-mix(in srgb,var(--c) 40%,#fff)}
@@ -81,6 +78,10 @@ button{font:inherit;color:inherit}
 .go.main:active{box-shadow:0 1px 0 color-mix(in srgb,var(--c) 62%,#000)}
 
 .more{margin-top:18px}
+.install{margin-top:18px;--c:var(--more)}
+.install .go{width:100%;border:0;cursor:pointer;text-align:right;font:inherit}
+.ios-tip{margin:10px 2px 0;font-size:15px;line-height:1.6;color:var(--ink);background:#fff;border-radius:16px;padding:10px 14px}
+.hero .offline{margin-top:8px;font-size:14px;color:#FDE7B0}
 .note{color:var(--ink-soft);font-size:14px;line-height:1.6;margin-top:22px;background:var(--card);border-radius:20px;padding:12px 14px}
 .adults{margin:16px 2px 0;font-size:13px;color:var(--muted)}
 .adults a{color:var(--ink-soft)}
@@ -93,33 +94,24 @@ button{font:inherit;color:inherit}
     <i class="blob b1" aria-hidden="true"></i><i class="blob b2" aria-hidden="true"></i><i class="blob b3" aria-hidden="true"></i><i class="blob b4" aria-hidden="true"></i>
     <h1>מרכזי הלמידה</h1>
     <p>בוחרים כיתה ויוצאים לדרך 👇</p>
+    <p class="offline" id="offlineNote" hidden>אין אינטרנט כרגע — אפשר להמשיך ללמוד 💪</p>
   </header>
 
   <nav class="grid" aria-label="כיתות">
-    <button class="tile" style="--c:var(--g1)" data-g="g1" aria-expanded="false" aria-controls="p-g1"><span class="mine" role="img" aria-label="הכיתה שלי">⭐</span><span class="pal" aria-hidden="true">🐣</span><span class="let">א</span><span class="nm">כיתה א׳</span></button>
+    <a class="tile" style="--c:var(--g1)" data-g="g1" href="grade1-learning/"><span class="mine" role="img" aria-label="הכיתה שלי">⭐</span><span class="pal" aria-hidden="true">🐣</span><span class="let">א</span><span class="nm">כיתה א׳</span></a>
     <a class="tile" style="--c:var(--g2)" data-g="g2" href="grade2-math/"><span class="mine" role="img" aria-label="הכיתה שלי">⭐</span><span class="pal" aria-hidden="true">🦊</span><span class="let">ב</span><span class="nm">כיתה ב׳</span></a>
-    <button class="tile" style="--c:var(--g4)" data-g="g4" aria-expanded="false" aria-controls="p-g4"><span class="mine" role="img" aria-label="הכיתה שלי">⭐</span><span class="pal" aria-hidden="true">🚀</span><span class="let">ד</span><span class="nm">כיתה ד׳</span></button>
-    <button class="tile" style="--c:var(--g6)" data-g="g6" aria-expanded="false" aria-controls="p-g6"><span class="mine" role="img" aria-label="הכיתה שלי">⭐</span><span class="pal" aria-hidden="true">🦉</span><span class="let">ו</span><span class="nm">כיתה ו׳</span></button>
+    <a class="tile" style="--c:var(--g4)" data-g="g4" href="grade4-learning/"><span class="mine" role="img" aria-label="הכיתה שלי">⭐</span><span class="pal" aria-hidden="true">🚀</span><span class="let">ד</span><span class="nm">כיתה ד׳</span></a>
+    <a class="tile" style="--c:var(--g6)" data-g="g6" href="grade6-learning/"><span class="mine" role="img" aria-label="הכיתה שלי">⭐</span><span class="pal" aria-hidden="true">🦉</span><span class="let">ו</span><span class="nm">כיתה ו׳</span></a>
   </nav>
 
-  <section class="panel" id="p-g1" style="--c:var(--g1)">
-    <h2>כיתה א׳ 🐣</h2>
-    <a class="go main" href="grade1-learning/"><span class="em">📖</span><span><b>מרכז הלמידה</b><small>עברית, חשבון ואנגלית — עם הקראה</small></span><i class="ar" aria-hidden="true">←</i></a>
-    <a class="go" href="adi-english-game/"><span class="em">🔤</span><span><b>משחק אנגלית</b><small>אותיות ומילים</small></span><i class="ar" aria-hidden="true">←</i></a>
-  </section>
-  <section class="panel" id="p-g4" style="--c:var(--g4)">
-    <h2>כיתה ד׳ 🚀</h2>
-    <a class="go main" href="grade4-learning/"><span class="em">🎒</span><span><b>מרכז הלמידה</b><small>9 מקצועות · אימונים, מבחנים והכנה</small></span><i class="ar" aria-hidden="true">←</i></a>
-    <a class="go" href="grade4-mivdak/"><span class="em">📝</span><span><b>חזרה למבדק</b><small>מבדק תחילת שנה · 250 שאלות</small></span><i class="ar" aria-hidden="true">←</i></a>
-  </section>
-  <section class="panel" id="p-g6" style="--c:var(--g6)">
-    <h2>כיתה ו׳ 🦉</h2>
-    <a class="go main" href="grade6-learning/"><span class="em">🎒</span><span><b>מרכז הלמידה</b><small>11 מקצועות · אימונים, מבחנים והכנה</small></span><i class="ar" aria-hidden="true">←</i></a>
-    <a class="go" href="math-test-prep/"><span class="em">📐</span><span><b>חזרה למבחן במתמטיקה</b><small>מסלול השבוע למבחן</small></span><i class="ar" aria-hidden="true">←</i></a>
-  </section>
 
   <div class="more" style="--c:var(--more)">
     <a class="go" href="dvir-melachim/"><span class="em">📜</span><span><b>מלכים א׳</b><small>עוד באתר · פרקים י״ז–כ״ב</small></span><i class="ar" aria-hidden="true">←</i></a>
+  </div>
+
+  <div class="install" id="installBox" hidden>
+    <button type="button" class="go" id="installBtn"><span class="em">📲</span><span><b>להוסיף למסך הבית</b><small>נפתח כמו אפליקציה, גם בלי אינטרנט</small></span></button>
+    <p class="ios-tip" id="iosTip" hidden>באייפון: לוחצים על <b>שיתוף</b> <span aria-hidden="true">⬆️</span> ואז על <b>הוספה למסך הבית</b>.</p>
   </div>
 
   <p class="note">בכל מרכז בוחרים או יוצרים פרופיל. ההתקדמות והמטבעות נשמרים לפרופיל הזה, במכשיר הזה בלבד.</p>
@@ -127,26 +119,30 @@ button{font:inherit;color:inherit}
 </div>
 <script id="home-tiles-js">
 try{
-  document.documentElement.classList.add('js');
   var KEY='home-grade',tiles=[].slice.call(document.querySelectorAll('.tile'));
   function mark(g){tiles.forEach(function(t){t.classList.toggle('mine-on',t.dataset.g===g)})}
-  function save(g){try{localStorage.setItem(KEY,g)}catch(e){}}
-  function open(g,scroll){
-    tiles.forEach(function(t){var on=t.dataset.g===g&&t.tagName==='BUTTON';t.classList.toggle('on',on);if(t.tagName==='BUTTON')t.setAttribute('aria-expanded',on?'true':'false')});
-    [].forEach.call(document.querySelectorAll('.panel'),function(p){p.classList.toggle('open',p.id==='p-'+g)});
-    var p=document.getElementById('p-'+g);
-    if(p&&scroll){setTimeout(function(){try{p.scrollIntoView({behavior:'smooth',block:'nearest'})}catch(e){p.scrollIntoView()}},60)}
-  }
-  tiles.forEach(function(t){
-    t.addEventListener('click',function(){
-      var g=t.dataset.g;save(g);mark(g);
-      t.classList.remove('wiggle');void t.offsetWidth;t.classList.add('wiggle');
-      if(t.tagName==='BUTTON'){var was=t.classList.contains('on');open(was?'':g,!was)}
-    });
-  });
+  tiles.forEach(function(t){t.addEventListener('click',function(){
+    try{localStorage.setItem(KEY,t.dataset.g)}catch(e){}
+    mark(t.dataset.g);t.classList.remove('wiggle');void t.offsetWidth;t.classList.add('wiggle');
+  })});
   var last=null;try{last=localStorage.getItem(KEY)}catch(e){}
-  if(last&&document.querySelector('.tile[data-g="'+last+'"]')){mark(last);open(last,false)}
-}catch(e){document.documentElement.classList.remove('js')}
+  if(last)mark(last);
+}catch(e){}
+</script>
+<script id="home-app-js">
+try{
+  var standalone=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+  var box=document.getElementById('installBox'),btn=document.getElementById('installBtn'),tip=document.getElementById('iosTip'),deferred=null;
+  var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  if(!standalone&&ios){box.hidden=false;btn.addEventListener('click',function(){tip.hidden=!tip.hidden})}
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;if(!standalone)box.hidden=false});
+  btn.addEventListener('click',function(){if(!deferred)return;deferred.prompt();deferred.userChoice.then(function(){deferred=null;box.hidden=true},function(){})});
+  window.addEventListener('appinstalled',function(){box.hidden=true});
+  var off=document.getElementById('offlineNote');
+  function net(){off.hidden=navigator.onLine!==false}
+  net();window.addEventListener('online',net);window.addEventListener('offline',net);
+  if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}
+}catch(e){}
 </script>
 </body>
 </html>
