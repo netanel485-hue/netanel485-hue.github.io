@@ -1433,6 +1433,17 @@ renderHome();
 /* מבקש מהדפדפן אחסון קבוע, כדי שההתקדמות לא תימחק כשהמכשיר מפנה מקום (11/11/2026). */
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(function(){});}catch(e){}
 </script>
+<script id="g1-tts-js">
+/* G1-TTS — ההקראה בכיתה א׳ אומרת רק מה שהילדה צריכה (13/11/2026):
+   בלי "עמוד 12" ובלי "חוברת א/ב" — רק שם השיעור. מה שכתוב על המסך לא משתנה.
+   להסרה: למחוק את הבלוק הזה. */
+try{(function(){
+  var strip=function(t){return String(t==null?'':t).replace(/עמוד\s*\d+\s*[,،:—–-]?\s*/g,'').replace(/^\s*חוברת\s+[אב]['׳]?\s*$/,'').trim()};
+  window.navPageLabel=function(pg){return pg&&pg.title?pg.title:''};
+  if(typeof window.navSay==='function'){var say=window.navSay;window.navSay=function(text,done){var t=strip(text);if(!t){if(done)done();return}return say.call(this,t,done)}}
+  if(typeof window.visibleNavLabels==='function'){var vis=window.visibleNavLabels;window.visibleNavLabels=function(){return vis.apply(this,arguments).map(strip).filter(Boolean)}}
+})()}catch(e){}
+</script>
 <script type="module" src="../shared/cloud.js"></script>
 </body>
 </html>
