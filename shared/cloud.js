@@ -171,7 +171,7 @@ window.LHCloud = {
     await fs.setDoc(ref, {v: norm(code()), t: Date.now()});
     raw.set.call(LS, K_NAME, cleanName(name)); emit('saved');
   },
-  link: () => code() ? location.origin + '/#join=' + pretty(code()) : '',
+  link: () => code() ? ((location.origin && location.origin !== 'null') ? location.origin : 'https://netanel485-hue.github.io') + '/#join=' + pretty(code()) : '',
   pendingJoin: () => { const m = location.hash.match(/join=([A-Za-z0-9-]+)/); return m ? norm(m[1]) : ''; },
   sameFamily: c => norm(c) === norm(code()),
   hasLocalData: () => Object.keys(localStorage).some(own),
