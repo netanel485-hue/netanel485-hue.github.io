@@ -87,7 +87,13 @@ button{font:inherit;color:inherit}
 .cloud summary::-webkit-details-marker{display:none}
 .cloud summary small{font-size:12px;font-weight:700;color:var(--muted);background:var(--card);border-radius:99px;padding:2px 8px}
 .cloud p{font-size:14.5px;line-height:1.6;color:var(--ink-soft);margin:6px 0}
-.cloud .or{margin-top:14px}
+.cloud .lab{margin-top:12px;font-weight:800;color:var(--ink)}
+.cbtn.wide{width:100%;margin-top:8px}
+.cloud details.sub{border-top:1px solid var(--line,#D8E4D4);margin-top:10px}
+.cloud details.sub summary{font-size:14.5px;min-height:46px}
+.cloud details.sub input{display:block;width:100%;min-height:48px;margin:8px 0;border:2px solid var(--line,#D8E4D4);border-radius:14px;padding:8px 12px;font:inherit;font-size:16px}
+.qr{display:grid;place-items:center;margin:12px 0;padding:12px;background:#fff;border-radius:16px}
+.qr img,.qr canvas{width:200px!important;height:200px!important}
 .cloud .ok{color:#2E7D4F;font-weight:800}
 .cloud .small{font-size:13px}
 .ccode{font-size:20px;letter-spacing:2px;color:var(--ink);direction:ltr;unicode-bidi:isolate}
@@ -133,24 +139,35 @@ button{font:inherit;color:inherit}
 
   <details class="cloud" id="cloudBox">
     <summary>☁️ שמירה בענן <small>להורים</small></summary>
-    <div id="cloudOff">
-      <p>היום ההתקדמות נשמרת רק במכשיר הזה. עם <b>קוד משפחה</b> היא נשמרת גם בענן, ואפשר להמשיך מכל מכשיר. בלי חשבון, בלי מייל ובלי פרטים אישיים.</p>
-      <button type="button" class="cbtn main" id="cloudCreate">יצירת קוד משפחה</button>
-      <p class="or">כבר יש לכם קוד ממכשיר אחר?</p>
-      <div class="crow"><input id="cloudInput" inputmode="latin" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCDE-23456" aria-label="קוד משפחה"><button type="button" class="cbtn" id="cloudJoin">חיבור</button></div>
-    </div>
     <div id="cloudOn" hidden>
-      <p class="ok">✓ ההתקדמות נשמרת בענן</p>
-      <p>קוד המשפחה: <b class="ccode" id="cloudCode"></b></p>
-      <p class="small">רושמים את הקוד ומקלידים אותו בכל מכשיר נוסף. מי שיש לו את הקוד רואה את ההתקדמות, אז כדאי לשמור אותו רק במשפחה.</p>
-      <div class="crow"><button type="button" class="cbtn" id="cloudCopy">העתקת הקוד</button><button type="button" class="cbtn" id="cloudSync">שמירה עכשיו</button></div>
-      <p class="small" id="cloudLast"></p>
-      <button type="button" class="linkbtn" id="cloudLeave">ניתוק המכשיר הזה מהקוד</button>
+      <p class="ok">✓ ההתקדמות נשמרת בענן אוטומטית</p>
+      <p id="cloudWho" class="small" hidden></p>
+      <p class="lab">להמשיך במכשיר נוסף:</p>
+      <button type="button" class="cbtn main" id="cloudShare">📲 שליחת קישור בוואטסאפ</button>
+      <button type="button" class="cbtn wide" id="cloudQrBtn">🔳 ברקוד לסריקה מהמכשיר השני</button>
+      <div id="cloudQr" class="qr" hidden></div>
+      <p class="small">טיפ: שלחו את הקישור גם לעצמכם. אם הטלפון יאבד, הקישור יחזיר את כל ההתקדמות.</p>
     </div>
+    <div id="cloudOff">
+      <p>השמירה בענן תתחיל לבד כשיהיה אינטרנט.</p>
+    </div>
+    <details class="sub" id="cloudLoginBox">
+      <summary>🔑 שם משפחה וסיסמה <small>לא חובה</small></summary>
+      <p class="small">אפשר לבחור שם וסיסמה ולהיכנס איתם מכל מכשיר, גם בלי הקישור. אין צורך במייל.</p>
+      <input id="cloudName" autocomplete="username" placeholder="שם משפחה (למשל: כהן)" aria-label="שם משפחה">
+      <input id="cloudPass" type="password" autocomplete="current-password" placeholder="סיסמה (לפחות 6 תווים)" aria-label="סיסמה">
+      <button type="button" class="cbtn wide" id="cloudLogin">המשך</button>
+    </details>
+    <details class="sub">
+      <summary>🔗 יש לי קישור או קוד</summary>
+      <p class="small">באייפון, אם האתר מותקן במסך הבית: מעתיקים את הקישור מהוואטסאפ ומדביקים כאן.</p>
+      <div class="crow"><input id="cloudInput" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="קישור או קוד" aria-label="קישור או קוד"><button type="button" class="cbtn" id="cloudJoin">חיבור</button></div>
+      <button type="button" class="linkbtn" id="cloudLeave" hidden>ניתוק המכשיר הזה מהשמירה בענן</button>
+    </details>
     <p class="cmsg" id="cloudMsg" role="status" aria-live="polite"></p>
   </details>
 
-  <p class="note">בכל מרכז בוחרים או יוצרים פרופיל. ההתקדמות והמטבעות נשמרים לפרופיל הזה במכשיר, ועם קוד משפחה גם בענן.</p>
+  <p class="note">בכל מרכז בוחרים או יוצרים פרופיל. ההתקדמות והמטבעות נשמרים לפרופיל הזה במכשיר, וגם בענן.</p>
   <p class="adults">להורים: <a href="mdryk-claude-code.html">מדריך Claude Code בעברית</a></p>
 </div>
 <script id="home-tiles-js">
@@ -184,23 +201,40 @@ try{
 <script id="home-cloud-js">
 try{(function(){
   var $=function(id){return document.getElementById(id)};
-  var off=$('cloudOff'),on=$('cloudOn'),msg=$('cloudMsg'),busy=false;
+  var msg=$('cloudMsg'),busy=false,asked=false;
   function say(t){msg.textContent=t||''}
-  function ago(t){if(!t)return'';var m=Math.round((Date.now()-t)/60000);return m<1?'נשמר עכשיו':m<60?'נשמר לפני '+m+' דק׳':'נשמר לפני '+Math.round(m/60)+' שע׳'}
-  function render(){var C=window.LHCloud;var c=C&&C.code();off.hidden=!!c;on.hidden=!c;if(c){$('cloudCode').textContent=c;$('cloudLast').textContent=ago(C.lastSync())}}
-  function run(btn,fn){if(busy||!window.LHCloud){if(!window.LHCloud)say('אין חיבור לענן כרגע. בודקים שיש אינטרנט ומנסים שוב.');return}
-    busy=true;btn.disabled=true;say('רגע…');
-    Promise.resolve().then(fn).then(function(t){say(t||'')},function(e){var m=e&&e.message;
-      say(m==='bad-code'?'הקוד צריך להיות 10 אותיות ומספרים, למשל ABCDE-23456.':m==='not-found'?'לא מצאנו את הקוד הזה. בודקים שהוא הוקלד נכון.':!navigator.onLine?'אין אינטרנט כרגע. מנסים שוב כשיש חיבור.':'משהו לא הצליח. מנסים שוב בעוד רגע.')})
-      .then(function(){busy=false;btn.disabled=false;render()})}
-  $('cloudCreate').onclick=function(){run(this,function(){return LHCloud.create().then(function(){return 'נוצר! רושמים את הקוד ושומרים אותו.'})})};
-  $('cloudJoin').onclick=function(){var v=$('cloudInput').value;run(this,function(){return LHCloud.join(v).then(function(n){if(n)setTimeout(function(){location.reload()},1800);return n?'מחובר! ההתקדמות מהמכשיר השני הגיעה.':'מחובר!'})})};
-  $('cloudSync').onclick=function(){run(this,function(){return LHCloud.sync().then(function(){return 'נשמר.'})})};
-  $('cloudCopy').onclick=function(){var c=LHCloud.code();try{navigator.clipboard.writeText(c).then(function(){say('הקוד הועתק.')},function(){say(c)})}catch(e){say(c)}};
-  $('cloudLeave').onclick=function(){if(confirm('לנתק את המכשיר הזה מקוד המשפחה? ההתקדמות נשארת במכשיר ובענן, ואפשר להתחבר שוב עם הקוד.')){LHCloud.leave();say('המכשיר נותק.');render()}};
-  addEventListener('lhcloud',function(e){if(e.detail&&e.detail.state==='saved')render()});
-  addEventListener('lhcloud-ready',render);
-  render();
+  function C(){return window.LHCloud}
+  function render(){var c=C()&&C().code();$('cloudOn').hidden=!c;$('cloudOff').hidden=!!c;$('cloudLeave').hidden=!c;
+    var n=C()&&C().loginName();$('cloudWho').hidden=!n;if(n)$('cloudWho').textContent='שם המשפחה: '+n}
+  function err(e){var m=e&&e.message;return m==='bad-code'?'זה לא נראה כמו קישור או קוד תקין.':m==='not-found'?'לא מצאנו את הקוד הזה.':
+    m==='bad-name'?'כותבים שם משפחה (לפחות 2 אותיות).':m==='bad-password'?'הסיסמה צריכה לפחות 6 תווים.':m==='login-taken'?'השם והסיסמה האלה כבר בשימוש. בוחרים סיסמה אחרת.':
+    !navigator.onLine?'אין אינטרנט כרגע. מנסים שוב כשיש חיבור.':'משהו לא הצליח. מנסים שוב בעוד רגע.'}
+  function run(btn,fn){if(busy)return;if(!C()){say('אין חיבור לענן כרגע. בודקים שיש אינטרנט ומנסים שוב.');return}
+    busy=true;if(btn)btn.disabled=true;say('רגע…');
+    Promise.resolve().then(fn).then(function(t){say(t||'')},function(e){say(err(e))}).then(function(){busy=false;if(btn)btn.disabled=false;render()})}
+  function joined(n){if(n)setTimeout(function(){location.reload()},1500);return n?'מחובר! ההתקדמות של המשפחה הגיעה.':'מחובר!'}
+  function shareText(){return 'מרכזי הלמידה — להמשיך מאותו מקום במכשיר הזה: '+C().link()}
+  $('cloudShare').onclick=function(){var t=shareText();
+    if(navigator.share){navigator.share({text:t}).catch(function(){})}else{location.href='https://wa.me/?text='+encodeURIComponent(t)}};
+  $('cloudQrBtn').onclick=function(){var box=$('cloudQr');if(!box.hidden){box.hidden=true;return}
+    function draw(){box.innerHTML='';new window.QRCode(box,{text:C().link(),width:200,height:200,correctLevel:window.QRCode.CorrectLevel.M});box.hidden=false}
+    if(window.QRCode)return draw();var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+    s.onload=draw;s.onerror=function(){say('אין אינטרנט כרגע. אפשר לשלוח קישור בוואטסאפ במקום.')};document.head.appendChild(s)};
+  $('cloudLogin').onclick=function(){var n=$('cloudName').value,p=$('cloudPass').value;run(this,function(){
+    return C().login(n,p).then(joined,function(e){if(e.message!=='login-not-found')throw e;
+      if(!confirm('השם והסיסמה האלה עוד לא קיימים. ליצור אותם עבור ההתקדמות במכשיר הזה?'))return '';
+      return C().setLogin(n,p).then(function(){return 'נשמר! מעכשיו אפשר להיכנס עם השם והסיסמה מכל מכשיר.'})})})};
+  $('cloudJoin').onclick=function(){var v=$('cloudInput').value;run(this,function(){return C().join(v).then(joined)})};
+  $('cloudLeave').onclick=function(){if(confirm('לנתק את המכשיר הזה מהשמירה בענן? ההתקדמות נשארת במכשיר ובענן.')){C().leave();say('המכשיר נותק.');render()}};
+  function handleLink(){var c=C();if(asked||!c)return;var j=c.pendingJoin();if(!j)return;asked=true;
+    var clear=function(){try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}};
+    $('cloudBox').open=true;
+    if(c.sameFamily(j)){clear();say('המכשיר הזה כבר מחובר להתקדמות של המשפחה.');return}
+    if(c.hasLocalData()&&!confirm('לחבר את המכשיר הזה להתקדמות של המשפחה? מה שכבר נשמר במכשיר הזה יוחלף.')){clear();return}
+    run(null,function(){return c.join(j).then(function(n){clear();return joined(n)})})}
+  addEventListener('lhcloud',function(){render()});
+  addEventListener('lhcloud-ready',function(){render();handleLink()});
+  render();handleLink();
 })()}catch(e){}
 </script>
 </body>
