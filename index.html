@@ -82,6 +82,23 @@ button{font:inherit;color:inherit}
 .install .go{width:100%;border:0;cursor:pointer;text-align:right;font:inherit}
 .ios-tip{margin:10px 2px 0;font-size:15px;line-height:1.6;color:var(--ink);background:#fff;border-radius:16px;padding:10px 14px}
 .hero .offline{margin-top:8px;font-size:14px;color:#FDE7B0}
+.cloud{margin-top:18px;background:#fff;border:2px solid var(--line,#D8E4D4);border-radius:20px;padding:4px 14px}
+.cloud summary{cursor:pointer;min-height:48px;display:flex;align-items:center;gap:8px;font-size:16px;font-weight:800;color:var(--ink);list-style:none}
+.cloud summary::-webkit-details-marker{display:none}
+.cloud summary small{font-size:12px;font-weight:700;color:var(--muted);background:var(--card);border-radius:99px;padding:2px 8px}
+.cloud p{font-size:14.5px;line-height:1.6;color:var(--ink-soft);margin:6px 0}
+.cloud .or{margin-top:14px}
+.cloud .ok{color:#2E7D4F;font-weight:800}
+.cloud .small{font-size:13px}
+.ccode{font-size:20px;letter-spacing:2px;color:var(--ink);direction:ltr;unicode-bidi:isolate}
+.crow{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.crow input{flex:1;min-width:150px;min-height:48px;border:2px solid var(--line,#D8E4D4);border-radius:14px;padding:8px 12px;font:inherit;font-size:18px;letter-spacing:1px;direction:ltr;text-align:center;text-transform:uppercase}
+.cbtn{min-height:48px;padding:8px 16px;border-radius:14px;border:2px solid var(--line,#D8E4D4);background:#fff;color:var(--ink);font:inherit;font-weight:800;cursor:pointer}
+.cbtn.main{width:100%;background:var(--more);border-color:var(--more);color:#fff;margin-top:6px}
+.cbtn:disabled{opacity:.6}
+.linkbtn{background:none;border:0;padding:8px 0 10px;font:inherit;font-size:13px;color:var(--muted);text-decoration:underline;cursor:pointer;min-height:44px}
+.cmsg{font-weight:700}
+.cmsg:empty{display:none}
 .note{color:var(--ink-soft);font-size:14px;line-height:1.6;margin-top:22px;background:var(--card);border-radius:20px;padding:12px 14px}
 .adults{margin:16px 2px 0;font-size:13px;color:var(--muted)}
 .adults a{color:var(--ink-soft)}
@@ -114,7 +131,26 @@ button{font:inherit;color:inherit}
     <p class="ios-tip" id="iosTip" hidden>באייפון: לוחצים על <b>שיתוף</b> <span aria-hidden="true">⬆️</span> ואז על <b>הוספה למסך הבית</b>.</p>
   </div>
 
-  <p class="note">בכל מרכז בוחרים או יוצרים פרופיל. ההתקדמות והמטבעות נשמרים לפרופיל הזה, במכשיר הזה בלבד.</p>
+  <details class="cloud" id="cloudBox">
+    <summary>☁️ שמירה בענן <small>להורים</small></summary>
+    <div id="cloudOff">
+      <p>היום ההתקדמות נשמרת רק במכשיר הזה. עם <b>קוד משפחה</b> היא נשמרת גם בענן, ואפשר להמשיך מכל מכשיר. בלי חשבון, בלי מייל ובלי פרטים אישיים.</p>
+      <button type="button" class="cbtn main" id="cloudCreate">יצירת קוד משפחה</button>
+      <p class="or">כבר יש לכם קוד ממכשיר אחר?</p>
+      <div class="crow"><input id="cloudInput" inputmode="latin" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCDE-23456" aria-label="קוד משפחה"><button type="button" class="cbtn" id="cloudJoin">חיבור</button></div>
+    </div>
+    <div id="cloudOn" hidden>
+      <p class="ok">✓ ההתקדמות נשמרת בענן</p>
+      <p>קוד המשפחה: <b class="ccode" id="cloudCode"></b></p>
+      <p class="small">רושמים את הקוד ומקלידים אותו בכל מכשיר נוסף. מי שיש לו את הקוד רואה את ההתקדמות, אז כדאי לשמור אותו רק במשפחה.</p>
+      <div class="crow"><button type="button" class="cbtn" id="cloudCopy">העתקת הקוד</button><button type="button" class="cbtn" id="cloudSync">שמירה עכשיו</button></div>
+      <p class="small" id="cloudLast"></p>
+      <button type="button" class="linkbtn" id="cloudLeave">ניתוק המכשיר הזה מהקוד</button>
+    </div>
+    <p class="cmsg" id="cloudMsg" role="status" aria-live="polite"></p>
+  </details>
+
+  <p class="note">בכל מרכז בוחרים או יוצרים פרופיל. ההתקדמות והמטבעות נשמרים לפרופיל הזה במכשיר, ועם קוד משפחה גם בענן.</p>
   <p class="adults">להורים: <a href="mdryk-claude-code.html">מדריך Claude Code בעברית</a></p>
 </div>
 <script id="home-tiles-js">
@@ -143,6 +179,29 @@ try{
   net();window.addEventListener('online',net);window.addEventListener('offline',net);
   if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}
 }catch(e){}
+</script>
+<script type="module" src="shared/cloud.js"></script>
+<script id="home-cloud-js">
+try{(function(){
+  var $=function(id){return document.getElementById(id)};
+  var off=$('cloudOff'),on=$('cloudOn'),msg=$('cloudMsg'),busy=false;
+  function say(t){msg.textContent=t||''}
+  function ago(t){if(!t)return'';var m=Math.round((Date.now()-t)/60000);return m<1?'נשמר עכשיו':m<60?'נשמר לפני '+m+' דק׳':'נשמר לפני '+Math.round(m/60)+' שע׳'}
+  function render(){var C=window.LHCloud;var c=C&&C.code();off.hidden=!!c;on.hidden=!c;if(c){$('cloudCode').textContent=c;$('cloudLast').textContent=ago(C.lastSync())}}
+  function run(btn,fn){if(busy||!window.LHCloud){if(!window.LHCloud)say('אין חיבור לענן כרגע. בודקים שיש אינטרנט ומנסים שוב.');return}
+    busy=true;btn.disabled=true;say('רגע…');
+    Promise.resolve().then(fn).then(function(t){say(t||'')},function(e){var m=e&&e.message;
+      say(m==='bad-code'?'הקוד צריך להיות 10 אותיות ומספרים, למשל ABCDE-23456.':m==='not-found'?'לא מצאנו את הקוד הזה. בודקים שהוא הוקלד נכון.':!navigator.onLine?'אין אינטרנט כרגע. מנסים שוב כשיש חיבור.':'משהו לא הצליח. מנסים שוב בעוד רגע.')})
+      .then(function(){busy=false;btn.disabled=false;render()})}
+  $('cloudCreate').onclick=function(){run(this,function(){return LHCloud.create().then(function(){return 'נוצר! רושמים את הקוד ושומרים אותו.'})})};
+  $('cloudJoin').onclick=function(){var v=$('cloudInput').value;run(this,function(){return LHCloud.join(v).then(function(n){if(n)setTimeout(function(){location.reload()},1800);return n?'מחובר! ההתקדמות מהמכשיר השני הגיעה.':'מחובר!'})})};
+  $('cloudSync').onclick=function(){run(this,function(){return LHCloud.sync().then(function(){return 'נשמר.'})})};
+  $('cloudCopy').onclick=function(){var c=LHCloud.code();try{navigator.clipboard.writeText(c).then(function(){say('הקוד הועתק.')},function(){say(c)})}catch(e){say(c)}};
+  $('cloudLeave').onclick=function(){if(confirm('לנתק את המכשיר הזה מקוד המשפחה? ההתקדמות נשארת במכשיר ובענן, ואפשר להתחבר שוב עם הקוד.')){LHCloud.leave();say('המכשיר נותק.');render()}};
+  addEventListener('lhcloud',function(e){if(e.detail&&e.detail.state==='saved')render()});
+  addEventListener('lhcloud-ready',render);
+  render();
+})()}catch(e){}
 </script>
 </body>
 </html>
