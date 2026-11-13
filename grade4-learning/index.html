@@ -645,6 +645,42 @@ body:not(.g4-enddetail) #hubEnd #hubEndTips+div{display:none}
 #hubExtra small{display:block;font-size:13.5px;font-weight:600;color:var(--ink-soft,#4F6B5D);margin-top:2px}
 #hubExtra .hx-ar{margin-right:auto;font-size:22px;font-weight:900;color:#B85A0A}
 </style>
+<style id="hub-unify-css">
+/* ==========================================================================
+   HUB-UNIFY — בתוך מקצוע ובתוך חשבון: אותו עיצוב כמו במסך הבית (13/11/2026).
+   כרטיסים לבנים עם פס בצבע המקצוע וצל "תלת־ממדי", בלי קופסה ירקרקה מסביב.
+   להסרה: למחוק את הבלוק הזה ואת hub-unify-js.
+   ========================================================================== */
+#hubSubject{--c:var(--accent-deep,#B85A0A)}
+body[data-subj="torah"] #hubSubject{--c:var(--fun-torah)}
+body[data-subj="navi"] #hubSubject{--c:var(--fun-navi)}
+body[data-subj="mishna"] #hubSubject{--c:var(--fun-mishna)}
+body[data-subj="halacha"] #hubSubject{--c:var(--fun-halacha)}
+body[data-subj="tefilla"] #hubSubject{--c:var(--fun-tefilla)}
+body[data-subj="hebrew"] #hubSubject{--c:var(--fun-hebrew)}
+body[data-subj="science"] #hubSubject{--c:var(--fun-science)}
+body[data-subj="english"] #hubSubject{--c:var(--fun-english)}
+#mathWrap{--c:var(--fun-math)}
+/* הקופסה הירקרקה מסביב לנושאים יורדת; הכרטיסים "צפים" על הרקע כמו במסך הבית */
+#hubSubject>.card:has(#hubTopicGrid),#mathWrap #topicsMode>.card:has(#topicGrid),#mathWrap .wrap>header{background:transparent!important;border:0!important;box-shadow:none!important;padding-left:0!important;padding-right:0!important}
+#hubSubject>.card:has(#hubTopicGrid) h1,#hubSubject>.card:has(#hubTopicGrid) h2,#mathWrap .wrap>header h1{color:color-mix(in srgb,var(--c) 70%,var(--ink))}
+/* שאר הקופסאות: לבנות, כמו כרטיס "שלום!" במסך הבית */
+#hubSubject .card:not(:has(#hubTopicGrid)),#mathWrap .card:not(:has(#topicGrid)){background:var(--card-focus,#fff)}
+/* כרטיס נושא = כרטיס מקצוע */
+#hubSubject .h-tcard,#mathWrap .tcard{position:relative;overflow:hidden;background:var(--card-focus,#fff)!important;border:2px solid transparent!important;border-radius:18px;
+  box-shadow:0 3px 0 color-mix(in srgb,var(--c) 35%,transparent),0 6px 18px rgba(30,70,50,.08)!important;padding-top:16px!important}
+#hubSubject .h-tcard::before,#mathWrap .tcard::before{content:"";position:absolute;inset:0 0 auto 0;height:6px;background:var(--c)}
+#hubSubject .h-tcard:hover,#mathWrap .tcard:hover{border-color:var(--c)!important}
+#hubSubject .h-tcard.h-active,#mathWrap .tcard.active,#mathWrap .tcard.sel{border-color:var(--c)!important;background:color-mix(in srgb,var(--c) 9%,#fff)!important}
+#hubSubject .h-tname,#mathWrap .tcard .nm{color:color-mix(in srgb,var(--c) 70%,var(--ink));font-weight:800}
+/* לשוניות בחשבון: הפעילה בצבע המקצוע */
+#mathWrap .tab{background:var(--card-focus,#fff);border-color:var(--line)}
+#mathWrap .tab.active{background:var(--c)!important;border-color:var(--c)!important;color:#fff!important}
+/* "בחרו נושא לאימון": שורת כותרת קצרה, כמו "או בוחרים מקצוע:" במסך הבית */
+#mathWrap #topicsMode>.card.center:not(:has(#topicGrid)){background:transparent!important;border:0!important;box-shadow:none!important;padding:6px 2px 0!important;text-align:right;margin-bottom:0}
+#mathWrap #topicsMode>.card.center:not(:has(#topicGrid)) .intro-emoji,#mathWrap #topicsMode>.card.center:not(:has(#topicGrid)) p{display:none}
+#mathWrap #topicsMode>.card.center:not(:has(#topicGrid)) h2{font-size:15px!important;font-weight:800;margin:0!important;color:var(--ink-soft)}
+</style>
 </head>
 <body>
 <header id="hubTopbar"><div class="h-top-inner">
@@ -45716,5 +45752,12 @@ try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().
 })();
 </script>
 
+<script id="hub-unify-js">
+/* HUB-UNIFY: זוכר איזה מקצוע פתוח, כדי לצבוע את מסך המקצוע בצבע שלו. אם נכשל — הצבע הכללי נשאר. */
+try{(function(){
+  var o=window.hubOpenSubject;
+  if(typeof o==='function'){window.hubOpenSubject=function(id){try{document.body.setAttribute('data-subj',id)}catch(e){}return o.apply(this,arguments)}}
+})()}catch(e){}
+</script>
 </body>
 </html>
