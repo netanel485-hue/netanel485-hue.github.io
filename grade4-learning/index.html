@@ -680,6 +680,29 @@ body[data-subj="english"] #hubSubject{--c:var(--fun-english)}
 #mathWrap #topicsMode>.card.center:not(:has(#topicGrid)){background:transparent!important;border:0!important;box-shadow:none!important;padding:6px 2px 0!important;text-align:right;margin-bottom:0}
 #mathWrap #topicsMode>.card.center:not(:has(#topicGrid)) .intro-emoji,#mathWrap #topicsMode>.card.center:not(:has(#topicGrid)) p{display:none}
 #mathWrap #topicsMode>.card.center:not(:has(#topicGrid)) h2{font-size:15px!important;font-weight:800;margin:0!important;color:var(--ink-soft)}
+/* ---- מסך השאלה ומסך הסיום (13/11/2026): אותו עיצוב כמו בחוץ ---- */
+#hubQuiz,#hubEnd{--c:var(--accent-deep,#B85A0A)}
+body[data-subj="torah"] :is(#hubQuiz,#hubEnd){--c:var(--fun-torah)}
+body[data-subj="navi"] :is(#hubQuiz,#hubEnd){--c:var(--fun-navi)}
+body[data-subj="mishna"] :is(#hubQuiz,#hubEnd){--c:var(--fun-mishna)}
+body[data-subj="halacha"] :is(#hubQuiz,#hubEnd){--c:var(--fun-halacha)}
+body[data-subj="tefilla"] :is(#hubQuiz,#hubEnd){--c:var(--fun-tefilla)}
+body[data-subj="hebrew"] :is(#hubQuiz,#hubEnd){--c:var(--fun-hebrew)}
+body[data-subj="science"] :is(#hubQuiz,#hubEnd){--c:var(--fun-science)}
+body[data-subj="english"] :is(#hubQuiz,#hubEnd){--c:var(--fun-english)}
+/* בלי הקופסה הירקרקה מסביב */
+#hubQuiz>.card{background:transparent!important;border:0!important;box-shadow:none!important;padding-left:0!important;padding-right:0!important}
+#hubQuiz #hubQuizTitle{color:color-mix(in srgb,var(--c) 70%,var(--ink))!important;font-weight:800}
+#hubQuiz .progress .fill,#hubQuiz #hubQBar{background:var(--c)!important}
+/* כרטיס השאלה וכרטיס הסיום = כרטיס לבן עם פס צבעוני וצל */
+#hubQuiz .h-quizmain,#hubEnd .card.center,#mathWrap #tQ>.card,#mathWrap #testPane .card{position:relative;overflow:hidden;background:var(--card-focus,#fff)!important;border:2px solid transparent!important;
+  box-shadow:0 4px 0 color-mix(in srgb,var(--c) 35%,transparent),0 6px 18px rgba(30,70,50,.08)!important;padding-top:22px!important}
+#hubQuiz .h-quizmain::before,#hubEnd .card.center::before,#mathWrap #tQ>.card::before,#mathWrap #testPane .card::before{content:"";position:absolute;inset:0 0 auto 0;height:7px;background:var(--c)}
+#hubEnd #hubEndTitle{color:color-mix(in srgb,var(--c) 70%,var(--ink))}
+/* תשובות: לבנות עם צל בצבע המקצוע; נכון/טעות נשארים ירוק/אדום */
+#hubQuiz .opt:not(.correct):not(.wrong),#mathWrap .opt:not(.correct):not(.wrong){border-color:color-mix(in srgb,var(--c) 22%,var(--line))!important;box-shadow:0 4px 0 color-mix(in srgb,var(--c) 30%,var(--line))!important}
+#hubQuiz .opt:not(:disabled):hover,#mathWrap .opt:not(:disabled):hover{border-color:var(--c)!important}
+#mathWrap .t-status{border:2px solid var(--line)!important;box-shadow:none!important}
 </style>
 </head>
 <body>
