@@ -194,7 +194,7 @@ try{(function(){
       say(m==='bad-code'?'הקוד צריך להיות 10 אותיות ומספרים, למשל ABCDE-23456.':m==='not-found'?'לא מצאנו את הקוד הזה. בודקים שהוא הוקלד נכון.':!navigator.onLine?'אין אינטרנט כרגע. מנסים שוב כשיש חיבור.':'משהו לא הצליח. מנסים שוב בעוד רגע.')})
       .then(function(){busy=false;btn.disabled=false;render()})}
   $('cloudCreate').onclick=function(){run(this,function(){return LHCloud.create().then(function(){return 'נוצר! רושמים את הקוד ושומרים אותו.'})})};
-  $('cloudJoin').onclick=function(){var v=$('cloudInput').value;run(this,function(){return LHCloud.join(v).then(function(n){return n?'מחובר! ההתקדמות מהמכשיר השני הגיעה ('+n+' עדכונים).':'מחובר!'})})};
+  $('cloudJoin').onclick=function(){var v=$('cloudInput').value;run(this,function(){return LHCloud.join(v).then(function(n){if(n)setTimeout(function(){location.reload()},1800);return n?'מחובר! ההתקדמות מהמכשיר השני הגיעה.':'מחובר!'})})};
   $('cloudSync').onclick=function(){run(this,function(){return LHCloud.sync().then(function(){return 'נשמר.'})})};
   $('cloudCopy').onclick=function(){var c=LHCloud.code();try{navigator.clipboard.writeText(c).then(function(){say('הקוד הועתק.')},function(){say(c)})}catch(e){say(c)}};
   $('cloudLeave').onclick=function(){if(confirm('לנתק את המכשיר הזה מקוד המשפחה? ההתקדמות נשארת במכשיר ובענן, ואפשר להתחבר שוב עם הקוד.')){LHCloud.leave();say('המכשיר נותק.');render()}};
