@@ -1,5 +1,6 @@
 /* שמירה בענן עם "קוד משפחה" (13/11/2026).
-   בלי חשבון גוגל ובלי מייל: מכשיר ראשון יוצר קוד, ושאר המכשירים מקלידים אותו ורואים את אותה התקדמות.
+   בלי חשבון גוגל ובלי מייל: כל מכשיר מתחיל לשמור בענן לבד (קוד נוצר בשקט).
+   כדי לחבר מכשיר נוסף שולחים קישור (#join=CODE) בוואטסאפ או סורקים ברקוד בדף הבית.
    מה נשמר: רק מה שהאתר כבר שומר במכשיר (localStorage) — פרופילים, מטבעות, רמות ונקודת עצירה.
    בענן הקוד עצמו לא נשמר, רק "טביעת אצבע" שלו (SHA-256), כך שאי אפשר לנחש משפחות.
    הקובץ נטען כ-module. אם הוא נכשל (בלי אינטרנט, חסימה) — האתר ממשיך לעבוד כרגיל במכשיר.
@@ -14,7 +15,7 @@ const CONFIG = {
   appId: '1:93127719780:web:dd7d543d0cf3c1689fd871'
 };
 const LS = window.localStorage;
-const K_CODE = 'cloud.family', K_META = 'cloud.meta', K_LAST = 'cloud.lastSync';
+const K_CODE = 'cloud.family', K_META = 'cloud.meta', K_LAST = 'cloud.lastSync', K_NAME = 'cloud.loginName';
 const MAX = 900000;                       // מגבלת גודל לערך אחד בענן
 const ABC = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // בלי O/0/I/1/L שמתבלבלים
 
@@ -44,7 +45,10 @@ function newCode() {
   const s = Array.from(b, x => ABC[x % ABC.length]).join('');
   return s.slice(0, 5) + '-' + s.slice(5);
 }
-function norm(c) { return String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+function norm(c) {
+  const t = String(c || ''); const m = t.match(/join=([A-Za-z0-9-]+)/);
+  return (m ? m[1] : t).toUpperCase().replace(/[^A-Z0-9]/g, '');
+}
 function pretty(c) { const n = norm(c); return n.length === 10 ? n.slice(0, 5) + '-' + n.slice(5) : n; }
 async function familyId(c) {
   const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('learning-hubs:' + norm(c)));
@@ -64,6 +68,16 @@ async function connect() {
   if (!a.currentUser) await auth.signInAnonymously(a);
   api = {db: fs.getFirestore(app), fs};
   return api;
+}
+function cleanName(n) { return String(n || '').trim().replace(/\s+/g, ' ').toLowerCase(); }
+async function aliasRef(name, pw) {
+  const n = cleanName(name), p = String(pw || '');
+  if (n.length < 2) throw new Error('bad-name');
+  if (p.length < 6) throw new Error('bad-password');
+  const {db, fs} = await connect();
+  const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('learning-hubs:login:' + n + '\n' + p));
+  const id = Array.from(new Uint8Array(d), x => x.toString(16).padStart(2, '0')).join('');
+  return fs.doc(db, 'families', id, 'keys', 'cloud.alias');
 }
 async function col() { const {db, fs} = await connect(); return fs.collection(db, 'families', await familyId(code()), 'keys'); }
 
@@ -140,17 +154,42 @@ window.LHCloud = {
       return await sync(true);
     } catch (e) { if (e.message !== 'not-found') emit('error', {message: String(e && e.message || e)}); throw e; }
   },
-  leave() { raw.remove.call(LS, K_CODE); raw.remove.call(LS, K_LAST); emit('off'); },
+  // שם משפחה + סיסמה: "כינוי" לקוד המשפחה. בענן נשמר מסמך מצביע תחת טביעת אצבע של השם והסיסמה יחד.
+  loginName: () => LS.getItem(K_NAME) || '',
+  async login(name, pw) {
+    const ref = await aliasRef(name, pw); const {fs} = await connect();
+    const d = await fs.getDoc(ref);
+    if (!d.exists() || typeof d.data().v !== 'string') throw new Error('login-not-found');
+    if (norm(d.data().v) === norm(code())) { raw.set.call(LS, K_NAME, cleanName(name)); emit('saved'); return 0; }
+    const n = await this.join(d.data().v); raw.set.call(LS, K_NAME, cleanName(name)); return n;
+  },
+  async setLogin(name, pw) {
+    if (!code()) await this.create();
+    const ref = await aliasRef(name, pw); const {fs} = await connect();
+    const d = await fs.getDoc(ref);
+    if (d.exists() && norm(d.data().v) !== norm(code())) throw new Error('login-taken');
+    await fs.setDoc(ref, {v: norm(code()), t: Date.now()});
+    raw.set.call(LS, K_NAME, cleanName(name)); emit('saved');
+  },
+  link: () => code() ? location.origin + '/#join=' + pretty(code()) : '',
+  pendingJoin: () => { const m = location.hash.match(/join=([A-Za-z0-9-]+)/); return m ? norm(m[1]) : ''; },
+  sameFamily: c => norm(c) === norm(code()),
+  hasLocalData: () => Object.keys(localStorage).some(own),
+  leave() { raw.remove.call(LS, K_CODE); raw.remove.call(LS, K_LAST); raw.remove.call(LS, K_NAME); emit('off'); },
   sync: () => sync(false)
 };
 
 // ---- הפעלה ----
+// אין קוד? יוצרים אחד בשקט — השמירה בענן מתחילה לבד. קישור הצטרפות (#join=) מטופל בדף הבית.
+function hooks() {
+  addEventListener('online', () => sync(false).catch(() => {}));
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && dirty.size) push().catch(() => {}); });
+  addEventListener('pagehide', () => { if (dirty.size) push().catch(() => {}); });
+}
 try {
-  if (code()) {
-    sync(false).catch(() => {});
-    addEventListener('online', () => sync(false).catch(() => {}));
-    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && dirty.size) push().catch(() => {}); });
-    addEventListener('pagehide', () => { if (dirty.size) push().catch(() => {}); });
-  } else emit('off');
+  const joining = /join=/.test(location.hash);
+  if (code()) { if (!joining) sync(false).catch(() => {}); hooks(); }
+  else if (!joining && navigator.onLine) { window.LHCloud.create().then(hooks, () => emit('off')); }
+  else emit('off');
 } catch (e) {}
 window.dispatchEvent(new Event('lhcloud-ready'));
