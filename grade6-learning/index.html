@@ -667,6 +667,10 @@ body[data-subj="history"] #hubSubject{--c:var(--fun-history)}
 /* לשוניות בחשבון: הפעילה בצבע המקצוע */
 #mathWrap .tab{background:var(--card-focus,#fff);border-color:var(--line)}
 #mathWrap .tab.active{background:var(--c)!important;border-color:var(--c)!important;color:#fff!important}
+/* "בחרו נושא לאימון": שורת כותרת קצרה, כמו "או בוחרים מקצוע:" במסך הבית */
+#mathWrap #topicsMode>.card.center:not(:has(#topicGrid)){background:transparent!important;border:0!important;box-shadow:none!important;padding:6px 2px 0!important;text-align:right;margin-bottom:0}
+#mathWrap #topicsMode>.card.center:not(:has(#topicGrid)) .intro-emoji,#mathWrap #topicsMode>.card.center:not(:has(#topicGrid)) p{display:none}
+#mathWrap #topicsMode>.card.center:not(:has(#topicGrid)) h2{font-size:15px!important;font-weight:800;margin:0!important;color:var(--ink-soft)}
 </style>
 </head>
 <body>
