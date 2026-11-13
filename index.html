@@ -6,6 +6,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#1E4634">
 <title>מרכזי הלמידה</title>
+<meta name="description" content="מרכזי למידה לכיתות א׳, ב׳, ד׳ ו־ו׳: אימונים, מבחנים ומשחקים בעברית, חשבון, אנגלית ועוד.">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://netanel485-hue.github.io/">
+<meta property="og:title" content="מרכזי הלמידה">
+<meta property="og:description" content="בוחרים כיתה, נכנסים ולומדים — אימונים, מבחנים ומשחקים.">
+<meta property="og:image" content="https://netanel485-hue.github.io/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="he_IL">
+<meta name="twitter:card" content="summary_large_image">
 <style>
 /* דף הבית — לפי מערכת העיצוב "מרכזי הלמידה" (11/11/2026) */
 :root{
@@ -42,8 +54,11 @@ a.item.main{grid-column:1/-1;min-height:96px;background:color-mix(in srgb,var(--
 a.item .em{font-size:30px;line-height:1;margin-bottom:auto}
 a.item b{display:block;font-size:19px;font-weight:800;margin-top:10px}
 a.item span{display:block;font-size:13.5px;color:var(--ink-soft);font-weight:600;margin-top:2px}
+a.item{padding-left:40px}
 a.item .go{position:absolute;left:14px;bottom:14px;font-size:20px;color:var(--c)}
 .note{color:var(--ink-soft);font-size:14px;line-height:1.6;margin-top:26px;background:var(--card);border-radius:var(--radius-md);padding:12px 14px}
+.adults{margin:18px 2px 0;font-size:13px;color:var(--muted)}
+.adults a{color:var(--ink-soft)}
 </style>
 </head>
 <body>
@@ -63,7 +78,7 @@ a.item .go{position:absolute;left:14px;bottom:14px;font-size:20px;color:var(--c)
     <div class="shelf-h"><div class="badge">א</div><div><h2>כיתה א׳</h2><small>קריאה, אותיות ואנגלית</small></div></div>
     <div class="items">
       <a class="item main" href="grade1-learning/"><span class="em">📖</span><b>מרכז הלמידה</b><span>עברית, חשבון ואנגלית — עם הקראה</span><i class="go" aria-hidden="true">←</i></a>
-      <a class="item" href="adi-english-game/"><span class="em">🔤</span><b>משחק אנגלית</b><span>אותיות ומילים</span></a>
+      <a class="item" href="adi-english-game/"><span class="em">🔤</span><b>משחק אנגלית</b><span>אותיות ומילים</span><i class="go" aria-hidden="true">←</i></a>
     </div>
   </section>
 
@@ -78,7 +93,7 @@ a.item .go{position:absolute;left:14px;bottom:14px;font-size:20px;color:var(--c)
     <div class="shelf-h"><div class="badge">ד</div><div><h2>כיתה ד׳</h2><small>כל המקצועות</small></div></div>
     <div class="items">
       <a class="item main" href="grade4-learning/"><span class="em">🎒</span><b>מרכז הלמידה</b><span>9 מקצועות · אימונים, מבחנים והכנה</span><i class="go" aria-hidden="true">←</i></a>
-      <a class="item" href="grade4-mivdak/"><span class="em">📝</span><b>חזרה למבדק</b><span>מבדק תחילת שנה · 250 שאלות</span></a>
+      <a class="item" href="grade4-mivdak/"><span class="em">📝</span><b>חזרה למבדק</b><span>מבדק תחילת שנה · 250 שאלות</span><i class="go" aria-hidden="true">←</i></a>
     </div>
   </section>
 
@@ -86,19 +101,19 @@ a.item .go{position:absolute;left:14px;bottom:14px;font-size:20px;color:var(--c)
     <div class="shelf-h"><div class="badge">ו</div><div><h2>כיתה ו׳</h2><small>כל המקצועות</small></div></div>
     <div class="items">
       <a class="item main" href="grade6-learning/"><span class="em">🎒</span><b>מרכז הלמידה</b><span>11 מקצועות · אימונים, מבחנים והכנה</span><i class="go" aria-hidden="true">←</i></a>
-      <a class="item" href="math-test-prep/"><span class="em">📐</span><b>חזרה למבחן במתמטיקה</b><span>מסלול השבוע למבחן</span></a>
+      <a class="item" href="math-test-prep/"><span class="em">📐</span><b>חזרה למבחן במתמטיקה</b><span>מסלול השבוע למבחן</span><i class="go" aria-hidden="true">←</i></a>
     </div>
   </section>
 
   <section class="shelf" style="--c:var(--more)">
     <div class="shelf-h"><div class="badge">+</div><div><h2>עוד באתר</h2><small>ערכות נוספות</small></div></div>
-    <div class="items">
-      <a class="item" href="dvir-melachim/"><span class="em">📜</span><b>מלכים א׳</b><span>פרקים י״ז–כ״ב</span></a>
-      <a class="item" href="mdryk-claude-code.html"><span class="em">🛠️</span><b>מדריך Claude Code</b><span>למבוגרים · בעברית</span></a>
+    <div class="items one">
+      <a class="item" href="dvir-melachim/"><span class="em">📜</span><b>מלכים א׳</b><span>פרקים י״ז–כ״ב</span><i class="go" aria-hidden="true">←</i></a>
     </div>
   </section>
 
   <p class="note">בכל מרכז בוחרים או יוצרים פרופיל. ההתקדמות והמטבעות נשמרים לפרופיל הזה, במכשיר הזה בלבד.</p>
+  <p class="adults">להורים: <a href="mdryk-claude-code.html">מדריך Claude Code בעברית</a></p>
 </div>
 </body>
 </html>
