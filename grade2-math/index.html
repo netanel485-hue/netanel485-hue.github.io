@@ -417,7 +417,7 @@ header .sharebtn,header .tts-toggle{background:#fff!important;color:var(--ink)!i
 <div class="wrap">
   <header>
     <h1>🧮 מתמטיקה — כיתה ב׳ · שבילים פלוס 4</h1>
-    <p>ערכת תרגול לאורי · לפי ספר שבילים פלוס 4 · מספרים עד 100, חיבור וחיסור</p>
+    <p>ערכת תרגול · לפי ספר שבילים פלוס 4 · מספרים עד 100, חיבור וחיסור</p>
     <button class="sharebtn" onclick="shareApp()">📤 שיתוף</button>
     <button class="tts-toggle" id="ttsToggle" aria-label="הקראה" onclick="ttsToggle()">🔊 הקראה פעילה</button>
   </header>
@@ -431,7 +431,7 @@ header .sharebtn,header .tts-toggle{background:#fff!important;color:var(--ink)!i
     </div>
     <div class="card center" id="homeIntro">
       <div class="mascot" id="homeMascot"></div>
-      <h2 style="margin:8px 0">שלום אורי! מתרגלים מתמטיקה ביחד</h2>
+      <h2 style="margin:8px 0">שלום! מתרגלים מתמטיקה ביחד</h2>
       <p style="margin:0;color:#55705f">בכל נושא יש <b>📖 למידה</b> קצרה, <b>🏋️ אימון רמות</b> עם כוכבים ו<b>📝 מבחן</b> של 10 שאלות.<br>
       בכל נושא מחכות לך <b>150 שאלות</b> — ובסך הכול <b id="totalBankLbl">1,800</b> שאלות בערכה!</p>
       <div class="center" style="margin-top:12px"><button class="ttsbtn" onclick="speakText(document.getElementById('homeIntro').innerText)" title="השמעת ההסבר" aria-label="השמעת ההסבר">🔊</button></div>
@@ -573,7 +573,7 @@ header .sharebtn,header .tts-toggle{background:#fff!important;color:var(--ink)!i
       <button class="btn-ghost" onclick="showTopics()">← לכל הנושאים</button>
       <div class="tn">🎓 מבחן מסכם — 12 שאלות מכל החלקים</div>
     </div>
-    <div class="bar"><span id="mockCounter"></span><span>בהצלחה רבה, אורי!</span></div>
+    <div class="bar"><span id="mockCounter"></span><span>בהצלחה רבה!</span></div>
     <div class="progress"><div id="mockFill"></div></div>
     <div id="mockQuiz"></div>
     <div class="center" style="margin:14px 0">
@@ -2093,13 +2093,13 @@ function nextTrainQ(){ const st=trainState; if(!st) return;
    if(st.streak>=3 && st.level<3){ st.level++; st.stars=0; st.streak=0; leveled=true; }
    else if(st.stars>=5){ if(st.level<3){ st.level++; st.stars=0; leveled=true; } else { updateTrainStatus(); mastery(); return; } }
    updateTrainStatus();
-   if(leveled) showCeleb("🚀",`עלית לרמה ${st.level}! כל הכבוד, אורי!`);
+   if(leveled) showCeleb("🚀",`עלית לרמה ${st.level}! כל הכבוד!`);
    $("tNext").style.display="";
  });
 }
 function mastery(){ $("tMain").style.display="none"; const m=$("tMastery"); m.style.display="";
  $("masteryStats").textContent=`ענית על ${trainState.total} שאלות, ${trainState.correct} נכונות!`;
- showCeleb("🏆","סיימת את כל הרמות! כל הכבוד, אורי!"); }
+ showCeleb("🏆","סיימת את כל הרמות! כל הכבוד!"); }
 function showCeleb(em,tx){ $("celebEmoji").textContent=em; $("celebText").textContent=tx; $("celebrate").style.display="flex"; speakAuto(tx); }
 function hideCeleb(){ $("celebrate").style.display="none"; }
 

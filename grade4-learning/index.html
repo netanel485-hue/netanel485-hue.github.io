@@ -704,6 +704,20 @@ body[data-subj="english"] :is(#hubQuiz,#hubEnd){--c:var(--fun-english)}
 #hubQuiz .opt:not(:disabled):hover,#mathWrap .opt:not(:disabled):hover{border-color:var(--c)!important}
 #mathWrap .t-status{border:2px solid var(--line)!important;box-shadow:none!important}
 </style>
+<style id="hub-kidclean-css">
+/* ==========================================================================
+   HUB-KIDCLEAN — מסכי הילד בלי מידע להורים (14/11/2026).
+   מוסתר: שיתוף, טווחי עמודים, ספירת שאלות, הסבר על שמירה במכשיר, תיאור הערכה בחשבון.
+   בחשבון: רק "לפי נושאים"; "לפי עמודים" ו"הכנה כוללת" מאחורי "⚙️ עוד דרכים לתרגל".
+   להסרה: למחוק את הבלוק הזה ואת hub-kidclean-js.
+   ========================================================================== */
+#hubHome .h-rowbtns:has(button[onclick="hubShare()"]),#hubHome #hubSharePanel{display:none!important}
+#hubProfiles .h-head p{display:none}
+#mathWrap .wrap>header p,#mathWrap .wrap>header button[onclick="shareApp()"]{display:none!important}
+#mathWrap .bkspan,#mathWrap .tcard .ct{display:none!important}
+body:not(.kc-opts) #mathWrap .tabs:has(#modeTopics){display:none!important}
+#kcMore{display:block;margin:14px auto 4px;min-height:44px;padding:8px 14px;border:0;background:none;font:inherit;font-size:14px;font-weight:700;color:var(--ink-soft);text-decoration:underline;cursor:pointer}
+</style>
 </head>
 <body>
 <header id="hubTopbar"><div class="h-top-inner">
@@ -45780,6 +45794,18 @@ try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().
 try{(function(){
   var o=window.hubOpenSubject;
   if(typeof o==='function'){window.hubOpenSubject=function(id){try{document.body.setAttribute('data-subj',id)}catch(e){}return o.apply(this,arguments)}}
+})()}catch(e){}
+</script>
+<script id="hub-kidclean-js">
+/* HUB-KIDCLEAN: כפתור "עוד דרכים לתרגל" בחשבון. אם נכשל — רק "לפי נושאים" מוצג, והכול עובד. */
+try{(function(){
+  var pane=document.getElementById('topicPane');if(!pane)return;
+  var b=document.createElement('button');b.type='button';b.id='kcMore';
+  function label(){b.textContent=document.body.classList.contains('kc-opts')?'⬆️ פחות אפשרויות':'⚙️ עוד דרכים לתרגל'}
+  b.onclick=function(){var on=document.body.classList.toggle('kc-opts');
+    if(!on&&typeof window.setMode==='function'){try{window.setMode('topics')}catch(e){}}
+    label();if(on){var t=pane.querySelector('.tabs:has(#modeTopics)')||document.getElementById('modeTopics');if(t&&t.scrollIntoView)t.scrollIntoView({block:'center',behavior:'smooth'})}};
+  label();pane.appendChild(b);
 })()}catch(e){}
 </script>
 <script type="module" src="../shared/cloud.js"></script>
