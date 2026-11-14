@@ -1512,6 +1512,35 @@ try{(function(){
   };
 })()}catch(e){}
 </script>
+<script id="g1-shva-js">
+/* שווא (14/11/2026): ההקלטות של הברה עם שווא לבד (מְ, שְׁ, אְ, עְ, רְ…) נשמעו כמו "מָה"/"שָׁה" או לא ברור.
+   שווא בתחילת מילה (שווא נע) נקרא "אֶ" קצר, ולכן כל הברה עם שווא מנגנת את הקלטת הסגול של אותה אות.
+   בשאלות "איזו הברה שמעת" לא מציגים יחד רְ ו־רֶ (נשמעות אותו דבר). בשיעור השווא נוספו מילים לדוגמה: שווא נע / שווא נח.
+   להסרה: למחוק את הבלוק הזה. */
+try{(function(){
+  var SH='\u05B0',SG='\u05B6';
+  Object.keys(AUDIO).forEach(function(k){if(k.length<=3&&k.slice(-1)===SH){var e=k.slice(0,-1)+SG;if(AUDIO[e])AUDIO[k]=AUDIO[e];}});
+  var twin=function(c){if(typeof c!=='string')return null;var l=c.slice(-1);return l===SH?c.slice(0,-1)+SG:l===SG?c.slice(0,-1)+SH:null;};
+  var g=genQuestions;
+  genQuestions=function(){var qs=g.apply(this,arguments);
+    try{(qs||[]).forEach(function(q){if(q&&q.type==='syl'&&q.options){var t=twin(q.correct);if(t)q.options=q.options.filter(function(o){return o!==t;});}});}catch(e){}
+    return qs;};
+  var ol=openLearn;
+  openLearn=function(idx){ol.apply(this,arguments);
+    try{var pg=DATA.PAGES[idx];if(pg.math||pg.kind!=='vowel'||pg.vowels[pg.vowels.length-1]!=='shva')return;
+      var body=el('learnBody'),row=body.querySelector('.sylrow');if(!row)return;
+      var ex=[['שְׁוָא נָע — בְּתְחִלַּת מִלָּה שׁוֹמְעִים "אֶ" קָצָר',[['נמלה','נְמָלָה'],['לגן','לְגַן'],['דבש','דְּבַשׁ']]],
+              ['שְׁוָא נָח — בְּאֶמְצַע מִלָּה לֹא שׁוֹמְעִים תְּנוּעָה',[['סבתא','סָבְתָּא'],['גמבה','גַּמְבָּה'],['פרפר','פַּרְפַּר']]]];
+      var d=document.createElement('div');d.id='shvaEx';
+      ex.forEach(function(r){var h='<div class="shx-t">'+r[0]+'</div><div class="sylrow">';
+        r[1].forEach(function(w){if(AUDIO[w[0]])h+='<button class="syl shx-w" data-w2="'+w[0]+'">'+w[1]+'</button>';});
+        d.insertAdjacentHTML('beforeend',h+'</div>');});
+      row.parentNode.insertBefore(d,row.nextSibling);
+      Array.prototype.forEach.call(d.querySelectorAll('[data-w2]'),function(b){b.onclick=function(){speak(b.getAttribute('data-w2'));};});
+    }catch(e){}};
+})()}catch(e){}
+</script>
+<style id="g1-shva-css">#shvaEx .shx-t{text-align:center;font-size:19px;font-weight:700;margin-top:12px}#shvaEx .shx-w{font-size:30px;padding:6px 14px}</style>
 <script type="module" src="../shared/cloud.js"></script>
 </body>
 </html>
