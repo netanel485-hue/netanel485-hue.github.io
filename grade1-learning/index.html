@@ -190,7 +190,7 @@ h1{font-size:clamp(24px,7vw,30px)}
 <div class="wrap">
   <!-- HOME -->
   <div id="screen-home">
-    <h1>🌸 המרכז של עדי 🌸</h1>
+    <h1>🌸 המרכז שלי 🌸</h1>
     <p class="sub">לומדים לקרוא עם "צלילים מספרים"</p>
     <div class="continuecard" id="continueCard">
       <div class="cc-label">💪 המשיכי מאיפה שהפסקת</div>
@@ -501,7 +501,7 @@ function navStopReadAll(){
 }
 function visibleNavLabels(){
   var out = [];
-  if (curTab === 'eng') { out.push('משחק האנגלית של עדי'); return out; }
+  if (curTab === 'eng') { out.push('משחק האנגלית'); return out; }
   if (curTab === 'math') {
     out.push('חשבון');
     DATA.PAGES.forEach(function(pg){ if (pg.booklet === 'M') out.push(navPageLabel(pg)); });
@@ -687,7 +687,7 @@ function renderEng(host) {
   var n = engStars();
   var line = n > 0 ? '⭐ ' + n + ' כוכבים באנגלית — כל הכבוד!' : 'בואי נתחיל לשחק באנגלית! 🎉';
   wrap.innerHTML = '<div class="engcard"><div style="font-size:52px;line-height:1.1">🌟</div>'
-    + '<div style="font-size:22px;font-weight:800">משחק האנגלית של עדי</div>'
+    + '<div style="font-size:22px;font-weight:800">משחק האנגלית</div>'
     + '<div style="font-size:17px;margin:8px 0">' + line + '</div>'
     + '<div style="font-size:15px;color:#555">אותיות, מילים ומשפטים מהחוברת שלך — קוראים ואומרים בקול</div>'
     + '<a class="bigbtn purple" style="text-decoration:none;text-align:center;box-sizing:border-box" target="_blank" rel="noopener" href="' + ENG_GAME_URL + '">▶️ לשחק באנגלית</a>'
