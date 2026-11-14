@@ -184,13 +184,50 @@ h1{font-size:clamp(24px,7vw,30px)}
 .btn-primary{background:#d6336c;box-shadow:0 4px 0 #a3214f}
 </style>
 
-<script src="../shared/site-bar.js" defer data-label="מרכז הלמידה · כיתה א׳"></script>
+
+<style id="g1-match-css">
+/* ==========================================================================
+   G1-MATCH — כיתה א׳ באותה שפה כמו דף הבית (14/11/2026):
+   רקע שמנת, דיו ירוק כהה, ורוד של ריבוע כיתה א׳ (#d6336c), מסגרות ירקרקות במקום סגול,
+   בלי מעברי צבע, וכותרת ורודה עם 🐣 כמו הריבוע. הכותרת היא חלק מהדף, לכן אין "קפיצה" בטעינה.
+   להסרה: למחוק את הבלוק הזה ולהחזיר את ה-h1 ואת site-bar.js.
+   ========================================================================== */
+:root{--bg:#FAF6EB;--ink:#1E4634;--pink:#d6336c;--purple:#a3214f;--line-g1:#D8E4D4;--soft-g1:#4F6B5D}
+body{background:var(--bg)}
+.g1-hero{position:relative;display:flex;align-items:center;gap:12px;background:#d6336c;color:#fff;border-radius:28px;padding:16px 18px;margin:4px 0 12px;
+  box-shadow:0 6px 0 #a3214f,0 10px 18px rgba(30,70,50,.15);overflow:hidden}
+.g1-hero::before{content:"";position:absolute;width:130%;height:70%;top:-35%;right:-15%;border-radius:50%;background:rgba(255,255,255,.14)}
+.g1-hero>*{position:relative}
+.g1-pal{font-size:46px;line-height:1;filter:drop-shadow(0 3px 0 rgba(0,0,0,.15))}
+.g1-hero h1{margin:0;font-size:30px;font-weight:900;color:#fff;text-align:right;flex:1}
+.g1-home{display:grid;place-items:center;width:48px;height:48px;border-radius:16px;background:#fff;text-decoration:none;font-size:24px;box-shadow:0 4px 0 rgba(0,0,0,.18)}
+.g1-home:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
+.sub,.note,.continuecard .cc-sub{color:var(--soft-g1)!important}
+.booklet,.qcount,.homefold>summary,.continuecard .cc-label{color:var(--ink)!important}
+/* כרטיסים: לבן, מסגרת ירקרקה, בלי מעברי צבע */
+.continuecard{background:#fff!important;border:3px solid #d6336c!important;box-shadow:0 5px 0 rgba(214,51,108,.25)!important}
+.bank{background:#FFF3D6!important;border:2px solid #F59E0B;box-shadow:0 4px 0 rgba(245,158,11,.3)!important}
+.dot.on{background:#d6336c;border-color:#d6336c}
+.tabbtn,.page-btn,.opt,.bigbtn.ghost,.btn-ghost{border-color:var(--line-g1)!important}
+.tabbtn{box-shadow:0 4px 0 var(--line-g1)}
+.page-btn{box-shadow:0 4px 0 rgba(214,51,108,.18)!important}
+.page-btn.done{border-color:var(--good)!important}
+.opt:not(.right):not(.wrong){box-shadow:0 5px 0 var(--line-g1)!important}
+.bigbtn.ghost,.btn-ghost{color:var(--ink)!important;box-shadow:0 5px 0 var(--line-g1)!important}
+.bigbtn.purple,.btn-secondary{background:var(--ink)!important;box-shadow:0 5px 0 #0f2a1e!important}
+.btn-primary{background:#d6336c;box-shadow:0 4px 0 #a3214f}
+.prog,.bar{background:#EAF4E6!important}
+.prog>div{background:#d6336c!important}
+.syl,.slot{background:#FBEAF0!important;border-color:#F4C0D1!important}
+.motiv .chip{border-color:#F4C0D1}
+button:focus-visible,a:focus-visible,summary:focus-visible,[role="button"]:focus-visible,input:focus-visible{outline-color:#F59E0B!important}
+</style>
 </head>
 <body>
 <div class="wrap">
   <!-- HOME -->
   <div id="screen-home">
-    <h1>🌸 המרכז שלי 🌸</h1>
+    <header class="g1-hero"><span class="g1-pal" aria-hidden="true">🐣</span><h1>כיתה א׳</h1><a class="g1-home" href="../" aria-label="מרכזי הלמידה">🏠</a></header>
     <p class="sub">לומדים לקרוא עם "צלילים מספרים"</p>
     <div class="continuecard" id="continueCard">
       <div class="cc-label">💪 המשיכי מאיפה שהפסקת</div>
@@ -394,7 +431,7 @@ function navPageLabel(pg){
 function navBtnHtml(pg, stars){
   var main = pg.math
     ? '<span class="big">' + pg.icon + '</span><span class="ttl">' + pg.title + '</span>'
-    : '<span class="big">' + pg.icon + '</span><span class="ttl">עמוד ' + pg.page + '<br>' + pg.title + '</span>';
+    : '<span class="big">' + pg.icon + '</span><span class="ttl">שיעור ' + pg.page + '<br>' + pg.title + '</span>';
   return '<span class="navart">' + navArt(pg.id) + '</span>'
     + '<span class="spkbadge" aria-hidden="true">🔊</span>'
     + main + '<span class="stars">' + stars + '</span>';
@@ -710,10 +747,10 @@ function renderContinue() {
   var pg = DATA.PAGES[idx];
   var st = prog.pages[pg.id] || {};
   var allDone = DATA.PAGES.every(function (p) { return (prog.pages[p.id] || {}).mastered; });
-  el('ccTitle').textContent = pg.icon + ' ' + pg.title + (pg.page ? ' — עמוד ' + pg.page : '');
+  el('ccTitle').textContent = pg.icon + ' ' + pg.title + (pg.page ? ' — שיעור ' + pg.page : '');
   var stars = st.best === undefined ? '' : (st.best >= 8 ? '⭐⭐⭐' : st.best >= 6 ? '⭐⭐' : st.best >= 4 ? '⭐' : '🌱');
-  el('ccSub').textContent = allDone ? 'סיימת את כל העמודים! אפשר לשחק שוב מההתחלה 🎉'
-    : st.best === undefined ? 'עוד לא התחלנו את העמוד הזה — בואי נתחיל! 🌟'
+  el('ccSub').textContent = allDone ? 'סיימת את כל השיעורים! אפשר לשחק שוב מההתחלה 🎉'
+    : st.best === undefined ? 'עוד לא התחלנו את השיעור הזה — בואי נתחיל! 🌟'
     : 'כבר התחלנו — ' + stars + ' — ממשיכים מאיפה שהפסקנו 💪';
 }
 function renderHome() {
@@ -722,7 +759,7 @@ function renderHome() {
   renderContinue();
   var wk = weekKey(); var donePages = 0;
   Object.keys(prog.pages).forEach(function (k) { if (prog.pages[k].wk === wk) donePages++; });
-  el('goalText').innerHTML = 'היעד: ' + prog.goalPages + ' עמודים השבוע<br>סיימתי: ' + donePages + ' 📄';
+  el('goalText').innerHTML = 'היעד: ' + prog.goalPages + ' שיעורים השבוע<br>סיימתי: ' + donePages + ' 📄';
   var dots = el('weekDots'); dots.innerHTML = '';
   var s = new Date(); s.setDate(s.getDate() - s.getDay());
   for (var i = 0; i < 7; i++) { var d = new Date(s); d.setDate(s.getDate() + i); var k = d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate(); var dv = document.createElement('div'); dv.className = 'dot' + (prog.days[k] ? ' on' : ''); dots.appendChild(dv); }
@@ -787,7 +824,7 @@ function openLearn(idx) {
     show('screen-learn');
     return;
   }
-  var html = '<h2 style="text-align:center">עמוד ' + pg.page + ' — ' + pg.title + '</h2>';
+  var html = '<h2 style="text-align:center">שיעור ' + pg.page + ' — ' + pg.title + '</h2>';
   if (pg.kind === 'letter') {
     var L = pg.letters[0];
     var introKey = 'זֹאת הָאוֹת ' + DATA.NAMES[L];
@@ -826,7 +863,7 @@ function openLearn(idx) {
     html += '<div style="text-align:center;font-size:20px">חוזרים ומתרגלים את כל מה שלמדנו 💪</div>';
   }
   var nw = DATA.WORDS.filter(function (w) { return w.s === idx; });
-  var gridWords = nw, gridTitle = 'מילים חדשות בעמוד הזה:';
+  var gridWords = nw, gridTitle = 'מילים חדשות בשיעור הזה:';
   if (pg.kind === 'letter') {
     var L2 = pg.letters[0];
     var withL = DATA.WORDS.filter(function (w) { return w.s <= idx && w.p.split('').some(function (ch) { return baseOf(ch) === L2; }); });
@@ -1270,7 +1307,7 @@ function finishRound() {
   var coinMsg = '';
   if (!roundReview && score >= Math.ceil(total * 0.75)) {
     var st = prog.pages[DATA.PAGES[roundPage].id] || {};
-    if (!st.mastered) { st.mastered = 1; addCoins(10, 'סיימתי עמוד: ' + DATA.PAGES[roundPage].title); coinMsg = '🪙 +10 מטבעות לבנק!'; }
+    if (!st.mastered) { st.mastered = 1; addCoins(10, 'סיימתי שיעור: ' + DATA.PAGES[roundPage].title); coinMsg = '🪙 +10 מטבעות לבנק!'; }
     st.best = Math.max(st.best || 0, score); st.wk = weekKey(); prog.pages[DATA.PAGES[roundPage].id] = st;
   } else if (roundReview && score >= Math.ceil(total * 0.75)) {
     var key = 'rev|' + todayKey();
@@ -1312,10 +1349,10 @@ function renderParent() {
   ['א','ב'].forEach(function (bk) {
     var pages = DATA.PAGES.filter(function (p) { return p.booklet === bk; });
     var done = pages.filter(function (p) { return (prog.pages[p.id] || {}).mastered; }).length;
-    html += '<h3>חוברת ' + bk + '׳ — ' + done + '/' + pages.length + ' עמודים הושלמו</h3><div class="bar"><div style="width:' + (pages.length ? done / pages.length * 100 : 0) + '%"></div></div>';
+    html += '<h3>חוברת ' + bk + '׳ — ' + done + '/' + pages.length + ' שיעורים הושלמו</h3><div class="bar"><div style="width:' + (pages.length ? done / pages.length * 100 : 0) + '%"></div></div>';
   });
   var foc = currentFocus();
-  html += '<h3>🌟 לומדים עכשיו בכיתה — בחירת הורה</h3><p class="note">בחרי עמודים למיקוד — הם יופיעו בראש הטאב המתאים בדף הבית.</p>';
+  html += '<h3>🌟 לומדים עכשיו בכיתה — בחירת הורה</h3><p class="note">בחרי שיעורים למיקוד — הם יופיעו בראש הטאב המתאים בדף הבית.</p>';
   [['א', 'חוברת א׳'], ['ב', 'חוברת ב׳'], ['M', 'חשבון']].forEach(function (g) {
     var bk = g[0];
     var list = DATA.PAGES.filter(function (p) { return p.booklet === bk; });
@@ -1323,7 +1360,7 @@ function renderParent() {
     var picked = tab === 'he' ? foc.he : foc.math;
     html += '<div><b>' + g[1] + ':</b><br>';
     list.forEach(function (p) {
-      var label = p.math ? p.title : (p.page ? 'עמוד ' + p.page + ' — ' + p.title : p.title);
+      var label = p.math ? p.title : (p.page ? 'שיעור ' + p.page + ' — ' + p.title : p.title);
       html += '<label style="display:inline-block;margin:3px 8px 3px 0"><input type="checkbox" data-focus="' + tab + '" value="' + p.id + '"' + (picked.indexOf(p.id) >= 0 ? ' checked' : '') + '> ' + label + '</label>';
     });
     html += '</div>';
@@ -1377,7 +1414,7 @@ el('btnGoal').onclick = function () {
   var cur = prog.goalPages;
   var nxt = opts[(opts.indexOf(cur) + 1) % opts.length] || 3;
   prog.goalPages = nxt; save(); renderHome();
-  alert('היעד השבועי: ' + nxt + ' עמודים (לחיצה שוב משנה)');
+  alert('היעד השבועי: ' + nxt + ' שיעורים (לחיצה שוב משנה)');
 };
 renderHome();
 </script>
