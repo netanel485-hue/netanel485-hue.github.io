@@ -1522,14 +1522,15 @@ try{(function(){
   DATA.PAGES.forEach(function(pg){if(pg.id==='ב11'&&pg.vowels.indexOf('shva')<0)pg.vowels.push('shva');});
   Object.keys(AUDIO).forEach(function(k){if(k.length<=3&&k.slice(-1)===SH){var e=k.slice(0,-1)+SG;if(AUDIO[e])AUDIO[k]=AUDIO[e];}});
   var twin=function(c){if(typeof c!=='string')return null;var l=c.slice(-1);return l===SH?c.slice(0,-1)+SG:l===SG?c.slice(0,-1)+SH:null;};
+  var gut=function(x){return typeof x==='string'&&x.length===2&&'אהע'.indexOf(x[0])>=0&&x[1]===SH;};
   var g=genQuestions;
   genQuestions=function(){var qs=g.apply(this,arguments);
-    try{(qs||[]).forEach(function(q){if(q&&q.type==='syl'&&q.options){var t=twin(q.correct);if(t)q.options=q.options.filter(function(o){return o!==t;});}});}catch(e){}
+    try{(qs||[]).forEach(function(q){if(q&&q.type==='syl'&&q.options){var t=twin(q.correct);if(t)q.options=q.options.filter(function(o){return o!==t;});q.options=q.options.filter(function(o){return o===q.correct||!gut(o);});}});}catch(e){}
     return qs;};
   var ol=openLearn;
   openLearn=function(idx){ol.apply(this,arguments);
     try{var pg=DATA.PAGES[idx];if(pg.math||pg.kind!=='vowel'||pg.vowels[pg.vowels.length-1]!=='shva')return;
-      var body=el('learnBody'),row=body.querySelector('.sylrow');if(!row)return;
+      var body=el('learnBody'),row=body.querySelector('.sylrow');if(!row)return;Array.prototype.forEach.call(row.querySelectorAll('[data-syl]'),function(b){if(gut(b.getAttribute('data-syl')))b.remove();});
       var ex=[['שְׁוָא נָע — בְּתְחִלַּת מִלָּה שׁוֹמְעִים "אֶ" קָצָר',[['נמלה','נְמָלָה'],['לגן','לְגַן'],['דבש','דְּבַשׁ']]],
               ['שְׁוָא נָח — בְּאֶמְצַע מִלָּה לֹא שׁוֹמְעִים תְּנוּעָה',[['סבתא','סָבְתָּא'],['גמבה','גַּמְבָּה'],['פרפר','פַּרְפַּר']]]];
       var d=document.createElement('div');d.id='shvaEx';
