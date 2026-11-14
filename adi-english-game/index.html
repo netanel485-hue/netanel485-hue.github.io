@@ -275,8 +275,8 @@ var T_WORDS = ['tape', 'toothbrush', 'turtle', 'tiger', 'top'];
 var C_WORDS = ['cat', 'cap'];
 var P_WORDS = ['pig', 'pot', 'pen', 'pin', 'puzzle'];
 var PIC = { sun: '☀️', sock: '🧦', saw: '🪚', soap: '🧼', seven: '7️⃣', sandwich: '🥪', snake: '🐍', star: '⭐', soup: '🍜', sunflowers: '🌻', soccer: '⚽', shoes: '👟', shell: '🐚', sand: '🏖️', scooter: '🛴', slide: '🛝', turtle: '🐢', tiger: '🐯', tape: '<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 100 100" role="img" aria-label="tape"><ellipse cx="50" cy="90" rx="30" ry="4" fill="#000000" opacity="0.08"/><rect x="58" y="28" width="34" height="11" rx="2" fill="#CFE8F5" stroke="#1d3a2a" stroke-width="2.5"/><rect x="86" y="28" width="6" height="11" fill="#8FC7E8"/><circle cx="40" cy="58" r="30" fill="#EAF6FB" stroke="#1d3a2a" stroke-width="3"/><circle cx="40" cy="58" r="22" fill="none" stroke="#A8D8EA" stroke-width="2" opacity="0.7"/><path d="M22,44 A22,22 0 0 1 34,34" stroke="#ffffff" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.8"/><circle cx="40" cy="58" r="14" fill="#F2C078" stroke="#1d3a2a" stroke-width="2.5"/><circle cx="40" cy="58" r="6" fill="#FFFDF7" stroke="#1d3a2a" stroke-width="2"/></svg>', top: '<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 100 100" role="img" aria-label="spinning top"><ellipse cx="50" cy="92" rx="22" ry="3.5" fill="#000000" opacity="0.08"/><path d="M10,52 Q4,62 12,70" stroke="#7A8B7F" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.6"/><path d="M90,52 Q96,62 88,70" stroke="#7A8B7F" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.6"/><rect x="46" y="6" width="8" height="24" rx="4" fill="#B08968" stroke="#1d3a2a" stroke-width="2.5"/><circle cx="50" cy="8" r="6" fill="#F59E0B" stroke="#1d3a2a" stroke-width="2.5"/><path d="M16,40 L84,40 L75,58 L25,58 Z" fill="#FFD54F" stroke="#1d3a2a" stroke-width="2.5" stroke-linejoin="round"/><path d="M25,58 L75,58 L65,74 L35,74 Z" fill="#3B82F6" stroke="#1d3a2a" stroke-width="2.5" stroke-linejoin="round"/><path d="M35,74 L65,74 L50,90 Z" fill="#EF4444" stroke="#1d3a2a" stroke-width="2.5" stroke-linejoin="round"/><ellipse cx="50" cy="38" rx="36" ry="10" fill="#FF6B6B" stroke="#1d3a2a" stroke-width="3"/><ellipse cx="38" cy="35" rx="10" ry="3" fill="#ffffff" opacity="0.5"/><circle cx="50" cy="38" r="4" fill="#FFFDF7" stroke="#1d3a2a" stroke-width="2"/></svg>', toothbrush: '🪥', cat: '🐱', cap: '🧢', pig: '🐷', pot: '🍲', pen: '🖊️', pin: '📌', puzzle: '🧩', apple: '🍎' };
-var CHEERS = ['כל הכבוד! 🌟', 'מדהים! 🎉', 'עשית את זה! 👏', 'את כוכבת! ⭐', 'נהדר! 🌈', 'מדהימה! 🥳'];
-var TRY_AGAIN = ['נסי שוב! את יכולה! 💪', 'כמעט! הקשיבי שוב 👂', 'ניסיון טוב! הקשיבי עוד פעם 🎧'];
+var CHEERS = ['כל הכבוד! 🌟', 'מדהים! 🎉', 'כל הכבוד! 👏', 'איזה כוכב! ⭐', 'נהדר! 🌈', 'מדהים! 🥳'];
+var TRY_AGAIN = ['נסו שוב! אפשר להצליח! 💪', 'כמעט! מקשיבים שוב 👂', 'ניסיון טוב! מקשיבים עוד פעם 🎧'];
 
 /* ---------- Persistence (contract: see header comment) ---------- */
 function loadProgress() {
@@ -534,11 +534,11 @@ function sayPhaseHTML(text) {
 /* Hebrew instruction per step kind (STAGE 4.1) — spoken in Hebrew, while
    the letter/word itself is still spoken in English by playStepAudio. */
 function stepInstr(st) {
-  if (st.kind === 'tap') return 'הקשיבי! לחצי על התשובה הנכונה.';
+  if (st.kind === 'tap') return 'מקשיבים ולוחצים על התשובה הנכונה.';
   if (st.kind === 'say') return 'הסתכלי על המילה, ואמרי אותה בקול רם.';
-  if (st.kind === 'build') return 'הקשיבי לצלילים, ואז לחצי על המילה הנכונה.';
+  if (st.kind === 'build') return 'מקשיבים לצלילים, ואז לוחצים על המילה הנכונה.';
   if (st.kind === 'pic') return 'באיזו אות מתחילה המילה שבתמונה?';
-  if (st.kind === 'checklist') return 'קראי כל מילה בקול רם, ולחצי קראתי על כל מילה.';
+  if (st.kind === 'checklist') return 'קוראים כל מילה בקול רם, ולוחצים קראתי על כל מילה.';
   return '';
 }
 function playStepAudio(st) {
@@ -558,7 +558,7 @@ function renderStep(skipInstr) {
   var n = current.steps.length;
   var html = '<div class="card"><div class="small">שלב ' + (current.li + 1) + ' • ' + current.act.name + ' • ' + (current.idx + 1) + ' מתוך ' + n + '</div>';
   if (st.kind === 'tap') {
-    html += '<div class="msg">👂 הקשיבי! לחצי על התשובה הנכונה.</div>';
+    html += '<div class="msg">👂 מקשיבים ולוחצים על התשובה הנכונה.</div>';
     html += '<div><button class="btn-secondary" onclick="speak(\'' + st.audio + '\')">🔊 לשמוע</button>';
     if (st.audioKind === 'letter') html += ' <button class="btn-ghost" onclick="speak(\'' + LETTER_WORD[st.audio] + '\')">💡 לשמוע מילה</button>';
     html += ' <button class="btn-ghost" onclick="replayInstr()">📢 הוראות</button>';
@@ -573,7 +573,7 @@ function renderStep(skipInstr) {
     html += '<div class="msg">🎤 אמרי בקול רם!</div>';
     html += '<div><button class="btn-primary" onclick="nextStep()">אמרתי! ✅</button></div>';
   } else if (st.kind === 'build') {
-    html += '<div class="msg">👂 הקשיבי לצלילים, ואז לחצי על המילה הנכונה!</div>';
+    html += '<div class="msg">👂 מקשיבים לצלילים, ואז לוחצים על המילה הנכונה!</div>';
     html += '<div><button class="btn-secondary" onclick="playSounds()">🔊 לשמוע את הצלילים</button> <button class="btn-ghost" onclick="replayInstr()">📢 הוראות</button></div><div id="fb" class="msg"></div><div>';
     for (var j = 0; j < st.choices.length; j++) {
       html += '<button class="choice" onclick="tapAnswer(\'' + st.choices[j] + '\',this)">' + st.choices[j] + '</button>';
@@ -597,7 +597,7 @@ function renderStep(skipInstr) {
     var ci = current.checkIdx || 0;
     while (ci < total && current.checked[ci]) ci++;
     current.checkIdx = ci;
-    html += '<div class="msg">📖 קראי כל מילה בקול רם! לחצי "קראתי!" על כל מילה.</div>';
+    html += '<div class="msg">📖 קוראים כל מילה בקול רם! לוחצים "קראתי!" על כל מילה.</div>';
     html += '<div class="small">מילה ' + Math.min(ci + 1, total) + ' מתוך ' + total + ' • קראתי ' + doneCount + ' מתוך ' + total + '</div>';
     html += '<div class="dots">';
     for (var d = 0; d < total; d++) { html += '<span class="dot' + (current.checked[d] ? ' done' : '') + '">' + (current.checked[d] ? '✅' : (d + 1)) + '</span>'; }
@@ -687,7 +687,7 @@ function finishActivity() {
   for (var ai = 0; ai < lv.activities.length; ai++) {
     if (!isDone(lv.activities[ai].id)) { nextBtn = '<button class="btn-primary" onclick="startActivity(' + li + ',' + ai + ')">⏭️ הפעילות הבאה: ' + lv.activities[ai].name + '</button>'; break; }
   }
-  app().innerHTML = '<div class="card"><div class="pic">🎉</div><div class="msg">עשית את זה! הרווחת כוכב! ⭐</div>' +
+  app().innerHTML = '<div class="card"><div class="pic">🎉</div><div class="msg">כל הכבוד! הרווחת כוכב! ⭐</div>' +
     '<div class="total">⭐ ' + totalStars() + ' מתוך ' + totalActivities() + ' כוכבים</div>' +
     '<div>' + nextBtn + ' <button class="btn-ghost" onclick="goMap()">🗺️ חזרה למפה</button></div></div>';
 }

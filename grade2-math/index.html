@@ -418,6 +418,8 @@ body{--c:#2E7D4F}
 .wrap>header h1,.wrap>header p,.wrap>header .sharebtn{display:none!important}
 .wrap>header{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0 0 8px!important;text-align:center}
 #homeIntro p{display:none}
+/* פחות טקסט במסך הבית: פעולה ראשית אחת ("ממשיכים"), ונושאים בלי ספירת שאלות (14/11/2026) */
+#homeIntro,.tcard .ct,.pd{display:none!important}
 </style>
 </head>
 <body class="kit-themed">
@@ -524,7 +526,7 @@ body{--c:#2E7D4F}
       </div>
       <div id="tMastery" class="card center" style="display:none">
         <div class="mini-illus" id="masteryIllus"></div>
-        <h2 style="margin:8px 0">אלופת האלופות!</h2>
+        <h2 style="margin:8px 0">אלופים!</h2>
         <p class="msg">סיימת את כל 3 הרמות בנושא הזה! 🎉</p>
         <p id="masteryStats" style="font-size:17px"></p>
         <div class="center" style="margin:8px 0"><button class="ttsbtn" onclick="speakText(document.getElementById('tMastery').innerText)" title="השמעה" aria-label="השמעה">🔊</button></div>
@@ -537,7 +539,7 @@ body{--c:#2E7D4F}
       <div class="progress"><div id="pfill"></div></div>
       <div id="quiz"></div>
       <div class="center" style="margin:14px 0">
-        <button class="btn btn-main" id="submitBtn" onclick="gradeTest()">סיימתי — בדוק ציון ✅</button>
+        <button class="btn btn-main" id="submitBtn" onclick="gradeTest()">סיימתי — לבדיקת הציון ✅</button>
       </div>
       <div id="result" class="card center" style="display:none">
         <div class="mini-illus" id="scoreIllus"></div>
@@ -585,7 +587,7 @@ body{--c:#2E7D4F}
     <div class="progress"><div id="mockFill"></div></div>
     <div id="mockQuiz"></div>
     <div class="center" style="margin:14px 0">
-      <button class="btn btn-main" id="mockSubmit" onclick="gradeMock()">סיימתי — בדוק ציון ✅</button>
+      <button class="btn btn-main" id="mockSubmit" onclick="gradeMock()">סיימתי — לבדיקת הציון ✅</button>
     </div>
     <div id="mockResult" class="card center" style="display:none">
       <div class="mini-illus" id="mockIllus"></div>
@@ -2001,13 +2003,13 @@ function renderContinue(){
     const plan=store.plan, day=continueTarget.day, done=(plan.sessionsDone||{})[day];
     t.textContent="📅 מסלול השבוע — יום "+day+" מתוך "+plan.totalDays;
     s.textContent= done? "שיעור היום כבר הושלם — אפשר עוד אחד לכיף!" : dayKindLabel(plan,day);
-    b.textContent= done? "🔁 עוד שיעור היום" : "▶️ המשיכי בשיעור היום";
+    b.textContent= done? "🔁 עוד שיעור היום" : "▶️ ממשיכים בשיעור היום";
   } else {
     const topic=TOPIC_BY_ID[continueTarget.tid];
     const done=(store.correct[topic.id]||[]).length, total=BANKS[topic.id].length;
     t.textContent=topic.emoji+" "+topic.name;
-    s.textContent= done===0? "עוד לא התחלנו את הנושא הזה — בואי נתחיל באימון!" : "ענית נכון על "+done+" מתוך "+total+" שאלות — ממשיכים באימון";
-    b.textContent="▶️ המשיכי באימון";
+    s.textContent= done===0? "עוד לא התחלנו את הנושא הזה — בואו נתחיל באימון!" : "ענית נכון על "+done+" מתוך "+total+" שאלות — ממשיכים באימון";
+    b.textContent="▶️ ממשיכים באימון";
   }
 }
 function continueGo(){
@@ -2166,7 +2168,7 @@ function gradeTest(){
  $("submitBtn").style.display="none";
  const box=$("result"); box.style.display="";
  $("scoreNum").textContent=score*10;
- $("scoreMsg").textContent= score===10? "מושלם! 🏆 את מוכנה!" : score>=8? "מצוין! 💪 כמעט מושלם" :
+ $("scoreMsg").textContent= score===10? "מושלם! 🏆 מוכנים!" : score>=8? "מצוין! 💪 כמעט מושלם" :
    score>=6? "יפה! 👏 עוד קצת אימון ותשלוטי בזה" : "לא נורא! 💡 חוזרים ללמידה ולאימון — ומנסים שוב";
  speakAuto("הציון שלך: " + (score*10) + ". " + $("scoreMsg").textContent);
  const ex=document.createElement("div"); ex.innerHTML=ramzorHtml(curTopic.part);
@@ -2200,7 +2202,7 @@ function gradeMock(){
  $("mockSubmit").style.display="none";
  const box=$("mockResult"); box.style.display="";
  $("mockScoreNum").textContent=Math.round(score/mockQs.length*100);
- $("mockScoreMsg").textContent= score>=11? "מדהים! 🏆 את מוכנה לגמרי!" : score>=9? "מצוין! 💪" :
+ $("mockScoreMsg").textContent= score>=11? "מדהים! 🏆 מוכנים לגמרי!" : score>=9? "מצוין! 💪" :
    score>=7? "יפה! 👏 עוד תרגול בנושאים החלשים" : "ממשיכים להתאמן! 💡 רואים למטה באיזה חלק כדאי להתחזק";
  speakAuto("הציון שלך: " + $("mockScoreNum").textContent + ". " + $("mockScoreMsg").textContent);
  let html="<b>פירוט לפי חלקים:</b><br>";
