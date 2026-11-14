@@ -1524,8 +1524,8 @@ try{(function(){
   var twin=function(c){if(typeof c!=='string')return null;var l=c.slice(-1);return l===SH?c.slice(0,-1)+SG:l===SG?c.slice(0,-1)+SH:null;};
   var gut=function(x){return typeof x==='string'&&x.length===2&&'אהע'.indexOf(x[0])>=0&&x[1]===SH;};
   var g=genQuestions;
-  genQuestions=function(){var qs=g.apply(this,arguments);
-    try{(qs||[]).forEach(function(q){if(q&&q.type==='syl'&&q.options){var t=twin(q.correct);if(t)q.options=q.options.filter(function(o){return o!==t;});q.options=q.options.filter(function(o){return o===q.correct||!gut(o);});}});}catch(e){}
+  genQuestions=function(){var qs=g.apply(this,arguments),pi=arguments[0];
+    try{(qs||[]).forEach(function(q){if(q&&q.type==='syl'&&q.options){var t=twin(q.correct);if(t)q.options=q.options.filter(function(o){return o!==t;});q.options=q.options.filter(function(o){return o===q.correct||!gut(o);});if(q.options.length<3&&t){var vv=q.correct.slice(-1)===SH?'shva':'e',seen={};q.options.forEach(function(o){seen[o]=1;});shuffle(cumLetters(pi)).forEach(function(LL){var x=syllable(LL,vv);if(q.options.length<4&&!seen[x]&&!gut(x)&&x!==t){seen[x]=1;q.options.push(x);}});q.options=shuffle(q.options);}}});}catch(e){}
     return qs;};
   var ol=openLearn;
   openLearn=function(idx){ol.apply(this,arguments);
