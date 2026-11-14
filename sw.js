@@ -1,8 +1,8 @@
 /* Service worker של כל האתר (13/11/2026): האתר עובד גם בלי אינטרנט.
    כשיש רשת — תמיד הגרסה החדשה (רשת קודם); בלי רשת או ברשת איטית — העותק השמור.
    מוחק רק מטמונים שמתחילים ב-"site-", כדי לא לפגוע במטמונים של כיתה ד׳ ו־ו׳. */
-const C='site-3';
-const CORE=['./','index.html','manifest.webmanifest','favicon.png','apple-touch-icon.png','icon-192.png','icon-512.png','icon-maskable-512.png','shared/site-bar.js','shared/cloud.js'];
+const C='site-4';
+const CORE=['./','index.html','manifest.webmanifest','favicon.png','apple-touch-icon.png','icon-192.png','icon-512.png','icon-maskable-512.png','shared/site-bar.js','shared/cloud.js','shared/kit-theme.css'];
 const PAGES=['grade1-learning/','adi-english-game/','grade2-math/','grade4-learning/','grade4-mivdak/','grade6-learning/','math-test-prep/','dvir-melachim/'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(C).then(c=>
   c.addAll(CORE.map(u=>new Request(u,{cache:'reload'}))).then(()=>

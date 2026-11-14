@@ -1,0 +1,24 @@
+/* ערכות הלימוד באותה שפה כמו דף הבית ומרכזי הלמידה (14/11/2026).
+   כותרת בצבע ובדמות של הכיתה (כמו הריבוע בדף הבית) עם כפתור חזרה, כרטיסים לבנים עם צל "תלת־ממדי".
+   נטען כ-<link> ב-head, לכן אין "קפיצה" בטעינה. כל ערכה קובעת את --c (צבע הכיתה) על .kit-hero ועל body.
+   להסרה מערכה: למחוק את ה-<link id="kit-theme">, את <header class="kit-hero"> ואת <style id="kit-match-css">. */
+body{background:#FAF6EB!important}
+.kit-hero{position:relative;display:flex;align-items:center;gap:12px;box-sizing:border-box;direction:rtl;
+  margin:12px max(16px,calc((100% - 760px) / 2)) 14px;padding:16px 18px;border-radius:28px;overflow:hidden;
+  background:var(--c);color:#fff;font-family:"Segoe UI",Arial,system-ui,sans-serif;
+  box-shadow:0 6px 0 color-mix(in srgb,var(--c) 62%,#000),0 10px 18px rgba(30,70,50,.15)}
+.kit-hero::before{content:"";position:absolute;width:130%;height:70%;top:-35%;right:-15%;border-radius:50%;background:rgba(255,255,255,.14)}
+.kit-hero>*{position:relative}
+.kit-hero .kh-pal{font-size:44px;line-height:1;filter:drop-shadow(0 3px 0 rgba(0,0,0,.15))}
+.kit-hero .kh-t{flex:1;min-width:0}
+.kit-hero .kh-title{font-size:26px;font-weight:900;line-height:1.15;margin:0;color:#fff}
+.kit-hero .kh-sub{font-size:14.5px;font-weight:700;margin-top:3px;color:#fff;opacity:.95}
+.kit-hero .kh-home{flex:0 0 auto;display:grid;place-items:center;width:48px;height:48px;border-radius:16px;background:#fff;
+  text-decoration:none;font-size:24px;box-shadow:0 4px 0 rgba(0,0,0,.18)}
+.kit-hero .kh-home:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
+.kit-hero .kh-home:focus-visible{outline:3px solid #F59E0B;outline-offset:2px}
+@media (max-width:420px){.kit-hero .kh-title{font-size:23px}.kit-hero .kh-pal{font-size:38px}}
+/* כרטיסים: לבנים עם צל בצבע הכיתה, כמו בדף הבית */
+.kit-themed .card{background:#fff!important;border:2px solid #D8E4D4!important;border-radius:20px!important;
+  box-shadow:0 4px 0 color-mix(in srgb,var(--c) 22%,#D8E4D4)!important}
+@media (prefers-reduced-motion:reduce){.kit-hero .kh-home{transition:none}}
