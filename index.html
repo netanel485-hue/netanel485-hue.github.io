@@ -105,6 +105,12 @@ button{font:inherit;color:inherit}
 .linkbtn{background:none;border:0;padding:8px 0 10px;font:inherit;font-size:13px;color:var(--muted);text-decoration:underline;cursor:pointer;min-height:44px}
 .cmsg{font-weight:700}
 .cmsg:empty{display:none}
+.nudge{margin-top:18px;background:#fff;border:3px solid var(--accent,#F59E0B);border-radius:22px;padding:12px 14px;box-shadow:0 5px 0 rgba(245,158,11,.3)}
+.nudge .nt{margin:2px 0 4px;font-size:17px;font-weight:800;color:var(--ink)}
+.nudge .nt small{font-size:12px;font-weight:700;color:var(--muted);background:var(--card);border-radius:99px;padding:2px 8px;margin-right:4px}
+.nudge .ns{margin:4px 0;font-size:14.5px;line-height:1.55;color:var(--ink-soft)}
+.nudge .nrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.nudge .nrow .cbtn:not(.main){flex:1}
 .note{color:var(--ink-soft);font-size:14px;line-height:1.6;margin-top:22px;background:var(--card);border-radius:20px;padding:12px 14px}
 .adults{margin:16px 2px 0;font-size:13px;color:var(--muted)}
 .adults a{color:var(--ink-soft)}
@@ -127,6 +133,14 @@ button{font:inherit;color:inherit}
     <a class="tile" style="--c:var(--g6)" data-g="g6" href="grade6-learning/"><span class="mine" role="img" aria-label="הכיתה שלי">⭐</span><span class="pal" aria-hidden="true">🦉</span><span class="let">ו</span><span class="nm">כיתה ו׳</span></a>
   </nav>
 
+
+  <div class="nudge" id="saveNudge" hidden role="region" aria-label="שמירת ההתקדמות">
+    <p class="nt">🔒 לשמור את ההתקדמות לתמיד? <small>להורים</small></p>
+    <p class="ns">ההתקדמות כבר נשמרת לבד. כדי לא לאבד אותה אם מחליפים טלפון, בוחרים פעם אחת שם משפחה וסיסמה.</p>
+    <p class="ns ios" id="nudgeIos" hidden>באייפון כדאי גם להוסיף את האתר למסך הבית. בלי זה, Safari מוחק את הנתונים אחרי שבוע בלי כניסה.</p>
+    <div class="nrow"><button type="button" class="cbtn main" id="nudgeLogin">🔑 בחירת שם וסיסמה</button></div>
+    <div class="nrow"><button type="button" class="cbtn" id="nudgeLink">📲 שליחת קישור לעצמי</button><button type="button" class="linkbtn" id="nudgeLater">לא עכשיו</button></div>
+  </div>
 
   <div class="more" style="--c:var(--more)">
     <a class="go" href="dvir-melachim/"><span class="em">📜</span><span><b>מלכים א׳</b><small>עוד באתר · פרקים י״ז–כ״ב</small></span><i class="ar" aria-hidden="true">←</i></a>
@@ -198,6 +212,25 @@ try{
 }catch(e){}
 </script>
 <script type="module" src="shared/cloud.js"></script>
+<script id="home-nudge-js">
+/* תזכורת שמירה (14/11/2026): אחרי שיש התקדמות, ועוד לא נבחרו שם וסיסמה — כרטיס אחד להורה.
+   "לא עכשיו" = שוב בעוד 7 ימים; שליחת קישור או בחירת שם וסיסמה = לא מופיע יותר. אם נכשל — פשוט לא מופיע. */
+try{(function(){
+  var $=function(id){return document.getElementById(id)},box=$('saveNudge'),K='cloud.nudge';
+  function get(){try{return localStorage.getItem(K)||''}catch(e){return ''}}
+  function set(v){try{localStorage.setItem(K,v)}catch(e){}}
+  function progress(){try{return Object.keys(localStorage).some(function(k){return !/^(cloud\.|firebase|home-grade$)/.test(k)&&!/(:tts|\.sound)$/.test(k)})}catch(e){return false}}
+  function render(){var C=window.LHCloud,v=get();
+    var show=!!(C&&C.code()&&!C.loginName()&&progress()&&v!=='never'&&!(+v>Date.now()));
+    box.hidden=!show;
+    var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!(navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches));
+    $('nudgeIos').hidden=!ios}
+  $('nudgeLogin').onclick=function(){var b=$('cloudBox'),l=$('cloudLoginBox');b.open=true;l.open=true;l.scrollIntoView({block:'center',behavior:'smooth'});setTimeout(function(){try{$('cloudName').focus()}catch(e){}},400)};
+  $('nudgeLink').onclick=function(){set('never');render();$('cloudShare').click()};
+  $('nudgeLater').onclick=function(){set(String(Date.now()+7*864e5));render()};
+  addEventListener('lhcloud',render);addEventListener('lhcloud-ready',render);render();
+})()}catch(e){}
+</script>
 <script id="home-cloud-js">
 try{(function(){
   var $=function(id){return document.getElementById(id)};
