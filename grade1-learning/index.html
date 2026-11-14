@@ -1482,6 +1482,30 @@ try{(function(){
   if(typeof window.visibleNavLabels==='function'){var vis=window.visibleNavLabels;window.visibleNavLabels=function(){return vis.apply(this,arguments).map(strip).filter(Boolean)}}
 })()}catch(e){}
 </script>
+<script id="g1-books-js">
+/* G1-BOOKS — שיעורי חיריק וחולם לפי "צלילים מספרים 2" (14/11/2026):
+   בכל יחידה לפחות 5 מתוך 8 שאלות הן על האותיות של היחידה עם התנועה החדשה (שומעים הברה ובוחרים).
+   להסרה: למחוק את הבלוק הזה (השיעורים עדיין יעבדו, רק פחות ממוקדים). */
+try{(function(){
+  var orig=window.genQuestions;if(typeof orig!=='function')return;
+  window.genQuestions=function(idx,review){
+    var qs=orig.apply(this,arguments);
+    try{
+      var pg=DATA.PAGES[idx];if(review||!pg||pg.kind!=='vowel'||!pg.vowels||!/^(i|o)$/.test(pg.vowels[0]))return qs;
+      var v=pg.vowels[0],known=cumLetters(idx),focus=(pg.focus&&pg.focus.length)?pg.focus:known;
+      var rnd=function(a){return a[Math.floor(Math.random()*a.length)]};
+      var sylQ=function(){var L=rnd(focus),tgt=syllable(L,v),seen={},opts=[tgt];seen[tgt]=1;
+        var c=[syllable(L,'a'),syllable(L,'shva')].concat(focus.filter(function(x){return x!==L}).map(function(x){return syllable(x,v)}),shuffle(known).slice(0,4).map(function(x){return syllable(x,v)}));
+        shuffle(c).forEach(function(x){if(opts.length<4&&!seen[x]){seen[x]=1;opts.push(x)}});
+        return {type:'syl',inst:'inst|syl',audio:tgt,promptHtml:'<span class="spk" aria-hidden="true">🔊</span>',options:shuffle(opts),correct:tgt,optClass:'small',itemKey:'Y:'+tgt}};
+      var sndQ=function(){var L=rnd(focus),pool=known.filter(function(x){return x!==L});
+        return {type:'snd',inst:'inst|snd',audio:syllable(L,v),promptHtml:'<span class="spk" aria-hidden="true">🔊</span>',options:shuffle([L].concat(shuffle(pool).slice(0,3))),correct:L,itemKey:'L:'+L}};
+      var focused=[sylQ(),sylQ(),sylQ(),sndQ(),sndQ()];
+      return shuffle(focused.concat(qs.slice(0,3)));
+    }catch(e){return qs}
+  };
+})()}catch(e){}
+</script>
 <script type="module" src="../shared/cloud.js"></script>
 </body>
 </html>
