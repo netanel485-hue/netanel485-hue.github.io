@@ -416,6 +416,8 @@ body{--c:#7C3AED}
 .wrap>header h1,.wrap>header p,.wrap>header .sharebtn{display:none!important}
 .wrap>header{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0 0 8px!important;text-align:center}
 #homeIntro p{display:none}
+/* פחות טקסט במסך הבית: פעולה ראשית אחת ("ממשיכים"), ונושאים בלי ספירת שאלות (14/11/2026) */
+#homeIntro,.tcard .ct,.pd{display:none!important}
 </style>
 </head>
 <body class="kit-themed">
@@ -523,7 +525,7 @@ body{--c:#7C3AED}
       </div>
       <div id="tMastery" class="card center" style="display:none">
         <div class="mini-illus" id="masteryIllus"></div>
-        <h2 style="margin:8px 0">אלוף האלופים!</h2>
+        <h2 style="margin:8px 0">אלופים!</h2>
         <p class="msg">סיימת את כל 3 הרמות בנושא הזה! 🎉</p>
         <p id="masteryStats" style="font-size:17px"></p>
         <div class="center" style="margin:8px 0"><button class="ttsbtn" onclick="speakText(document.getElementById('tMastery').innerText)" title="השמעה" aria-label="השמעה">🔊</button></div>
@@ -536,7 +538,7 @@ body{--c:#7C3AED}
       <div class="progress"><div id="pfill"></div></div>
       <div id="quiz"></div>
       <div class="center" style="margin:14px 0">
-        <button class="btn btn-main" id="submitBtn" onclick="gradeTest()">סיימתי — בדוק ציון ✅</button>
+        <button class="btn btn-main" id="submitBtn" onclick="gradeTest()">סיימתי — לבדיקת הציון ✅</button>
       </div>
       <div id="result" class="card center" style="display:none">
         <div class="mini-illus" id="scoreIllus"></div>
@@ -584,7 +586,7 @@ body{--c:#7C3AED}
     <div class="progress"><div id="mockFill"></div></div>
     <div id="mockQuiz"></div>
     <div class="center" style="margin:14px 0">
-      <button class="btn btn-main" id="mockSubmit" onclick="gradeMock()">סיימתי — בדוק ציון ✅</button>
+      <button class="btn btn-main" id="mockSubmit" onclick="gradeMock()">סיימתי — לבדיקת הציון ✅</button>
     </div>
     <div id="mockResult" class="card center" style="display:none">
       <div class="mini-illus" id="mockIllus"></div>
@@ -2977,7 +2979,7 @@ function nextTrainQ(){ const st=trainState; if(!st) return;
 }
 function mastery(){ $("tMain").style.display="none"; const m=$("tMastery"); m.style.display="";
  $("masteryStats").textContent=`ענית על ${trainState.total} שאלות, ${trainState.correct} נכונות!`;
- showCeleb("🏆","סיימת את כל הרמות! אתה מוכן למבחן!"); }
+ showCeleb("🏆","סיימת את כל הרמות! מוכנים למבחן!"); }
 function showCeleb(em,tx){ $("celebEmoji").textContent=em; $("celebText").textContent=tx; $("celebrate").style.display="flex"; speakAuto(tx); }
 function hideCeleb(){ $("celebrate").style.display="none"; }
 
@@ -3036,7 +3038,7 @@ function gradeTest(){
  $("submitBtn").style.display="none";
  const box=$("result"); box.style.display="";
  $("scoreNum").textContent=score*10;
- $("scoreMsg").textContent= score===10? "מושלם! 🏆 אתה מוכן למבחן!" : score>=8? "מצוין! 💪 כמעט מושלם" :
+ $("scoreMsg").textContent= score===10? "מושלם! 🏆 מוכנים למבחן!" : score>=8? "מצוין! 💪 כמעט מושלם" :
    score>=6? "יפה! 👏 עוד קצת אימון ותשלוט בזה" : "לא נורא! 💡 חוזרים ללמידה ולאימון — ומנסים שוב";
  speakAuto("הציון שלך: " + (score*10) + ". " + $("scoreMsg").textContent);
  const ex=document.createElement("div"); ex.innerHTML=ramzorHtml(curTopic.part);
