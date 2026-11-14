@@ -1491,7 +1491,8 @@ try{(function(){
   if(typeof window.continueTargetIdx==='function'){window.continueTargetIdx=function(){
     for(var i=0;i<DATA.PAGES.length;i++){var p=DATA.PAGES[i];if((p.booklet==='א'||p.booklet==='ב')&&!((prog.pages[p.id]||{}).mastered))return i}
     for(i=0;i<DATA.PAGES.length;i++){if(!((prog.pages[DATA.PAGES[i].id]||{}).mastered))return i}
-    return 0}}
+    return 0};
+    try{if(typeof renderHome==='function'&&!document.getElementById('screen-home').classList.contains('hidden'))renderHome()}catch(e){}}
   var orig=window.genQuestions;if(typeof orig!=='function')return;
   window.genQuestions=function(idx,review){
     var qs=orig.apply(this,arguments);
