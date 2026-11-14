@@ -268,9 +268,17 @@ nav button:not(.off),.filters button.sel{background:#B85A0A!important;border-col
 h2,h3{color:var(--ink)!important}
 nav:not(#siteBar){background:var(--bg)!important}
 </style>
-<script src="../shared/site-bar.js" defer data-static data-label="מלכים א׳ · פרקים י״ז–כ״ב"></script>
+<link id="kit-theme" rel="stylesheet" href="../shared/kit-theme.css">
+<style id="kit-match-css">
+/* KIT-MATCH — dvir-melachim: כותרת בסגנון דף הבית, בלי הכותרת הישנה ובלי מידע להורים (14/11/2026). להסרה: למחוק את הבלוק, את link#kit-theme ואת div.kit-hero */
+body{--c:#0F766E}
+body>header{display:none!important}
+nav button{border-radius:14px}
+nav button:not(.off){background:var(--c)!important;color:#fff!important;border-color:var(--c)!important}
+</style>
 </head>
-<body>
+<body class="kit-themed">
+<div class="kit-hero" role="banner" style="--c:#0F766E"><span class="kh-pal" aria-hidden="true">📜</span><div class="kh-t"><div class="kh-title">מלכים א׳</div><div class="kh-sub">פרקים י״ז–כ״ב</div></div><a class="kh-home" href="../" aria-label="מרכזי הלמידה">🏠</a></div>
 <header>
 <h1>📖 מלכים א׳ פרקים י״ז–כ״ב</h1>
 <p>סיכום אינטראקטיבי + 200 שאלות לתרגול | הכנה למבחן</p>
