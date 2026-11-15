@@ -1075,7 +1075,7 @@ try{ if(/grade4-learning/.test(document.referrer)) sessionStorage.setItem('readi
      var bk=sessionStorage.getItem('reading-back'); if(bk) document.getElementById('homeLink').href=bk; }catch(e){}
 
 function load(){ try{ var o=JSON.parse(localStorage.getItem(KEY)||'{}'); if(!o.done) o.done={}; if(!o.wanted) o.wanted={}; return o; }catch(e){ return {done:{},wanted:{}}; } }
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function save(){ try{ var v=JSON.stringify(S); if(localStorage.getItem(KEY)!==v) localStorage.setItem(KEY, v); }catch(e){} }
 function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
 function norm(s){ return String(s).replace(/[֑-ׇ]/g,'').replace(/[ךםןףץ]/g,function(c){return {'ך':'כ','ם':'מ','ן':'נ','ף':'פ','ץ':'צ'}[c];})
   .replace(/[^א-ת0-9a-zA-Z ]+/g,' ').replace(/\s+/g,' ').trim(); }
@@ -1095,7 +1095,8 @@ function stars(d){ var r=d.score/d.max; return r>=0.9?'⭐⭐⭐':r>=0.75?'⭐�
 function sentences(par){ return par.match(/[^.!?]+[.!?]+["״”]?\s*|[^.!?]+$/g)||[par]; }
 
 /* ---------- בית ---------- */
-function home(){
+function home(keep){
+  var y=keep?window.scrollY:0;
   stopTts(); cur=null; wide(false);
   var tab=S.tab==='lv'?'lv':'case', rp=replies(), h='';
   h+='<div class="tabs"><button data-tab="case"'+(tab==='case'?' class="on"':'')+'>🕵️ סוכנות החקירות</button><button data-tab="lv"'+(tab==='lv'?' class="on"':'')+'>📖 קטעים בשלבים</button></div>';
@@ -1123,7 +1124,7 @@ function home(){
   list.forEach(function(p){ var d=S.done[p.id];
     h+='<button class="pc" data-p="'+p.id+'"><span class="em" aria-hidden="true">'+p.em+'</span><span><b>'+esc(p.title)+'</b><small>'+esc(p.kind)+(rp[p.id]&&rp[p.id].txt?' · 💬':'')+'</small></span><span class="st">'+(d?stars(d):'▶️')+'</span></button>'; });
   h+='<button class="plink" id="parentBtn">להורים: התשובות שנכתבו</button>';
-  save(); app.innerHTML=h; window.scrollTo(0,0);
+  save(); app.innerHTML=h; window.scrollTo(0,y);
   each('[data-tab]',function(b){ b.onclick=function(){ S.tab=b.getAttribute('data-tab'); save(); home(); }; });
   each('[data-lv]',function(b){ b.onclick=function(){ S.view=+b.getAttribute('data-lv'); save(); home(); }; });
   each('[data-p]',function(b){ b.onclick=function(){ start(b.getAttribute('data-p')); }; });
@@ -1389,7 +1390,8 @@ function parents(){
   each('[data-rs]',function(b){ b.onclick=function(){ var id=b.getAttribute('data-rs'), r=replies(); r[id]={t:Date.now(),txt:app.querySelector('[data-r="'+id+'"]').value.trim()};
     try{ localStorage.setItem('reading-replies',JSON.stringify(r)); }catch(e){} b.textContent='נשמר ✓'; }; });
 }
-window.addEventListener('lhcloud',function(){ if(!cur){ S=load(); home(); } });
+/* רענון מהענן (15/11/2026): רק כשהסנכרון הביא שינויים, ובלי לקפוץ למעלה. קודם כל אירוע "נשמר" צייר את הרשימה מחדש והקפיץ לראש הדף. */
+window.addEventListener('lhcloud',function(e){ var d=e&&e.detail||{}; if(cur||d.state!=='saved'||!d.changed) return; var o=JSON.stringify(S); S=load(); if(JSON.stringify(S)!==o) home(true); });
 window.READING={norm:norm,canon:canon,check:check,sentences:sentences,home:home,start:start,spellFix:spellFix};
 home();
 })();
