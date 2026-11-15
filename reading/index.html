@@ -68,6 +68,16 @@ textarea:focus{outline:3px solid #F59E0B;outline-offset:1px}
 .msg{background:#E7F5FF;border-radius:14px;padding:10px 12px;margin:8px 0;font-size:17px}.msg b{display:block;font-size:13px;color:#1864AB}
 .reply{min-height:64px;font-size:16px;margin-top:8px}
 [hidden]{display:none!important}
+/* מחשב (מסך רחב): הקטע והכתיבה זה לצד זה, כדי שהקטע יהיה מול העיניים בזמן הכתיבה. בטלפון הכול נשאר בעמודה אחת. */
+@media (min-width:900px){
+  main.wide{max-width:1180px}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+  .cols>.pcard{order:-1;position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}
+  .cols #tg{display:none}.cols #pg{display:block!important}
+  .cols textarea#ans{min-height:170px}.cols .kbs textarea{min-height:84px}
+  .kbd{display:block!important;color:var(--soft);font-size:14px;text-align:center;margin-top:8px}
+}
+.kbd{display:none}
 @media (prefers-reduced-motion:reduce){.btn{transition:none}}
 </style>
 </head>
@@ -348,7 +358,7 @@ function sentences(par){ return par.match(/[^.!?]+[.!?]+["״”]?\s*|[^.!?]+$/g)
 
 /* ---------- בית ---------- */
 function home(){
-  stopTts(); cur=null;
+  stopTts(); cur=null; wide(false);
   var tab=S.tab==='lv'?'lv':'case', rp=replies(), h='';
   h+='<div class="tabs"><button data-tab="case"'+(tab==='case'?' class="on"':'')+'>🕵️ סוכנות החקירות</button><button data-tab="lv"'+(tab==='lv'?' class="on"':'')+'>📖 קטעים בשלבים</button></div>';
   Object.keys(rp).forEach(function(id){ var r=rp[id], p=byId(id); if(!p||!r.txt||(S.seen&&S.seen[id]>=r.t)) return;
@@ -382,12 +392,14 @@ function home(){
   document.getElementById('parentBtn').onclick=parents;
 }
 function byId(id){ return PASSAGES.filter(function(x){return x.id===id;})[0]; }
+function wide(on){ app.className=on?'wide':''; }
+function desk(){ try{ return window.matchMedia('(min-width:900px)').matches; }catch(e){ return false; } }
 function each(sel,fn){ Array.prototype.forEach.call(app.querySelectorAll(sel),fn); }
 function stepsBar(i,n){ var h='<div class="steps" aria-hidden="true">'; for(var k=0;k<n;k++) h+='<i'+(k<=i?' class="on"':'')+'></i>'; return h+'</div>'; }
 
 /* ---------- קטע ---------- */
 function start(id){
-  var p=byId(id); if(!p) return;
+  var p=byId(id); if(!p) return; wide(false);
   cur={p:p, qi:0, score:0, max:1+p.qs.length*2, ans:[], locTry:0, before:closed()};
   var rp=replies()[id];
   var h=stepsBar(0,3+p.qs.length)+'<div class="card"><span class="pill">'+(p.trk?'תיק חקירה · ':'')+esc(p.kind)+'</span><h2>'+p.em+' '+esc(p.title)+'</h2>'+
@@ -400,7 +412,7 @@ function start(id){
 }
 /* "מילים מבוקשות": מילים שנכתבו בשגיאה חוזרות בהברקה (מופיעות לרגע ונעלמות) עד שנתפסות 3 פעמים */
 function flash(){
-  var list=Object.keys(S.wanted).slice(0,3), i=0, my=cur;
+  var list=Object.keys(S.wanted).slice(0,3), i=0, my=cur; wide(false);
   if(!list.length) return read();
   var show=function(){
     if(cur!==my) return; if(i>=list.length){ save(); return read(); }
@@ -427,7 +439,7 @@ function psgHtml(p,pick){
 }
 function allSent(p){ var o=[]; p.text.forEach(function(par){ sentences(par).forEach(function(s){o.push(s);}); }); return o; }
 function read(){
-  var p=cur.p;
+  var p=cur.p; wide(false);
   app.innerHTML=stepsBar(1,3+p.qs.length)+'<div class="card"><h2>'+p.em+' '+esc(p.title)+'</h2>'+psgHtml(p,false)+
     '<button class="btn ghost" id="say" hidden>🔊 להקשיב לקטע</button></div><button class="btn" id="go">קראתי, אפשר להמשיך ➜</button>';
   window.scrollTo(0,0);
@@ -460,13 +472,14 @@ function chunks(s){ s=s.trim(); if(s.length<=180) return [s]; var out=[],c='';
 function locate(){
   var p=cur.p, list=allSent(p), target=-1;
   list.forEach(function(s,i){ if(target<0 && s.indexOf(p.loc.find)>=0) target=i; });
-  app.innerHTML=stepsBar(2,3+p.qs.length)+'<div class="card"><span class="pill">איפה כתוב?</span><div class="qtxt">'+esc(p.loc.q)+'</div>'+
-    '<div style="color:var(--soft);font-size:16px">הקישו על המשפט בקטע שבו נמצאת התשובה.</div><div id="locFb"></div></div>'+
-    '<div class="card">'+psgHtml(p,true)+'</div><button class="btn" id="go" hidden>ממשיכים לכתיבה ✍️</button>';
+  wide(true);
+  app.innerHTML=stepsBar(2,3+p.qs.length)+'<div class="cols"><div class="card"><span class="pill">'+(p.trk?'מוצאים ראיה':'איפה כתוב?')+'</span><div class="qtxt">'+esc(p.loc.q)+'</div>'+
+    '<div style="color:var(--soft);font-size:16px">הקישו על המשפט בקטע שבו נמצאת התשובה.</div><div id="locFb"></div><button class="btn" id="go" hidden>ממשיכים לכתיבה ✍️</button></div>'+
+    '<div class="card pcard">'+psgHtml(p,true)+'</div></div>';
   window.scrollTo(0,0);
   var fb=document.getElementById('locFb'), go=document.getElementById('go'), over=false;
   var finish=function(pts,cls,msg){ over=true; cur.score+=pts; cur.loc=pts; fb.innerHTML='<div class="fb '+cls+'">'+msg+'</div>';
-    var t=app.querySelector('.sent[data-i="'+target+'"]'); if(t) t.classList.add('good'); go.hidden=false; go.scrollIntoView({block:'nearest'}); };
+    var t=app.querySelector('.sent[data-i="'+target+'"]'); if(t) t.classList.add('good'); go.hidden=false; go.scrollIntoView({block:'nearest'}); if(desk()){ try{go.focus();}catch(e){} } };
   each('.sent',function(el){ var hit=function(){ if(over) return;
       if(+el.getAttribute('data-i')===target){ finish(cur.locTry?0.5:1,'ok',cur.locTry?'✅ נכון! מצאתם בניסיון השני.':'✅ מצוין! מצאתם את המשפט.'); }
       else { cur.locTry++; el.classList.add('wrong');
@@ -509,7 +522,8 @@ function spellFix(typed,p){
 }
 function write(){
   var p=cur.p, q=p.qs[cur.qi], tries=0, lvl=p.lvl, kbs=q.type==='kbs', need=kbs?2:(p.trk&&q.st?3:LEVELS[lvl-1].min);
-  var h=stepsBar(3+cur.qi,3+p.qs.length)+'<div class="card"><span class="pill">'+(p.trk?'דוח חקירה · ':'')+'שאלה '+(cur.qi+1)+' מתוך '+p.qs.length+(q.op?' · מה דעתכם?':'')+'</span>'+
+  wide(true);
+  var h=stepsBar(3+cur.qi,3+p.qs.length)+'<div class="cols"><div class="card"><span class="pill">'+(p.trk?'דוח חקירה · ':'')+'שאלה '+(cur.qi+1)+' מתוך '+p.qs.length+(q.op?' · מה דעתכם?':'')+'</span>'+
     '<div class="qtxt">'+esc(q.q)+'</div>';
   if(kbs){
     h+='<div class="starter" style="font-size:20px">'+esc(q.stem)+' …</div>'+
@@ -521,13 +535,17 @@ function write(){
       '<textarea id="ans" rows="3" aria-label="התשובה שלכם" placeholder="'+(q.st?'המשיכו את המשפט כאן':'כתבו כאן תשובה במשפט שלם')+'"></textarea>'+
       '<button class="tog" id="mic" hidden>🎤 קודם להגיד בקול, ואז לכתוב</button>';
   }
-  h+='<div id="fb"></div><button class="btn" id="chk">בדיקה ✅</button><button class="btn" id="nxt" hidden></button></div>'+
-    '<div class="card"><button class="tog" id="tg" aria-expanded="false">📖 להציג את הקטע</button><div id="pg" hidden>'+psgHtml(p,false)+'</div></div>';
+  h+='<div id="fb"></div><button class="btn" id="chk">בדיקה ✅</button><button class="btn" id="nxt" hidden></button><div class="kbd">במקלדת: Ctrl+Enter לבדיקה ולהמשך</div></div>'+
+    '<div class="card pcard"><button class="tog" id="tg" aria-expanded="false">📖 להציג את הקטע</button><div id="pg" hidden>'+psgHtml(p,false)+'</div></div></div>';
   app.innerHTML=h; window.scrollTo(0,0);
   var ta=document.getElementById('ans'), fb=document.getElementById('fb'), chk=document.getElementById('chk'), nxt=document.getElementById('nxt');
   var K=kbs?{ki:document.getElementById('k_ki'),aval:document.getElementById('k_aval'),lachen:document.getElementById('k_lachen')}:null;
   document.getElementById('tg').onclick=function(){ var g=document.getElementById('pg'); g.hidden=!g.hidden; this.textContent=g.hidden?'📖 להציג את הקטע':'📖 להסתיר את הקטע'; this.setAttribute('aria-expanded',String(!g.hidden)); };
   if(!kbs) dictation(document.getElementById('said'),document.getElementById('mic'));
+  /* מקלדת: הסמן בתיבה מיד (רק במסך רחב, כדי לא להקפיץ מקלדת בטלפון), ו-Ctrl+Enter לבדיקה / לתיקון / להמשך */
+  if(desk()){ try{ (kbs?K.ki:ta).focus(); }catch(e){} }
+  app.querySelector('.cols').onkeydown=function(e){ if(e.key!=='Enter'||!(e.ctrlKey||e.metaKey)) return; e.preventDefault();
+    var fx=document.getElementById('fxok'); if(fx) fx.click(); else if(!chk.hidden) chk.click(); else if(!nxt.hidden) nxt.click(); };
   nxt.textContent=cur.qi+1<p.qs.length?'לשאלה הבאה ➜':(p.trk?'לסגירת התיק 🏁':'לסיום 🏁');
   var typedAll=function(){ return kbs?[K.ki.value,K.aval.value,K.lachen.value].join(' '):ta.value; };
   var fullText=function(){ return kbs?(q.stem+' כי '+K.ki.value.trim()+' · אבל '+K.aval.value.trim()+' · לכן '+K.lachen.value.trim()):((q.st?q.st+' ':'')+ta.value.trim()); };
@@ -540,18 +558,18 @@ function write(){
       document.getElementById('self').onclick=function(){ var np=a.pts>=1?1.5:1; cur.score+=np-a.pts; a.pts=np; a.m='self'; this.remove();
         fb.insertAdjacentHTML('beforeend','<div class="fb mid">רשמנו. הורה יוכל לקרוא את התשובה ולאשר.</div>'); }; }
     var fixes=spellFix(typedAll(),p);
-    if(!fixes.length){ nxt.hidden=false; nxt.scrollIntoView({block:'nearest'}); return; }
+    if(!fixes.length){ nxt.hidden=false; nxt.scrollIntoView({block:'nearest'}); if(desk()){ try{nxt.focus();}catch(e){} } return; }
     a.sp=fixes;
     fb.insertAdjacentHTML('beforeend','<div class="fix" id="fix"><b>🎯 '+(fixes.length===1?'מילה אחת לתיקון כתיב':fixes.length+' מילים לתיקון כתיב')+'</b>'+
       fixes.map(function(f,i){ return '<div class="fr">כתבתם <s>'+esc(f.bad)+'</s> · כותבים <b>'+esc(f.good)+'</b> <input data-fx="'+i+'" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="כתבו שוב: '+esc(f.good)+'"></div>'; }).join('')+
       '<button class="btn" id="fxok">תיקנתי ✅</button><button class="tog" id="fxskip">לדלג על התיקון</button></div>');
-    var done=function(){ var b=document.getElementById('fix'); if(b) b.remove(); nxt.hidden=false; nxt.scrollIntoView({block:'nearest'}); };
+    var done=function(){ var b=document.getElementById('fix'); if(b) b.remove(); nxt.hidden=false; nxt.scrollIntoView({block:'nearest'}); if(desk()){ try{nxt.focus();}catch(e){} } };
     each('[data-fx]',function(inp){ inp.oninput=function(){ inp.classList.toggle('ok',norm(inp.value)===norm(fixes[+inp.getAttribute('data-fx')].good)); }; });
     document.getElementById('fxok').onclick=function(){ var all=true; each('[data-fx]',function(inp){ if(!inp.classList.contains('ok')) all=false; });
       if(!all){ this.textContent='עוד לא. העתיקו כל מילה בדיוק ✅'; return; }
       fixes.forEach(function(f){ if(!S.wanted[f.good]) S.wanted[f.good]={n:0}; }); save(); done(); };
     document.getElementById('fxskip').onclick=done;
-    document.getElementById('fix').scrollIntoView({block:'nearest'});
+    document.getElementById('fix').scrollIntoView({block:'nearest'}); if(desk()){ try{ app.querySelector('[data-fx]').focus(); }catch(e){} }
   };
   chk.onclick=function(){
     if(kbs){ var short=[K.ki,K.aval,K.lachen].filter(function(t){ return words(t.value)<need; });
@@ -583,7 +601,7 @@ function dictation(box,btn){
 }
 /* ---------- סיום ---------- */
 function end(){
-  var p=cur.p, d={t:Date.now(), score:Math.round(cur.score*10)/10, max:cur.max, loc:cur.loc, ans:cur.ans};
+  var p=cur.p, wide(false); d={t:Date.now(), score:Math.round(cur.score*10)/10, max:cur.max, loc:cur.loc, ans:cur.ans};
   var old=S.done[p.id]; S.done[p.id]=d; save();
   var ok=d.score/d.max>=0.6, before=old&&old.score/old.max>=0.6, h, nextP, lvUp=false;
   if(p.trk){
@@ -611,7 +629,7 @@ function ansHtml(a){ var ic={full:'✅',part:'🟡',no:'🔴',self:'✋'}[a.m]||
   return '<div class="pa"><b>'+ic+' '+esc(a.q)+'</b>'+esc(a.a)+(a.sp&&a.sp.length?'<div style="font-size:14px;color:var(--soft)">כתיב: '+a.sp.map(function(f){return esc(f.bad)+' ← '+esc(f.good);}).join(' · ')+'</div>':'')+'</div>'; }
 /* ---------- הורים ---------- */
 function parents(){
-  var ids=Object.keys(S.done).sort(function(a,b){return S.done[b].t-S.done[a].t;}), rp=replies(), nw=0, na=0;
+ wide(false);  var ids=Object.keys(S.done).sort(function(a,b){return S.done[b].t-S.done[a].t;}), rp=replies(), nw=0, na=0;
   ids.forEach(function(id){ (S.done[id].ans||[]).forEach(function(a){ nw+=words(a.a); na++; }); });
   var wl=Object.keys(S.wanted);
   var h='<div class="card"><h2>להורים</h2><div style="font-size:16px;color:var(--soft)">כאן מופיעות התשובות שנכתבו, מהחדש לישן. ✅ מלאה · 🟡 חלקית · 🔴 לא נמצאה התשובה · ✋ הילד סימן שכתב את אותו רעיון במילים אחרות. '+
