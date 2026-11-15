@@ -265,6 +265,7 @@ try{(function(){
     if(c.sameFamily(j)){clear();say('המכשיר הזה כבר מחובר להתקדמות של המשפחה.');return}
     if(c.hasLocalData()&&!confirm('לחבר את המכשיר הזה להתקדמות של המשפחה? מה שכבר נשמר במכשיר הזה יוחלף.')){clear();return}
     run(null,function(){return c.join(j).then(function(n){clear();return joined(n)})})}
+  if(location.hash==='#cloud'){try{$('cloudBox').open=true;setTimeout(function(){$('cloudBox').scrollIntoView({block:'start',behavior:'smooth'})},300)}catch(e){}}
   addEventListener('lhcloud',function(){render()});
   addEventListener('lhcloud-ready',function(){render();handleLink()});
   render();handleLink();
