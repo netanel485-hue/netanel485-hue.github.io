@@ -601,7 +601,8 @@ function dictation(box,btn){
 }
 /* ---------- סיום ---------- */
 function end(){
-  var p=cur.p, wide(false); d={t:Date.now(), score:Math.round(cur.score*10)/10, max:cur.max, loc:cur.loc, ans:cur.ans};
+  wide(false);
+  var p=cur.p, d={t:Date.now(), score:Math.round(cur.score*10)/10, max:cur.max, loc:cur.loc, ans:cur.ans};
   var old=S.done[p.id]; S.done[p.id]=d; save();
   var ok=d.score/d.max>=0.6, before=old&&old.score/old.max>=0.6, h, nextP, lvUp=false;
   if(p.trk){
