@@ -357,7 +357,7 @@ function home(){
   if(tab==='case'){
     var n=closed(), rk=rank(n); list=cases();
     h+='<div class="card"><div class="rank"><span class="em" aria-hidden="true">'+rk.r[2]+'</span><div style="flex:1"><span class="pill">הדרגה שלכם</span><h2>'+rk.r[1]+'</h2>'+
-      (rk.next?'<div style="color:var(--soft);font-size:16px">עוד '+(rk.next[0]-n)+' תיקים סגורים לדרגת '+rk.next[1]+'</div><div class="bar"><i style="width:'+Math.round(100*(n-rk.r[0])/(rk.next[0]-rk.r[0]))+'%"></i></div>':'<div style="color:var(--soft);font-size:16px">הגעתם לדרגה הגבוהה ביותר!</div>')+
+      (rk.next?'<div style="color:var(--soft);font-size:16px">'+(rk.next[0]-n===1?'עוד תיק סגור אחד':'עוד '+(rk.next[0]-n)+' תיקים סגורים')+' לדרגת '+rk.next[1]+'</div><div class="bar"><i style="width:'+Math.round(100*(n-rk.r[0])/(rk.next[0]-rk.r[0]))+'%"></i></div>':'<div style="color:var(--soft);font-size:16px">הגעתם לדרגה הגבוהה ביותר!</div>')+
       '</div></div></div><div class="card"><h2>בחרו תיק לחקירה</h2><div style="color:var(--soft);font-size:16px">קוראים את התיק, מוצאים ראיה וכותבים דוח. תיקים סגורים: '+n+' מתוך '+list.length+'</div></div>';
   } else {
     var top=1; LEVELS.forEach(function(l){ if(byLevel(l.n).length && unlocked(l.n)) top=l.n; });
@@ -413,7 +413,7 @@ function flash(){
     var hide=function(){ if(cur!==my||!fw.isConnected) return; fw.textContent='· · ·'; fi.hidden=false; fc.hidden=false; fi.value=''; try{fi.focus();}catch(e){} };
     setTimeout(hide,1800);
     fc.onclick=function(){
-      if(norm(fi.value)===norm(w)){ S.wanted[w].n=(S.wanted[w].n||0)+1; if(S.wanted[w].n>=3) delete S.wanted[w];
+      if(norm(fi.value)===norm(w)){ S.wanted[w].n=(S.wanted[w].n||0)+1; if(S.wanted[w].n>=3) delete S.wanted[w]; save();
         fi.classList.add('ok'); fc.hidden=true; ff.innerHTML='<div class="fb ok">✅ תפסתם!</div>'; setTimeout(function(){ i++; show(); },800); }
       else if(++tries<2){ ff.innerHTML='<div class="fb bad">עוד לא. הסתכלו שוב.</div>'; fw.textContent=w; fi.hidden=true; fc.hidden=true; setTimeout(hide,2400); }
       else { ff.innerHTML='<div class="fb mid">כותבים: <b>'+esc(w)+'</b></div>'; fc.hidden=true; setTimeout(function(){ i++; show(); },1800); }
@@ -496,13 +496,14 @@ function spellFix(typed,p){
   var lex=lexicon(p), out=[], seen={}, PRE='והבלכמש';
   var gz=function(L,c){ if(L.length!==c.length) return false; var d=0; for(var i=0;i<L.length;i++){ if(L[i]!==c[i]){ if(!((L[i]==='ג'&&c[i]==='ז')||(L[i]==='ז'&&c[i]==='ג'))) return false; d++; } } return d>0; };
   var omit=function(L,c){ if(L.length<4||c.length!==L.length-1) return false; for(var i=1;i<L.length-1;i++){ if('וי'.indexOf(L[i])<0 && L.slice(0,i)+L.slice(i+1)===c) return true; } return false; };
+  var raw={}; String(typed).replace(/[\u0591-\u05C7]/g,'').split(/[^\u05D0-\u05EA]+/).forEach(function(w){ raw[norm(w)]=w; });
   norm(typed).split(' ').forEach(function(w){
     if(out.length>=3||w.length<3||seen[w]||/[0-9a-zA-Z]/.test(w)) return; seen[w]=1;
     var forms=[['',w]]; if(PRE.indexOf(w[0])>=0&&w.length>3){ forms.push([w[0],w.slice(1)]); if(PRE.indexOf(w[1])>=0&&w.length>4) forms.push([w.slice(0,2),w.slice(2)]); }
     if(forms.some(function(f){ return lex[f[1]]||COMMON[f[1]]; })) return;
     for(var i=0;i<forms.length;i++){ var core=forms[i][1]; if(i>0&&core.length<4) continue;
       for(var L in lex){ if(L.length<3) continue;
-        if(hom(L)===hom(core)||gz(L,core)||(i===0&&L.length>=5&&omit(L,core))){ out.push({bad:w, good:forms[i][0]+lex[L]}); return; } } }
+        if(hom(L)===hom(core)||gz(L,core)||(i===0&&L.length>=5&&omit(L,core))){ out.push({bad:raw[w]||w, good:forms[i][0]+lex[L]}); return; } } }
   });
   return out;
 }
