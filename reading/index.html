@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>הבנת הנקרא — קוראים, מבינים וכותבים</title>
+<link rel="icon" href="../favicon.png">
+<link id="kit-theme" rel="stylesheet" href="../shared/kit-theme.css">
+<style>
+:root{--c:#D9480F;--bg:#FAF6EB;--ink:#1E4634;--soft:#4F6B5D;--line:#D8E4D4;--ok:#2B8A3E;--mid:#E67700;--bad:#C92A2A}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Arial,system-ui,sans-serif;font-size:18px;line-height:1.6;-webkit-text-size-adjust:100%}
+main{max-width:760px;margin:0 auto;padding:0 16px 48px}
+.card{background:#fff;border:2px solid var(--line);border-radius:20px;padding:16px;margin:12px 0;box-shadow:0 4px 0 color-mix(in srgb,var(--c) 22%,#D8E4D4)}
+h2{font-size:22px;margin:4px 0 8px}
+h3{font-size:19px;margin:0 0 6px}
+button{font:inherit;color:inherit;cursor:pointer}
+.btn{display:block;width:100%;min-height:54px;border:0;border-radius:18px;background:var(--c);color:#fff;font-size:20px;font-weight:800;padding:10px 16px;
+  box-shadow:0 5px 0 color-mix(in srgb,var(--c) 62%,#000);margin-top:12px}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 color-mix(in srgb,var(--c) 62%,#000)}
+.btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--line);box-shadow:0 4px 0 var(--line);font-size:17px;font-weight:700;min-height:48px}
+.btn[disabled]{opacity:.45}
+.btn:focus-visible,.lv:focus-visible,.pc:focus-visible,.sent:focus-visible{outline:3px solid #F59E0B;outline-offset:2px}
+/* שלבים */
+.lvrow{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.lv{min-height:58px;border-radius:16px;border:2px solid var(--line);background:#fff;font-weight:800;font-size:20px;display:grid;place-items:center;line-height:1.1;padding:4px}
+.lv small{display:block;font-size:11px;font-weight:700;color:var(--soft)}
+.lv.on{background:var(--c);color:#fff;border-color:var(--c)}.lv.on small{color:#fff}
+.lv.done{background:#EBFBEE;border-color:#8CE99A}
+.lv.lock{opacity:.5}
+.pc{display:flex;align-items:center;gap:12px;width:100%;text-align:right;background:#fff;border:2px solid var(--line);border-radius:18px;padding:12px 14px;margin:10px 0;
+  box-shadow:0 4px 0 color-mix(in srgb,var(--c) 22%,#D8E4D4);min-height:64px}
+.pc .em{font-size:30px}.pc b{display:block;font-size:19px}.pc small{color:var(--soft);font-size:14px}
+.pc .st{margin-inline-start:auto;font-size:18px;white-space:nowrap}
+/* קטע */
+.psg{font-size:19px;line-height:1.9}
+.psg p{margin:0 0 12px}
+.psg.pick .sent{border-radius:8px;background:#FFF4E6;cursor:pointer;padding:2px 0;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.sent.good{background:#D3F9D8!important}.sent.wrong{background:#FFE3E3!important}.sent.say{background:#FFF3BF}
+.pill{display:inline-block;background:color-mix(in srgb,var(--c) 12%,#fff);color:var(--c);border-radius:999px;padding:2px 12px;font-size:14px;font-weight:800}
+.voc{margin:8px 0 0;padding:0;list-style:none}.voc li{padding:6px 0;border-bottom:1px dashed var(--line)}.voc li:last-child{border:0}
+.steps{display:flex;gap:6px;margin:6px 0 2px}.steps i{flex:1;height:8px;border-radius:8px;background:var(--line)}.steps i.on{background:var(--c)}
+.qtxt{font-size:20px;font-weight:800;margin:6px 0 10px}
+.starter{font-weight:700;color:var(--c);margin-bottom:4px}
+textarea{width:100%;min-height:96px;border:2px solid var(--line);border-radius:14px;padding:10px 12px;font:inherit;font-size:19px;line-height:1.6;color:var(--ink);background:#FFFDF7;resize:vertical}
+textarea:focus{outline:3px solid #F59E0B;outline-offset:1px}
+.help{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0}.help span{background:#F1F3F5;border-radius:999px;padding:2px 10px;font-size:15px}
+.fb{border-radius:14px;padding:10px 12px;margin-top:12px;font-weight:700}
+.fb.ok{background:#EBFBEE;color:var(--ok)}.fb.mid{background:#FFF4E6;color:var(--mid)}.fb.bad{background:#FFF5F5;color:var(--bad)}
+.fb small{display:block;font-weight:600;color:var(--ink);margin-top:4px;font-size:16px}
+.model{background:#F8F9FA;border-radius:14px;padding:10px 12px;margin-top:10px;font-size:17px}.model b{display:block;font-size:14px;color:var(--soft)}
+.row{display:flex;gap:8px}.row .btn{flex:1}
+.tog{background:none;border:0;color:var(--c);font-weight:800;padding:8px 0;font-size:17px}
+.center{text-align:center}.big{font-size:54px;line-height:1.1}
+.plink{display:block;margin:26px auto 0;background:none;border:0;color:var(--soft);font-size:14px;text-decoration:underline}
+.pa{border-top:1px dashed var(--line);padding:8px 0;font-size:16px}.pa b{display:block}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){.btn{transition:none}}
+</style>
+</head>
+<body class="kit-themed" style="--c:#D9480F">
+<div class="kit-hero" role="banner" style="--c:#D9480F"><span class="kh-pal" aria-hidden="true">📖</span><div class="kh-t"><div class="kh-title">הבנת הנקרא</div><div class="kh-sub">קוראים, מבינים וכותבים</div></div><a class="kh-home" id="homeLink" href="../" aria-label="חזרה">🏠</a></div>
+<main id="app"></main>
+
+<script id="reading-data">
+/* קטעי הקריאה — כולם מקוריים (נכתבו לאתר, לא הועתקו מספרי לימוד).
+   מבנה קטע: id, lvl, kind, em, title, pre (שאלה לפני הקריאה), voc [[מילה, פירוש]], text (פסקאות),
+   loc {q, find}  — "איפה כתוב?": find = רצף מילים ייחודי מתוך המשפט הנכון,
+   qs [{q, st (פתיחת משפט), ideas [{k:[שורשים/מילים שמעידים שהרעיון נמצא], h: רמז}], model, op (שאלת דעה)}] */
+var LEVELS = [
+  {n:1, name:'משלימים משפט', min:2},
+  {n:2, name:'משלימים ומנמקים', min:3},
+  {n:3, name:'משפט שלם עם מילות עזר', min:5},
+  {n:4, name:'משפט שלם לבד', min:6},
+  {n:5, name:'שני משפטים', min:10},
+  {n:6, name:'תשובה עם הוכחה', min:14},
+  {n:7, name:'מסיקים מסקנות', min:18},
+  {n:8, name:'פסקה: טענה והוכחה', min:25},
+  {n:9, name:'פסקת דעה', min:32},
+  {n:10, name:'סיכום ודעה', min:40}
+];
+var PASSAGES = [
+{id:'p01', lvl:1, kind:'קטע מידע', em:'🐕', title:'הכלב שחיכה בתחנה',
+ pre:'כמה זמן, לדעתכם, כלב יכול לחכות למישהו שהוא אוהב?',
+ voc:[['נאמן','מי שנשאר לצידך תמיד ולא עוזב'],['ליווה','הלך יחד עם מישהו'],['פסל','דמות עשויה אבן או מתכת']],
+ text:["לפני כמאה שנה חי ביפן כלב בשם האצ'יקו. בכל בוקר הוא ליווה את בעליו, פרופסור באוניברסיטה, אל תחנת הרכבת. בכל ערב הוא חזר לתחנה וחיכה לו ליד השער.",
+  "יום אחד הפרופסור חלה בזמן העבודה ומת. הוא לא חזר ברכבת. האצ'יקו לא הבין מה קרה. הוא המשיך להגיע לתחנה בכל ערב, בדיוק בשעה שבה הרכבת הייתה מגיעה, וחיכה.",
+  "כך עשה האצ'יקו במשך כמעט עשר שנים. אנשים שעברו בתחנה התרגלו אליו. הם הביאו לו אוכל ומים, ועיתון אחד כתב עליו כתבה. בזכותה כל יפן שמעה על הכלב הנאמן.",
+  "היום עומד ליד התחנה פסל של האצ'יקו. אנשים רבים קובעים להיפגש דווקא לידו."],
+ loc:{q:"במשך כמה זמן חיכה האצ'יקו בתחנה?", find:'כמעט עשר שנים'},
+ qs:[
+  {q:'למה הפרופסור לא חזר ברכבת?', st:'הפרופסור לא חזר ברכבת כי', ideas:[{k:['חלה','מת','נפטר','חולה'],h:'קראו שוב את תחילת הפסקה השנייה.'}], model:'הפרופסור לא חזר ברכבת כי הוא חלה בזמן העבודה ומת.'},
+  {q:"איך כל יפן שמעה על האצ'יקו?", st:"כל יפן שמעה על האצ'יקו בזכות", ideas:[{k:['עיתון','עתון','כתבה'],h:'חפשו בפסקה השלישית: מי כתב עליו?'}], model:"כל יפן שמעה על האצ'יקו בזכות כתבה שהתפרסמה עליו בעיתון."},
+  {q:"למה קוראים להאצ'יקו \"הכלב הנאמן\"?", st:'קוראים לו הכלב הנאמן כי', ideas:[{k:['חיכ','המשיך','חזר','הגיע','בא '],h:'מה הוא עשה בכל ערב?'},{k:['שנים','שנה','כל ערב','כל יום','מת','אחרי ש','למרות'],h:'כמה זמן זה נמשך, וזה קרה גם אחרי מה?'}], model:'קוראים לו הכלב הנאמן כי הוא המשיך לחכות לבעליו בתחנה בכל ערב במשך כמעט עשר שנים, גם אחרי שבעליו מת.'}
+ ]},
+{id:'p02', lvl:1, kind:'קטע מידע', em:'🥱', title:'למה אנחנו מפהקים?',
+ pre:'מתי פיהקתם בפעם האחרונה? נסו לקרוא את הקטע בלי לפהק.',
+ voc:[['חמצן','הגז שבאוויר שאנחנו צריכים כדי לנשום'],['מדבק','עובר מאדם לאדם'],['חוקרים','אנשים שבודקים דברים כדי לגלות ידע חדש']],
+ text:["כולנו מפהקים: כשאנחנו עייפים, כשמשעמם לנו, ולפעמים סתם באמצע היום. אבל למה הגוף עושה את זה?",
+  "במשך שנים חשבו שפיהוק מכניס לגוף עוד חמצן. היום מדענים רבים חושבים אחרת. לדעתם הפיהוק מקרר את המוח. כשאנחנו פותחים את הפה ושואפים הרבה אוויר, דם קריר יותר מגיע אל המוח, והוא עובד טוב יותר.",
+  "יש עוד דבר מוזר בפיהוק: הוא מדבק. מספיק לראות מישהו מפהק, ואפילו רק לקרוא על פיהוק, כדי להתחיל לפהק בעצמנו. חוקרים גילו שאנחנו נדבקים בעיקר מאנשים שקרובים אלינו, כמו בני משפחה וחברים.",
+  "אז אם פיהקתם עכשיו, זה לא בגלל שהקטע משעמם. זה פשוט המוח שלכם שמתקרר."],
+ loc:{q:'ממי אנחנו נדבקים בפיהוק בעיקר?', find:'שקרובים אלינו'},
+ qs:[
+  {q:'מה חשבו פעם על הפיהוק?', st:'פעם חשבו שהפיהוק', ideas:[{k:['חמצן'],h:'חפשו בתחילת הפסקה השנייה: מה הפיהוק מכניס לגוף?'}], model:'פעם חשבו שהפיהוק מכניס לגוף עוד חמצן.'},
+  {q:'לפי המדענים היום, איך הפיהוק עוזר למוח?', st:'הפיהוק עוזר למוח כי הוא', ideas:[{k:['מקרר','קריר','מתקרר','קירור','מצנן','לקרר'],h:'מה קורה לטמפרטורה של המוח?'}], model:'הפיהוק עוזר למוח כי הוא מקרר אותו, וכך המוח עובד טוב יותר.'},
+  {q:'מה פירוש המשפט "הפיהוק מדבק"?', st:'הפיהוק מדבק, כלומר', ideas:[{k:['רוא','מישהו','אחר','קורא'],h:'מה צריך לקרות קודם? את מי רואים?'},{k:['גם אנחנו','גם אני','בעצמ','מתחיל','נדבק','גם הוא','גם מפהק'],h:'ומה קורה לנו אחרי זה?'}], model:'הפיהוק מדבק, כלומר כשרואים מישהו אחר מפהק מתחילים לפהק בעצמנו.'}
+ ]},
+{id:'p03', lvl:1, kind:'מודעה', em:'⚽', title:'טורניר הכדורגל של השכונה',
+ pre:'מה חשוב לדעת לפני שנרשמים לתחרות?',
+ voc:[['טורניר','תחרות עם הרבה משחקים'],['יידחה','יעבור לתאריך מאוחר יותר'],['לעודד','לקרוא קריאות שמחזקות את השחקנים']],
+ text:["טורניר הכדורגל של השכונה חוזר!",
+  "ביום שישי, 14 במאי, יתקיים במגרש שליד המתנ\"ס טורניר כדורגל לילדי כיתות ד' עד ו'. המשחקים יתחילו בשעה 15:00 ויסתיימו בשעה 18:00.",
+  "איך נרשמים? מרכיבים קבוצה של חמישה שחקנים ושוער, בוחרים לה שם, ונרשמים אצל רונית במזכירות המתנ\"ס עד יום שלישי. ההרשמה בחינם.",
+  "חשוב לדעת: כל שחקן צריך להביא בקבוק מים וכובע. מי שיגיע בלי נעלי ספורט לא יוכל לשחק. אם ירד גשם, הטורניר יידחה בשבוע.",
+  "הקבוצה המנצחת תקבל גביע, וכל המשתתפים יקבלו ארטיק. גם מי שלא משחק מוזמן לבוא ולעודד!"],
+ loc:{q:'עד מתי אפשר להירשם לטורניר?', find:'עד יום שלישי'},
+ qs:[
+  {q:'מה יקרה אם ירד גשם?', st:'אם ירד גשם,', ideas:[{k:['יידחה','ידחה','נדחה','דחו','שבוע','יעבור','מאוחר'],h:'חפשו את המילה "גשם" בקטע וקראו את המשפט.'}], model:'אם ירד גשם, הטורניר יידחה בשבוע.'},
+  {q:'מי לא יוכל לשחק בטורניר?', st:'לא יוכל לשחק מי ש', ideas:[{k:['נעל'],h:'חפשו בפסקה שמתחילה במילים "חשוב לדעת".'}], model:'לא יוכל לשחק מי שיגיע בלי נעלי ספורט.'},
+  {q:'כמה ילדים יש בכל קבוצה? הסבירו איך חישבתם.', st:'בכל קבוצה יש', ideas:[{k:['שש','שיש','6'],h:'חברו את כל מי שנמצא בקבוצה.'},{k:['חמיש','5','שוער','ועוד'],h:'כתבו גם ממי מורכבת הקבוצה.'}], model:'בכל קבוצה יש שישה ילדים, כי יש בה חמישה שחקנים ועוד שוער.'}
+ ]},
+{id:'p04', lvl:1, kind:'סיפור', em:'🔑', title:'המפתח',
+ pre:'קרה לכם פעם שנשארתם מחוץ לבית בלי מפתח? מה עשיתם?',
+ voc:[['נזפה','דיברה בכעס אל מישהו על משהו שעשה'],['הנהן','הזיז את הראש כדי לומר "כן"'],['קיווה','רצה מאוד שמשהו יקרה']],
+ text:["נועם חזר מבית הספר, הכניס יד לכיס ונבהל. המפתח לא היה שם. הוא חיפש בתיק, בקלמר ואפילו בקופסת האוכל. כלום.",
+  "אמא ואבא יחזרו רק בערב. נועם התיישב על המדרגות וחשב מה לעשות. פתאום נפתחה הדלת ממול. זאת הייתה גברת לוי, השכנה שתמיד נזפה בילדים כשהם הרעישו בחצר. נועם קיווה שהיא לא תשים לב אליו.",
+  "\"נשארת בחוץ?\" שאלה. נועם הנהן. \"בוא, חכה אצלי,\" אמרה, \"בדיוק הוצאתי עוגה מהתנור.\"",
+  "כל אחר הצהריים הם ישבו במטבח שלה. גברת לוי סיפרה על הילדות שלה בכפר קטן, ונועם שכח לגמרי מהמפתח.",
+  "בערב, כשאמא דפקה בדלת, נועם כמעט הצטער ללכת. \"אפשר לבוא שוב מחר?\" שאל."],
+ loc:{q:'איפה חיפש נועם את המפתח?', find:'חיפש בתיק'},
+ qs:[
+  {q:'למה נועם נבהל?', st:'נועם נבהל כי', ideas:[{k:['מפתח'],h:'מה היה חסר בכיס?'}], model:'נועם נבהל כי המפתח לא היה בכיס שלו.'},
+  {q:'למה נועם קיווה שגברת לוי לא תשים לב אליו?', st:'נועם קיווה שהיא לא תשים לב אליו כי', ideas:[{k:['נזפ','כעס','צעק','פחד','הרעיש','גער','כועס'],h:'מה גברת לוי עשתה תמיד לילדים בחצר?'}], model:'נועם קיווה שהיא לא תשים לב אליו כי היא תמיד נזפה בילדים, והוא חשב שהיא תכעס גם עליו.'},
+  {q:'איך השתנתה דעתו של נועם על גברת לוי? איך יודעים?', st:'בסוף הסיפור נועם', ideas:[{k:['רצה','רוצ','ביקש','שאל','הצטער','אהב','נהנ','נחמד','חיב'],h:'מה נועם הרגיש כלפיה בסוף?'},{k:['שוב','מחר','לחזור','ללכת','לבוא'],h:'מה הוא שאל כשאמא הגיעה?'}], model:'בסוף הסיפור נועם כבר אהב להיות אצל גברת לוי. יודעים את זה כי הוא הצטער ללכת ושאל אם אפשר לבוא שוב מחר.'}
+ ]},
+{id:'p05', lvl:1, kind:'קטע מידע', em:'🐝', title:'בלי דבורים אין תפוחים',
+ pre:'מה הדבר הכי חשוב שהדבורים נותנות לנו? (רמז: זה לא דבש)',
+ voc:[['צוף','נוזל מתוק שנמצא בתוך הפרח'],['חומרי הדברה','חומרים שמרססים כדי להרוג חרקים מזיקים'],['מזיקים','חרקים שהורסים את הצמחים בשדה']],
+ text:["דבורה אחת קטנה מבקרת בכאלף פרחים ביום. היא אוספת מהם צוף, וממנו מכינות הדבורים דבש. אבל הדבש הוא לא הדבר החשוב ביותר שהדבורים נותנות לנו.",
+  "כשדבורה עוברת מפרח לפרח, נדבקת לגופה אבקה צהובה. האבקה עוברת איתה אל הפרח הבא, וכך הפרח יכול להפוך לפרי. בלי הדבורים לא היו לנו תפוחים, שקדים, אבטיחים ועוד הרבה פירות וירקות.",
+  "בשנים האחרונות יש בעולם פחות ופחות דבורים. אחת הסיבות היא חומרי הדברה שמרססים בשדות. החומרים האלה נועדו להרוג מזיקים, אבל הם פוגעים גם בדבורים.",
+  "מה אפשר לעשות? אפשר לשתול בגינה או במרפסת פרחים שדבורים אוהבות, כמו לבנדר ורוזמרין. וכשדבורה מתקרבת, לא צריך להבריח אותה. היא רק עובדת."],
+ loc:{q:'ממה מכינות הדבורים דבש?', find:'אוספת מהם צוף'},
+ qs:[
+  {q:'מה אחת הסיבות לכך שיש פחות דבורים בעולם?', st:'יש פחות דבורים, בין השאר בגלל', ideas:[{k:['הדבר','ריסוס','מרסס','רעל','חומר'],h:'חפשו בפסקה השלישית: מה מרססים בשדות?'}], model:'יש פחות דבורים, בין השאר בגלל חומרי הדברה שמרססים בשדות.'},
+  {q:'למה בלי דבורים לא היו לנו תפוחים?', st:'בלי דבורים לא היו תפוחים כי', ideas:[{k:['אבק','מעביר','מאביק'],h:'מה הדבורה מעבירה מפרח לפרח?'},{k:['פרי','פירות','תפוח'],h:'למה הפרח הופך בזכות האבקה?'}], model:'בלי דבורים לא היו תפוחים כי הדבורים מעבירות אבקה מפרח לפרח, ורק כך הפרח יכול להפוך לפרי.'},
+  {q:'מה אפשר לעשות כדי לעזור לדבורים?', st:'כדי לעזור לדבורים אפשר', ideas:[{k:['שתול','לשתול','פרח','לבנדר','רוזמרין','להבריח','לגדל','לא להרוג'],h:'קראו את הפסקה האחרונה.'}], model:'כדי לעזור לדבורים אפשר לשתול פרחים שהן אוהבות, כמו לבנדר ורוזמרין, ולא להבריח אותן.'}
+ ]},
+{id:'p06', lvl:2, kind:'קטע מידע', em:'🧊', title:'ההמצאה שנולדה בטעות',
+ pre:'האם ילד יכול להמציא משהו שכל העולם ישתמש בו?',
+ voc:[['המצאה','דבר חדש שמישהו חשב עליו ויצר בפעם הראשונה'],['כעבור','אחרי שעבר זמן'],['בזכות','בגלל משהו טוב']],
+ text:["בשנת 1905, בערב קר בעיר סן פרנסיסקו, ישב ילד בן אחת־עשרה בשם פרנק במרפסת הבית. הוא ערבב בכוס מים עם אבקת סודה מתוקה, בעזרת מקל עץ. באמצע קראו לו להיכנס הביתה, והוא שכח את הכוס בחוץ.",
+  "באותו לילה ירדה הטמפרטורה מתחת לאפס. בבוקר מצא פרנק את הכוס, והמשקה שבתוכה היה קפוא לגמרי. המקל נשאר תקוע באמצע. פרנק משך במקל, והגוש הקפוא יצא מהכוס. הוא ליקק אותו וגילה שזה טעים מאוד.",
+  "פרנק הראה את ההמצאה לחברים שלו, אבל רק כעבור שמונה־עשרה שנים, כשכבר היה אבא, החליט למכור אותה. הוא הכין קרחונים על מקל בשבעה טעמים ומכר אותם בפארק שעשועים. הילדים שלו קראו להם \"הקרחון של אבא\".",
+  "כך, בזכות שכחה של ילד אחד, נולד הארטיק שכולנו אוהבים עד היום."],
+ loc:{q:'איפה מכר פרנק את הקרחונים?', find:'בפארק שעשועים'},
+ qs:[
+  {q:'מה גרם למשקה שבכוס לקפוא?', st:'המשקה קפא כי', ideas:[{k:['טמפרטור','אפס','קור','היה קר','לילה','בחוץ','קר מאוד'],h:'מה קרה לטמפרטורה באותו לילה, ואיפה הייתה הכוס?'}], model:'המשקה קפא כי הכוס נשארה בחוץ, ובלילה ירדה הטמפרטורה מתחת לאפס.'},
+  {q:'למה כתוב שהארטיק נולד "בזכות שכחה"?', st:'הארטיק נולד בזכות שכחה כי פרנק', ideas:[{k:['שכח'],h:'מה פרנק שכח?'},{k:['כוס','משק','בחוץ','מרפסת'],h:'איפה נשארה הכוס?'}], model:'הארטיק נולד בזכות שכחה כי פרנק שכח את הכוס עם המשקה בחוץ, ואם הוא לא היה שוכח אותה המשקה לא היה קופא.'},
+  {q:'למה, לדעתכם, פרנק חיכה שנים רבות עד שמכר את ההמצאה?', st:'לדעתי פרנק חיכה כי', op:true, model:'אין כאן תשובה אחת נכונה. למשל: לדעתי פרנק חיכה כי הוא היה ילד ולא חשב שאפשר להרוויח מזה כסף, ורק כשגדל הבין שזו המצאה שאנשים ירצו לקנות.'}
+ ]},
+{id:'p07', lvl:2, kind:'סיפור', em:'⭐', title:'הכוכב',
+ pre:'מה הייתם עושים אם הייתם מקבלים ציון גבוה יותר ממה שמגיע לכם?',
+ voc:[['הציץ','הסתכל מהר'],['בגאווה','כשמרגישים שמחה גדולה על הצלחה'],['ניגש','הלך אל מישהו']],
+ text:["ביום חמישי החזירה המורה את המבחנים בחשבון. יובל הציץ בדף שלו וחייך: 100. זה היה המאה הראשון שלו השנה.",
+  "בהפסקה הוא עבר שוב על המבחן, רק כדי ליהנות. ואז ראה משהו מוזר. בשאלה שש הוא כתב 54, אבל התשובה הנכונה הייתה 56. המורה לא שמה לב לטעות.",
+  "יובל קיפל את הדף מהר והכניס אותו לתיק. \"אף אחד לא יידע,\" אמר לעצמו. אבל כל היום הוא הרגיש כאילו אבן קטנה יושבת לו בבטן. אפילו כשאבא שאל בגאווה על הציון, הוא לא הצליח לשמוח.",
+  "למחרת בבוקר ניגש יובל אל המורה לפני השיעור והראה לה את השאלה. המורה הסתכלה, תיקנה את הציון ל־95, והוסיפה ליד המספר מדבקה של כוכב.",
+  "\"על מה הכוכב?\" שאל יובל.",
+  "\"על משהו שלא בודקים במבחן,\" ענתה."],
+ loc:{q:'מה הייתה התשובה הנכונה בשאלה שש?', find:'התשובה הנכונה הייתה 56'},
+ qs:[
+  {q:'מה פירוש המשפט "אבן קטנה יושבת לו בבטן"?', st:'הכוונה היא שיובל הרגיש', ideas:[{k:['לא נעים','רע','אשמ','מצפון','התבייש','בושה','לא טוב','מוטרד','לא נוח','דאג','לא בסדר','כבד','אי נעימות','עצוב'],h:'זו לא אבן אמיתית. איזו הרגשה יש למי שמסתיר משהו?'}], model:'הכוונה היא שיובל הרגיש לא נעים והמצפון שלו הציק לו, כי הוא ידע שהציון לא מגיע לו.'},
+  {q:'על מה קיבל יובל את הכוכב?', st:'יובל קיבל את הכוכב על', ideas:[{k:['יושר','ישר','אמת','סיפר','הודה','הראה','אומץ','כנות','אמר','גילה'],h:'מה יובל עשה למחרת בבוקר, אף על פי שהציון שלו ירד?'}], model:'יובל קיבל את הכוכב על היושר שלו: הוא סיפר למורה על הטעות, אף על פי שידע שהציון שלו יירד.'},
+  {q:'מה אתם הייתם עושים במקומו של יובל? הסבירו למה.', st:'במקומו של יובל הייתי', op:true, model:'אין כאן תשובה אחת נכונה. למשל: במקומו של יובל הייתי מספר למורה, כי לא הייתי נהנה מציון שלא באמת הרווחתי.'}
+ ]},
+{id:'p08', lvl:2, kind:'מכתב', em:'✉️', title:'מכתב למנהלת',
+ pre:'אם הייתם יכולים לשנות דבר אחד בבית הספר, מה הייתם משנים?',
+ voc:[['להאריך','לעשות ארוך יותר'],['מוותרים','מחליטים לא לעשות משהו'],['להתרכז','לשים לב רק לדבר אחד']],
+ text:["לכבוד מנהלת בית הספר, שלום רב.",
+  "אנחנו, תלמידי כיתה ו'2, מבקשים להאריך את ההפסקה הגדולה מעשרים דקות לחצי שעה.",
+  "יש לנו שלוש סיבות. ראשית, עשרים דקות לא מספיקות גם לאכול וגם לשחק. רבים מאיתנו מוותרים על האוכל כדי להספיק משחק אחד, וחוזרים לכיתה רעבים. שנית, אחרי הפסקה ארוכה קל יותר להתרכז. בשיעור מדעים למדנו שתנועה מזרימה דם למוח ועוזרת לחשוב. שלישית, המגרש קטן, ובהפסקה קצרה לא כל הכיתות מספיקות לשחק בו.",
+  "אנחנו יודעים שהפסקה ארוכה יותר באה על חשבון זמן הלימוד. לכן אנחנו מציעים לקצר בחמש דקות את שני השיעורים האחרונים.",
+  "נשמח אם תסכימי לנסות את ההצעה במשך חודש אחד. אם היא לא תצליח, נחזור למצב הקודם.",
+  "בתודה מראש, תלמידי כיתה ו'2"],
+ loc:{q:'מה מציעים התלמידים כדי למצוא זמן להפסקה הארוכה?', find:'לקצר בחמש דקות'},
+ qs:[
+  {q:'מה מבקשים התלמידים מהמנהלת?', st:'התלמידים מבקשים', ideas:[{k:['להאריך','ארוכ','חצי שעה','יותר זמן','שלושים','30','תאריך'],h:'קראו את המשפט השני במכתב.'}], model:'התלמידים מבקשים להאריך את ההפסקה הגדולה מעשרים דקות לחצי שעה.'},
+  {q:'למה חלק מהתלמידים חוזרים לכיתה רעבים?', st:'חלק מהתלמידים חוזרים רעבים כי', ideas:[{k:['מוותר','לא אוכל','לא מספיק','משחק','לשחק','אין זמן','אין להם זמן'],h:'על מה הם מוותרים, ובשביל מה?'}], model:'חלק מהתלמידים חוזרים רעבים כי הם מוותרים על האוכל כדי להספיק לשחק.'},
+  {q:'האם, לדעתכם, המנהלת צריכה להסכים? נמקו.', st:'לדעתי המנהלת', op:true, model:'אין כאן תשובה אחת נכונה. למשל: לדעתי המנהלת צריכה להסכים, כי התלמידים הציעו פתרון לזמן שיחסר והציעו לנסות רק חודש אחד.'}
+ ]},
+{id:'p09', lvl:2, kind:'קטע מידע', em:'🐙', title:'החכם של הים',
+ pre:'איזו חיה בים היא לדעתכם החכמה ביותר?',
+ voc:[['ניסוי','בדיקה שעושים כדי לגלות משהו'],['טורפים','חיות שצדות חיות אחרות ואוכלות אותן'],['מסוגל','יכול']],
+ text:["לתמנון יש שלושה לבבות, דם כחול ושמונה זרועות. אבל הדבר המפתיע ביותר בו הוא המוח שלו.",
+  "התמנון הוא אחת החיות החכמות בים. בניסויים במעבדה תמנונים למדו לפתוח צנצנת סגורה כדי להגיע לסרטן שבתוכה. הם גם מצאו את הדרך החוצה ממבוכים, וזכרו אותה ימים רבים אחר כך.",
+  "רוב תאי העצב של התמנון נמצאים דווקא בזרועות ולא בראש. לכן כל זרוע יכולה למשש, לטעום ולהחליט לבד, בלי לחכות להוראה מהמוח.",
+  "לתמנון אין שריון ואין שיניים חדות, ולכן הוא צריך להסתתר מטורפים. הוא מסוגל לשנות את צבע העור שלו בתוך שנייה ולהיראות כמו סלע או כמו אצה. כשזה לא עוזר, הוא מתיז ענן של דיו כהה ונעלם.",
+  "בעלי אקווריומים מספרים שתמנונים אפילו בורחים מהמכל בלילה, אוכלים דגים במכל השכן וחוזרים למקומם לפני הבוקר."],
+ loc:{q:'איפה נמצאים רוב תאי העצב של התמנון?', find:'נמצאים דווקא בזרועות'},
+ qs:[
+  {q:'איך התמנון מתגונן מפני טורפים? כתבו דרך אחת.', st:'התמנון מתגונן בכך שהוא', ideas:[{k:['צבע','דיו','מסתתר','נעלם','סלע','אצה','מתיז'],h:'קראו את הפסקה הרביעית.'}], model:'התמנון מתגונן בכך שהוא משנה את צבע העור שלו ונראה כמו סלע או אצה.'},
+  {q:'איך יודעים שהתמנון חכם? הביאו דוגמה אחת מהקטע.', st:'יודעים שהתמנון חכם כי', ideas:[{k:['צנצנת','מבוך','מבוכ','בורח','ברח','זכר','פתח','למד'],h:'מה תמנונים הצליחו לעשות במעבדה?'}], model:'יודעים שהתמנון חכם כי בניסויים תמנונים למדו לפתוח צנצנת סגורה כדי להגיע לאוכל שבתוכה.'},
+  {q:'מה הכי הפתיע אתכם בקטע, ולמה?', st:'הכי הפתיע אותי ש', op:true, model:'אין כאן תשובה אחת נכונה. למשל: הכי הפתיע אותי שכל זרוע של התמנון יכולה להחליט לבד, כי אצל בני אדם רק המוח מחליט.'}
+ ]},
+{id:'p10', lvl:2, kind:'סיפור', em:'🤝', title:'אחרונה על הקו',
+ pre:'איך מרגיש מי שנבחר אחרון לקבוצה?',
+ voc:[['האדימו','נעשו אדומים (מבושה)'],['נעצרה','הפסיקה ללכת'],['התוצאה','כמה נקודות קיבלה כל קבוצה בסוף המשחק']],
+ text:["בכל שיעור ספורט זה חזר על עצמו. שני ראשי קבוצות בחרו שחקנים, אחד אחד, ותמר ידעה בדיוק מה יקרה. היא תישאר אחרונה. היא לא הייתה מהירה, והכדור תמיד ברח לה.",
+  "גם היום נשארו בסוף רק שתיים: היא ומיכל, הילדה החדשה שהגיעה לכיתה לפני שבוע. תמר הסתכלה על הנעליים שלה וחיכתה.",
+  "\"תמר,\" קרא עומר, ראש הקבוצה. היא הרימה את הראש בהפתעה. מיכל נשארה לבד על הקו, ופניה האדימו.",
+  "תמר הכירה את ההרגשה הזאת טוב מדי. היא הלכה לכיוון הקבוצה שלה, אבל באמצע הדרך נעצרה, חזרה אל מיכל ואמרה בשקט: \"בואי, נלך ביחד. אני אלמד אותך איפה לעמוד כדי שהכדור לא יפגע בך.\"",
+  "מיכל חייכה בפעם הראשונה מאז שהגיעה.",
+  "באותו יום הקבוצה שלהן הפסידה. אבל בדרך הביתה תמר שמה לב שהיא בכלל לא חושבת על התוצאה."],
+ loc:{q:'מתי הגיעה מיכל לכיתה?', find:'שהגיעה לכיתה לפני שבוע'},
+ qs:[
+  {q:'למה תמר ידעה שהיא תישאר אחרונה?', st:'תמר ידעה שתישאר אחרונה כי', ideas:[{k:['מהיר','כדור','ברח','טובה','ספורט','תמיד','כל שיעור','כל פעם','חזר'],h:'קראו את סוף הפסקה הראשונה.'}], model:'תמר ידעה שתישאר אחרונה כי זה קרה בכל שיעור: היא לא הייתה מהירה והכדור תמיד ברח לה.'},
+  {q:'למה תמר חזרה אל מיכל?', st:'תמר חזרה אל מיכל כי', ideas:[{k:['הכיר','הרגש','יודעת','ידעה','הבינה','לבד','עצוב','ריחמ','אחרונה','קרה לה','גם היא','מרגיש'],h:'מה תמר ידעה על ההרגשה של מיכל, ומאיפה?'}], model:'תמר חזרה אל מיכל כי היא הכירה את ההרגשה של מי שנשאר אחרון ולבד, ולא רצתה שמיכל תרגיש כך.'},
+  {q:'למה, לדעתכם, תמר לא חשבה על התוצאה בדרך הביתה?', st:'לדעתי תמר לא חשבה על התוצאה כי', op:true, model:'אין כאן תשובה אחת נכונה. למשל: לדעתי תמר לא חשבה על התוצאה כי היא הייתה שמחה שעזרה למיכל ושיש לה חברה חדשה, וזה היה חשוב לה יותר מהניצחון.'}
+ ]}
+];
+</script>
+
+<script id="reading-engine">
+(function(){
+'use strict';
+var KEY='reading-v1', app=document.getElementById('app');
+var S=load(), cur=null, tts={tok:0,a:null};
+try{ if(/grade4-learning/.test(document.referrer)) sessionStorage.setItem('reading-back','../grade4-learning/');
+     else if(/grade6-learning/.test(document.referrer)) sessionStorage.setItem('reading-back','../grade6-learning/');
+     var bk=sessionStorage.getItem('reading-back'); if(bk) document.getElementById('homeLink').href=bk; }catch(e){}
+
+function load(){ try{ var o=JSON.parse(localStorage.getItem(KEY)||'{}'); if(!o.done) o.done={}; return o; }catch(e){ return {done:{}}; } }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+function norm(s){ return String(s).replace(/[֑-ׇ]/g,'').replace(/[ךםןףץ]/g,function(c){return {'ך':'כ','ם':'מ','ן':'נ','ף':'פ','ץ':'צ'}[c];})
+  .replace(/[^א-ת0-9a-zA-Z ]+/g,' ').replace(/\s+/g,' ').trim(); }
+function words(s){ var n=norm(s); return n?n.split(' ').length:0; }
+function byLevel(n){ return PASSAGES.filter(function(p){return p.lvl===n;}); }
+function passed(p){ var d=S.done[p.id]; return !!d && d.score/d.max>=0.6; }
+function passedIn(n){ return byLevel(n).filter(passed).length; }
+function unlocked(n){ return n===1 || passedIn(n-1)>=Math.min(3,byLevel(n-1).length||99); }
+function stars(d){ var r=d.score/d.max; return r>=0.9?'⭐⭐⭐':r>=0.75?'⭐⭐':r>=0.6?'⭐':'🔁'; }
+function sentences(par){ return par.match(/[^.!?]+[.!?]+["״”]?\s*|[^.!?]+$/g)||[par]; }
+
+/* ---------- בית ---------- */
+function home(){
+  stopTts(); cur=null;
+  var top=1; LEVELS.forEach(function(l){ if(byLevel(l.n).length && unlocked(l.n)) top=l.n; });
+  var sel=S.view&&unlocked(S.view)&&byLevel(S.view).length?S.view:top;
+  var h='<div class="card"><h2>השלבים</h2><div class="lvrow">';
+  LEVELS.forEach(function(l){
+    var has=byLevel(l.n).length>0, un=has&&unlocked(l.n), dn=has&&passedIn(l.n)>=Math.min(3,byLevel(l.n).length);
+    h+='<button class="lv'+(l.n===sel?' on':dn?' done':'')+(un?'':' lock')+'" data-lv="'+l.n+'"'+(un?'':' disabled')+' aria-label="שלב '+l.n+(un?'':has?' — נעול':' — בקרוב')+'">'+
+       (un?l.n:has?'🔒':'🚧')+'<small>'+(un?(dn?'✓':'שלב'):has?'נעול':'בקרוב')+'</small></button>';
+  });
+  var L=LEVELS[sel-1];
+  h+='</div></div><div class="card"><span class="pill">שלב '+sel+'</span><h2>'+esc(L.name)+'</h2>'+
+     '<div style="color:var(--soft);font-size:16px">עוברים לשלב הבא אחרי 3 קטעים מוצלחים. הצלחתם: '+passedIn(sel)+' מתוך '+byLevel(sel).length+'</div></div>';
+  byLevel(sel).forEach(function(p){ var d=S.done[p.id];
+    h+='<button class="pc" data-p="'+p.id+'"><span class="em" aria-hidden="true">'+p.em+'</span><span><b>'+esc(p.title)+'</b><small>'+esc(p.kind)+'</small></span><span class="st">'+(d?stars(d):'▶️')+'</span></button>'; });
+  h+='<button class="plink" id="parentBtn">להורים: התשובות שנכתבו</button>';
+  app.innerHTML=h; window.scrollTo(0,0);
+  each('[data-lv]',function(b){ b.onclick=function(){ S.view=+b.getAttribute('data-lv'); save(); home(); }; });
+  each('[data-p]',function(b){ b.onclick=function(){ start(b.getAttribute('data-p')); }; });
+  document.getElementById('parentBtn').onclick=parents;
+}
+function each(sel,fn){ Array.prototype.forEach.call(app.querySelectorAll(sel),fn); }
+function stepsBar(i,n){ var h='<div class="steps" aria-hidden="true">'; for(var k=0;k<n;k++) h+='<i'+(k<=i?' class="on"':'')+'></i>'; return h+'</div>'; }
+
+/* ---------- קטע ---------- */
+function start(id){
+  var p=PASSAGES.filter(function(x){return x.id===id;})[0]; if(!p) return;
+  cur={p:p, qi:0, score:0, max:1+p.qs.length*2, ans:[], locTry:0};
+  var h=stepsBar(0,3+p.qs.length)+'<div class="card"><span class="pill">'+esc(p.kind)+'</span><h2>'+p.em+' '+esc(p.title)+'</h2>'+
+    '<h3>לפני שקוראים, חשבו רגע:</h3><div>'+esc(p.pre)+'</div></div>'+
+    '<div class="card"><h3>מילים שכדאי להכיר</h3><ul class="voc">'+p.voc.map(function(v){return '<li><b>'+esc(v[0])+'</b> — '+esc(v[1])+'</li>';}).join('')+'</ul></div>'+
+    '<button class="btn" id="go">לקריאה 📖</button><button class="btn ghost" id="back">חזרה לרשימה</button>';
+  app.innerHTML=h; window.scrollTo(0,0);
+  document.getElementById('go').onclick=read; document.getElementById('back').onclick=home;
+}
+function psgHtml(p,pick){
+  var i=0; return '<div class="psg'+(pick?' pick':'')+'" id="psg">'+p.text.map(function(par){
+    return '<p>'+sentences(par).map(function(s){ return '<span class="sent" data-i="'+(i++)+'"'+(pick?' role="button" tabindex="0"':'')+'>'+esc(s)+'</span>'; }).join('')+'</p>'; }).join('')+'</div>';
+}
+function allSent(p){ var o=[]; p.text.forEach(function(par){ sentences(par).forEach(function(s){o.push(s);}); }); return o; }
+function read(){
+  var p=cur.p;
+  app.innerHTML=stepsBar(1,3+p.qs.length)+'<div class="card"><h2>'+p.em+' '+esc(p.title)+'</h2>'+psgHtml(p,false)+
+    '<button class="btn ghost" id="say" hidden>🔊 להקשיב לקטע</button></div><button class="btn" id="go">קראתי, אפשר להמשיך ➜</button>';
+  window.scrollTo(0,0);
+  var say=document.getElementById('say'); if(navigator.onLine!==false){ say.hidden=false; say.onclick=function(){ toggleTts(p,say); }; }
+  document.getElementById('go').onclick=function(){ stopTts(); locate(); };
+}
+/* ---------- הקראה (הקול של Google Translate, משפט אחרי משפט; עובד רק עם אינטרנט) ---------- */
+function stopTts(){ tts.tok++; try{ if(tts.a) tts.a.pause(); }catch(e){} each('.sent.say',function(x){x.classList.remove('say');}); }
+function toggleTts(p,btn){
+  if(btn.getAttribute('data-on')){ stopTts(); btn.removeAttribute('data-on'); btn.textContent='🔊 להקשיב לקטע'; return; }
+  btn.setAttribute('data-on','1'); btn.textContent='⏹ לעצור את ההקראה';
+  var list=allSent(p), my=++tts.tok;
+  var done=function(){ if(my===tts.tok){ stopTts(); btn.removeAttribute('data-on'); btn.textContent='🔊 להקשיב לקטע'; } };
+  var step=function(i){
+    if(my!==tts.tok) return; if(i>=list.length) return done();
+    each('.sent.say',function(x){x.classList.remove('say');});
+    var el=app.querySelector('.sent[data-i="'+i+'"]'); if(el) el.classList.add('say');
+    var parts=chunks(list[i]), k=0;
+    var next=function(){ if(my!==tts.tok) return; if(k>=parts.length) return step(i+1);
+      var a=new Audio('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=he&q='+encodeURIComponent(parts[k++]));
+      tts.a=a; a.onended=next; a.onerror=done; var pr=a.play(); if(pr&&pr.catch) pr.catch(done); };
+    next();
+  };
+  step(0);
+}
+function chunks(s){ s=s.trim(); if(s.length<=180) return [s]; var out=[],c='';
+  s.split(' ').forEach(function(w){ if((c+' '+w).length>180&&c){ out.push(c); c=w; } else c=c?c+' '+w:w; }); if(c) out.push(c); return out; }
+
+/* ---------- איפה כתוב? ---------- */
+function locate(){
+  var p=cur.p, list=allSent(p), target=-1;
+  list.forEach(function(s,i){ if(target<0 && s.indexOf(p.loc.find)>=0) target=i; });
+  app.innerHTML=stepsBar(2,3+p.qs.length)+'<div class="card"><span class="pill">איפה כתוב?</span><div class="qtxt">'+esc(p.loc.q)+'</div>'+
+    '<div style="color:var(--soft);font-size:16px">הקישו על המשפט בקטע שבו נמצאת התשובה.</div><div id="locFb"></div></div>'+
+    '<div class="card">'+psgHtml(p,true)+'</div><button class="btn" id="go" hidden>ממשיכים לכתיבה ✍️</button>';
+  window.scrollTo(0,0);
+  var fb=document.getElementById('locFb'), go=document.getElementById('go'), over=false;
+  var finish=function(pts,cls,msg){ over=true; cur.score+=pts; cur.loc=pts; fb.innerHTML='<div class="fb '+cls+'">'+msg+'</div>';
+    var t=app.querySelector('.sent[data-i="'+target+'"]'); if(t) t.classList.add('good'); go.hidden=false; go.scrollIntoView({block:'nearest'}); };
+  each('.sent',function(el){ var hit=function(){ if(over) return;
+      if(+el.getAttribute('data-i')===target){ finish(cur.locTry?0.5:1,'ok',cur.locTry?'✅ נכון! מצאתם בניסיון השני.':'✅ מצוין! מצאתם את המשפט.'); }
+      else { cur.locTry++; el.classList.add('wrong');
+        if(cur.locTry>=2) finish(0,'mid','🟡 המשפט הנכון מסומן עכשיו בירוק. קראו אותו שוב.');
+        else fb.innerHTML='<div class="fb bad">עוד לא. קראו שוב את השאלה ונסו משפט אחר.</div>'; } };
+    el.onclick=hit; el.onkeydown=function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); hit(); } }; });
+  go.onclick=function(){ cur.qi=0; write(); };
+}
+
+/* ---------- כתיבה ---------- */
+function check(q,full,typed,lvl){
+  var n=norm(full), need=LEVELS[lvl-1].min, wc=words(typed);
+  if(q.op){ return {full:wc>=Math.max(4,need), miss:[], op:true}; }
+  var miss=[]; q.ideas.forEach(function(id){ var ok=id.k.some(function(k){ var s=norm(k); return s && (' '+n+' ').indexOf(/ $/.test(k)?s+' ':s)>=0; }); if(!ok) miss.push(id); });
+  return {full:miss.length===0, part:miss.length<q.ideas.length, miss:miss};
+}
+function write(){
+  var p=cur.p, q=p.qs[cur.qi], tries=0, lvl=p.lvl, need=LEVELS[lvl-1].min;
+  var h=stepsBar(3+cur.qi,3+p.qs.length)+'<div class="card"><span class="pill">שאלה '+(cur.qi+1)+' מתוך '+p.qs.length+(q.op?' · מה דעתכם?':'')+'</span>'+
+    '<div class="qtxt">'+esc(q.q)+'</div>'+(q.st?'<div class="starter">'+esc(q.st)+' …</div>':'')+
+    '<textarea id="ans" rows="3" aria-label="התשובה שלכם" placeholder="'+(q.st?'המשיכו את המשפט כאן':'כתבו כאן תשובה במשפט שלם')+'"></textarea>'+
+    (q.help?'<div class="help">'+q.help.map(function(w){return '<span>'+esc(w)+'</span>';}).join('')+'</div>':'')+
+    '<button class="tog" id="mic" hidden>🎤 להגיד בקול במקום להקליד</button>'+
+    '<div id="fb"></div><button class="btn" id="chk">בדיקה ✅</button><button class="btn" id="nxt" hidden></button></div>'+
+    '<div class="card"><button class="tog" id="tg" aria-expanded="false">📖 להציג את הקטע</button><div id="pg" hidden>'+psgHtml(p,false)+'</div></div>';
+  app.innerHTML=h; window.scrollTo(0,0);
+  var ta=document.getElementById('ans'), fb=document.getElementById('fb'), chk=document.getElementById('chk'), nxt=document.getElementById('nxt');
+  document.getElementById('tg').onclick=function(){ var g=document.getElementById('pg'); g.hidden=!g.hidden; this.textContent=g.hidden?'📖 להציג את הקטע':'📖 להסתיר את הקטע'; this.setAttribute('aria-expanded',String(!g.hidden)); };
+  dictation(ta,document.getElementById('mic'));
+  nxt.textContent=cur.qi+1<p.qs.length?'לשאלה הבאה ➜':'לסיום 🏁';
+  var fullText=function(){ return (q.st?q.st+' ':'')+ta.value.trim(); };
+  var close=function(pts,mark){ cur.score+=pts; cur.ans.push({q:q.q,a:fullText(),m:mark,pts:pts}); ta.readOnly=true; chk.hidden=true; nxt.hidden=false;
+    fb.insertAdjacentHTML('beforeend','<div class="model"><b>'+(q.op?'דוגמה לתשובה טובה':'תשובה לדוגמה')+'</b>'+esc(q.model)+'</div>');
+    if(mark==='part'||mark==='no'){ fb.insertAdjacentHTML('beforeend','<button class="btn ghost" id="self">✋ כתבתי את אותו רעיון במילים אחרות</button>');
+      document.getElementById('self').onclick=function(){ var a=cur.ans[cur.ans.length-1], np=a.pts>=1?1.5:1; cur.score+=np-a.pts; a.pts=np; a.m='self'; this.remove();
+        fb.insertAdjacentHTML('beforeend','<div class="fb mid">רשמנו. הורה יוכל לקרוא את התשובה ולאשר.</div>'); }; }
+    nxt.scrollIntoView({block:'nearest'}); };
+  chk.onclick=function(){
+    var typed=ta.value.trim();
+    if(words(typed)<need){ fb.innerHTML='<div class="fb bad">התשובה קצרה מדי. כתבו לפחות '+need+' מילים'+(q.st?' אחרי פתיחת המשפט':'')+'.</div>'; return; }
+    var r=check(q,fullText(),typed,lvl); tries++;
+    if(r.full){ fb.innerHTML='<div class="fb ok">'+(r.op?'✅ כתבתם דעה עם הסבר. כל הכבוד!':'✅ תשובה מלאה ונכונה!')+'</div>'; close(tries===1?2:1.5,'full'); return; }
+    var hints=r.miss.map(function(m){return m.h;}).join(' ');
+    if(tries<2){ fb.innerHTML='<div class="fb '+(r.part?'mid':'bad')+'">'+(r.part?'🟡 התחלה טובה, אבל חסר חלק מהתשובה.':'🔴 עוד לא מצאנו את התשובה במה שכתבתם.')+'<small>רמז: '+esc(hints)+'</small></div>';
+      chk.textContent='שיפרתי, לבדוק שוב ✅'; ta.focus(); return; }
+    fb.innerHTML='<div class="fb '+(r.part?'mid':'bad')+'">'+(r.part?'🟡 תשובה חלקית.':'🔴 התשובה שכתבתם שונה מהתשובה שבקטע.')+'<small>השוו את מה שכתבתם לתשובה לדוגמה.</small></div>';
+    close(r.part?1:0, r.part?'part':'no');
+  };
+  nxt.onclick=function(){ cur.qi++; if(cur.qi<p.qs.length) write(); else end(); };
+}
+function dictation(ta,btn){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR) return;
+  btn.hidden=false; var rec=null;
+  btn.onclick=function(){
+    if(rec){ try{rec.stop();}catch(e){} return; }
+    try{ rec=new SR(); rec.lang='he-IL'; rec.interimResults=false;
+      rec.onresult=function(e){ var t=''; for(var i=e.resultIndex;i<e.results.length;i++) t+=e.results[i][0].transcript; ta.value=(ta.value?ta.value.trim()+' ':'')+t.trim(); };
+      rec.onend=rec.onerror=function(){ rec=null; btn.textContent='🎤 להגיד בקול במקום להקליד'; };
+      rec.start(); btn.textContent='⏹ מקשיב… הקישו כדי לעצור'; }catch(e){ rec=null; btn.hidden=true; }
+  };
+}
+
+/* ---------- סיום ---------- */
+function end(){
+  var p=cur.p, d={t:Date.now(), score:Math.round(cur.score*10)/10, max:cur.max, loc:cur.loc, ans:cur.ans};
+  var old=S.done[p.id]; S.done[p.id]=d; if(old&&old.score/old.max>d.score/d.max) S.done[p.id].best=old.score; save();
+  var ok=d.score/d.max>=0.6, before=old&&old.score/old.max>=0.6;
+  var nextP=byLevel(p.lvl).filter(function(x){return !S.done[x.id];})[0];
+  var lvUp=ok&&!before&&passedIn(p.lvl)===Math.min(3,byLevel(p.lvl).length)&&byLevel(p.lvl+1).length>0;
+  var h='<div class="card center"><div class="big">'+(ok?'🎉':'💪')+'</div><h2>'+(ok?'סיימתם את הקטע!':'סיימתם. כדאי לנסות את הקטע שוב.')+'</h2>'+
+    '<div style="font-size:30px">'+stars(d)+'</div><div>'+d.score+' נקודות מתוך '+d.max+'</div>'+
+    (lvUp?'<div class="fb ok">🔓 נפתח שלב '+(p.lvl+1)+'!</div>':'')+'</div>';
+  h+='<div class="card"><h3>מה כתבתם</h3>'+d.ans.map(ansHtml).join('')+'</div>';
+  if(lvUp) h+='<button class="btn" id="up">לשלב '+(p.lvl+1)+' ➜</button>';
+  else if(nextP) h+='<button class="btn" id="nx">לקטע הבא ➜</button>';
+  h+='<button class="btn ghost" id="back">לרשימת הקטעים</button>';
+  app.innerHTML=h; window.scrollTo(0,0);
+  var b=document.getElementById('nx'); if(b) b.onclick=function(){ start(nextP.id); };
+  b=document.getElementById('up'); if(b) b.onclick=function(){ S.view=p.lvl+1; save(); home(); };
+  document.getElementById('back').onclick=home;
+}
+function ansHtml(a){ var ic={full:'✅',part:'🟡',no:'🔴',self:'✋'}[a.m]||''; return '<div class="pa"><b>'+ic+' '+esc(a.q)+'</b>'+esc(a.a)+'</div>'; }
+
+/* ---------- הורים ---------- */
+function parents(){
+  var ids=Object.keys(S.done).sort(function(a,b){return S.done[b].t-S.done[a].t;});
+  var h='<div class="card"><h2>להורים</h2><div style="font-size:16px;color:var(--soft)">כאן מופיעות התשובות שנכתבו, מהחדש לישן. ✅ מלאה · 🟡 חלקית · 🔴 לא נמצאה התשובה · ✋ הילד סימן שכתב את אותו רעיון במילים אחרות. '+
+    'הבדיקה האוטומטית מחפשת את הרעיונות של התשובה בטקסט, והיא לא מושלמת. כדאי לקרוא את התשובות יחד.</div></div>';
+  if(!ids.length) h+='<div class="card">עוד לא נכתבו תשובות.</div>';
+  ids.forEach(function(id){ var p=PASSAGES.filter(function(x){return x.id===id;})[0], d=S.done[id]; if(!p) return;
+    h+='<div class="card"><span class="pill">שלב '+p.lvl+' · '+new Date(d.t).toLocaleDateString('he-IL')+'</span><h3>'+p.em+' '+esc(p.title)+' — '+d.score+' מתוך '+d.max+'</h3>'+(d.ans||[]).map(ansHtml).join('')+'</div>'; });
+  h+='<button class="btn ghost" id="back">חזרה</button>';
+  app.innerHTML=h; window.scrollTo(0,0); document.getElementById('back').onclick=home;
+}
+window.addEventListener('lhcloud',function(){ if(!cur){ S=load(); home(); } });
+window.READING={norm:norm,check:check,sentences:sentences,home:home,start:start};
+home();
+})();
+</script>
+<script type="module" src="../shared/cloud.js"></script>
+<script>try{ if('serviceWorker' in navigator) navigator.serviceWorker.register('../sw.js'); }catch(e){}</script>
+</body>
+</html>
