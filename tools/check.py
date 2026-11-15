@@ -70,12 +70,31 @@ for sw in glob.glob('*/sw.js'):
     if "cache:'reload'" not in w: fail(f"{sw}: ההתקנה חייבת לטעון עם {{cache:'reload'}}")
     node_check(w, sw)
 for js in glob.glob('shared/*.js'): node_check(open(js, encoding='utf-8').read(), js)
+# 11. question data split into <hub>/data/*.json (tools/split_data.py): valid JSON, answers in range, files precached with the current version
+for dj in sorted(glob.glob('*/data/*.json')):
+    try: d = json.load(open(dj, encoding='utf-8'))
+    except Exception as e: fail(f'{dj}: קובץ JSON לא תקין — {e}'); continue
+    for tid, t in d.items():
+        for q in t.get('questions', []) if isinstance(t, dict) else []:
+            o = q.get('opts') or q.get('options')
+            if isinstance(o, list) and isinstance(q.get('a'), int) and not (0 <= q['a'] < len(o)):
+                fail(f'{dj}: תשובה מחוץ לטווח בנושא {tid} — {str(q.get("q"))[:60]}')
+for sw in glob.glob('*/sw.js'):
+    d = os.path.dirname(sw); files = glob.glob(f'{d}/data/*.json')
+    if not files: continue
+    w = open(sw, encoding='utf-8').read(); h = open(f'{d}/index.html', encoding='utf-8').read()
+    import hashlib
+    for f in files:
+        txt = open(f, encoding='utf-8').read(); ver = hashlib.sha1(txt.encode()).hexdigest()[:8]
+        ref = os.path.basename(f) + '?v=' + ver
+        if ref not in h or ref not in w: fail(f'{f}: השתנה אבל הגרסה ב-index.html / sw.js לא עודכנה — להריץ python3 tools/split_data.py {d}')
+    if re.search(r'const\s+DATA_[A-Z0-9_]+\s*=\s*\{[^\n]{0,4000}"questions"', h): fail(f'{d}/index.html: יש שוב שאלות בתוך הדף — להריץ python3 tools/split_data.py {d}')
 if '--base' in sys.argv:
     base = sys.argv[sys.argv.index('--base') + 1]
     changed = subprocess.run(['git', 'diff', '--name-only', base, '--'], capture_output=True, text=True).stdout.split()
     for sw in glob.glob('*/sw.js'):
         d = os.path.dirname(sw)
-        if f'{d}/index.html' in changed and sw not in changed:
+        if (f'{d}/index.html' in changed or any(c.startswith(f'{d}/data/') for c in changed)) and sw not in changed:
             fail(f'{d}/index.html השתנה אבל שם המטמון ב-{sw} לא עודכן — ילדים יישארו על הגרסה הישנה')
 
 for w_ in warns: print('⚠', w_)
