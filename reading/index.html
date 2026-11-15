@@ -55,6 +55,18 @@ textarea:focus{outline:3px solid #F59E0B;outline-offset:1px}
 .center{text-align:center}.big{font-size:54px;line-height:1.1}
 .plink{display:block;margin:26px auto 0;background:none;border:0;color:var(--soft);font-size:14px;text-decoration:underline}
 .pa{border-top:1px dashed var(--line);padding:8px 0;font-size:16px}.pa b{display:block}
+.tabs{display:flex;gap:8px;margin:12px 0 0}.tabs button{flex:1;min-height:52px;border-radius:16px;border:2px solid var(--line);background:#fff;font-weight:800;font-size:17px}
+.tabs button.on{background:var(--c);color:#fff;border-color:var(--c)}
+.rank{display:flex;align-items:center;gap:12px}.rank .em{font-size:40px}.bar{height:10px;border-radius:10px;background:var(--line);overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:var(--c)}
+.tpl{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px;font-size:14px}.tpl span{background:#FFF4E6;border-radius:999px;padding:2px 10px;font-weight:700}
+.kbs{display:flex;gap:8px;align-items:flex-start;margin-top:10px}.kbs b{flex:0 0 46px;padding-top:12px;color:var(--c);font-size:19px}.kbs textarea{min-height:64px}
+.said{background:#F1F3F5;border-radius:12px;padding:8px 12px;margin:8px 0;font-size:17px}.said b{display:block;font-size:13px;color:var(--soft)}
+.fix{background:#FFF9DB;border-radius:14px;padding:10px 12px;margin-top:12px}.fix .fr{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}.fix s{color:var(--bad)}
+.fix input,.flash input{font:inherit;font-size:19px;border:2px solid var(--line);border-radius:12px;padding:6px 10px;width:150px;background:#fff;color:var(--ink)}
+.fix input.ok,.flash input.ok{border-color:var(--ok);background:#EBFBEE}
+.flash{text-align:center}.flash .w{font-size:40px;font-weight:900;min-height:64px;letter-spacing:1px}
+.msg{background:#E7F5FF;border-radius:14px;padding:10px 12px;margin:8px 0;font-size:17px}.msg b{display:block;font-size:13px;color:#1864AB}
+.reply{min-height:64px;font-size:16px;margin-top:8px}
 [hidden]{display:none!important}
 @media (prefers-reduced-motion:reduce){.btn{transition:none}}
 </style>
@@ -221,6 +233,88 @@ var PASSAGES = [
   {q:'למה, לדעתכם, תמר לא חשבה על התוצאה בדרך הביתה?', st:'לדעתי תמר לא חשבה על התוצאה כי', op:true, model:'אין כאן תשובה אחת נכונה. למשל: לדעתי תמר לא חשבה על התוצאה כי היא הייתה שמחה שעזרה למיכל ושיש לה חברה חדשה, וזה היה חשוב לה יותר מהניצחון.'}
  ]}
 ];
+/* ---- סוכנות החקירות: תיקים לפי תחומי עניין (לגו, מכוניות, כדורגל). כל העובדות אמיתיות, הניסוח מקורי. ---- */
+var RANKS=[[0,'חוקר מתחיל','🔎'],[2,'חוקר','🕵️'],[4,'בלש','🧩'],[6,'בלש בכיר','🎖️'],[10,'מפקד צוות','⭐'],[15,'ראש הסוכנות','🏆']];
+PASSAGES.push(
+{id:'c01', trk:'case', lvl:4, kind:'כדורגל', em:'🏆', title:'תיק הגביע הנעלם',
+ pre:'גביע העולם נגנב כמה חודשים לפני המונדיאל. מי לדעתכם ימצא אותו: המשטרה, בלש מפורסם או מישהו אחר?',
+ voc:[['תערוכה','מקום שבו מציגים דברים מיוחדים לקהל'],['שיח','צמח נמוך וסבוך'],['פרס כספי','כסף שנותנים למי שעזר']],
+ text:["במרץ 1966, ארבעה חודשים לפני המונדיאל באנגליה, הוצג גביע העולם בתערוכה בלונדון. בדרך כלל עמדו שומרים ליד הארון שבו הוצג. ביום ראשון בצהריים, ברגע שאף שומר לא עמד שם, מישהו פרץ את הדלת האחורית ולקח את הגביע.",
+  "כל אנגליה נבהלה. איך אפשר לארח את המונדיאל בלי הגביע? מאות שוטרים חיפשו אותו במשך שבוע שלם, ולא מצאו דבר.",
+  "שבוע אחרי הגניבה יצא אדם בשם דייוויד לטייל עם הכלב שלו, פיקלס. ליד הבית התחיל פיקלס לרחרח חבילה שהייתה מונחת מתחת לשיח, עטופה בנייר עיתון. הוא לא הסכים לזוז ממנה. דייוויד הרים את החבילה, קרע את העיתון וראה פסל מוזהב. זה היה הגביע.",
+  "פיקלס הפך לגיבור. הוא הוזמן לארוחה חגיגית, קיבל מדליה והופיע בסרט. בעליו קיבל פרס כספי וקנה בו בית. כמה חודשים אחר כך זכתה נבחרת אנגליה במונדיאל, והשחקנים הניפו את הגביע שכלב אחד הציל."],
+ loc:{q:'מצאו את הראיה: איפה בדיוק הייתה החבילה?', find:'מתחת לשיח'},
+ qs:[
+  {q:'איך הצליח הגנב לקחת את הגביע אף על פי שהיו שם שומרים?', st:'הגנב הצליח כי', ideas:[{k:['לא עמד','אף שומר','לא היה','לא היו','בלי שומר','לא שמר'],h:'מי עמד ליד הארון באותו רגע?'},{k:['דלת','אחורי','פרץ'],h:'מאיפה הוא נכנס?'}], model:'הגנב הצליח כי באותו רגע אף שומר לא עמד ליד הארון, והוא פרץ את הדלת האחורית.'},
+  {q:'למה כתוב שפיקלס "הציל" את הגביע? הוכיחו מהקטע.', ideas:[{k:['מצא','רחרח','גילה','הריח'],h:'מה פיקלס עשה שאף אחד אחר לא הצליח?'},{k:['שוטר','משטרה','שבוע','לא מצאו','לא הצליחו'],h:'מי חיפש לפניו, וכמה זמן?'}], model:'פיקלס הציל את הגביע כי הוא מצא אותו מתחת לשיח, אחרי שמאות שוטרים חיפשו שבוע שלם ולא מצאו דבר.'},
+  {type:'kbs', q:'המשיכו את המשפט בשלוש דרכים.', stem:'פיקלס לא הסכים לזוז מהחבילה', model:{ki:'כי הריח שלה סקרן אותו.', aval:'אבל הוא לא ידע שיש בתוכה גביע מפורסם.', lachen:'לכן דייוויד הרים אותה ופתח אותה.'}}
+ ]},
+{id:'c02', trk:'case', lvl:4, kind:'מכוניות', em:'🚗', title:'תיק הנסיעה הסודית',
+ pre:'פעם אנשים לא האמינו שמכונית היא דבר שימושי. איך הייתם משכנעים אותם?',
+ voc:[['בית מרקחת','חנות שמוכרים בה תרופות'],['סיכת ראש','סיכה דקה שמחזיקה את השיער'],['הזמנות','בקשות של אנשים לקנות משהו']],
+ text:["בשנת 1886 בנה המהנדס הגרמני קרל בנץ את אחת המכוניות הראשונות בעולם. היו לה שלושה גלגלים ומנוע קטן. אבל אף אחד לא רצה לקנות אותה. אנשים חשבו שהיא צעצוע מרעיש, ושסוסים טובים ממנה.",
+  "אשתו, ברטה, האמינה בהמצאה. בוקר אחד בשנת 1888, בלי לספר לקרל, היא הוציאה את המכונית מהמחסן ויצאה עם שני בניה לבקר את אמא שלה. המרחק היה יותר ממאה קילומטרים. אף אחד לא נסע אז מרחק כזה במכונית.",
+  "הדרך לא הייתה קלה. תחנות דלק עוד לא היו, ולכן ברטה קנתה דלק בבית מרקחת. כשצינור הדלק נסתם, היא ניקתה אותו בסיכת ראש. בעליות הבנים ירדו ודחפו.",
+  "בערב הם הגיעו, וברטה שלחה לקרל מברק קצר: הגענו. העיתונים כתבו על המסע, ואנשים הבינו שאפשר לסמוך על המכונית. בתוך זמן קצר התחילו להגיע הזמנות."],
+ loc:{q:'מצאו את הראיה: איפה קנתה ברטה דלק?', find:'בבית מרקחת'},
+ qs:[
+  {q:'למה אנשים לא רצו לקנות את המכונית של קרל?', st:'אנשים לא רצו לקנות אותה כי', ideas:[{k:['צעצוע','מרעיש','סוס','לא האמינו','לא שימושי'],h:'מה אנשים חשבו על המכונית?'}], model:'אנשים לא רצו לקנות אותה כי הם חשבו שהיא צעצוע מרעיש ושסוסים טובים ממנה.'},
+  {q:'איך הנסיעה של ברטה שינתה את דעתם של האנשים? הוכיחו מהקטע.', ideas:[{k:['עיתון','כתבו','שמעו','פרסמ'],h:'איך אנשים שמעו על המסע?'},{k:['לסמוך','הבינו','הזמנ','לקנות','הוכיח','אפשר'],h:'מה הם הבינו, ומה קרה אחר כך?'}], model:'העיתונים כתבו על המסע, ואנשים הבינו שאפשר לסמוך על המכונית גם בדרך ארוכה. ההוכחה היא שזמן קצר אחר כך התחילו להגיע הזמנות.'},
+  {type:'kbs', q:'המשיכו את המשפט בשלוש דרכים.', stem:'ברטה יצאה לדרך בלי לספר לקרל', model:{ki:'כי היא ידעה שהוא לא ירשה לה.', aval:'אבל בערב היא שלחה לו מברק.', lachen:'לכן הוא גילה על המסע רק אחרי שיצאה.'}}
+ ]},
+{id:'c03', trk:'case', lvl:4, kind:'לגו', em:'🧱', title:'תיק המחסן השרוף',
+ pre:'ממה לדעתכם היו עשויים הצעצועים הראשונים של חברת לגו?',
+ voc:[['נגר','מי שבונה דברים מעץ'],['שריפה','אש גדולה שהורסת'],['להתמקד','לעסוק רק בדבר אחד']],
+ text:["בשנת 1932 חי בעיירה קטנה בדנמרק נגר בשם אולה. אנשים הפסיקו להזמין ממנו רהיטים כי לא היה להם כסף, ולכן הוא התחיל לבנות צעצועים מעץ: ברווזים על גלגלים, משאיות ורכבות. לחברה שלו הוא קרא לגו. בדנית פירוש השם הוא: שחק היטב.",
+  "אחרי כמה שנים קנתה החברה מכונה שיוצרת צעצועים מפלסטיק, והתחילה לייצר גם קוביות קטנות שמתחברות זו לזו. רוב האנשים העדיפו אז צעצועים מעץ, והקוביות נמכרו לאט.",
+  "בשנת 1958 שיפרה החברה את הקובייה. בתוך כל קובייה נוספו צינורות קטנים, ובזכותם הקוביות נצמדו חזק ולא התפרקו. שנתיים אחר כך פרצה שריפה במחסן, וכל צעצועי העץ נשרפו.",
+  "זה היה רגע של החלטה. במקום לבנות את המחסן מחדש, החליטה החברה להפסיק לייצר צעצועי עץ ולהתמקד רק בקוביות. מאז ועד היום הקובייה כמעט לא השתנתה. קובייה משנת 1958 מתחברת לקובייה שתקנו מחר."],
+ loc:{q:'מצאו את הראיה: מה פירוש השם לגו?', find:'שחק היטב'},
+ qs:[
+  {q:'למה אולה התחיל לבנות צעצועים?', st:'אולה התחיל לבנות צעצועים כי', ideas:[{k:['רהיט','הפסיקו','כסף','להזמין','לא קנו'],h:'מה קרה לעבודה שלו כנגר?'}], model:'אולה התחיל לבנות צעצועים כי אנשים הפסיקו להזמין ממנו רהיטים, ולא הייתה לו עבודה.'},
+  {q:'איך השריפה, שהייתה אסון, עזרה בסוף לחברה? הוכיחו מהקטע.', ideas:[{k:['החליט','הפסיק','להתמקד','רק'],h:'מה החליטה החברה אחרי השריפה?'},{k:['קובי','פלסטיק'],h:'במה היא התמקדה מאז?'}], model:'בגלל השריפה החליטה החברה להפסיק לייצר צעצועי עץ ולהתמקד רק בקוביות. הקוביות הן מה שהפך את לגו למפורסמת.'},
+  {type:'kbs', q:'המשיכו את המשפט בשלוש דרכים.', stem:'הקוביות הראשונות נמכרו לאט', model:{ki:'כי רוב האנשים העדיפו צעצועים מעץ.', aval:'אבל החברה המשיכה לשפר אותן.', lachen:'לכן החברה ייצרה גם צעצועי עץ.'}}
+ ]},
+{id:'c04', trk:'case', lvl:4, kind:'מכוניות', em:'🏎️', title:'תיק שתי השניות',
+ pre:'כמה זמן לוקח להחליף גלגל במכונית? ובמכונית מרוץ?',
+ voc:[['מוסך','מקום שבו מתקנים מכוניות'],['מגבה','מכשיר שמרים את המכונית'],['אלפית שנייה','חלק קטן מאוד של שנייה']],
+ text:["במוסך רגיל החלפה של ארבעה גלגלים נמשכת כעשרים דקות. במרוצי פורמולה 1 עושים את זה בפחות משתי שניות. איך זה אפשרי?",
+  "כשמכונית המרוץ נעצרת, מחכים לה כעשרים אנשי צוות. לכל אחד יש תפקיד אחד בלבד. שניים מרימים את המכונית במגבה, מלפנים ומאחור. ליד כל גלגל עומדים שלושה: אחד פותח את הבורג, אחד מוציא את הגלגל הישן, ואחד מכניס את החדש. אף אחד לא מדבר. כולם יודעים בדיוק מתי להתחיל.",
+  "כדי להגיע למהירות כזאת, הצוות מתאמן על אותה פעולה מאות פעמים בכל שבוע. המאמנים מצלמים כל אימון ובודקים אחר כך איפה אפשר לחסוך עוד כמה אלפיות שנייה.",
+  "למה זה חשוב כל כך? במרוץ, ההבדל בין המקום הראשון לשני הוא לפעמים פחות משנייה. עצירה איטית אחת יכולה לעלות לנהג בניצחון. לכן אומרים בפורמולה 1 שמרוץ מנצחים לא רק על המסלול, אלא גם בעצירה."],
+ loc:{q:'מצאו את הראיה: כמה אנשי צוות מחכים למכונית?', find:'כעשרים אנשי צוות'},
+ qs:[
+  {q:'למה לכל איש צוות יש תפקיד אחד בלבד?', st:'לכל אחד יש תפקיד אחד כי', ideas:[{k:['מהר','מהיר','זמן','שניות','לחסוך','בלי לחשוב','בדיוק','לא להתבלבל','יודע בדיוק','יודע מה'],h:'מה קורה למהירות כשכל אחד עושה רק דבר אחד?'}], model:'לכל אחד יש תפקיד אחד כי כך כל אחד יודע בדיוק מה לעשות, והעבודה נעשית מהר מאוד.'},
+  {q:'הסבירו את המשפט "מרוץ מנצחים גם בעצירה". הוכיחו מהקטע.', ideas:[{k:['עציר','החלפ','גלגל','צוות'],h:'על איזה חלק של המרוץ מדובר?'},{k:['שנייה','שניה','הבדל','איטי','ניצחון','להפסיד','מקום'],h:'מה יכול לקרות בגלל עצירה איטית?'}], model:'הכוונה היא שגם הצוות שמחליף גלגלים משפיע על התוצאה. ההבדל בין המקום הראשון לשני הוא לפעמים פחות משנייה, ולכן עצירה איטית יכולה לעלות בניצחון.'},
+  {type:'kbs', q:'המשיכו את המשפט בשלוש דרכים.', stem:'הצוות מתאמן מאות פעמים בשבוע', model:{ki:'כי כל אלפית שנייה חשובה.', aval:'אבל גם אחרי כל האימונים קורות לפעמים טעויות.', lachen:'לכן הוא מחליף ארבעה גלגלים בפחות משתי שניות.'}}
+ ]},
+{id:'c05', trk:'case', lvl:4, kind:'כדורגל', em:'🥅', title:'תיק השוער שלא זז',
+ pre:'בבעיטת עונשין, מה לדעתכם כדאי לשוער לעשות: לקפוץ ימינה, לקפוץ שמאלה או להישאר במקום?',
+ voc:[['חוקרים','אנשים שבודקים דברים כדי לגלות ידע חדש'],['מסקנה','מה שמבינים אחרי שבודקים'],['אוהדים','אנשים שמעודדים קבוצה']],
+ text:["בבעיטת עונשין השוער עומד מול הבועט, אחד מול אחד. הכדור מגיע לשער בפחות מחצי שנייה. אין לשוער זמן לראות לאן הכדור עף ורק אז לקפוץ. הוא חייב להחליט מראש.",
+  "חוקרים ישראלים רצו לדעת מה ההחלטה הטובה ביותר. הם צפו ביותר ממאתיים בעיטות עונשין מהליגות הטובות בעולם, ורשמו לאן בעט כל שחקן ולאן קפץ כל שוער.",
+  "התוצאה הפתיעה אותם. כמעט שליש מהבעיטות נשלחו למרכז השער. אבל השוערים כמעט אף פעם לא נשארו במרכז. כמעט בכל הפעמים הם קפצו ימינה או שמאלה. המסקנה הייתה ששוער שנשאר לעמוד במקום עוצר יותר בעיטות.",
+  "אז למה השוערים קופצים? החוקרים שאלו אותם. השוערים הסבירו שאם הם קופצים ומפסידים, כולם רואים שהם ניסו. אבל אם הם נשארים לעמוד והכדור נכנס, האוהדים כועסים שהם לא עשו כלום. לפעמים קשה יותר לא לזוז מאשר לקפוץ."],
+ loc:{q:'מצאו את הראיה: כמה מהבעיטות נשלחו למרכז השער?', find:'כמעט שליש מהבעיטות'},
+ qs:[
+  {q:'למה השוער חייב להחליט מראש לאן לקפוץ?', st:'השוער חייב להחליט מראש כי', ideas:[{k:['חצי שנייה','חצי שניה','מהר','מהיר','אין זמן','אין לו זמן','זמן'],h:'כמה זמן לוקח לכדור להגיע לשער?'}], model:'השוער חייב להחליט מראש כי הכדור מגיע לשער בפחות מחצי שנייה, ואין לו זמן לראות לאן הוא עף.'},
+  {q:'למה השוערים קופצים, אף על פי שעדיף להם להישאר במקום? הוכיחו מהקטע.', ideas:[{k:['ניסו','ניסה','רואים','מנסה'],h:'מה כולם רואים כשהשוער קופץ?'},{k:['אוהד','כועס','כלום','לא עשו','לא עשה'],h:'מה קורה כשהוא נשאר לעמוד והכדור נכנס?'}], model:'השוערים קופצים כי כשהם קופצים כולם רואים שהם ניסו. אם הם נשארים לעמוד והכדור נכנס, האוהדים כועסים שהם לא עשו כלום.'},
+  {type:'kbs', q:'המשיכו את המשפט בשלוש דרכים.', stem:'השוער נשאר לעמוד במרכז השער', model:{ki:'כי הוא קרא על המחקר.', aval:'אבל הבועט בעט לפינה.', lachen:'לכן הוא עצר את הכדור שנבעט למרכז.'}}
+ ]},
+{id:'c06', trk:'case', lvl:4, kind:'לגו', em:'🛞', title:'תיק יצרן הצמיגים',
+ pre:'איזו חברה לדעתכם מייצרת הכי הרבה צמיגים בעולם?',
+ voc:[['יצרן','מי שמכין מוצרים במפעל'],['זעירים','קטנים מאוד'],['שיא','התוצאה הגבוהה ביותר שנמדדה']],
+ text:["אם תשאלו אנשים מי יצרן הצמיגים הגדול בעולם, רובם יגידו שם של חברת צמיגים מפורסמת. הם יטעו. לפי מספר הצמיגים, היצרן הגדול בעולם הוא בכלל חברת צעצועים: לגו.",
+  "איך זה ייתכן? כמעט בכל ערכת לגו של מכונית, משאית או מטוס יש גלגלים, ועל כל גלגל יש צמיג גומי זעיר. לגו מייצרת מאות מיליוני צמיגים כאלה בכל שנה, יותר מכל חברה אחרת. ספר השיאים של גינס אפילו רשם את השיא הזה.",
+  "כמובן, יש הבדל גדול. צמיג של לגו שוקל כמה גרמים ונכנס לכיס. צמיג של משאית שוקל עשרות קילוגרמים. אם מודדים לפי משקל הגומי, חברות הצמיגים הרגילות מנצחות בקלות.",
+  "הסיפור הזה מלמד שצריך לקרוא מספרים בזהירות. המשפט \"לגו היא יצרן הצמיגים הגדול בעולם\" נכון, אבל רק אם סופרים צמיגים ולא שוקלים אותם. לפני שמאמינים למספר מפתיע, כדאי לשאול מה בדיוק נמדד."],
+ loc:{q:'מצאו את הראיה: מי רשם את השיא של לגו?', find:'ספר השיאים של גינס'},
+ qs:[
+  {q:'איך ייתכן שחברת צעצועים מייצרת הכי הרבה צמיגים?', st:'זה ייתכן כי', ideas:[{k:['ערכ','גלגל','מכונית','כמעט בכל'],h:'איפה נמצאים הצמיגים של לגו?'},{k:['מיליונ','הרבה','מאות'],h:'כמה צמיגים כאלה מייצרים בשנה?'}], model:'זה ייתכן כי כמעט בכל ערכה של מכונית או משאית יש גלגלים עם צמיגים זעירים, ולגו מייצרת מאות מיליונים כאלה בשנה.'},
+  {q:'למה כדאי "לשאול מה בדיוק נמדד" לפני שמאמינים למספר? הוכיחו מהקטע.', ideas:[{k:['סופר','מספר','כמות','ספיר'],h:'לפי איזו מדידה לגו ראשונה?'},{k:['משקל','שוקל','גומי','קילו'],h:'ולפי איזו מדידה היא לא ראשונה?'}], model:'כי אותו מספר יכול להטעות. לגו ראשונה אם סופרים את הצמיגים, אבל אם שוקלים את הגומי חברות הצמיגים הרגילות מנצחות.'},
+  {type:'kbs', q:'המשיכו את המשפט בשלוש דרכים.', stem:'צמיג של לגו שוקל רק כמה גרמים', model:{ki:'כי הוא מיועד למכונית צעצוע.', aval:'אבל לגו מייצרת מאות מיליונים כאלה.', lachen:'לכן לפי משקל הגומי היא לא היצרן הגדול ביותר.'}}
+ ]}
+);
 </script>
 
 <script id="reading-engine">
@@ -232,13 +326,20 @@ try{ if(/grade4-learning/.test(document.referrer)) sessionStorage.setItem('readi
      else if(/grade6-learning/.test(document.referrer)) sessionStorage.setItem('reading-back','../grade6-learning/');
      var bk=sessionStorage.getItem('reading-back'); if(bk) document.getElementById('homeLink').href=bk; }catch(e){}
 
-function load(){ try{ var o=JSON.parse(localStorage.getItem(KEY)||'{}'); if(!o.done) o.done={}; return o; }catch(e){ return {done:{}}; } }
+function load(){ try{ var o=JSON.parse(localStorage.getItem(KEY)||'{}'); if(!o.done) o.done={}; if(!o.wanted) o.wanted={}; return o; }catch(e){ return {done:{},wanted:{}}; } }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
 function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
 function norm(s){ return String(s).replace(/[֑-ׇ]/g,'').replace(/[ךםןףץ]/g,function(c){return {'ך':'כ','ם':'מ','ן':'נ','ף':'פ','ץ':'צ'}[c];})
   .replace(/[^א-ת0-9a-zA-Z ]+/g,' ').replace(/\s+/g,' ').trim(); }
+/* צורה "לפי הצליל": אותיות שנשמעות דומה מתאחדות, כדי ששגיאת כתיב לא תכשיל תשובה נכונה */
+function canon(s){ return norm(s).replace(/[טת]/g,'ת').replace(/[קכח]/g,'כ').replace(/[עא]/g,'א').replace(/[זג]/g,'ג'); }
+function hom(w){ return w.replace(/[טת]/g,'ת').replace(/[קכח]/g,'כ').replace(/[עא]/g,'א'); }
 function words(s){ var n=norm(s); return n?n.split(' ').length:0; }
-function byLevel(n){ return PASSAGES.filter(function(p){return p.lvl===n;}); }
+function byLevel(n){ return PASSAGES.filter(function(p){return p.lvl===n&&!p.trk;}); }
+function cases(){ return PASSAGES.filter(function(p){return p.trk==='case';}); }
+function closed(){ return cases().filter(passed).length; }
+function rank(n){ var r=RANKS[0],nx=null; RANKS.forEach(function(x,i){ if(n>=x[0]){ r=x; nx=RANKS[i+1]||null; } }); return {r:r,next:nx}; }
+function replies(){ try{ return JSON.parse(localStorage.getItem('reading-replies')||'{}'); }catch(e){ return {}; } }
 function passed(p){ var d=S.done[p.id]; return !!d && d.score/d.max>=0.6; }
 function passedIn(n){ return byLevel(n).filter(passed).length; }
 function unlocked(n){ return n===1 || passedIn(n-1)>=Math.min(3,byLevel(n-1).length||99); }
@@ -248,38 +349,77 @@ function sentences(par){ return par.match(/[^.!?]+[.!?]+["״”]?\s*|[^.!?]+$/g)
 /* ---------- בית ---------- */
 function home(){
   stopTts(); cur=null;
-  var top=1; LEVELS.forEach(function(l){ if(byLevel(l.n).length && unlocked(l.n)) top=l.n; });
-  var sel=S.view&&unlocked(S.view)&&byLevel(S.view).length?S.view:top;
-  var h='<div class="card"><h2>השלבים</h2><div class="lvrow">';
-  LEVELS.forEach(function(l){
-    var has=byLevel(l.n).length>0, un=has&&unlocked(l.n), dn=has&&passedIn(l.n)>=Math.min(3,byLevel(l.n).length);
-    h+='<button class="lv'+(l.n===sel?' on':dn?' done':'')+(un?'':' lock')+'" data-lv="'+l.n+'"'+(un?'':' disabled')+' aria-label="שלב '+l.n+(un?'':has?' — נעול':' — בקרוב')+'">'+
-       (un?l.n:has?'🔒':'🚧')+'<small>'+(un?(dn?'✓':'שלב'):has?'נעול':'בקרוב')+'</small></button>';
-  });
-  var L=LEVELS[sel-1];
-  h+='</div></div><div class="card"><span class="pill">שלב '+sel+'</span><h2>'+esc(L.name)+'</h2>'+
-     '<div style="color:var(--soft);font-size:16px">עוברים לשלב הבא אחרי 3 קטעים מוצלחים. הצלחתם: '+passedIn(sel)+' מתוך '+byLevel(sel).length+'</div></div>';
-  byLevel(sel).forEach(function(p){ var d=S.done[p.id];
-    h+='<button class="pc" data-p="'+p.id+'"><span class="em" aria-hidden="true">'+p.em+'</span><span><b>'+esc(p.title)+'</b><small>'+esc(p.kind)+'</small></span><span class="st">'+(d?stars(d):'▶️')+'</span></button>'; });
+  var tab=S.tab==='lv'?'lv':'case', rp=replies(), h='';
+  h+='<div class="tabs"><button data-tab="case"'+(tab==='case'?' class="on"':'')+'>🕵️ סוכנות החקירות</button><button data-tab="lv"'+(tab==='lv'?' class="on"':'')+'>📖 קטעים בשלבים</button></div>';
+  Object.keys(rp).forEach(function(id){ var r=rp[id], p=byId(id); if(!p||!r.txt||(S.seen&&S.seen[id]>=r.t)) return;
+    h+='<div class="msg"><b>💬 הודעה על "'+esc(p.title)+'"</b>'+esc(r.txt)+'</div>'; if(!S.seen) S.seen={}; S.seen[id]=r.t; });
+  var list;
+  if(tab==='case'){
+    var n=closed(), rk=rank(n); list=cases();
+    h+='<div class="card"><div class="rank"><span class="em" aria-hidden="true">'+rk.r[2]+'</span><div style="flex:1"><span class="pill">הדרגה שלכם</span><h2>'+rk.r[1]+'</h2>'+
+      (rk.next?'<div style="color:var(--soft);font-size:16px">עוד '+(rk.next[0]-n)+' תיקים סגורים לדרגת '+rk.next[1]+'</div><div class="bar"><i style="width:'+Math.round(100*(n-rk.r[0])/(rk.next[0]-rk.r[0]))+'%"></i></div>':'<div style="color:var(--soft);font-size:16px">הגעתם לדרגה הגבוהה ביותר!</div>')+
+      '</div></div></div><div class="card"><h2>בחרו תיק לחקירה</h2><div style="color:var(--soft);font-size:16px">קוראים את התיק, מוצאים ראיה וכותבים דוח. תיקים סגורים: '+n+' מתוך '+list.length+'</div></div>';
+  } else {
+    var top=1; LEVELS.forEach(function(l){ if(byLevel(l.n).length && unlocked(l.n)) top=l.n; });
+    var sel=S.view&&unlocked(S.view)&&byLevel(S.view).length?S.view:top;
+    h+='<div class="card"><h2>השלבים</h2><div class="lvrow">';
+    LEVELS.forEach(function(l){
+      var has=byLevel(l.n).length>0, un=has&&unlocked(l.n), dn=has&&passedIn(l.n)>=Math.min(3,byLevel(l.n).length);
+      h+='<button class="lv'+(l.n===sel?' on':dn?' done':'')+(un?'':' lock')+'" data-lv="'+l.n+'"'+(un?'':' disabled')+' aria-label="שלב '+l.n+(un?'':has?' — נעול':' — בקרוב')+'">'+
+         (un?l.n:has?'🔒':'🚧')+'<small>'+(un?(dn?'✓':'שלב'):has?'נעול':'בקרוב')+'</small></button>';
+    });
+    var L=LEVELS[sel-1]; list=byLevel(sel);
+    h+='</div></div><div class="card"><span class="pill">שלב '+sel+'</span><h2>'+esc(L.name)+'</h2>'+
+       '<div style="color:var(--soft);font-size:16px">עוברים לשלב הבא אחרי 3 קטעים מוצלחים. הצלחתם: '+passedIn(sel)+' מתוך '+list.length+'</div></div>';
+  }
+  list.forEach(function(p){ var d=S.done[p.id];
+    h+='<button class="pc" data-p="'+p.id+'"><span class="em" aria-hidden="true">'+p.em+'</span><span><b>'+esc(p.title)+'</b><small>'+esc(p.kind)+(rp[p.id]&&rp[p.id].txt?' · 💬':'')+'</small></span><span class="st">'+(d?stars(d):'▶️')+'</span></button>'; });
   h+='<button class="plink" id="parentBtn">להורים: התשובות שנכתבו</button>';
-  app.innerHTML=h; window.scrollTo(0,0);
+  save(); app.innerHTML=h; window.scrollTo(0,0);
+  each('[data-tab]',function(b){ b.onclick=function(){ S.tab=b.getAttribute('data-tab'); save(); home(); }; });
   each('[data-lv]',function(b){ b.onclick=function(){ S.view=+b.getAttribute('data-lv'); save(); home(); }; });
   each('[data-p]',function(b){ b.onclick=function(){ start(b.getAttribute('data-p')); }; });
   document.getElementById('parentBtn').onclick=parents;
 }
+function byId(id){ return PASSAGES.filter(function(x){return x.id===id;})[0]; }
 function each(sel,fn){ Array.prototype.forEach.call(app.querySelectorAll(sel),fn); }
 function stepsBar(i,n){ var h='<div class="steps" aria-hidden="true">'; for(var k=0;k<n;k++) h+='<i'+(k<=i?' class="on"':'')+'></i>'; return h+'</div>'; }
 
 /* ---------- קטע ---------- */
 function start(id){
-  var p=PASSAGES.filter(function(x){return x.id===id;})[0]; if(!p) return;
-  cur={p:p, qi:0, score:0, max:1+p.qs.length*2, ans:[], locTry:0};
-  var h=stepsBar(0,3+p.qs.length)+'<div class="card"><span class="pill">'+esc(p.kind)+'</span><h2>'+p.em+' '+esc(p.title)+'</h2>'+
-    '<h3>לפני שקוראים, חשבו רגע:</h3><div>'+esc(p.pre)+'</div></div>'+
+  var p=byId(id); if(!p) return;
+  cur={p:p, qi:0, score:0, max:1+p.qs.length*2, ans:[], locTry:0, before:closed()};
+  var rp=replies()[id];
+  var h=stepsBar(0,3+p.qs.length)+'<div class="card"><span class="pill">'+(p.trk?'תיק חקירה · ':'')+esc(p.kind)+'</span><h2>'+p.em+' '+esc(p.title)+'</h2>'+
+    (rp&&rp.txt?'<div class="msg"><b>💬 הודעה על התיק הזה</b>'+esc(rp.txt)+'</div>':'')+
+    '<h3>'+(p.trk?'לפני שפותחים את התיק, חשבו רגע:':'לפני שקוראים, חשבו רגע:')+'</h3><div>'+esc(p.pre)+'</div></div>'+
     '<div class="card"><h3>מילים שכדאי להכיר</h3><ul class="voc">'+p.voc.map(function(v){return '<li><b>'+esc(v[0])+'</b> — '+esc(v[1])+'</li>';}).join('')+'</ul></div>'+
-    '<button class="btn" id="go">לקריאה 📖</button><button class="btn ghost" id="back">חזרה לרשימה</button>';
+    '<button class="btn" id="go">'+(p.trk?'פותחים את התיק 📂':'לקריאה 📖')+'</button><button class="btn ghost" id="back">חזרה לרשימה</button>';
   app.innerHTML=h; window.scrollTo(0,0);
-  document.getElementById('go').onclick=read; document.getElementById('back').onclick=home;
+  document.getElementById('go').onclick=flash; document.getElementById('back').onclick=home;
+}
+/* "מילים מבוקשות": מילים שנכתבו בשגיאה חוזרות בהברקה (מופיעות לרגע ונעלמות) עד שנתפסות 3 פעמים */
+function flash(){
+  var list=Object.keys(S.wanted).slice(0,3), i=0, my=cur;
+  if(!list.length) return read();
+  var show=function(){
+    if(cur!==my) return; if(i>=list.length){ save(); return read(); }
+    var w=list[i], tries=0;
+    app.innerHTML=stepsBar(0,3+my.p.qs.length)+'<div class="card flash"><span class="pill">מילים מבוקשות 🎯 '+(i+1)+' מתוך '+list.length+'</span>'+
+      '<div style="color:var(--soft);font-size:16px;margin:6px 0">הסתכלו טוב על המילה. היא תיעלם, ואז כתבו אותה.</div><div class="w" id="fw">'+esc(w)+'</div>'+
+      '<input id="fi" hidden autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="כתבו את המילה"><div id="ff"></div><button class="btn" id="fc" hidden>בדיקה ✅</button></div>';
+    window.scrollTo(0,0);
+    var fw=document.getElementById('fw'), fi=document.getElementById('fi'), fc=document.getElementById('fc'), ff=document.getElementById('ff');
+    var hide=function(){ if(cur!==my||!fw.isConnected) return; fw.textContent='· · ·'; fi.hidden=false; fc.hidden=false; fi.value=''; try{fi.focus();}catch(e){} };
+    setTimeout(hide,1800);
+    fc.onclick=function(){
+      if(norm(fi.value)===norm(w)){ S.wanted[w].n=(S.wanted[w].n||0)+1; if(S.wanted[w].n>=3) delete S.wanted[w];
+        fi.classList.add('ok'); fc.hidden=true; ff.innerHTML='<div class="fb ok">✅ תפסתם!</div>'; setTimeout(function(){ i++; show(); },800); }
+      else if(++tries<2){ ff.innerHTML='<div class="fb bad">עוד לא. הסתכלו שוב.</div>'; fw.textContent=w; fi.hidden=true; fc.hidden=true; setTimeout(hide,2400); }
+      else { ff.innerHTML='<div class="fb mid">כותבים: <b>'+esc(w)+'</b></div>'; fc.hidden=true; setTimeout(function(){ i++; show(); },1800); }
+    };
+  };
+  show();
 }
 function psgHtml(p,pick){
   var i=0; return '<div class="psg'+(pick?' pick':'')+'" id="psg">'+p.text.map(function(par){
@@ -338,33 +478,84 @@ function locate(){
 
 /* ---------- כתיבה ---------- */
 function check(q,full,typed,lvl){
-  var n=norm(full), need=LEVELS[lvl-1].min, wc=words(typed);
+  var n=canon(full), need=LEVELS[lvl-1].min, wc=words(typed);
   if(q.op){ return {full:wc>=Math.max(4,need), miss:[], op:true}; }
-  var miss=[]; q.ideas.forEach(function(id){ var ok=id.k.some(function(k){ var s=norm(k); return s && (' '+n+' ').indexOf(/ $/.test(k)?s+' ':s)>=0; }); if(!ok) miss.push(id); });
+  var miss=[]; q.ideas.forEach(function(id){ var ok=id.k.some(function(k){ var s=canon(k); return s && (' '+n+' ').indexOf(/ $/.test(k)?s+' ':s)>=0; }); if(!ok) miss.push(id); });
   return {full:miss.length===0, part:miss.length<q.ideas.length, miss:miss};
 }
+function lexicon(p){
+  if(p._lex) return p._lex; var m={};
+  var add=function(t){ String(t||'').replace(/[֑-ׇ]/g,'').split(/[^א-ת]+/).forEach(function(w){ if(w.length>1) m[norm(w)]=w; }); };
+  p.text.forEach(add); add(p.loc.q); p.voc.forEach(function(v){ add(v[0]); });
+  p.qs.forEach(function(q){ add(q.q); add(q.st); add(q.stem); if(q.model){ if(typeof q.model==='string') add(q.model); else { add(q.model.ki); add(q.model.aval); add(q.model.lachen); } } });
+  p._lex=m; return m;
+}
+/* שגיאות כתיב שאפשר לזהות בביטחון: חילוף אותיות שנשמעות דומה, חילוף ג/ז, או אות חסרה באמצע המילה — מול המילים של הקטע */
+var COMMON={}; 'מאוד אתה את אני הוא היא הם הן אנחנו אתם זה זאת זו אלה אלו של על אל עם אם כי אבל לכן גם רק כל כמו יותר פחות אחרי לפני אחר אחרת כך ככה כדי בגלל למרות כאשר היה הייתה היו יהיה תהיה יש אין לא כן עוד כבר אז שם פה כאן מה מי איך למה מתי איפה אותו אותה אותם אותי אותך שלו שלה שלהם שלי שלך שלנו לו לה להם לי לך לנו אחד אחת שני שתי שניים שלוש טוב טובה טובים רע רעה גדול גדולה קטן קטנה הרבה מעט קצת תמיד אף פעם פעמים עכשיו היום מחר אתמול אפשר צריך צריכה רוצה רצה רצו יכול יכולה יכלו יודע יודעת ידע חושב חושבת חשב אומר אומרת אמר אמרה עשה עשתה עושה עושים הלך הלכה הולך בא באה באו ראה ראתה רואה נתן נתנה לקח לקחה ילד ילדה ילדים אנשים איש אישה בית דבר דברים זמן יום ימים שנה שנים דרך מקום עצמו עצמה בעצם אולי בטח כמעט מאז עדיין אפילו בכלל ממש מהר לאט קודם בסוף בהתחלה לבד ביחד אותו כולם כולנו משהו מישהו כלום שום קרה קורה הקטע כתוב לדעתי למשל בנוסף כלומר לפי בזכות'.split(' ').forEach(function(w){ COMMON[norm(w)]=1; });
+function spellFix(typed,p){
+  var lex=lexicon(p), out=[], seen={}, PRE='והבלכמש';
+  var gz=function(L,c){ if(L.length!==c.length) return false; var d=0; for(var i=0;i<L.length;i++){ if(L[i]!==c[i]){ if(!((L[i]==='ג'&&c[i]==='ז')||(L[i]==='ז'&&c[i]==='ג'))) return false; d++; } } return d>0; };
+  var omit=function(L,c){ if(L.length<4||c.length!==L.length-1) return false; for(var i=1;i<L.length-1;i++){ if('וי'.indexOf(L[i])<0 && L.slice(0,i)+L.slice(i+1)===c) return true; } return false; };
+  norm(typed).split(' ').forEach(function(w){
+    if(out.length>=3||w.length<3||seen[w]||/[0-9a-zA-Z]/.test(w)) return; seen[w]=1;
+    var forms=[['',w]]; if(PRE.indexOf(w[0])>=0&&w.length>3){ forms.push([w[0],w.slice(1)]); if(PRE.indexOf(w[1])>=0&&w.length>4) forms.push([w.slice(0,2),w.slice(2)]); }
+    if(forms.some(function(f){ return lex[f[1]]||COMMON[f[1]]; })) return;
+    for(var i=0;i<forms.length;i++){ var core=forms[i][1]; if(i>0&&core.length<4) continue;
+      for(var L in lex){ if(L.length<3) continue;
+        if(hom(L)===hom(core)||gz(L,core)||(i===0&&L.length>=5&&omit(L,core))){ out.push({bad:w, good:forms[i][0]+lex[L]}); return; } } }
+  });
+  return out;
+}
 function write(){
-  var p=cur.p, q=p.qs[cur.qi], tries=0, lvl=p.lvl, need=LEVELS[lvl-1].min;
-  var h=stepsBar(3+cur.qi,3+p.qs.length)+'<div class="card"><span class="pill">שאלה '+(cur.qi+1)+' מתוך '+p.qs.length+(q.op?' · מה דעתכם?':'')+'</span>'+
-    '<div class="qtxt">'+esc(q.q)+'</div>'+(q.st?'<div class="starter">'+esc(q.st)+' …</div>':'')+
-    '<textarea id="ans" rows="3" aria-label="התשובה שלכם" placeholder="'+(q.st?'המשיכו את המשפט כאן':'כתבו כאן תשובה במשפט שלם')+'"></textarea>'+
-    (q.help?'<div class="help">'+q.help.map(function(w){return '<span>'+esc(w)+'</span>';}).join('')+'</div>':'')+
-    '<button class="tog" id="mic" hidden>🎤 להגיד בקול במקום להקליד</button>'+
-    '<div id="fb"></div><button class="btn" id="chk">בדיקה ✅</button><button class="btn" id="nxt" hidden></button></div>'+
+  var p=cur.p, q=p.qs[cur.qi], tries=0, lvl=p.lvl, kbs=q.type==='kbs', need=kbs?2:(p.trk&&q.st?3:LEVELS[lvl-1].min);
+  var h=stepsBar(3+cur.qi,3+p.qs.length)+'<div class="card"><span class="pill">'+(p.trk?'דוח חקירה · ':'')+'שאלה '+(cur.qi+1)+' מתוך '+p.qs.length+(q.op?' · מה דעתכם?':'')+'</span>'+
+    '<div class="qtxt">'+esc(q.q)+'</div>';
+  if(kbs){
+    h+='<div class="starter" style="font-size:20px">'+esc(q.stem)+' …</div>'+
+      [['ki','כי'],['aval','אבל'],['lachen','לכן']].map(function(x){ return '<div class="kbs"><b>'+x[1]+'</b><textarea id="k_'+x[0]+'" rows="2" aria-label="'+esc(q.stem)+' '+x[1]+'"></textarea></div>'; }).join('');
+  } else {
+    if(p.trk&&!q.st) h+='<div class="tpl" aria-label="איך כותבים תשובה מלאה"><span>1. חוזרים על השאלה</span><span>2. עונים</span><span>3. מוכיחים מהקטע</span></div>';
+    h+=(q.st?'<div class="starter">'+esc(q.st)+' …</div>':'')+
+      '<div class="said" id="said" hidden></div>'+
+      '<textarea id="ans" rows="3" aria-label="התשובה שלכם" placeholder="'+(q.st?'המשיכו את המשפט כאן':'כתבו כאן תשובה במשפט שלם')+'"></textarea>'+
+      '<button class="tog" id="mic" hidden>🎤 קודם להגיד בקול, ואז לכתוב</button>';
+  }
+  h+='<div id="fb"></div><button class="btn" id="chk">בדיקה ✅</button><button class="btn" id="nxt" hidden></button></div>'+
     '<div class="card"><button class="tog" id="tg" aria-expanded="false">📖 להציג את הקטע</button><div id="pg" hidden>'+psgHtml(p,false)+'</div></div>';
   app.innerHTML=h; window.scrollTo(0,0);
   var ta=document.getElementById('ans'), fb=document.getElementById('fb'), chk=document.getElementById('chk'), nxt=document.getElementById('nxt');
+  var K=kbs?{ki:document.getElementById('k_ki'),aval:document.getElementById('k_aval'),lachen:document.getElementById('k_lachen')}:null;
   document.getElementById('tg').onclick=function(){ var g=document.getElementById('pg'); g.hidden=!g.hidden; this.textContent=g.hidden?'📖 להציג את הקטע':'📖 להסתיר את הקטע'; this.setAttribute('aria-expanded',String(!g.hidden)); };
-  dictation(ta,document.getElementById('mic'));
-  nxt.textContent=cur.qi+1<p.qs.length?'לשאלה הבאה ➜':'לסיום 🏁';
-  var fullText=function(){ return (q.st?q.st+' ':'')+ta.value.trim(); };
-  var close=function(pts,mark){ cur.score+=pts; cur.ans.push({q:q.q,a:fullText(),m:mark,pts:pts}); ta.readOnly=true; chk.hidden=true; nxt.hidden=false;
-    fb.insertAdjacentHTML('beforeend','<div class="model"><b>'+(q.op?'דוגמה לתשובה טובה':'תשובה לדוגמה')+'</b>'+esc(q.model)+'</div>');
+  if(!kbs) dictation(document.getElementById('said'),document.getElementById('mic'));
+  nxt.textContent=cur.qi+1<p.qs.length?'לשאלה הבאה ➜':(p.trk?'לסגירת התיק 🏁':'לסיום 🏁');
+  var typedAll=function(){ return kbs?[K.ki.value,K.aval.value,K.lachen.value].join(' '):ta.value; };
+  var fullText=function(){ return kbs?(q.stem+' כי '+K.ki.value.trim()+' · אבל '+K.aval.value.trim()+' · לכן '+K.lachen.value.trim()):((q.st?q.st+' ':'')+ta.value.trim()); };
+  var close=function(pts,mark){
+    var a={q:kbs?q.stem+' (כי / אבל / לכן)':q.q,a:fullText(),m:mark,pts:pts}; cur.score+=pts; cur.ans.push(a);
+    (kbs?[K.ki,K.aval,K.lachen]:[ta]).forEach(function(t){ t.readOnly=true; }); chk.hidden=true;
+    var model=kbs?(q.stem+' כי '+q.model.ki.replace(/^כי /,'')+' '+q.stem+' אבל '+q.model.aval.replace(/^אבל /,'')+' '+q.stem+' לכן '+q.model.lachen.replace(/^לכן /,'')):q.model;
+    fb.insertAdjacentHTML('beforeend','<div class="model"><b>'+(q.op||kbs?'דוגמה לתשובה טובה':'תשובה לדוגמה')+'</b>'+esc(model)+'</div>');
     if(mark==='part'||mark==='no'){ fb.insertAdjacentHTML('beforeend','<button class="btn ghost" id="self">✋ כתבתי את אותו רעיון במילים אחרות</button>');
-      document.getElementById('self').onclick=function(){ var a=cur.ans[cur.ans.length-1], np=a.pts>=1?1.5:1; cur.score+=np-a.pts; a.pts=np; a.m='self'; this.remove();
+      document.getElementById('self').onclick=function(){ var np=a.pts>=1?1.5:1; cur.score+=np-a.pts; a.pts=np; a.m='self'; this.remove();
         fb.insertAdjacentHTML('beforeend','<div class="fb mid">רשמנו. הורה יוכל לקרוא את התשובה ולאשר.</div>'); }; }
-    nxt.scrollIntoView({block:'nearest'}); };
+    var fixes=spellFix(typedAll(),p);
+    if(!fixes.length){ nxt.hidden=false; nxt.scrollIntoView({block:'nearest'}); return; }
+    a.sp=fixes;
+    fb.insertAdjacentHTML('beforeend','<div class="fix" id="fix"><b>🎯 '+(fixes.length===1?'מילה אחת לתיקון כתיב':fixes.length+' מילים לתיקון כתיב')+'</b>'+
+      fixes.map(function(f,i){ return '<div class="fr">כתבתם <s>'+esc(f.bad)+'</s> · כותבים <b>'+esc(f.good)+'</b> <input data-fx="'+i+'" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="כתבו שוב: '+esc(f.good)+'"></div>'; }).join('')+
+      '<button class="btn" id="fxok">תיקנתי ✅</button><button class="tog" id="fxskip">לדלג על התיקון</button></div>');
+    var done=function(){ var b=document.getElementById('fix'); if(b) b.remove(); nxt.hidden=false; nxt.scrollIntoView({block:'nearest'}); };
+    each('[data-fx]',function(inp){ inp.oninput=function(){ inp.classList.toggle('ok',norm(inp.value)===norm(fixes[+inp.getAttribute('data-fx')].good)); }; });
+    document.getElementById('fxok').onclick=function(){ var all=true; each('[data-fx]',function(inp){ if(!inp.classList.contains('ok')) all=false; });
+      if(!all){ this.textContent='עוד לא. העתיקו כל מילה בדיוק ✅'; return; }
+      fixes.forEach(function(f){ if(!S.wanted[f.good]) S.wanted[f.good]={n:0}; }); save(); done(); };
+    document.getElementById('fxskip').onclick=done;
+    document.getElementById('fix').scrollIntoView({block:'nearest'});
+  };
   chk.onclick=function(){
+    if(kbs){ var short=[K.ki,K.aval,K.lachen].filter(function(t){ return words(t.value)<need; });
+      if(short.length){ fb.innerHTML='<div class="fb bad">השלימו את שלושת המשפטים. בכל אחד לפחות '+need+' מילים.</div>'; try{short[0].focus();}catch(e){} return; }
+      fb.innerHTML='<div class="fb ok">✅ כתבתם שלושה המשכים. קראו את הדוגמה והשוו.</div>'; close(2,'full'); return; }
     var typed=ta.value.trim();
     if(words(typed)<need){ fb.innerHTML='<div class="fb bad">התשובה קצרה מדי. כתבו לפחות '+need+' מילים'+(q.st?' אחרי פתיחת המשפט':'')+'.</div>'; return; }
     var r=check(q,fullText(),typed,lvl); tries++;
@@ -377,52 +568,66 @@ function write(){
   };
   nxt.onclick=function(){ cur.qi++; if(cur.qi<p.qs.length) write(); else end(); };
 }
-function dictation(ta,btn){
+function dictation(box,btn){
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR) return;
-  btn.hidden=false; var rec=null;
+  btn.hidden=false; var rec=null, said='';
   btn.onclick=function(){
     if(rec){ try{rec.stop();}catch(e){} return; }
     try{ rec=new SR(); rec.lang='he-IL'; rec.interimResults=false;
-      rec.onresult=function(e){ var t=''; for(var i=e.resultIndex;i<e.results.length;i++) t+=e.results[i][0].transcript; ta.value=(ta.value?ta.value.trim()+' ':'')+t.trim(); };
-      rec.onend=rec.onerror=function(){ rec=null; btn.textContent='🎤 להגיד בקול במקום להקליד'; };
+      rec.onresult=function(e){ for(var i=e.resultIndex;i<e.results.length;i++) said+=(said?' ':'')+e.results[i][0].transcript.trim();
+        box.hidden=false; box.innerHTML='<b>מה שאמרתם (עכשיו כתבו את זה בעצמכם)</b>'+esc(said); };
+      rec.onend=rec.onerror=function(){ rec=null; btn.textContent='🎤 להגיד שוב בקול'; };
       rec.start(); btn.textContent='⏹ מקשיב… הקישו כדי לעצור'; }catch(e){ rec=null; btn.hidden=true; }
   };
 }
-
 /* ---------- סיום ---------- */
 function end(){
   var p=cur.p, d={t:Date.now(), score:Math.round(cur.score*10)/10, max:cur.max, loc:cur.loc, ans:cur.ans};
-  var old=S.done[p.id]; S.done[p.id]=d; if(old&&old.score/old.max>d.score/d.max) S.done[p.id].best=old.score; save();
-  var ok=d.score/d.max>=0.6, before=old&&old.score/old.max>=0.6;
-  var nextP=byLevel(p.lvl).filter(function(x){return !S.done[x.id];})[0];
-  var lvUp=ok&&!before&&passedIn(p.lvl)===Math.min(3,byLevel(p.lvl).length)&&byLevel(p.lvl+1).length>0;
-  var h='<div class="card center"><div class="big">'+(ok?'🎉':'💪')+'</div><h2>'+(ok?'סיימתם את הקטע!':'סיימתם. כדאי לנסות את הקטע שוב.')+'</h2>'+
-    '<div style="font-size:30px">'+stars(d)+'</div><div>'+d.score+' נקודות מתוך '+d.max+'</div>'+
-    (lvUp?'<div class="fb ok">🔓 נפתח שלב '+(p.lvl+1)+'!</div>':'')+'</div>';
+  var old=S.done[p.id]; S.done[p.id]=d; save();
+  var ok=d.score/d.max>=0.6, before=old&&old.score/old.max>=0.6, h, nextP, lvUp=false;
+  if(p.trk){
+    var rb=rank(cur.before).r, ra=rank(closed()).r; nextP=cases().filter(function(x){return !S.done[x.id];})[0];
+    h='<div class="card center"><div class="big">'+(ok?'🎉':'💪')+'</div><h2>'+(ok?'התיק נסגר!':'התיק עוד פתוח. כדאי לחקור אותו שוב.')+'</h2>'+
+      '<div style="font-size:30px">'+stars(d)+'</div><div>'+d.score+' נקודות מתוך '+d.max+'</div>'+
+      (ra!==rb?'<div class="fb ok">'+ra[2]+' עליתם לדרגת '+ra[1]+'!</div>':'')+'</div>';
+  } else {
+    nextP=byLevel(p.lvl).filter(function(x){return !S.done[x.id];})[0];
+    lvUp=ok&&!before&&passedIn(p.lvl)===Math.min(3,byLevel(p.lvl).length)&&byLevel(p.lvl+1).length>0;
+    h='<div class="card center"><div class="big">'+(ok?'🎉':'💪')+'</div><h2>'+(ok?'סיימתם את הקטע!':'סיימתם. כדאי לנסות את הקטע שוב.')+'</h2>'+
+      '<div style="font-size:30px">'+stars(d)+'</div><div>'+d.score+' נקודות מתוך '+d.max+'</div>'+
+      (lvUp?'<div class="fb ok">🔓 נפתח שלב '+(p.lvl+1)+'!</div>':'')+'</div>';
+  }
   h+='<div class="card"><h3>מה כתבתם</h3>'+d.ans.map(ansHtml).join('')+'</div>';
   if(lvUp) h+='<button class="btn" id="up">לשלב '+(p.lvl+1)+' ➜</button>';
-  else if(nextP) h+='<button class="btn" id="nx">לקטע הבא ➜</button>';
-  h+='<button class="btn ghost" id="back">לרשימת הקטעים</button>';
+  else if(nextP) h+='<button class="btn" id="nx">'+(p.trk?'לתיק הבא ➜':'לקטע הבא ➜')+'</button>';
+  h+='<button class="btn ghost" id="back">'+(p.trk?'לרשימת התיקים':'לרשימת הקטעים')+'</button>';
   app.innerHTML=h; window.scrollTo(0,0);
   var b=document.getElementById('nx'); if(b) b.onclick=function(){ start(nextP.id); };
   b=document.getElementById('up'); if(b) b.onclick=function(){ S.view=p.lvl+1; save(); home(); };
   document.getElementById('back').onclick=home;
 }
-function ansHtml(a){ var ic={full:'✅',part:'🟡',no:'🔴',self:'✋'}[a.m]||''; return '<div class="pa"><b>'+ic+' '+esc(a.q)+'</b>'+esc(a.a)+'</div>'; }
-
+function ansHtml(a){ var ic={full:'✅',part:'🟡',no:'🔴',self:'✋'}[a.m]||'';
+  return '<div class="pa"><b>'+ic+' '+esc(a.q)+'</b>'+esc(a.a)+(a.sp&&a.sp.length?'<div style="font-size:14px;color:var(--soft)">כתיב: '+a.sp.map(function(f){return esc(f.bad)+' ← '+esc(f.good);}).join(' · ')+'</div>':'')+'</div>'; }
 /* ---------- הורים ---------- */
 function parents(){
-  var ids=Object.keys(S.done).sort(function(a,b){return S.done[b].t-S.done[a].t;});
+  var ids=Object.keys(S.done).sort(function(a,b){return S.done[b].t-S.done[a].t;}), rp=replies(), nw=0, na=0;
+  ids.forEach(function(id){ (S.done[id].ans||[]).forEach(function(a){ nw+=words(a.a); na++; }); });
+  var wl=Object.keys(S.wanted);
   var h='<div class="card"><h2>להורים</h2><div style="font-size:16px;color:var(--soft)">כאן מופיעות התשובות שנכתבו, מהחדש לישן. ✅ מלאה · 🟡 חלקית · 🔴 לא נמצאה התשובה · ✋ הילד סימן שכתב את אותו רעיון במילים אחרות. '+
-    'הבדיקה האוטומטית מחפשת את הרעיונות של התשובה בטקסט, והיא לא מושלמת. כדאי לקרוא את התשובות יחד.</div></div>';
+    'הבדיקה האוטומטית מחפשת את הרעיונות של התשובה בטקסט, והיא לא מושלמת. כדאי לקרוא את התשובות יחד.</div></div>'+
+    '<div class="card"><h3>תמונת מצב</h3><div>קטעים ותיקים שנעשו: <b>'+ids.length+'</b></div><div>אורך ממוצע של תשובה: <b>'+(na?Math.round(nw/na):0)+' מילים</b></div>'+
+    '<div>מילים שמחכות לתיקון כתיב: <b>'+(wl.length?wl.map(esc).join(', '):'אין')+'</b></div></div>';
   if(!ids.length) h+='<div class="card">עוד לא נכתבו תשובות.</div>';
-  ids.forEach(function(id){ var p=PASSAGES.filter(function(x){return x.id===id;})[0], d=S.done[id]; if(!p) return;
-    h+='<div class="card"><span class="pill">שלב '+p.lvl+' · '+new Date(d.t).toLocaleDateString('he-IL')+'</span><h3>'+p.em+' '+esc(p.title)+' — '+d.score+' מתוך '+d.max+'</h3>'+(d.ans||[]).map(ansHtml).join('')+'</div>'; });
+  ids.forEach(function(id){ var p=byId(id), d=S.done[id]; if(!p) return;
+    h+='<div class="card"><span class="pill">'+(p.trk?'תיק חקירה':'שלב '+p.lvl)+' · '+new Date(d.t).toLocaleDateString('he-IL')+'</span><h3>'+p.em+' '+esc(p.title)+' — '+d.score+' מתוך '+d.max+'</h3>'+(d.ans||[]).map(ansHtml).join('')+
+      '<textarea class="reply" data-r="'+id+'" rows="2" aria-label="תגובה לילד" placeholder="תגובה קצרה שהילד יראה בכניסה הבאה">'+esc(rp[id]&&rp[id].txt||'')+'</textarea><button class="btn ghost" data-rs="'+id+'">שמירת התגובה 💬</button></div>'; });
   h+='<button class="btn ghost" id="back">חזרה</button>';
   app.innerHTML=h; window.scrollTo(0,0); document.getElementById('back').onclick=home;
+  each('[data-rs]',function(b){ b.onclick=function(){ var id=b.getAttribute('data-rs'), r=replies(); r[id]={t:Date.now(),txt:app.querySelector('[data-r="'+id+'"]').value.trim()};
+    try{ localStorage.setItem('reading-replies',JSON.stringify(r)); }catch(e){} b.textContent='נשמר ✓'; }; });
 }
 window.addEventListener('lhcloud',function(){ if(!cur){ S=load(); home(); } });
-window.READING={norm:norm,check:check,sentences:sentences,home:home,start:start};
+window.READING={norm:norm,canon:canon,check:check,sentences:sentences,home:home,start:start,spellFix:spellFix};
 home();
 })();
 </script>
