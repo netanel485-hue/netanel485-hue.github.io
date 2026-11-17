@@ -149,6 +149,48 @@
     return mine.filter(isCorrect).length / mine.length;
   }
 
+  /* מחברת טעויות: לכל תרגיל הטעות האחרונה (טעות מזוהה או "טעיתי" בהשוואה עצמית), מהחדשה לישנה.
+     resolved = אחרי הטעות הזו היתה תשובה נכונה באותו תרגיל. */
+  function mistakeLog(attempts) {
+    var sorted = attempts.slice().sort(byDate), last = {}, order = [];
+    sorted.forEach(function (a) {
+      if (a.outcome === 'error' || a.outcome === 'selfWrong') {
+        if (!(a.ex in last)) order.push(a.ex);
+        last[a.ex] = { attempt: a, resolved: false };
+      } else if (isCorrect(a) && last[a.ex]) {
+        last[a.ex].resolved = true;
+      }
+    });
+    return order.map(function (id) { return last[id]; }).sort(function (x, y) { return y.attempt.date - x.attempt.date; });
+  }
+
+  /* חזרה מעורבת: תרגילים מכמה נושאים שכבר התחילו, לסירוגין, כדי לתרגל לזהות לבד איזה כלל מתאים.
+     בכל נושא: קודם תרגילים עם טעות שעוד לא תוקנה, אחר כך הכי ישנים. בלי תרגילים שנענו היום.
+     הנושאים לפי מועד החזרה. מחזיר [] אם התחילו פחות משני נושאים. */
+  function mixedReview(topics, progress, attempts, now, size) {
+    size = size || 6;
+    var started = topics.filter(function (t) { return progress[t.id] && progress[t.id].state !== 'new'; })
+      .sort(function (a, b) { return progress[a.id].nextDue - progress[b.id].nextDue; });
+    if (started.length < 2) return [];
+    var open = {};
+    mistakeLog(attempts).forEach(function (m) { if (!m.resolved) open[m.attempt.ex] = 1; });
+    var lastSeen = {};
+    attempts.forEach(function (a) { if (!(a.ex in lastSeen) || a.date > lastSeen[a.ex]) lastSeen[a.ex] = a.date; });
+    var queues = started.map(function (t) {
+      var seen = t.exercises.filter(function (e) { return e.id in lastSeen && daysBetween(lastSeen[e.id], now) > 0; });
+      seen.sort(function (a, b) { return ((open[b.id] ? 1 : 0) - (open[a.id] ? 1 : 0)) || (lastSeen[a.id] - lastSeen[b.id]); });
+      return seen.map(function (e) { return { ex: e, topicId: t.id }; });
+    });
+    var out = [];
+    for (var round = 0; out.length < size; round++) {
+      var added = false;
+      queues.forEach(function (q) { if (q[round] && out.length < size) { out.push(q[round]); added = true; } });
+      if (!added) break;
+    }
+    var topicsIn = {}; out.forEach(function (x) { topicsIn[x.topicId] = 1; });
+    return Object.keys(topicsIn).length >= 2 ? out : [];
+  }
+
   function reviewVocab(item, correct, now) {
     item.box = correct ? Math.min(item.box + 1, INTERVALS.length - 1) : 1;
     item.nextDue = addDays(INTERVALS[Math.max(item.box, 1)], now);
@@ -158,6 +200,7 @@
     normalize: normalize, check: check, isCorrect: isCorrect, newProgress: newProgress,
     repeatedErrorTag: repeatedErrorTag, todayPlan: todayPlan, sessionExercises: sessionExercises,
     finishSession: finishSession, accuracyLast10: accuracyLast10, reviewVocab: reviewVocab,
+    mistakeLog: mistakeLog, mixedReview: mixedReview,
     startOfDay: startOfDay, addDays: addDays, daysBetween: daysBetween, dayKey: dayKey,
     INTERVALS: INTERVALS, STATE_HE: STATE_HE, SESSION_SIZE: SESSION_SIZE
   };

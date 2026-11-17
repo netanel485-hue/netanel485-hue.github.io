@@ -1,0 +1,19 @@
+{
+  "name": "English Boost — חיזוק דקדוק באנגלית",
+  "short_name": "English Boost",
+  "description": "10 דקות ביום: דקדוק באנגלית עם משוב, חזרות מרווחות ומחברת טעויות",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "dir": "rtl",
+  "lang": "he",
+  "background_color": "#FAF6EB",
+  "theme_color": "#1D4ED8",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
