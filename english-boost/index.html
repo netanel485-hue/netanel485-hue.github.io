@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1D4ED8">
+<title>English Boost | חיזוק דקדוק באנגלית</title>
+<style>
+:root{
+  --bg:#FAF6EB;--card:#FFFFFF;--ink:#1E4634;--ink-soft:#4F6B5D;--muted:#7A8B7F;--line:#D8E4D4;
+  --c:#1D4ED8;--c-soft:#E6EDFF;--ok:#15803D;--ok-soft:#E5F6EA;--warn:#B45309;--warn-soft:#FFF4E0;--bad:#B91C1C;
+  --radius:18px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Arial,system-ui,sans-serif;font-size:17px;line-height:1.5}
+button,input{font:inherit}
+.en{direction:ltr;unicode-bidi:isolate;text-align:left;display:block}
+span.en{display:inline}
+main{max-width:720px;margin:0 auto;padding:0 16px 110px}
+.tabs{position:fixed;inset:auto 0 0 0;z-index:40;display:flex;gap:6px;justify-content:center;padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+  background:#FFFDF7;border-top:1px solid var(--line);box-shadow:0 -2px 10px rgba(30,70,50,.06)}
+.tabs button{flex:1;max-width:220px;min-height:48px;border:2px solid var(--line);border-radius:14px;background:#fff;color:var(--ink);font-weight:800;cursor:pointer}
+.tabs button[aria-current="page"]{background:var(--c);border-color:var(--c);color:#fff}
+.tabs.hide{display:none}
+h2{font-size:20px;margin:18px 0 10px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:16px;margin:0 0 12px;
+  box-shadow:0 4px 0 color-mix(in srgb,var(--c) 18%,var(--line))}
+.task{display:flex;gap:12px;align-items:center;width:100%;text-align:right;cursor:pointer;color:inherit}
+.task .ic{font-size:30px;flex:0 0 auto}
+.task b{display:block;font-size:18px}
+.task small{display:block;color:var(--ink-soft);font-size:15px}
+.task .ar{margin-inline-start:auto;font-size:22px;color:var(--c)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:50px;padding:10px 18px;border-radius:14px;border:2px solid var(--c);
+  background:var(--c);color:#fff;font-weight:800;cursor:pointer;width:100%}
+.btn.sec{background:#fff;color:var(--c)}
+.btn.quiet{background:#fff;color:var(--ink-soft);border-color:var(--line)}
+.btn.danger{background:#fff;color:var(--bad);border-color:#F3C4C4}
+.btn:disabled{opacity:.45;cursor:default}
+.btn:focus-visible,.tabs button:focus-visible,.task:focus-visible,.opt:focus-visible{outline:3px solid #F59E0B;outline-offset:2px}
+.row{display:flex;gap:10px;margin-top:10px}
+.row>*{flex:1}
+.muted{color:var(--ink-soft)}
+.small{font-size:14px}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;background:var(--c-soft);color:var(--c);font-weight:700;font-size:14px}
+.rule p{margin:0 0 8px}
+.examples{background:var(--c-soft);border-radius:12px;padding:10px 14px;margin:10px 0 14px}
+.examples .en{margin:4px 0;font-weight:600}
+.progressbar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:4px 0 14px}
+.progressbar i{display:block;height:100%;background:var(--c);transition:width .3s}
+.prompt{font-size:19px;font-weight:700;margin:0 0 6px}
+.prompt-en{font-size:19px;font-weight:600;margin:0 0 12px;color:var(--c)}
+.opt{display:block;width:100%;min-height:52px;margin:0 0 10px;padding:10px 14px;border:2px solid var(--line);border-radius:14px;background:#fff;
+  color:var(--ink);font-weight:700;cursor:pointer;direction:ltr;text-align:left}
+.opt.picked{border-color:var(--c);background:var(--c-soft)}
+.opt:disabled{cursor:default}
+textarea{width:100%;min-height:76px;padding:12px;border:2px solid var(--line);border-radius:14px;background:#fff;color:var(--ink);
+  direction:ltr;text-align:left;font-family:inherit;font-size:18px;resize:vertical}
+textarea:focus{outline:none;border-color:var(--c)}
+textarea:disabled{background:#F4F4F0}
+.fb{border-radius:14px;padding:12px 14px;margin:12px 0}
+.fb.ok{background:var(--ok-soft)}
+.fb.warn{background:var(--warn-soft)}
+.fb.info{background:var(--c-soft)}
+.fb h3{margin:0 0 6px;font-size:18px}
+.fb.ok h3{color:var(--ok)}
+.fb.warn h3{color:var(--warn)}
+.model{background:#fff;border-radius:10px;padding:8px 12px;margin:8px 0}
+.model .t{font-size:14px;color:var(--ink-soft)}
+.model .en{font-weight:700}
+.vocab-save{margin-top:8px}
+.top{display:flex;align-items:center;gap:10px;margin:14px 0 6px}
+.top h1{font-size:21px;margin:0;flex:1}
+.x{min-height:44px;min-width:44px;border-radius:12px;border:2px solid var(--line);background:#fff;font-size:18px;cursor:pointer}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.kv:last-child{border-bottom:0}
+.kv .v{color:var(--ink-soft);text-align:left}
+.vitem{padding:10px 0;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:flex-start}
+.vitem:last-child{border-bottom:0}
+.vitem .body{flex:1;min-width:0}
+.vitem .del{min-height:40px;min-width:40px;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer}
+.devnote{color:var(--warn);font-size:14px;font-weight:700}
+.err{color:var(--bad);font-weight:700;white-space:pre-wrap}
+.big{font-size:24px;font-weight:800;margin:6px 0 14px}
+@media (prefers-reduced-motion:reduce){.progressbar i{transition:none}}
+</style>
+<link id="kit-theme" rel="stylesheet" href="../shared/kit-theme.css">
+<style id="kit-match-css">
+/* KIT-MATCH — english-boost: כותרת בסגנון דף הבית (17/11/2026). להסרה: למחוק את הבלוק, את link#kit-theme ואת div.kit-hero */
+body{--c:#1D4ED8}
+.kit-hero{margin-bottom:6px!important}
+</style>
+</head>
+<body class="kit-themed">
+<div class="kit-hero" role="banner" style="--c:#1D4ED8"><span class="kh-pal" aria-hidden="true">🗽</span><div class="kh-t"><div class="kh-title">English Boost</div><div class="kh-sub">חיזוק דקדוק באנגלית · 10 דקות ביום</div></div><a class="kh-home" href="../" aria-label="מרכזי הלמידה">🏠</a></div>
+<main id="app" aria-live="polite"><p class="muted">טוען…</p></main>
+<nav class="tabs" id="tabs" aria-label="מסכים">
+  <button type="button" data-tab="today">📅 היום</button>
+  <button type="button" data-tab="progress">📈 התקדמות</button>
+  <button type="button" data-tab="vocab">📒 אוצר מילים</button>
+</nav>
+<script src="engine.js"></script>
+<script>
+/* English Boost — הממשק (17/11/2026). המנוע והכללים ב-engine.js.
+   הכול נשמר ב-localStorage במפתח אחד (eb.data), ו-shared/cloud.js מגבה אותו לענן כמו בשאר האתר. */
+(function () {
+  'use strict';
+  var TOPIC_FILES = ['topic-present-simple-continuous.json', 'topic-present-perfect.json', 'topic-articles.json'];
+  var KEY = 'eb.data', OFFSET_KEY = 'eb.dayOffset';
+  var app = document.getElementById('app'), tabsEl = document.getElementById('tabs');
+  var topics = [], loadError = null;
+  var S = load();
+  var view = { tab: 'today' };
+  var L = null; // שיעור פעיל
+  var R = null; // חזרה על אוצר מילים
+
+  // ---------- שמירה ----------
+  function load() {
+    try {
+      var d = JSON.parse(localStorage.getItem(KEY) || 'null');
+      if (d && d.v === 1) return d;
+    } catch (e) {}
+    return { v: 1, progress: {}, attempts: [], vocab: [] };
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+  function dayOffset() { try { return parseInt(localStorage.getItem(OFFSET_KEY) || '0', 10) || 0; } catch (e) { return 0; } }
+  function setOffset(n) { try { n ? localStorage.setItem(OFFSET_KEY, String(n)) : localStorage.removeItem(OFFSET_KEY); } catch (e) {} }
+  function now() { return EB.addDays(dayOffset(), Date.now()) + (Date.now() - EB.startOfDay(Date.now())); }
+  function topicById(id) { return topics.find(function (t) { return t.id === id; }); }
+
+  // ---------- עזר לתצוגה ----------
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function en(s, tag) { tag = tag || 'div'; return '<' + tag + ' class="en" dir="ltr" lang="en">' + esc(s) + '</' + tag + '>'; }
+  function pct(x) { return Math.round(x * 100) + '%'; }
+  function daysText(d) { return d <= 0 ? 'היום' : d === 1 ? 'מחר' : 'בעוד ' + d + ' ימים'; }
+  function render(html) { app.innerHTML = html; }
+  function setTabs() {
+    tabsEl.classList.toggle('hide', !!(L || R));
+    Array.prototype.forEach.call(tabsEl.querySelectorAll('button'), function (b) {
+      if (b.dataset.tab === view.tab) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+    });
+  }
+  function draw() {
+    setTabs();
+    if (L) return drawLesson();
+    if (R) return drawReview();
+    if (view.tab === 'progress') return drawProgress();
+    if (view.tab === 'vocab') return drawVocab();
+    drawToday();
+  }
+
+  // ---------- היום ----------
+  var KIND_IC = ['🔁', '🗓️', '✨'];
+  function drawToday() {
+    var t = now();
+    var plan = EB.todayPlan(topics, S.progress, S.attempts, t);
+    var due = S.vocab.filter(function (v) { return v.nextDue <= t; });
+    var h = '';
+    if (loadError) h += '<div class="card err">' + esc(loadError) + '</div>';
+    h += '<h2>מה לתרגל היום</h2>';
+    if (!plan.length && !loadError) h += '<div class="card muted">אין משימות להיום. הנושאים יחזרו לפי לוח החזרות.</div>';
+    plan.forEach(function (it, i) {
+      h += '<button type="button" class="card task" data-start="' + i + '"><span class="ic" aria-hidden="true">' + KIND_IC[it.kind] + '</span>'
+        + '<span><b>' + esc(it.topic.titleHe) + '</b><small>' + esc(it.reasonHe) + '</small></span><span class="ar" aria-hidden="true">←</span></button>';
+    });
+    if (due.length) {
+      h += '<h2>אוצר מילים</h2><button type="button" class="card task" data-review="1"><span class="ic" aria-hidden="true">📒</span>'
+        + '<span><b>' + due.length + ' ביטויים מחכים לחזרה</b><small>רואים בעברית, כותבים באנגלית</small></span><span class="ar" aria-hidden="true">←</span></button>';
+    }
+    h += '<h2>כל הנושאים</h2><div class="card">';
+    topics.forEach(function (tp) {
+      var p = S.progress[tp.id];
+      h += '<div class="kv"><span>' + esc(tp.titleHe) + ' <span class="small muted">· ' + EB.STATE_HE[p ? p.state : 'new'] + '</span></span>'
+        + '<button type="button" class="btn sec" style="width:auto;min-height:40px;padding:4px 14px" data-free="' + esc(tp.id) + '">תרגול</button></div>';
+    });
+    h += '</div>';
+    if (dayOffset()) h += '<p class="devnote">מצב פיתוח: התאריך מוזז ב-' + dayOffset() + ' ימים</p>';
+    render(h);
+    app.querySelectorAll('[data-start]').forEach(function (b) {
+      b.onclick = function () { var it = plan[+b.dataset.start]; startLesson(it.topic, it.focusTag); };
+    });
+    app.querySelectorAll('[data-free]').forEach(function (b) { b.onclick = function () { startLesson(topicById(b.dataset.free), null); }; });
+    var rv = app.querySelector('[data-review]'); if (rv) rv.onclick = startReview;
+  }
+
+  // ---------- שיעור ----------
+  function startLesson(topic, focusTag) {
+    if (!topic) return;
+    var seen = {};
+    S.attempts.forEach(function (a) { if (a.topic === topic.id) seen[a.ex] = 1; });
+    L = { topic: topic, focusTag: focusTag, exercises: EB.sessionExercises(topic, S.attempts, focusTag), seen: seen,
+      i: 0, answer: '', tries: 0, phase: 'rule', fb: null, attempt: null, results: [], summary: null };
+    draw(); window.scrollTo(0, 0);
+  }
+  function exitLesson() { L = null; view.tab = 'today'; draw(); window.scrollTo(0, 0); }
+  function canAnswer() { return L.phase === 'answering' || (L.phase === 'error' && L.tries < 2); }
+
+  function drawLesson() {
+    var t = L.topic, h = '<div class="top"><h1>' + esc(t.titleHe) + '</h1><button type="button" class="x" id="exit" aria-label="יציאה מהשיעור">✕</button></div>';
+    if (L.phase === 'rule') {
+      if (L.focusTag) h += '<p><span class="pill">היום מתמקדים ב: ' + esc(t.tags[L.focusTag] || L.focusTag) + '</span></p>';
+      h += '<div class="card rule"><h2 style="margin-top:0">הכלל</h2>' + t.ruleHe.map(function (l) { return '<p>' + esc(l) + '</p>'; }).join('')
+        + '<h2>דוגמאות</h2><div class="examples">' + t.examples.map(function (x) { return en(x); }).join('') + '</div>'
+        + '<button type="button" class="btn" id="go">מתחילים תרגול (' + L.exercises.length + ' תרגילים)</button></div>';
+    } else if (L.phase === 'summary') {
+      var s = L.summary;
+      h += '<div class="card"><h2 style="margin-top:0">סיכום</h2>';
+      if (s) {
+        h += '<p class="big">' + s.correct + ' מתוך ' + s.total + ' נכון בניסיון הראשון</p>'
+          + '<div class="kv"><span>מצב הנושא</span><span class="v">' + EB.STATE_HE[s.state] + '</span></div>'
+          + '<div class="kv"><span>חזרה הבאה</span><span class="v">' + daysText(EB.daysBetween(now(), s.nextDue)) + '</span></div>';
+        if (s.repeatedTag) h += '<div class="fb warn">שים לב: ' + esc(t.tags[s.repeatedTag] || s.repeatedTag) + ' חזרה כמה פעמים. נחזור אליה מחר במשפטים חדשים.</div>';
+      } else h += '<p>אין כרגע תרגילים בנושא הזה.</p>';
+      h += '<div class="row"><button type="button" class="btn" id="done">חזרה למסך היום</button></div></div>';
+    } else {
+      var ex = L.exercises[L.i];
+      h += '<div class="muted small">תרגיל ' + (L.i + 1) + ' מתוך ' + L.exercises.length + '</div>'
+        + '<div class="progressbar" aria-hidden="true"><i style="width:' + Math.round(100 * L.i / L.exercises.length) + '%"></i></div>'
+        + '<div class="card"><p class="prompt">' + esc(ex.promptHe) + '</p>' + (ex.promptEn ? '<p class="prompt-en en" dir="ltr" lang="en">' + esc(ex.promptEn) + '</p>' : '');
+      if (ex.type === 'choose') {
+        (ex.options || []).forEach(function (o, k) {
+          h += '<button type="button" class="opt' + (L.answer === o && L.phase !== 'answering' ? ' picked' : '') + '" data-opt="' + k + '" lang="en"' + (canAnswer() ? '' : ' disabled') + '>' + esc(o) + '</button>';
+        });
+      } else {
+        h += '<label class="small muted" for="ans">התשובה שלך באנגלית</label>'
+          + '<textarea id="ans" dir="ltr" lang="en" rows="2" autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false" placeholder="Write your answer in English"'
+          + (canAnswer() ? '' : ' disabled') + '>' + esc(L.answer) + '</textarea>';
+        if (canAnswer()) h += '<div class="row"><button type="button" class="btn" id="check">בדיקה</button></div>';
+      }
+      h += feedback(ex) + '</div>';
+    }
+    render(h);
+    document.getElementById('exit').onclick = function () {
+      if (L.phase === 'rule' || L.phase === 'summary' || confirm('לצאת מהשיעור? התשובות שכבר נתת נשמרות.')) {
+        if (L.results.length && L.phase !== 'summary') finishLesson(true); else exitLesson();
+      }
+    };
+    var go = document.getElementById('go'); if (go) go.onclick = function () { L.phase = L.exercises.length ? 'answering' : 'summary'; draw(); focusAns(); };
+    var done = document.getElementById('done'); if (done) done.onclick = exitLesson;
+    app.querySelectorAll('[data-opt]').forEach(function (b) {
+      b.onclick = function () { var ex = L.exercises[L.i]; L.answer = ex.options[+b.dataset.opt]; doCheck(ex); };
+    });
+    var ta = document.getElementById('ans');
+    if (ta) {
+      var chk = document.getElementById('check');
+      var sync = function () { L.answer = ta.value; if (chk) chk.disabled = !ta.value.trim(); };
+      ta.oninput = sync; sync();
+      ta.onkeydown = function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (ta.value.trim() && canAnswer()) doCheck(L.exercises[L.i]); } };
+      if (chk) chk.onclick = function () { doCheck(L.exercises[L.i]); };
+    }
+    var nx = document.getElementById('next'); if (nx) nx.onclick = nextEx;
+    var yes = document.getElementById('selfYes'); if (yes) yes.onclick = function () { selfAssess(true); };
+    var no = document.getElementById('selfNo'); if (no) no.onclick = function () { selfAssess(false); };
+    app.querySelectorAll('[data-vocab]').forEach(function (b) { b.onclick = function () { saveVocab(+b.dataset.vocab); }; });
+  }
+  function focusAns() { var ta = document.getElementById('ans'); if (ta && !ta.disabled) try { ta.focus({ preventScroll: true }); } catch (e) {} }
+
+  function modelBlock(ex, title) {
+    return '<div class="model"><div class="t">' + esc(title) + '</div>' + en(ex.modelAnswer)
+      + (ex.alternatives || []).map(function (a) { return '<div class="small">או: ' + en(a, 'span') + '</div>'; }).join('') + '</div>';
+  }
+  function vocabButtons(ex) {
+    return (ex.vocab || []).map(function (v, k) {
+      var saved = S.vocab.some(function (x) { return x.en.toLowerCase() === v.en.toLowerCase(); });
+      return '<button type="button" class="btn quiet vocab-save" data-vocab="' + k + '"' + (saved ? ' disabled' : '') + '>'
+        + (saved ? '✓ נשמר: ' : '➕ שמירת ביטוי: ') + en(v.en, 'span') + (saved ? '' : ' – ' + esc(v.he)) + '</button>';
+    }).join('');
+  }
+  function nextBtn() { return '<div class="row"><button type="button" class="btn" id="next">' + (L.i + 1 < L.exercises.length ? 'הבא ←' : 'סיום') + '</button></div>'; }
+  function feedback(ex) {
+    var f = L.fb;
+    switch (L.phase) {
+      case 'correct':
+        return '<div class="fb ok"><h3>' + (L.tries === 1 ? '✓ נכון!' : '✓ נכון, תוקן!') + '</h3>' + modelBlock(ex, 'ניסוח תקין') + vocabButtons(ex) + '</div>' + nextBtn();
+      case 'error':
+        return '<div class="fb warn"><h3>לא בדיוק</h3><p style="margin:0">' + esc(f.explainHe) + '</p>'
+          + (f.isRepeat ? '<p class="small muted">זו טעות שחוזרת. הנושא יחזור מחר בתרגילים אחרים.</p>' : '')
+          + (L.tries < 2 ? '<p class="small muted">תקן את התשובה ולחץ "בדיקה".</p></div>'
+            : modelBlock(ex, 'התשובה הנכונה') + vocabButtons(ex) + '</div>' + nextBtn());
+      case 'unknown':
+        return '<div class="fb info"><h3>לא זיהיתי את התשובה אוטומטית</h3><p style="margin:0">השווה לניסוח הזה:</p>' + modelBlock(ex, 'ניסוח לדוגמה')
+          + '<p style="margin:8px 0 0">התשובה שלך נכונה?</p><div class="row"><button type="button" class="btn" id="selfYes">כן, נכונה</button>'
+          + '<button type="button" class="btn sec" id="selfNo">לא, טעיתי</button></div></div>';
+      case 'revealed':
+        return '<div class="fb info">' + modelBlock(ex, 'ניסוח תקין') + vocabButtons(ex) + '</div>' + nextBtn();
+    }
+    return '';
+  }
+
+  function doCheck(ex) {
+    if (!canAnswer() || !String(L.answer).trim()) return;
+    L.tries++;
+    var r = EB.check(L.answer, ex);
+    if (r.kind === 'correct') {
+      if (L.tries === 1) record(ex, 'correct', null); else if (L.attempt) { L.attempt.fixed = true; save(); }
+      L.phase = 'correct';
+    } else if (r.kind === 'error') {
+      var t = now(), cur = L.attempt;
+      var isRepeat = S.attempts.some(function (a) { return a !== cur && a.topic === L.topic.id && a.tag === r.tag && EB.daysBetween(a.date, t) < 7; });
+      if (L.tries === 1) record(ex, 'error', r.tag);
+      L.fb = { explainHe: r.explainHe, isRepeat: isRepeat };
+      L.phase = 'error';
+    } else {
+      L.phase = L.tries === 1 ? 'unknown' : 'revealed';
+    }
+    draw();
+    if (L.phase === 'error') focusAns(); else { var nx = document.getElementById('next') || document.getElementById('selfYes'); if (nx) try { nx.focus({ preventScroll: true }); } catch (e) {} }
+  }
+  function selfAssess(ok) { record(L.exercises[L.i], ok ? 'selfCorrect' : 'selfWrong', null); L.phase = 'revealed'; draw(); }
+  function record(ex, outcome, tag) {
+    var t = now();
+    var a = { ex: ex.id, topic: L.topic.id, answer: String(L.answer).slice(0, 300), outcome: outcome, tag: tag, date: t, day: EB.dayKey(t),
+      prod: ex.type !== 'choose', isNew: !L.seen[ex.id] };
+    S.attempts.push(a); L.attempt = a; L.results.push(EB.isCorrect(a)); save();
+  }
+  function saveVocab(k) {
+    var ex = L.exercises[L.i], v = (ex.vocab || [])[k];
+    if (!v || S.vocab.some(function (x) { return x.en.toLowerCase() === v.en.toLowerCase(); })) return;
+    S.vocab.push({ en: v.en, he: v.he, context: ex.modelAnswer, topic: L.topic.id, box: 0, nextDue: now(), created: now() });
+    save(); draw();
+  }
+  function nextEx() {
+    if (L.i + 1 < L.exercises.length) { L.i++; L.answer = ''; L.tries = 0; L.attempt = null; L.fb = null; L.phase = 'answering'; draw(); window.scrollTo(0, 0); focusAns(); }
+    else finishLesson(false);
+  }
+  function finishLesson(andExit) {
+    var id = L.topic.id;
+    var p = S.progress[id] || (S.progress[id] = EB.newProgress());
+    L.summary = EB.finishSession(p, S.attempts.filter(function (a) { return a.topic === id; }), L.results, now());
+    save();
+    if (andExit) return exitLesson();
+    L.phase = 'summary'; draw(); window.scrollTo(0, 0);
+  }
+
+  // ---------- התקדמות ----------
+  function drawProgress() {
+    var t = now(), h = '<h2>תחומים</h2><div class="card">';
+    var mastered = topics.filter(function (tp) { return (S.progress[tp.id] || {}).state === 'mastered'; }).length;
+    h += '<div class="kv"><span>דקדוק</span><span class="v">' + mastered + ' מתוך ' + topics.length + ' נושאים בשליטה</span></div>';
+    ['כתיבה', 'קריאה', 'הבנת הנשמע', 'דיבור'].forEach(function (n) { h += '<div class="kv"><span>' + n + '</span><span class="v">לא נבדק עדיין</span></div>'; });
+    h += '<p class="small muted" style="margin:8px 0 0">הערכה לכל תחום תגיע עם האבחון הראשוני.</p></div>';
+
+    h += '<h2>נושאי דקדוק</h2><div class="card">';
+    topics.forEach(function (tp) {
+      var p = S.progress[tp.id], st = p ? p.state : 'new', acc = EB.accuracyLast10(tp.id, S.attempts), d = [EB.STATE_HE[st]];
+      if (acc != null) d.push('דיוק אחרון: ' + pct(acc));
+      if (p && st !== 'new') { var dd = EB.daysBetween(t, p.nextDue); d.push(dd <= 0 ? 'לחזרה היום' : 'חזרה ' + daysText(dd)); }
+      h += '<div class="kv" style="display:block"><b>' + esc(tp.titleHe) + '</b><div class="small muted">' + esc(d.join(' · ')) + '</div></div>';
+    });
+    h += '</div>';
+
+    var improved = topics.filter(function (tp) {
+      var s = (S.progress[tp.id] || {}).state; return s === 'mastered' || (s === 'practicing' && (EB.accuracyLast10(tp.id, S.attempts) || 0) >= 0.8);
+    });
+    var needs = topics.filter(function (tp) {
+      var a = EB.accuracyLast10(tp.id, S.attempts); return EB.repeatedErrorTag(tp.id, S.attempts, t) || (a != null && a < 0.6);
+    });
+    var nextT = EB.todayPlan(topics, S.progress, S.attempts, t)[0];
+    function line(title, arr) { return '<div class="kv" style="display:block"><b>' + title + '</b><div class="small muted">' + (arr.length ? esc(arr.join(', ')) : 'עדיין אין') + '</div></div>'; }
+    h += '<h2>במבט אחד</h2><div class="card">' + line('השתפרת ב', improved.map(function (x) { return x.titleHe; }))
+      + line('עדיין דורש תרגול', needs.map(function (x) { return x.titleHe; })) + line('השלב הבא', nextT ? [nextT.topic.titleHe] : []) + '</div>';
+
+    h += '<details class="card"><summary><b>כלי פיתוח</b></summary>'
+      + '<p class="small">התאריך המדומה: ' + (dayOffset() ? '+' + dayOffset() + ' ימים' : 'היום') + '</p>'
+      + '<div class="row"><button type="button" class="btn sec" id="dayPlus">קדם יום אחד</button><button type="button" class="btn quiet" id="dayReset">חזרה לתאריך האמיתי</button></div>'
+      + '<div class="row"><button type="button" class="btn danger" id="wipe">מחיקת כל ההתקדמות</button></div></details>';
+    render(h);
+    document.getElementById('dayPlus').onclick = function () { setOffset(dayOffset() + 1); draw(); };
+    document.getElementById('dayReset').onclick = function () { setOffset(0); draw(); };
+    document.getElementById('wipe').onclick = function () {
+      if (confirm('למחוק את כל ההתקדמות ואוצר המילים? אי אפשר לבטל.')) { S = { v: 1, progress: {}, attempts: [], vocab: [] }; save(); draw(); }
+    };
+    var det = app.querySelector('details'); if (dayOffset()) det.open = true;
+  }
+
+  // ---------- אוצר מילים ----------
+  function drawVocab() {
+    var t = now(), due = S.vocab.filter(function (v) { return v.nextDue <= t; }).length;
+    var h = '';
+    if (due) h += '<div style="margin-top:16px"><button type="button" class="btn" id="rev">חזרה על ' + due + ' ביטויים</button></div>';
+    h += '<h2>ביטויים שמורים</h2><div class="card">';
+    if (!S.vocab.length) h += '<p class="muted" style="margin:0">עוד לא שמרת ביטויים. אפשר לשמור אותם מתוך השיעורים.</p>';
+    S.vocab.slice().sort(function (a, b) { return b.created - a.created; }).forEach(function (v) {
+      h += '<div class="vitem"><div class="body">' + en(v.en, 'b') + '<div>' + esc(v.he) + '</div><div class="small muted">' + en(v.context) + '</div></div>'
+        + '<button type="button" class="del" data-del="' + esc(v.en) + '" aria-label="מחיקת הביטוי">🗑️</button></div>';
+    });
+    h += '</div>';
+    render(h);
+    var rv = document.getElementById('rev'); if (rv) rv.onclick = startReview;
+    app.querySelectorAll('[data-del]').forEach(function (b) {
+      b.onclick = function () {
+        if (!confirm('למחוק את הביטוי?')) return;
+        S.vocab = S.vocab.filter(function (v) { return v.en !== b.dataset.del; }); save(); draw();
+      };
+    });
+  }
+  function startReview() {
+    var t = now(), q = S.vocab.filter(function (v) { return v.nextDue <= t; });
+    for (var i = q.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), x = q[i]; q[i] = q[j]; q[j] = x; }
+    R = { queue: q, i: 0, answer: '', result: null };
+    draw(); window.scrollTo(0, 0); focusRev();
+  }
+  function focusRev() { var el = document.getElementById('rans'); if (el && !el.disabled) try { el.focus({ preventScroll: true }); } catch (e) {} }
+  function drawReview() {
+    var h = '<div class="top"><h1>חזרה על ביטויים</h1><button type="button" class="x" id="rexit" aria-label="יציאה מהחזרה">✕</button></div>';
+    if (R.i < R.queue.length) {
+      var it = R.queue[R.i];
+      h += '<div class="muted small">' + (R.i + 1) + ' מתוך ' + R.queue.length + '</div><div class="card"><p class="muted" style="margin:0">איך אומרים באנגלית:</p>'
+        + '<p class="big">' + esc(it.he) + '</p>'
+        + '<textarea id="rans" dir="ltr" lang="en" rows="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="English"'
+        + (R.result == null ? '' : ' disabled') + '>' + esc(R.answer) + '</textarea>';
+      if (R.result == null) h += '<div class="row"><button type="button" class="btn" id="rcheck">בדיקה</button></div>';
+      else h += '<div class="fb ' + (R.result ? 'ok' : 'warn') + '"><h3>' + (R.result ? '✓ נכון!' : 'התשובה:') + '</h3>' + en(it.en, 'b')
+        + '<div class="small muted" style="margin-top:6px">בתוך משפט:</div>' + en(it.context) + '</div><div class="row"><button type="button" class="btn" id="rnext">הבא ←</button></div>';
+      h += '</div>';
+    } else {
+      h += '<div class="card"><p class="big">' + (R.queue.length ? 'סיימת את החזרה 🎉' : 'אין ביטויים לחזרה כרגע.') + '</p><button type="button" class="btn" id="rdone">חזרה</button></div>';
+    }
+    render(h);
+    var close = function () { R = null; draw(); };
+    document.getElementById('rexit').onclick = close;
+    var d = document.getElementById('rdone'); if (d) d.onclick = close;
+    var ta = document.getElementById('rans'), c = document.getElementById('rcheck'), n = document.getElementById('rnext');
+    var doIt = function () {
+      if (!R.answer.trim()) return;
+      var it = R.queue[R.i]; R.result = EB.normalize(R.answer) === EB.normalize(it.en);
+      var item = S.vocab.find(function (v) { return v.en === it.en; }) || it;
+      EB.reviewVocab(item, R.result, now()); save(); draw();
+      var nb = document.getElementById('rnext'); if (nb) try { nb.focus({ preventScroll: true }); } catch (e) {}
+    };
+    if (ta) {
+      ta.oninput = function () { R.answer = ta.value; if (c) c.disabled = !ta.value.trim(); };
+      ta.oninput();
+      ta.onkeydown = function (e) { if (e.key === 'Enter') { e.preventDefault(); if (R.result == null) doIt(); } };
+    }
+    if (c) c.onclick = doIt;
+    if (n) n.onclick = function () { R.i++; R.answer = ''; R.result = null; draw(); focusRev(); };
+  }
+
+  // ---------- התחלה ----------
+  tabsEl.addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-tab]'); if (!b) return;
+    view.tab = b.dataset.tab; draw(); window.scrollTo(0, 0);
+  });
+  Promise.all(TOPIC_FILES.map(function (f) {
+    return fetch('content/' + f).then(function (r) { if (!r.ok) throw new Error(f + ': ' + r.status); return r.json(); })
+      .catch(function (e) { throw new Error(f + ': ' + (e && e.message || e)); });
+  })).then(function (list) {
+    topics = list.sort(function (a, b) { return a.order - b.order; });
+  }).catch(function (e) {
+    loadError = 'לא הצלחתי לטעון את התרגילים. בדוק את החיבור לאינטרנט ונסה שוב.\n' + (e && e.message || e);
+  }).then(draw);
+})();
+</script>
+<script type="module" src="../shared/cloud.js"></script>
+</body>
+</html>
