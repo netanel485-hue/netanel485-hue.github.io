@@ -1,0 +1,162 @@
+{
+  "id": "present-perfect-since-for",
+  "order": 1,
+  "titleHe": "Present perfect עם since / for",
+  "summaryHe": "משהו שהתחיל בעבר ועדיין נמשך",
+  "ruleHe": [
+    "כשמשהו התחיל בעבר ועדיין נמשך היום, באנגלית לא משתמשים בהווה פשוט אלא ב-have/has + צורה שלישית (V3), או ב-have/has been + ‎-ing.",
+    "since = מאז נקודה בזמן (since 2019, since Monday, since the meeting).",
+    "for = משך זמן (for five years, for an hour).",
+    "בעברית אומרים \"אני עובד פה מאז 2019\" בהווה. באנגלית זו הטעות הנפוצה ביותר: I work here since 2019 ✗"
+  ],
+  "examples": [
+    "I've worked here since 2019.",
+    "She has lived in Haifa for ten years.",
+    "We've been waiting for an hour.",
+    "How long have you known him?"
+  ],
+  "tags": {
+    "PP_SINCE_TENSE": "זמן לא נכון עם since/for",
+    "SINCE_FOR": "בלבול בין since ל-for",
+    "STATIVE_CONTINUOUS": "פועל מצב ב-‎-ing",
+    "PP_HOW_LONG": "How long בהווה פשוט"
+  },
+  "exercises": [
+    {
+      "id": "pp-since-01",
+      "type": "translate",
+      "promptHe": "אני עובד בחברה הזו מאז 2019.",
+      "accept": ["i have (worked|been working) (at|for|in|with) this company since 2019"],
+      "errors": [
+        { "pattern": "^i (work|am working) .*since", "tag": "PP_SINCE_TENSE",
+          "explainHe": "since מצביע על התחלה בעבר שנמשכת עד היום, ולכן צריך have worked ולא work." },
+        { "pattern": "^i worked .*since", "tag": "PP_SINCE_TENSE",
+          "explainHe": "worked אומר שזה נגמר. כאן אתה עדיין עובד שם, ולכן have worked." },
+        { "pattern": "\\bfor 2019\\b", "tag": "SINCE_FOR",
+          "explainHe": "2019 היא נקודה בזמן, ולכן since ולא for." }
+      ],
+      "modelAnswer": "I've worked at this company since 2019.",
+      "alternatives": ["I've been working for this company since 2019."],
+      "vocab": [{ "en": "since 2019", "he": "מאז 2019" }],
+      "tests": {
+        "accept": ["I've worked at this company since 2019.", "I have been working for this company since 2019"],
+        "flag": { "I work in this company since 2019": "PP_SINCE_TENSE", "I have worked here for 2019": "SINCE_FOR" }
+      }
+    },
+    {
+      "id": "pp-since-02",
+      "type": "choose",
+      "promptHe": "בחר את הצורה הנכונה:",
+      "promptEn": "She ___ in Haifa since 2015.",
+      "options": ["lives", "has lived", "lived", "is living"],
+      "accept": ["has lived"],
+      "errors": [
+        { "pattern": "^(lives|is living)$", "tag": "PP_SINCE_TENSE",
+          "explainHe": "עם since על משהו שעדיין נמשך משתמשים ב-has lived, לא בהווה." },
+        { "pattern": "^lived$", "tag": "PP_SINCE_TENSE",
+          "explainHe": "lived אומר שזה נגמר. היא עדיין גרה שם, ולכן has lived." }
+      ],
+      "modelAnswer": "She has lived in Haifa since 2015.",
+      "tests": { "accept": ["has lived"], "flag": { "lives": "PP_SINCE_TENSE", "lived": "PP_SINCE_TENSE" } }
+    },
+    {
+      "id": "pp-since-03",
+      "type": "choose",
+      "promptHe": "בחר את המילה הנכונה:",
+      "promptEn": "We've been waiting ___ an hour.",
+      "options": ["for", "since", "from"],
+      "accept": ["for"],
+      "errors": [
+        { "pattern": "^since$", "tag": "SINCE_FOR", "explainHe": "an hour הוא משך זמן, ולכן for." },
+        { "pattern": "^from$", "tag": "SINCE_FOR", "explainHe": "למשך זמן משתמשים ב-for. from מגיע בדרך כלל עם to (from 9 to 5)." }
+      ],
+      "modelAnswer": "We've been waiting for an hour.",
+      "tests": { "accept": ["for"], "flag": { "since": "SINCE_FOR" } }
+    },
+    {
+      "id": "pp-since-04",
+      "type": "translate",
+      "promptHe": "אני מכיר אותו כבר חמש שנים.",
+      "accept": ["i have known him for (five|5) years( now)?", "i have known him for the (past|last) (five|5) years"],
+      "errors": [
+        { "pattern": "^i (know|am knowing) him", "tag": "PP_SINCE_TENSE",
+          "explainHe": "\"כבר חמש שנים\" = התחיל בעבר ונמשך עד היום, ולכן have known." },
+        { "pattern": "have been knowing", "tag": "STATIVE_CONTINUOUS",
+          "explainHe": "know הוא פועל מצב ולא מקבל ‎-ing. אומרים I have known." },
+        { "pattern": "since (five|5) years", "tag": "SINCE_FOR",
+          "explainHe": "five years הוא משך זמן, ולכן for." }
+      ],
+      "modelAnswer": "I've known him for five years.",
+      "tests": {
+        "accept": ["I've known him for five years.", "I have known him for 5 years now"],
+        "flag": { "I know him for five years": "PP_SINCE_TENSE", "I have been knowing him for five years": "STATIVE_CONTINUOUS" }
+      }
+    },
+    {
+      "id": "pp-since-05",
+      "type": "rewrite",
+      "promptHe": "תקן את המשפט:",
+      "promptEn": "I am here since Monday.",
+      "accept": ["i have been here since monday"],
+      "errors": [
+        { "pattern": "^i am here since", "tag": "PP_SINCE_TENSE", "explainHe": "am הוא הווה. עם since צריך have been." },
+        { "pattern": "^i was here since", "tag": "PP_SINCE_TENSE", "explainHe": "was אומר שזה נגמר. אתה עדיין כאן, ולכן have been." },
+        { "pattern": "for monday", "tag": "SINCE_FOR", "explainHe": "Monday היא נקודה בזמן, ולכן since." }
+      ],
+      "modelAnswer": "I've been here since Monday.",
+      "tests": { "accept": ["I've been here since Monday."], "flag": { "I was here since Monday": "PP_SINCE_TENSE" } }
+    },
+    {
+      "id": "pp-since-06",
+      "type": "translate",
+      "promptHe": "לא שמעתי ממנו מאז הפגישה.",
+      "accept": ["i have not heard( anything)? (back )?from him since the meeting"],
+      "errors": [
+        { "pattern": "^i did not hear .*since", "tag": "PP_SINCE_TENSE",
+          "explainHe": "since מחבר את העבר להיום, ולכן haven't heard ולא didn't hear." },
+        { "pattern": "^i (do not|am not) hear", "tag": "PP_SINCE_TENSE",
+          "explainHe": "עם since צריך haven't heard." }
+      ],
+      "modelAnswer": "I haven't heard from him since the meeting.",
+      "alternatives": ["I haven't heard back from him since the meeting."],
+      "vocab": [{ "en": "hear back from someone", "he": "לקבל תשובה ממישהו" }],
+      "tests": {
+        "accept": ["I haven't heard from him since the meeting.", "I have not heard back from him since the meeting"],
+        "flag": { "I didn't hear from him since the meeting": "PP_SINCE_TENSE" }
+      }
+    },
+    {
+      "id": "pp-since-07",
+      "type": "translate",
+      "promptHe": "כמה זמן אתה גר בתל אביב?",
+      "accept": ["how long have you (lived|been living) in tel aviv"],
+      "errors": [
+        { "pattern": "^how long (do you live|are you living)", "tag": "PP_HOW_LONG",
+          "explainHe": "How long על משהו שנמשך עד היום מקבל have you lived, לא do you live." },
+        { "pattern": "^how much time", "tag": "PP_HOW_LONG",
+          "explainHe": "על משך של מצב שואלים How long, לא How much time." }
+      ],
+      "modelAnswer": "How long have you lived in Tel Aviv?",
+      "alternatives": ["How long have you been living in Tel Aviv?"],
+      "tests": {
+        "accept": ["How long have you lived in Tel Aviv?"],
+        "flag": { "How long do you live in Tel Aviv?": "PP_HOW_LONG" }
+      }
+    },
+    {
+      "id": "pp-since-08",
+      "type": "write",
+      "promptHe": "כתוב משפט אחד באנגלית על משהו שאתה עושה כבר הרבה זמן, עם since.",
+      "accept": ["(i|we|my [a-z]+) (have|has) (been )?[a-z]+\\b.*\\bsince\\b.*"],
+      "errors": [
+        { "pattern": "^(i|we) (?!have\\b|has\\b)[a-z]+\\b.*\\bsince\\b", "tag": "PP_SINCE_TENSE",
+          "explainHe": "משהו שנמשך עד היום, עם since, מקבל have + V3 (I have played…, I have been playing…)." }
+      ],
+      "modelAnswer": "I've played the guitar since I was twelve.",
+      "tests": {
+        "accept": ["I have been running every morning since January."],
+        "flag": { "I play guitar since I was twelve": "PP_SINCE_TENSE" }
+      }
+    }
+  ]
+}

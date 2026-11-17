@@ -15,6 +15,7 @@
 | חזרה למבדק | חזרה למבדק תחילת שנה — כיתה ד׳ | https://netanel485-hue.github.io/grade4-mivdak/ |
 | משחק אנגלית | משחק אנגלית — אותיות ומילים | https://netanel485-hue.github.io/adi-english-game/ |
 | מלכים א׳ | ערכת למידה — פרקים י״ז–כ״ב | https://netanel485-hue.github.io/dvir-melachim/ |
+| English Boost | חיזוק דקדוק באנגלית למבוגרים: שיעורים, משוב, חזרות מרווחות ואוצר מילים | https://netanel485-hue.github.io/english-boost/ |
 | מדריך Claude Code | מדריך בעברית — מתחילים בלי לדעת לתכנת | https://netanel485-hue.github.io/mdryk-claude-code.html |
 
 ## איך זה בנוי

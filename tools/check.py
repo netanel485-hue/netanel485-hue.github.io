@@ -89,6 +89,12 @@ for sw in glob.glob('*/sw.js'):
         ref = os.path.basename(f) + '?v=' + ver
         if ref not in h or ref not in w: fail(f'{f}: השתנה אבל הגרסה ב-index.html / sw.js לא עודכנה — להריץ python3 tools/split_data.py {d}')
     if re.search(r'const\s+DATA_[A-Z0-9_]+\s*=\s*\{[^\n]{0,4000}"questions"', h): fail(f'{d}/index.html: יש שוב שאלות בתוך הדף — להריץ python3 tools/split_data.py {d}')
+# 12. ערכות עם בדיקות node משלהן (למשל english-boost/test/*.test.js): התוכן, הבודק וכללי ההתאמה לרמה
+for tf in sorted(glob.glob('*/test/*.test.js')):
+    r = subprocess.run(['node', '--test', tf], capture_output=True, text=True)
+    if r.returncode:
+        bad = [l for l in (r.stdout + r.stderr).splitlines() if l.lstrip().startswith(('✖', 'not ok', 'AssertionError', 'Error'))]
+        fail(f'{tf}: בדיקות נכשלו — ' + ' | '.join(bad[:6]))
 if '--base' in sys.argv:
     base = sys.argv[sys.argv.index('--base') + 1]
     changed = subprocess.run(['git', 'diff', '--name-only', base, '--'], capture_output=True, text=True).stdout.split()

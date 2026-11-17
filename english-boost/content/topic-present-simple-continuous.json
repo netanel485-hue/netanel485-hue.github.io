@@ -1,0 +1,111 @@
+{
+  "id": "present-simple-continuous",
+  "order": 3,
+  "titleHe": "הווה: Present simple מול Present continuous",
+  "summaryHe": "הרגל קבוע מול משהו שקורה עכשיו",
+  "ruleHe": [
+    "Present simple = הרגל, עובדה, משהו קבוע: I start work at eight. בגוף שלישי יחיד מוסיפים ‎-s: she works.",
+    "Present continuous = am/is/are + ‎-ing, למשהו שקורה עכשיו או בתקופה הזו: I'm working from home today.",
+    "פעלי מצב (know, understand, want, like, agree, need) כמעט אף פעם לא מקבלים ‎-ing: I understand, לא I'm understanding.",
+    "לא מחברים am/is/are עם פועל בסיסי: I agree, לא I am agree."
+  ],
+  "examples": [
+    "I usually start work at eight.",
+    "I'm working from home today.",
+    "She's having a call right now.",
+    "I don't understand what he wants."
+  ],
+  "tags": {
+    "BE_PLUS_VERB": "am/is/are + פועל בסיסי",
+    "STATIVE_CONTINUOUS": "פועל מצב ב-‎-ing",
+    "PRESENT_FOR_NOW": "הווה פשוט על משהו שקורה עכשיו",
+    "CONTINUOUS_FOR_HABIT": "‎-ing על הרגל קבוע",
+    "AGREEMENT_S": "חסר ‎-s בגוף שלישי"
+  },
+  "exercises": [
+    {
+      "id": "pres-01",
+      "type": "choose",
+      "promptHe": "בחר:",
+      "promptEn": "I ___ with you. That's a good idea.",
+      "options": ["agree", "am agree", "am agreeing"],
+      "accept": ["agree"],
+      "errors": [
+        { "pattern": "^am agree$", "tag": "BE_PLUS_VERB", "explainHe": "agree הוא פועל. לא שמים לפניו am: I agree." },
+        { "pattern": "^am agreeing$", "tag": "STATIVE_CONTINUOUS", "explainHe": "agree הוא פועל מצב, ולכן בלי ‎-ing: I agree." }
+      ],
+      "modelAnswer": "I agree with you. That's a good idea.",
+      "tests": { "accept": ["agree"], "flag": { "am agree": "BE_PLUS_VERB", "am agreeing": "STATIVE_CONTINUOUS" } }
+    },
+    {
+      "id": "pres-02",
+      "type": "translate",
+      "promptHe": "אני עובד מהבית היום.",
+      "accept": ["i am working (from|at) home today", "today i am working (from|at) home"],
+      "errors": [
+        { "pattern": "^(today )?i work (from|at) home", "tag": "PRESENT_FOR_NOW",
+          "explainHe": "\"היום\" = מצב זמני, לא הרגל. לכן I'm working." }
+      ],
+      "modelAnswer": "I'm working from home today.",
+      "vocab": [{ "en": "work from home", "he": "לעבוד מהבית" }],
+      "tests": { "accept": ["I'm working from home today."], "flag": { "I work from home today": "PRESENT_FOR_NOW" } }
+    },
+    {
+      "id": "pres-03",
+      "type": "translate",
+      "promptHe": "בדרך כלל אני מתחיל לעבוד בשמונה.",
+      "accept": ["(usually )?i (usually|normally|typically)? ?start (work|working) at (8|eight)( am| o'clock)?( usually)?"],
+      "errors": [
+        { "pattern": "^(usually )?i am (usually )?starting", "tag": "CONTINUOUS_FOR_HABIT",
+          "explainHe": "\"בדרך כלל\" = הרגל, ולכן present simple: I usually start." }
+      ],
+      "modelAnswer": "I usually start work at eight.",
+      "tests": { "accept": ["I usually start work at 8.", "Usually I start working at eight"], "flag": { "I am usually starting work at 8": "CONTINUOUS_FOR_HABIT" } }
+    },
+    {
+      "id": "pres-04",
+      "type": "choose",
+      "promptHe": "בחר:",
+      "promptEn": "Right now she ___ a call with a client.",
+      "options": ["has", "is having", "have"],
+      "accept": ["is having"],
+      "errors": [
+        { "pattern": "^has$", "tag": "PRESENT_FOR_NOW", "explainHe": "Right now = קורה ממש עכשיו, ולכן is having." },
+        { "pattern": "^have$", "tag": "AGREEMENT_S", "explainHe": "she היא גוף שלישי יחיד, ולכן לא have. וכאן גם right now, ולכן is having." }
+      ],
+      "modelAnswer": "Right now she's having a call with a client.",
+      "tests": { "accept": ["is having"], "flag": { "has": "PRESENT_FOR_NOW", "have": "AGREEMENT_S" } }
+    },
+    {
+      "id": "pres-05",
+      "type": "translate",
+      "promptHe": "אני לא מבין מה הוא רוצה.",
+      "accept": ["i do not understand what he wants"],
+      "errors": [
+        { "pattern": "am not understanding", "tag": "STATIVE_CONTINUOUS", "explainHe": "understand הוא פועל מצב, ולכן I don't understand." },
+        { "pattern": "^i am not understand\\b", "tag": "BE_PLUS_VERB", "explainHe": "שלילה של פועל רגיל: don't + פועל. I don't understand." },
+        { "pattern": "what he want$", "tag": "AGREEMENT_S", "explainHe": "he = גוף שלישי יחיד, ולכן wants." }
+      ],
+      "modelAnswer": "I don't understand what he wants.",
+      "tests": {
+        "accept": ["I don't understand what he wants."],
+        "flag": { "I am not understanding what he wants": "STATIVE_CONTINUOUS", "I don't understand what he want": "AGREEMENT_S" }
+      }
+    },
+    {
+      "id": "pres-06",
+      "type": "write",
+      "promptHe": "כתוב משפט אחד באנגלית שמשלב הרגל קבוע (usually / every…) ומשהו שאתה עושה השבוע (this week).",
+      "accept": [".*\\b(usually|every|always|often|normally)\\b.*\\b(am|is|are) [a-z]+ing\\b.*", ".*\\b(am|is|are) [a-z]+ing\\b.*\\b(usually|every|always|often|normally)\\b.*"],
+      "errors": [
+        { "pattern": "\\b(i am|he is|she is|we are|they are) (go|work|start|like|want|need|know|agree|understand)\\b", "tag": "BE_PLUS_VERB",
+          "explainHe": "am/is/are לא מגיעים עם פועל בסיסי. או I work (הרגל), או I'm working (עכשיו)." }
+      ],
+      "modelAnswer": "I usually work from the office, but this week I'm working from home.",
+      "tests": {
+        "accept": ["I usually go to the gym, but this week I'm resting."],
+        "flag": { "I usually go to the office, but this week I am work from home": "BE_PLUS_VERB" }
+      }
+    }
+  ]
+}

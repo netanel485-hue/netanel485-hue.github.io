@@ -1,0 +1,106 @@
+{
+  "id": "articles",
+  "order": 2,
+  "titleHe": "Articles: a / an / the",
+  "summaryHe": "מתי a, מתי the ומתי בלי כלום",
+  "ruleHe": [
+    "בעברית אין מילה ל-a, ולכן קל לשכוח אותה. באנגלית שם עצם ספיר ביחיד כמעט תמיד צריך a/an או the.",
+    "a/an = אחד כלשהו, או כשמזכירים משהו בפעם הראשונה (I have a meeting). an לפני צליל של תנועה (an apartment, an hour).",
+    "the = משהו מסוים ששנינו יודעים על מה מדובר (the file we talked about), וגם עם הכי (the best).",
+    "בלי article: דברים כלליים ברבים או לא ספירים (Life is expensive, I like dogs). בעברית אומרים \"החיים\", באנגלית life בלי the."
+  ],
+  "examples": [
+    "I'm a software engineer.",
+    "Can you send me the file we discussed?",
+    "She's the best developer on the team.",
+    "Life is expensive in this city."
+  ],
+  "tags": {
+    "ART_MISSING_A": "חסר a/an",
+    "ART_MISSING_THE": "חסר the",
+    "ART_A_THE": "a במקום the או להפך",
+    "ART_A_AN": "a במקום an",
+    "ART_GENERAL_THE": "the על דבר כללי"
+  },
+  "exercises": [
+    {
+      "id": "art-01",
+      "type": "translate",
+      "promptHe": "אני מהנדס תוכנה.",
+      "accept": ["i am an? (software )?(engineer|developer)"],
+      "errors": [
+        { "pattern": "^i am (software )?(engineer|developer)$", "tag": "ART_MISSING_A",
+          "explainHe": "מקצוע ביחיד מקבל a: I'm a software engineer." }
+      ],
+      "modelAnswer": "I'm a software engineer.",
+      "tests": { "accept": ["I'm a software engineer."], "flag": { "I am software engineer": "ART_MISSING_A" } }
+    },
+    {
+      "id": "art-02",
+      "type": "choose",
+      "promptHe": "בחר:",
+      "promptEn": "Can you send me ___ file we talked about yesterday?",
+      "options": ["a", "the", "—"],
+      "accept": ["the"],
+      "errors": [
+        { "pattern": "^a$", "tag": "ART_A_THE", "explainHe": "זה קובץ מסוים ששניכם יודעים עליו (we talked about), ולכן the." },
+        { "pattern": "^—$", "tag": "ART_MISSING_THE", "explainHe": "file הוא שם עצם ספיר ביחיד, הוא צריך article. כאן the." }
+      ],
+      "modelAnswer": "Can you send me the file we talked about yesterday?",
+      "tests": { "accept": ["the"], "flag": { "a": "ART_A_THE", "—": "ART_MISSING_THE" } }
+    },
+    {
+      "id": "art-03",
+      "type": "translate",
+      "promptHe": "יש לי פגישה בשלוש.",
+      "accept": ["i have a meeting at (3|three)( o'clock| pm|pm)?", "i have got a meeting at (3|three)( o'clock| pm|pm)?", "i have a meeting at 3:00( pm)?"],
+      "errors": [
+        { "pattern": "^i (have|have got) meeting", "tag": "ART_MISSING_A",
+          "explainHe": "meeting ביחיד, מוזכר בפעם הראשונה, ולכן a meeting." }
+      ],
+      "modelAnswer": "I have a meeting at three.",
+      "tests": { "accept": ["I have a meeting at 3 pm.", "I've got a meeting at three"], "flag": { "I have meeting at 3": "ART_MISSING_A" } }
+    },
+    {
+      "id": "art-04",
+      "type": "rewrite",
+      "promptHe": "תקן את המשפט:",
+      "promptEn": "She is best developer in team.",
+      "accept": ["she('s| is) the best developer (in|on) the team"],
+      "errors": [
+        { "pattern": "\\b(is|'s) best\\b", "tag": "ART_MISSING_THE", "explainHe": "עם הכי (best) תמיד the: the best." },
+        { "pattern": "\\b(in|on) team\\b", "tag": "ART_MISSING_THE", "explainHe": "צוות מסוים, ולכן the team." }
+      ],
+      "modelAnswer": "She's the best developer on the team.",
+      "tests": { "accept": ["She's the best developer on the team."], "flag": { "She is the best developer in team": "ART_MISSING_THE" } }
+    },
+    {
+      "id": "art-05",
+      "type": "choose",
+      "promptHe": "בחר:",
+      "promptEn": "I'm looking for ___ apartment in Tel Aviv.",
+      "options": ["a", "an", "the"],
+      "accept": ["an"],
+      "errors": [
+        { "pattern": "^a$", "tag": "ART_A_AN", "explainHe": "apartment מתחיל בצליל תנועה, ולכן an." },
+        { "pattern": "^the$", "tag": "ART_A_THE", "explainHe": "אתה מחפש דירה כלשהי, לא דירה מסוימת, ולכן an." }
+      ],
+      "modelAnswer": "I'm looking for an apartment in Tel Aviv.",
+      "vocab": [{ "en": "look for", "he": "לחפש" }],
+      "tests": { "accept": ["an"], "flag": { "a": "ART_A_AN", "the": "ART_A_THE" } }
+    },
+    {
+      "id": "art-06",
+      "type": "translate",
+      "promptHe": "החיים יקרים בעיר הזאת.",
+      "accept": ["life is (very |really |so )?expensive in this city", "living in this city is expensive", "this city is expensive to live in", "the cost of living (in this city is high|is high in this city)"],
+      "errors": [
+        { "pattern": "^the life\\b", "tag": "ART_GENERAL_THE", "explainHe": "על החיים באופן כללי אומרים life בלי the." }
+      ],
+      "modelAnswer": "Life is expensive in this city.",
+      "alternatives": ["The cost of living is high in this city."],
+      "vocab": [{ "en": "the cost of living", "he": "יוקר המחיה" }],
+      "tests": { "accept": ["Life is expensive in this city."], "flag": { "The life is expensive in this city": "ART_GENERAL_THE" } }
+    }
+  ]
+}
