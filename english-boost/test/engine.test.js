@@ -146,3 +146,48 @@ test('vocab review', () => {
   EB.reviewVocab(v, true, at(0)); assert.equal(v.box, 2); assert.equal(EB.daysBetween(at(0), v.nextDue), 3);
   EB.reviewVocab(v, false, at(0)); assert.equal(v.box, 1);
 });
+
+// ---------- מחברת טעויות וחזרה מעורבת ----------
+function attOn(topicId, exId, day, outcome, tag = null) {
+  seq++;
+  const date = at(day, seq);
+  return { ex: exId, topic: topicId, answer: 'x', outcome, tag, date, day: EB.dayKey(date), prod: true, isNew: false };
+}
+
+test('mistake log: newest first, one row per exercise, resolved after a later correct answer', () => {
+  const log = EB.mistakeLog([
+    attOn(T, 'a', 0, 'error', 'T1'),
+    attOn(T, 'b', 1, 'selfWrong'),
+    attOn(T, 'a', 2, 'correct'),
+    attOn(T, 'c', 3, 'correct'),
+    attOn(T, 'b', 3, 'error', 'T1'),
+  ]);
+  assert.deepEqual(log.map(m => [m.attempt.ex, m.resolved]), [['b', false], ['a', true]]);
+});
+
+test('mixed review interleaves started topics, open mistakes first, nothing answered today', () => {
+  const ex = id => ({ id, type: 'write', accept: ['x'], errors: [], modelAnswer: 'x' });
+  const A = Object.assign({}, topic, { id: 'A', exercises: [ex('a1'), ex('a2'), ex('a3')] });
+  const B = Object.assign({}, topic, { id: 'B', exercises: [ex('b1'), ex('b2')] });
+  const C = Object.assign({}, topic, { id: 'C', exercises: [ex('c1')] });
+  const progress = { A: { state: 'practicing', box: 1, nextDue: at(3) }, B: { state: 'learning', box: 1, nextDue: at(2) }, C: { state: 'new', box: 0, nextDue: 0 } };
+  const attempts = [
+    attOn('A', 'a1', 0, 'correct'), attOn('A', 'a2', 0, 'error', 'T1'), attOn('A', 'a3', 5, 'correct'),
+    attOn('B', 'b1', 0, 'correct'), attOn('B', 'b2', 1, 'correct'),
+    attOn('C', 'c1', 0, 'correct'),
+  ];
+  const r = EB.mixedReview([A, B, C], progress, attempts, at(5, 500));
+  // B is due first; A's open mistake (a2) comes before a1; a3 was answered today; C is not started.
+  assert.deepEqual(r.map(x => x.ex.id), ['b1', 'a2', 'b2', 'a1']);
+  assert.deepEqual(r.map(x => x.topicId), ['B', 'A', 'B', 'A']);
+});
+
+test('mixed review needs at least two started topics', () => {
+  const ex = id => ({ id, type: 'write', accept: ['x'], errors: [], modelAnswer: 'x' });
+  const A = Object.assign({}, topic, { id: 'A', exercises: [ex('a1')] });
+  const B = Object.assign({}, topic, { id: 'B', exercises: [ex('b1')] });
+  const attempts = [attOn('A', 'a1', 0, 'correct')];
+  assert.deepEqual(EB.mixedReview([A, B], { A: { state: 'learning', box: 1, nextDue: 0 } }, attempts, at(3)), []);
+  // two started topics, but only one has anything to review → not mixed
+  assert.deepEqual(EB.mixedReview([A, B], { A: { state: 'learning', box: 1, nextDue: 0 }, B: { state: 'learning', box: 1, nextDue: 0 } }, attempts, at(3)), []);
+});
