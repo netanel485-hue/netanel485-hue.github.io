@@ -116,6 +116,65 @@ body{--c:#1D4ED8}
 /* ביטוי באנגלית בתוך כותרת בעברית לא נשבר באמצע שורה (Present / perfect) */
 h1 bdi,h2 bdi,.task b bdi,.kv b bdi,.kv>span bdi,.mist b bdi{white-space:nowrap}
 </style>
+<style id="eb-notebook-css">
+/* EB-NOTEBOOK — שפת העיצוב "מחברת עם עט אדום" (שלב 1, 18/11/2026).
+   צבע = מצב: אדום (טעות פתוחה) → כתום (בתהליך) → ירוק (הוכח) → כחול-דיו (שולט). אנגלית בגופן סריף של המערכת.
+   להסרה: למחוק את הבלוק הזה. הסימון (bidi, diff) ממשיך לעבוד גם בלעדיו. */
+:root{
+  --st-open:#B42318;--st-open-bg:#FDECEA;--st-work:#A15C07;--st-work-bg:#FEF3DC;
+  --st-proof:#17703A;--st-proof-bg:#E4F4E8;--st-ink:#1E3A8A;--st-ink-bg:#E7EDFB;--st-new:#5E6B63;--st-new-bg:#EEF1EC;
+  --margin-line:rgba(180,35,24,.35);--paper:#FFFFFF;
+  --serif:Georgia,"Iowan Old Style","Times New Roman",serif;
+}
+.prompt-en,.examples .en,.model .en,.mist .en,.opt,textarea,.diff,.vitem .en,.fb .sl .en{font-family:var(--serif)}
+.prompt-en{font-size:21px;font-weight:600}
+.opt{font-size:19px;font-weight:600}
+textarea{font-size:19px}
+/* עמוד היום: כותרת תאריך וקו שוליים אדום כמו במחברת */
+.page-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:18px 0 10px}
+.page-head h2{margin:0}
+.page-head .date{color:var(--ink-soft);font-size:15px}
+.task{border-inline-start:6px solid var(--st-new)}
+.task.k0{border-inline-start-color:var(--st-open)}
+.task.k1{border-inline-start-color:var(--st-work)}
+.task.k2{border-inline-start-color:var(--st-new)}
+.task.kx{border-inline-start-color:var(--st-ink)}
+/* תוויות מצב */
+.pill.st-new{background:var(--st-new-bg);color:var(--st-new)}
+.pill.st-learning{background:var(--st-work-bg);color:var(--st-work)}
+.pill.st-practicing{background:var(--st-proof-bg);color:var(--st-proof)}
+.pill.st-mastered{background:var(--st-ink-bg);color:var(--st-ink)}
+.pill.open{background:var(--st-open-bg);color:var(--st-open)}
+.pill.ok{background:var(--st-proof-bg);color:var(--st-proof)}
+.kv .pill{font-size:13px;padding:1px 9px;font-weight:700;vertical-align:1px}
+/* עט אדום: מה למחוק ומה להוסיף */
+.diff{direction:ltr;text-align:left;font-size:19px;line-height:1.9;background:var(--paper);border-radius:10px;padding:8px 12px;margin:8px 0;
+  border-inline-end:3px solid var(--margin-line)}
+.diff .del{color:var(--st-open);text-decoration:line-through;text-decoration-thickness:2px}
+.diff .ins{color:var(--st-proof);font-weight:700;border-bottom:2px solid currentColor}
+.diff .hint{color:var(--st-open);text-decoration:underline wavy;text-decoration-thickness:1.5px;text-underline-offset:4px}
+.diff .gap{color:var(--st-open);font-weight:800;padding:0 1px}
+.diff.soft .del{color:var(--st-work);text-decoration:none;border-bottom:2px dotted currentColor}
+.diff.soft .ins{color:var(--st-ink);border-bottom-style:dotted}
+.diff-t{font-size:14px;color:var(--ink-soft);margin:8px 0 0}
+.vocab-save{flex-wrap:wrap;column-gap:6px;row-gap:0}
+/* מצב כהה */
+@media (prefers-color-scheme:dark){
+  :root{--bg:#141A17;--card:#1C2420;--ink:#E7EFE9;--ink-soft:#A9B8AE;--muted:#8E9C93;--line:#33413A;
+    --c:#7EA2FF;--c-soft:#1F2B47;--ok:#6FD394;--ok-soft:#173325;--warn:#F2B35B;--warn-soft:#3A2C14;--bad:#F28B82;--bad-soft:#3B1D1B;
+    --st-open:#F28B82;--st-open-bg:#3B1D1B;--st-work:#F2B35B;--st-work-bg:#3A2C14;--st-proof:#6FD394;--st-proof-bg:#173325;
+    --st-ink:#9DB7FF;--st-ink-bg:#1F2B47;--st-new:#A9B8AE;--st-new-bg:#26302B;--margin-line:rgba(242,139,130,.4);--paper:#151C18}
+  html body{background:var(--bg)!important;color:var(--ink)}
+  .card,html .kit-themed .card{background:var(--card)!important;border-color:var(--line)!important;box-shadow:none!important}
+  .tabs{background:#18201C;box-shadow:none}
+  .tabs button,.btn.sec,.btn.quiet,.btn.danger,.opt,textarea,.say,.x,.model,.vitem .del{background:var(--card);color:var(--ink)}
+  .btn.sec{color:var(--c)}
+  .btn:not(.sec):not(.quiet):not(.danger){background:#2F5BD8;border-color:#2F5BD8;color:#fff}
+  .tabs button[aria-current="page"]{background:#2F5BD8;border-color:#2F5BD8;color:#fff}
+  textarea:disabled{background:#202925}
+  .kit-hero{box-shadow:none!important}
+}
+</style>
 </head>
 <body class="kit-themed">
 <div class="kit-hero" role="banner" style="--c:#1D4ED8"><span class="kh-pal" aria-hidden="true">🗽</span><div class="kh-t"><div class="kh-title">English Boost</div><div class="kh-sub">חיזוק דקדוק באנגלית · 10 דקות ביום</div></div><a class="kh-home" href="../" aria-label="מרכזי הלמידה">🏠</a></div>
@@ -197,6 +256,20 @@ h1 bdi,h2 bdi,.task b bdi,.kv b bdi,.kv>span bdi,.mist b bdi{white-space:nowrap}
   function sayBtn(s) { return P.speech.available ? '<button type="button" class="say" data-say="' + esc(s) + '" aria-label="השמעה">🔊</button>' : ''; }
   /* שורת אנגלית עם כפתור השמעה */
   function enS(s, cls) { return '<div class="sl' + (cls ? ' ' + cls : '') + '">' + en(s) + sayBtn(s) + '</div>'; }
+  /* עט אדום: full = מה למחוק ומה להוסיף; hint = רק איפה הבעיה (בלי לגלות את התשובה); soft = הבדלים מניסוח לדוגמה */
+  function diffHtml(answer, ex, mode) {
+    try {
+      var d = EB.wordDiff(answer, [ex.modelAnswer].concat(ex.alternatives || []), function (x) { return EB.check(x, ex).kind === 'correct'; });
+      if (!d.ops.length || !d.changes) return '';
+      var parts = d.ops.map(function (o) {
+        if (o.op === 'same') return esc(o.text);
+        if (mode === 'hint') return o.op === 'del' ? '<span class="hint">' + esc(o.text) + '</span>' : '<span class="gap" aria-label="חסרה כאן מילה">‸</span>';
+        return '<span class="' + o.op + '">' + esc(o.text) + '</span>';
+      });
+      return '<div class="diff' + (mode === 'soft' ? ' soft' : '') + '" dir="ltr" lang="en">' + parts.join(' ') + '</div>';
+    } catch (e) { return ''; }
+  }
+  function statePill(st) { return '<span class="pill st-' + esc(st) + '">' + EB.STATE_HE[st] + '</span>'; }
   function pct(x) { return Math.round(x * 100) + '%'; }
   function daysText(d) { return d <= 0 ? 'היום' : d === 1 ? 'מחר' : 'בעוד ' + d + ' ימים'; }
   function render(html) { app.innerHTML = html; }
@@ -251,29 +324,30 @@ h1 bdi,h2 bdi,.task b bdi,.kv b bdi,.kv>span bdi,.mist b bdi{white-space:nowrap}
     var h = '';
     if (loadError) h += '<div class="card err">' + esc(loadError) + '</div>';
     if (dataNote) h += '<div class="card err" role="alert">' + esc(dataNote) + '</div>';
-    h += '<h2>מה לתרגל היום</h2>';
+    var dateHe = ''; try { dateHe = new Date(t).toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' }); } catch (e) {}
+    h += '<div class="page-head"><h2>מה לתרגל היום</h2><span class="date">' + esc(dateHe) + '</span></div>';
     if (!plan.length && !loadError) h += '<div class="card muted">אין משימות להיום. הנושאים יחזרו לפי לוח החזרות.</div>';
     plan.forEach(function (it, i) {
-      h += '<button type="button" class="card task" data-start="' + i + '"><span class="ic" aria-hidden="true">' + KIND_IC[it.kind] + '</span>'
+      h += '<button type="button" class="card task k' + it.kind + '" data-start="' + i + '"><span class="ic" aria-hidden="true">' + KIND_IC[it.kind] + '</span>'
         + '<span><b>' + bidi(it.topic.titleHe) + '</b><small>' + esc(it.reasonHe) + '</small></span><span class="ar" aria-hidden="true">←</span></button>';
     });
     if (mixed.length || due.length || open.length) h += '<h2>עוד היום</h2>';
     if (mixed.length) {
-      h += '<button type="button" class="card task" data-mixed="1"><span class="ic" aria-hidden="true">🔀</span>'
+      h += '<button type="button" class="card task kx" data-mixed="1"><span class="ic" aria-hidden="true">🔀</span>'
         + '<span><b>חזרה מעורבת</b><small>' + mixed.length + ' תרגילים מכמה נושאים, בלי לדעת מראש איזה כלל. ככה בונים שליטה אמיתית.</small></span><span class="ar" aria-hidden="true">←</span></button>';
     }
     if (open.length) {
-      h += '<button type="button" class="card task" data-mist="1"><span class="ic" aria-hidden="true">📝</span>'
+      h += '<button type="button" class="card task k0" data-mist="1"><span class="ic" aria-hidden="true">📝</span>'
         + '<span><b>' + open.length + ' טעויות פתוחות</b><small>תרגול של המשפטים שבהם טעית, עד שהם יוצאים נכון.</small></span><span class="ar" aria-hidden="true">←</span></button>';
     }
     if (due.length) {
-      h += '<button type="button" class="card task" data-review="1"><span class="ic" aria-hidden="true">📒</span>'
+      h += '<button type="button" class="card task k1" data-review="1"><span class="ic" aria-hidden="true">📒</span>'
         + '<span><b>' + due.length + ' ביטויים מחכים לחזרה</b><small>רואים בעברית, כותבים באנגלית</small></span><span class="ar" aria-hidden="true">←</span></button>';
     }
     h += '<h2>כל הנושאים</h2><div class="card">';
     topics.forEach(function (tp) {
       var p = S.progress[tp.id];
-      h += '<div class="kv"><span>' + bidi(tp.titleHe) + ' <span class="small muted">· ' + EB.STATE_HE[p ? p.state : 'new'] + '</span></span>'
+      h += '<div class="kv"><span>' + bidi(tp.titleHe) + ' ' + statePill(p ? p.state : 'new') + '</span>'
         + '<button type="button" class="btn sec" style="width:auto;min-height:40px;padding:4px 14px" data-free="' + esc(tp.id) + '">תרגול</button></div>';
     });
     h += '</div>' + installCard();
@@ -333,7 +407,7 @@ h1 bdi,h2 bdi,.task b bdi,.kv b bdi,.kv>span bdi,.mist b bdi{white-space:nowrap}
       if (s && s.total) {
         h += '<p class="big">' + s.correct + ' מתוך ' + s.total + ' נכון בניסיון הראשון</p>';
         if (s.state) {
-          h += '<div class="kv"><span>מצב הנושא</span><span class="v">' + EB.STATE_HE[s.state] + '</span></div>'
+          h += '<div class="kv"><span>מצב הנושא</span><span class="v">' + statePill(s.state) + '</span></div>'
             + '<div class="kv"><span>חזרה הבאה</span><span class="v">' + daysText(EB.daysBetween(now(), s.nextDue)) + '</span></div>';
           if (s.repeatedTag) h += '<div class="fb warn">שים לב: ' + esc(L.topic.tags[s.repeatedTag] || s.repeatedTag) + ' חזרה כמה פעמים. נחזור אליה מחר במשפטים חדשים.</div>';
         } else {
@@ -394,7 +468,7 @@ h1 bdi,h2 bdi,.task b bdi,.kv b bdi,.kv>span bdi,.mist b bdi{white-space:nowrap}
     return (ex.vocab || []).map(function (v, k) {
       var saved = S.vocab.some(function (x) { return x.en.toLowerCase() === v.en.toLowerCase(); });
       return '<button type="button" class="btn quiet vocab-save" data-vocab="' + k + '"' + (saved ? ' disabled' : '') + '>'
-        + (saved ? '✓ נשמר: ' : '➕ שמירת ביטוי: ') + en(v.en, 'span') + (saved ? '' : ' – ' + esc(v.he)) + '</button>';
+        + '<span>' + (saved ? '✓ נשמר:' : '➕ שמירת ביטוי:') + '</span> ' + en(v.en, 'span') + (saved ? '' : ' <span class="muted">(' + esc(v.he) + ')</span>') + '</button>';
     }).join('');
   }
   function topicNote(it) { return L.kind === 'topic' ? '' : '<p class="small muted" style="margin:6px 0 0">הנושא: ' + bidi((topicById(it.topicId) || {}).titleHe || '') + '</p>'; }
@@ -405,12 +479,17 @@ h1 bdi,h2 bdi,.task b bdi,.kv b bdi,.kv>span bdi,.mist b bdi{white-space:nowrap}
       case 'correct':
         return '<div class="fb ok"><h3>' + (L.tries === 1 ? '✓ נכון!' : '✓ נכון, תוקן!') + '</h3>' + modelBlock(ex, 'ניסוח תקין') + vocabButtons(ex) + topicNote(it) + '</div>' + nextBtn();
       case 'error':
-        return '<div class="fb warn"><h3>לא בדיוק</h3><p style="margin:0">' + bidi(f.explainHe) + '</p>'
+        var prod = ex.type !== 'choose';
+        return '<div class="fb warn"><h3>לא בדיוק</h3>'
+          + (prod && L.tries < 2 ? '<p class="diff-t">איפה הבעיה:</p>' + diffHtml(L.answer, ex, 'hint') : '')
+          + (prod && L.tries >= 2 ? '<p class="diff-t">התיקון:</p>' + diffHtml(L.answer, ex, 'full') : '')
+          + '<p style="margin:0">' + bidi(f.explainHe) + '</p>'
           + (f.isRepeat ? '<p class="small muted">זו טעות שחוזרת. הנושא יחזור מחר בתרגילים אחרים.</p>' : '')
           + (L.tries < 2 ? '<p class="small muted">' + (ex.type === 'choose' ? 'נסה לבחור תשובה אחרת.' : 'תקן את התשובה ולחץ "בדיקה".') + '</p></div>'
             : modelBlock(ex, 'התשובה הנכונה') + vocabButtons(ex) + topicNote(it) + '</div>' + nextBtn());
       case 'unknown':
-        return '<div class="fb info"><h3>לא זיהיתי את התשובה אוטומטית</h3><p style="margin:0">השווה לניסוח הזה:</p>' + modelBlock(ex, 'ניסוח לדוגמה')
+        return '<div class="fb info"><h3>לא זיהיתי את התשובה אוטומטית</h3><p style="margin:0">השווה לניסוח הזה. ייתכן שגם הניסוח שלך נכון.</p>' + modelBlock(ex, 'ניסוח לדוגמה')
+          + (ex.type !== 'choose' ? '<p class="diff-t">ההבדלים מהניסוח לדוגמה:</p>' + diffHtml(L.answer, ex, 'soft') : '')
           + '<p style="margin:8px 0 0">התשובה שלך נכונה?</p><div class="row"><button type="button" class="btn" id="selfYes">כן, נכונה</button>'
           + '<button type="button" class="btn sec" id="selfNo">לא, טעיתי</button></div></div>';
       case 'revealed':
@@ -495,7 +574,7 @@ h1 bdi,h2 bdi,.task b bdi,.kv b bdi,.kv>span bdi,.mist b bdi{white-space:nowrap}
       h += '<div class="mist"><div class="head"><div><b>' + bidi((topicById(a.topic) || {}).titleHe || '') + '</b><div class="small muted">' + esc(why) + '</div></div>'
         + '<span class="pill ' + (m.resolved ? 'ok">✓ תוקן' : 'open">פתוח') + '</span></div>'
         + '<div class="small muted">' + esc(ex.promptHe) + (ex.promptEn ? ' ' + en(ex.promptEn, 'span') : '') + '</div>'
-        + '<div class="yours">' + en(a.answer || '—') + '</div>'
+        + (ex.type !== 'choose' && a.answer ? diffHtml(a.answer, ex, 'full') || '<div class="yours">' + en(a.answer) + '</div>' : '<div class="yours">' + en(a.answer || '—') + '</div>')
         + '<div class="right">' + enS(ex.modelAnswer) + '</div></div>';
     });
     h += '</div>';
@@ -513,10 +592,10 @@ h1 bdi,h2 bdi,.task b bdi,.kv b bdi,.kv>span bdi,.mist b bdi{white-space:nowrap}
 
     h += '<h2>נושאי דקדוק</h2><div class="card">';
     topics.forEach(function (tp) {
-      var p = S.progress[tp.id], st = p ? p.state : 'new', acc = EB.accuracyLast10(tp.id, S.attempts), d = [EB.STATE_HE[st]];
+      var p = S.progress[tp.id], st = p ? p.state : 'new', acc = EB.accuracyLast10(tp.id, S.attempts), d = [];
       if (acc != null) d.push('דיוק אחרון: ' + pct(acc));
       if (p && st !== 'new') { var dd = EB.daysBetween(t, p.nextDue); d.push(dd <= 0 ? 'לחזרה היום' : 'חזרה ' + daysText(dd)); }
-      h += '<div class="kv" style="display:block"><b>' + bidi(tp.titleHe) + '</b><div class="small muted">' + esc(d.join(' · ')) + '</div></div>';
+      h += '<div class="kv" style="display:block"><b>' + bidi(tp.titleHe) + '</b> ' + statePill(st) + (d.length ? '<div class="small muted">' + esc(d.join(' · ')) + '</div>' : '') + '</div>';
     });
     h += '</div>';
 

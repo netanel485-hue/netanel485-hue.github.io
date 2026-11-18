@@ -77,7 +77,12 @@ async function answer(page, ex, text) {
         await page.locator('.fb.warn').waitFor();
         const hint = await page.locator('.fb.warn').textContent();
         if (ex.type === 'choose') assert.ok(hint.includes('תשובה אחרת'), 'choose retry hint');
-        else assert.ok(hint.includes('בדיקה'), 'write retry hint');
+        else {
+          assert.ok(hint.includes('בדיקה'), 'write retry hint');
+          // רמז "עט אדום": מסמן איפה הבעיה בלי לגלות את התשובה
+          assert.ok(await page.locator('.fb.warn .diff .hint, .fb.warn .diff .gap').count() > 0, 'hint marks the problem');
+          assert.equal(await page.locator('.fb.warn .diff .ins').count(), 0, 'hint does not reveal the answer');
+        }
         first = false;
       }
       await answer(page, ex, ex.tests.accept[0]);
@@ -93,6 +98,12 @@ async function answer(page, ex, text) {
     step('הטעות נכנסה למחברת');
     await page.click('[data-tab="mistakes"]');
     await page.getByText('1 פתוחות').waitFor();
+
+    step('מצב כהה: רקע כהה וטקסט בהיר');
+    await page.emulateMedia({ colorScheme: 'dark' });
+    const dark = await page.evaluate(() => [getComputedStyle(document.body).backgroundColor, getComputedStyle(document.body).color]);
+    assert.notEqual(dark[0], 'rgb(250, 246, 235)', 'dark background'); assert.ok(/^rgb\((2[0-9]{2}|1[5-9][0-9])/.test(dark[1]), 'light text ' + dark[1]);
+    await page.emulateMedia({ colorScheme: 'light' });
 
     step('שמירת גיבוי, מחיקה ושחזור');
     await page.click('[data-tab="progress"]');

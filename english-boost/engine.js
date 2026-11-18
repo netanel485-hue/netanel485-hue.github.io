@@ -196,6 +196,116 @@
     item.nextDue = addDays(INTERVALS[Math.max(item.box, 1)], now);
   }
 
+  // ---------- השוואה מילה מול מילה (משוב "עט אדום") ----------
+  /* wordDiff(answer, targets): בוחר מבין הניסוחים הנכונים (וגרסה עם קיצורים פתוחים) את הקרוב ביותר לתשובה,
+     ומחזיר רשימת חלקים { op: 'same' | 'del' | 'ins', text }. del = מילים מהתשובה שצריך להוריד/להחליף, ins = מה שחסר.
+     ההשוואה לפי normalize של כל מילה, כך שאותיות גדולות ופיסוק לא נחשבים הבדל. */
+  var EXPAND = [[/\bwon['’]t\b/gi, 'will not'], [/\bcan['’]t\b/gi, 'cannot'], [/n['’]t\b/gi, ' not'], [/['’]ve\b/gi, ' have'],
+    [/['’]m\b/gi, ' am'], [/['’]re\b/gi, ' are'], [/['’]ll\b/gi, ' will']];
+  function expandContractions(s) {
+    var t = String(s);
+    EXPAND.forEach(function (r) { t = t.replace(r[0], r[1]); });
+    return t;
+  }
+  function words(s) { return String(s).trim().split(/\s+/).filter(Boolean); }
+  function wkey(w) { return normalize(w).replace(/[.,!?;:"]+/g, ''); }
+  function lcsOps(a, b) {
+    var ka = a.map(wkey), kb = b.map(wkey), n = a.length, m = b.length, i, j;
+    var L = [];
+    for (i = 0; i <= n; i++) { L.push(new Array(m + 1).fill(0)); }
+    for (i = n - 1; i >= 0; i--) for (j = m - 1; j >= 0; j--) L[i][j] = ka[i] === kb[j] ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]);
+    var ops = [];
+    i = 0; j = 0;
+    while (i < n && j < m) {
+      if (ka[i] === kb[j]) { ops.push({ op: 'same', text: b[j] }); i++; j++; }
+      else if (L[i + 1][j] >= L[i][j + 1]) { ops.push({ op: 'del', text: a[i] }); i++; }
+      else { ops.push({ op: 'ins', text: b[j] }); j++; }
+    }
+    for (; i < n; i++) ops.push({ op: 'del', text: a[i] });
+    for (; j < m; j++) ops.push({ op: 'ins', text: b[j] });
+    return { ops: ops, same: L[0][0] };
+  }
+  /* isOk (לא חובה): פונקציה שבודקת משפט מלא. הבדל שבו הנוסח של המשתמש, יחד עם שאר המשפט הנכון, עדיין מתקבל
+     (למשל in במקום at כשגם in נכון) לא מסומן. כך העט האדום לא מסמן מילה נכונה כטעות. */
+  function wordDiff(answer, targets, isOk) {
+    var a = words(answer);
+    if (!a.length) return { ops: [], target: null, changes: 0 };
+    var cands = [];
+    (targets || []).forEach(function (t) {
+      if (!t) return;
+      cands.push(t);
+      var e = expandContractions(t);
+      if (e !== t) cands.push(e);
+    });
+    var best = null;
+    cands.forEach(function (t) {
+      var b = words(t), r = lcsOps(a, b), changes = a.length + b.length - 2 * r.same;
+      if (!best || changes < best.changes) best = { ops: merge(r.ops), target: t, changes: changes };
+    });
+    if (!best) return { ops: [], target: null, changes: 0 };
+    if (typeof isOk === 'function') best = forgive(best, isOk);
+    return best;
+  }
+  function tryOk(isOk, sentence) { try { return !!isOk(sentence); } catch (e) { return false; } }
+  /* המשפט הנכון, כשבמקום הקבוצה k..end בא הטקסט mid */
+  function joinAround(ops, k, end, mid) {
+    return ops.map(function (o, i) {
+      if (i >= k && i < end) return i === k ? mid : '';
+      return o.op === 'del' ? '' : o.text;
+    }).filter(Boolean).join(' ');
+  }
+  function forgive(d, isOk) {
+    var ops = d.ops.slice(), k = 0;
+    while (k < ops.length) {
+      if (ops[k].op === 'same') { k++; continue; }
+      var end = k; while (end < ops.length && ops[end].op !== 'same') end++;
+      var mine = ops.slice(k, end).filter(function (o) { return o.op === 'del'; }).map(function (o) { return o.text; }).join(' ');
+      var sentence = ops.map(function (o, i) {
+        if (i >= k && i < end) return i === k ? mine : '';
+        return o.op === 'del' ? '' : o.text;
+      }).filter(Boolean).join(' ');
+      if (tryOk(isOk, sentence)) { ops.splice(k, end - k, mine ? { op: 'same', text: mine } : null); ops = ops.filter(Boolean); continue; }
+      // אחרת: אולי רק הקצה של הקבוצה נכון (work in → have worked at: ה-in נכון)
+      var D = words(mine), I = words(ops.slice(k, end).filter(function (o) { return o.op === 'ins'; }).map(function (o) { return o.text; }).join(' '));
+      var split = null;
+      for (var t = Math.min(D.length, I.length); t >= 1 && !split; t--) {
+        var suf = { del: D.slice(0, D.length - t), ins: I.slice(0, I.length - t), same: D.slice(D.length - t), at: 'end' };
+        var pre = { del: D.slice(t), ins: I.slice(t), same: D.slice(0, t), at: 'start' };
+        [suf, pre].forEach(function (c) {
+          if (split || (!c.del.length && !c.ins.length)) return;
+          var mid = c.at === 'end' ? c.ins.concat(c.same) : c.same.concat(c.ins);
+          if (tryOk(isOk, joinAround(ops, k, end, mid.join(' ')))) split = c;
+        });
+      }
+      if (split) {
+        var rep = [];
+        if (split.at === 'start') rep.push({ op: 'same', text: split.same.join(' ') });
+        if (split.del.length) rep.push({ op: 'del', text: split.del.join(' ') });
+        if (split.ins.length) rep.push({ op: 'ins', text: split.ins.join(' ') });
+        if (split.at === 'end') rep.push({ op: 'same', text: split.same.join(' ') });
+        ops.splice.apply(ops, [k, end - k].concat(rep));
+      }
+      k = end + (split ? 1 : 0);
+      while (k < ops.length && ops[k].op !== 'same') k++;
+    }
+    var changes = 0;
+    ops.forEach(function (o) { if (o.op !== 'same') changes += words(o.text).length; });
+    return { ops: merge(ops), target: d.target, changes: changes };
+  }
+  /* מאחד חלקים רצופים מאותו סוג ומציב מחיקה לפני הוספה, כדי שיוצג "~~work~~ have worked" */
+  function merge(ops) {
+    var out = [];
+    ops.forEach(function (o) {
+      var last = out[out.length - 1];
+      if (last && last.op === o.op) last.text += ' ' + o.text;
+      else out.push({ op: o.op, text: o.text });
+    });
+    for (var k = 1; k < out.length; k++) {
+      if (out[k].op === 'del' && out[k - 1].op === 'ins') { var x = out[k]; out[k] = out[k - 1]; out[k - 1] = x; }
+    }
+    return out;
+  }
+
   // ---------- נתונים שמורים: גרסה, עדכון וגיבוי ----------
   /* DATA_V עולה בכל שינוי במבנה הנתונים. migrateData לא זורקת ולא מוחקת:
      ok/migrated = אפשר לעבוד; newer = נשמר בגרסה חדשה יותר (במכשיר אחר), לא נוגעים בו; invalid = לא נתונים של הערכה. */
@@ -240,6 +350,7 @@
     repeatedErrorTag: repeatedErrorTag, todayPlan: todayPlan, sessionExercises: sessionExercises,
     finishSession: finishSession, accuracyLast10: accuracyLast10, reviewVocab: reviewVocab,
     mistakeLog: mistakeLog, mixedReview: mixedReview,
+    wordDiff: wordDiff, expandContractions: expandContractions,
     DATA_V: DATA_V, emptyData: emptyData, migrateData: migrateData, makeBackup: makeBackup, readBackup: readBackup,
     startOfDay: startOfDay, addDays: addDays, daysBetween: daysBetween, dayKey: dayKey,
     INTERVALS: INTERVALS, STATE_HE: STATE_HE, SESSION_SIZE: SESSION_SIZE
