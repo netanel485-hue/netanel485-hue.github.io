@@ -79,6 +79,7 @@ async function answer(page, ex, text) {
         if (ex.type === 'choose') assert.ok(hint.includes('תשובה אחרת'), 'choose retry hint');
         else {
           assert.ok(hint.includes('בדיקה'), 'write retry hint');
+          assert.ok(hint.includes('רמז:'), 'first try shows a hint, not the full explanation');
           // רמז "עט אדום": מסמן איפה הבעיה בלי לגלות את התשובה
           assert.ok(await page.locator('.fb.warn .diff .hint, .fb.warn .diff .gap').count() > 0, 'hint marks the problem');
           assert.equal(await page.locator('.fb.warn .diff .ins').count(), 0, 'hint does not reveal the answer');
@@ -95,9 +96,11 @@ async function answer(page, ex, text) {
     assert.ok(n >= 3, `answered ${n} exercises`);
     await page.click('#done');
 
-    step('הטעות נכנסה למחברת');
+    step('הטעות נכנסה למחברת, במצב "בתיקון" (תוקנה בניסיון השני)');
     await page.click('[data-tab="mistakes"]');
-    await page.getByText('1 פתוחות').waitFor();
+    await page.locator('.mist.st-fixing').waitFor();
+    assert.equal(await page.locator('.mist').count(), 1);
+    assert.equal(await page.locator('#practice').count(), 0, 'proof waits for another day');
 
     step('מצב כהה: רקע כהה וטקסט בהיר');
     await page.emulateMedia({ colorScheme: 'dark' });
@@ -120,7 +123,29 @@ async function answer(page, ex, text) {
     await page.setInputFiles('#bkFile', file);
     await page.getByText('הגיבוי שוחזר.').waitFor();
     await page.click('[data-tab="mistakes"]');
-    await page.getByText('1 פתוחות').waitFor();
+    await page.locator('.mist.st-fixing').waitFor();
+
+    step('למחרת: משפט חדש עם אותו כלל, והכרטיס עובר להוכחה 1/3');
+    await page.evaluate(() => localStorage.setItem('eb.dayOffset', '1'));
+    await page.reload();
+    await page.getByRole('heading', { name: 'כל הנושאים' }).waitFor();
+    await page.click('[data-tab="mistakes"]');
+    await page.click('#practice');
+    const proofEx = await currentExercise(page);
+    const lastWrong = JSON.parse(await page.evaluate(() => localStorage.getItem('eb.data'))).attempts.find(a => a.outcome === 'error');
+    assert.notEqual(proofEx.id, lastWrong.ex, 'proof uses a new sentence');
+    await answer(page, proofEx, proofEx.tests.accept[0]);
+    await page.locator('.fb.ok').waitFor();
+    await page.click('#next');
+    while (await page.locator('.prompt').count()) {
+      const e2 = await currentExercise(page); await answer(page, e2, e2.tests.accept[0]); await page.locator('.fb.ok').waitFor(); await page.click('#next');
+      if (await page.getByRole('heading', { name: 'סיכום' }).count()) break;
+    }
+    await page.click('#done');
+    await page.click('[data-tab="mistakes"]');
+    await page.locator('.mist.st-proving').waitFor();
+    assert.match(await page.locator('.mist.st-proving .pill').textContent(), /1\/3/);
+    await page.evaluate(() => localStorage.removeItem('eb.dayOffset'));
 
     step('נתונים מגרסה חדשה יותר לא נדרסים');
     await page.evaluate(() => localStorage.setItem('eb.data', JSON.stringify({ v: 99, attempts: [{ keep: 1 }] })));

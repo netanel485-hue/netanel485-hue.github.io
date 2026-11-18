@@ -41,7 +41,7 @@
     var errs = ex.errors || [];
     for (var j = 0; j < errs.length; j++) {
       var r2 = re(errs[j].pattern);
-      if (r2 && r2.test(n)) return { kind: 'error', tag: errs[j].tag, explainHe: errs[j].explainHe };
+      if (r2 && r2.test(n)) return { kind: 'error', tag: errs[j].tag, explainHe: errs[j].explainHe, hintHe: errs[j].hintHe || null };
     }
     return { kind: 'unknown' };
   }
@@ -55,6 +55,7 @@
   function byDate(a, b) { return a.date - b.date; }
   function newProgress() { return { state: 'new', box: 0, nextDue: 0, last: null }; }
 
+  function passed(d) { return d <= 0 ? 'מהיום' : d === 1 ? 'עבר יום אחד' : d === 2 ? 'עברו יומיים' : 'עברו ' + d + ' ימים'; }
   /* תג טעות שהופיע לפחות פעמיים בנושא ב-7 הימים האחרונים. */
   function repeatedErrorTag(topicId, attempts, now) {
     var counts = {};
@@ -81,8 +82,8 @@
         var days = p.last ? daysBetween(p.last, now) : 0;
         items.push({ topic: t, kind: 1, focusTag: null,
           reasonHe: p.state === 'mastered'
-            ? 'בדיקת שימור: עברו ' + days + ' ימים מאז הפעם האחרונה.'
-            : 'הגיע זמן חזרה (מצב: ' + STATE_HE[p.state] + ', עברו ' + days + ' ימים).' });
+            ? 'בדיקת שימור: ' + passed(days) + ' מאז הפעם האחרונה.'
+            : 'הגיע זמן חזרה (מצב: ' + STATE_HE[p.state] + ', ' + passed(days) + ').' });
       }
     });
     items.sort(function (a, b) { return a.kind !== b.kind ? a.kind - b.kind : progress[a.topic.id].nextDue - progress[b.topic.id].nextDue; });
@@ -162,6 +163,106 @@
       }
     });
     return order.map(function (id) { return last[id]; }).sort(function (x, y) { return y.attempt.date - x.attempt.date; });
+  }
+
+  // ---------- מחזור החיים של טעות (שלב 2) ----------
+  /* טעות = דפוס, לא משפט: מפתח לפי נושא + תג (או לפי תרגיל, כשסימנת "טעיתי" בלי תג).
+     open → fixing (תיקנת את אותו משפט) → proving (1–2 הוכחות) → ink (3 הוכחות).
+     הוכחה = תשובה נכונה על משפט אחר שבודק את אותה טעות, ביום מאוחר יותר מהטעות, יום אחד נספר פעם אחת.
+     (אם אין בתוכן משפט אחר לאותה טעות, אותו משפט ביום אחר נספר.) טעות חדשה מאותו סוג מחזירה ל-open. */
+  var PROOFS_NEEDED = 3;
+  var CARD_STATES = ['open', 'fixing', 'proving', 'ink'];
+  function exIndex(topics) {
+    var byEx = {}, byTag = {};
+    (topics || []).forEach(function (t) {
+      t.exercises.forEach(function (e) {
+        byEx[e.id] = { ex: e, topicId: t.id };
+        (e.errors || []).forEach(function (er) {
+          var k = t.id + '|' + er.tag;
+          (byTag[k] = byTag[k] || []).indexOf(e.id) < 0 && byTag[k].push(e.id);
+        });
+      });
+    });
+    return { byEx: byEx, byTag: byTag };
+  }
+  function cardKey(a) { return a.tag ? a.topic + '|' + a.tag : 'ex|' + a.ex; }
+  function mistakeCards(attempts, topics, now) {
+    var idx = exIndex(topics), cards = {}, order = [];
+    attempts.slice().sort(byDate).forEach(function (a) {
+      var wrong = a.outcome === 'error' || a.outcome === 'selfWrong';
+      if (wrong) {
+        var k = cardKey(a), c = cards[k];
+        if (!c) { c = cards[k] = { key: k, topicId: a.topic, tag: a.tag || null, wrongCount: 0, firstDate: a.date, history: [] }; order.push(k); }
+        c.wrongCount++; c.last = a; c.fixed = !!a.fixed; c.proofDays = []; c.inkDate = null;
+        c.history.push({ date: a.date, type: 'wrong' });
+        if (a.fixed) c.history.push({ date: a.date, type: 'fixed' });
+        return;
+      }
+      if (!isCorrect(a)) return;
+      order.forEach(function (k) {
+        var c = cards[k];
+        if (c.inkDate) return;
+        if (a.ex === c.last.ex && !c.fixed) { c.fixed = true; c.history.push({ date: a.date, type: 'fixed' }); }
+        if (daysBetween(c.last.date, a.date) < 1) return;
+        var proves;
+        if (c.tag) {
+          var others = (idx.byTag[c.key] || []).filter(function (id) { return id !== c.last.ex; });
+          proves = a.topic === c.topicId && (others.length ? others.indexOf(a.ex) >= 0 : a.ex === c.last.ex);
+        } else proves = a.ex === c.last.ex;
+        var day = dayKey(a.date);
+        if (proves && c.proofDays.indexOf(day) < 0) {
+          c.proofDays.push(day); c.history.push({ date: a.date, type: 'proof' });
+          if (c.proofDays.length >= PROOFS_NEEDED) { c.inkDate = a.date; c.history.push({ date: a.date, type: 'ink' }); }
+        }
+      });
+    });
+    return order.map(function (k) {
+      var c = cards[k];
+      c.proofs = Math.min(c.proofDays.length, PROOFS_NEEDED);
+      c.state = c.inkDate ? 'ink' : c.proofs ? 'proving' : c.fixed ? 'fixing' : 'open';
+      c.provedToday = c.proofDays.indexOf(dayKey(now)) >= 0;
+      c.wrongToday = daysBetween(c.last.date, now) < 1;
+      return c;
+    }).sort(function (x, y) {
+      return (CARD_STATES.indexOf(x.state) - CARD_STATES.indexOf(y.state)) || (y.last.date - x.last.date);
+    });
+  }
+  /* תרגול מהמחברת: רק מה שיכול להתקדם עכשיו.
+     open → אותו משפט (לתקן). fixing/proving → משפט אחר לאותה טעות, ורק אם הטעות לא מהיום ולא הוכחת היום. */
+  function mistakePractice(cards, topics, attempts, now, size) {
+    size = size || 6;
+    var idx = exIndex(topics), lastSeen = {}, today = dayKey(now), out = [], used = {};
+    attempts.forEach(function (a) { if (!(a.ex in lastSeen) || a.date > lastSeen[a.ex]) lastSeen[a.ex] = a.date; });
+    cards.forEach(function (c) {
+      if (out.length >= size || c.state === 'ink') return;
+      var pick = null;
+      if (c.state === 'open') {
+        if (idx.byEx[c.last.ex]) pick = c.last.ex;
+      } else if (!c.wrongToday && !c.provedToday) {
+        var cands = c.tag ? (idx.byTag[c.key] || []).filter(function (id) { return id !== c.last.ex; }) : [];
+        if (!cands.length) cands = [c.last.ex];
+        cands = cands.filter(function (id) { return idx.byEx[id] && !used[id]; })
+          .sort(function (a, b) { return (lastSeen[a] || 0) - (lastSeen[b] || 0); });
+        pick = cands[0] || null;
+      }
+      if (pick && !used[pick] && !(c.state !== 'open' && lastSeen[pick] && dayKey(lastSeen[pick]) === today && pick === c.last.ex)) {
+        used[pick] = 1; out.push({ ex: idx.byEx[pick].ex, topicId: idx.byEx[pick].topicId, card: c.key });
+      }
+    });
+    return out;
+  }
+  /* השבוע שלי: 7 הימים האחרונים כולל היום. מספרים אמיתיים בלבד (לא מודדים דקות). */
+  function weekSummary(attempts, cards, now) {
+    var from = addDays(-6, now), days = {}, n = 0, ok = 0, newM = {}, proofs = 0, inked = 0;
+    attempts.forEach(function (a) {
+      if (a.date < from) return;
+      days[dayKey(a.date)] = 1; n++; if (isCorrect(a)) ok++;
+    });
+    cards.forEach(function (c) {
+      if (c.firstDate >= from) newM[c.key] = 1;
+      c.history.forEach(function (h) { if (h.date >= from) { if (h.type === 'proof') proofs++; if (h.type === 'ink') inked++; } });
+    });
+    return { days: Object.keys(days).length, answers: n, accuracy: n ? ok / n : null, newMistakes: Object.keys(newM).length, proofs: proofs, inked: inked };
   }
 
   /* חזרה מעורבת: תרגילים מכמה נושאים שכבר התחילו, לסירוגין, כדי לתרגל לזהות לבד איזה כלל מתאים.
@@ -350,6 +451,7 @@
     repeatedErrorTag: repeatedErrorTag, todayPlan: todayPlan, sessionExercises: sessionExercises,
     finishSession: finishSession, accuracyLast10: accuracyLast10, reviewVocab: reviewVocab,
     mistakeLog: mistakeLog, mixedReview: mixedReview,
+    mistakeCards: mistakeCards, mistakePractice: mistakePractice, weekSummary: weekSummary, PROOFS_NEEDED: PROOFS_NEEDED,
     wordDiff: wordDiff, expandContractions: expandContractions,
     DATA_V: DATA_V, emptyData: emptyData, migrateData: migrateData, makeBackup: makeBackup, readBackup: readBackup,
     startOfDay: startOfDay, addDays: addDays, daysBetween: daysBetween, dayKey: dayKey,
