@@ -85,5 +85,19 @@
     }
   } catch (e) {}
 
-  root.Platform = { storage: storage, speech: speech, haptics: haptics, install: install };
+  // ---------- קבצים ----------
+  // הורדת קובץ (גיבוי). באפליקציה (Capacitor) מחליפים ב-Filesystem + Share.
+  var files = {
+    save: function (name, text) {
+      try {
+        var blob = new root.Blob([text], { type: 'application/json' });
+        var url = root.URL.createObjectURL(blob), a = root.document.createElement('a');
+        a.href = url; a.download = name; root.document.body.appendChild(a); a.click(); a.remove();
+        root.setTimeout(function () { root.URL.revokeObjectURL(url); }, 4000);
+        return true;
+      } catch (e) { return false; }
+    }
+  };
+
+  root.Platform = { storage: storage, speech: speech, haptics: haptics, install: install, files: files };
 })(window);

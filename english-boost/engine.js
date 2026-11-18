@@ -196,11 +196,51 @@
     item.nextDue = addDays(INTERVALS[Math.max(item.box, 1)], now);
   }
 
+  // ---------- נתונים שמורים: גרסה, עדכון וגיבוי ----------
+  /* DATA_V עולה בכל שינוי במבנה הנתונים. migrateData לא זורקת ולא מוחקת:
+     ok/migrated = אפשר לעבוד; newer = נשמר בגרסה חדשה יותר (במכשיר אחר), לא נוגעים בו; invalid = לא נתונים של הערכה. */
+  var DATA_V = 1;
+  function emptyData() { return { v: DATA_V, progress: {}, attempts: [], vocab: [], mixedDay: null }; }
+  function isObj(x) { return !!x && typeof x === 'object' && !Array.isArray(x); }
+  function migrateData(raw) {
+    if (raw == null) return { status: 'empty', data: emptyData() };
+    if (!isObj(raw)) return { status: 'invalid', data: null };
+    var v = raw.v == null ? 0 : raw.v;
+    if (typeof v !== 'number' || v < 0 || v !== Math.floor(v)) return { status: 'invalid', data: null };
+    if (v > DATA_V) return { status: 'newer', data: null };
+    var d = JSON.parse(JSON.stringify(raw));
+    // v0 → v1: לפני שהיה מספר גרסה. המבנה זהה, רק משלימים שדות חסרים.
+    // (כשיהיה v2: if (d.v === 1) { ...שינוי...; d.v = 2; })
+    d.v = DATA_V;
+    if (!isObj(d.progress)) d.progress = {};
+    if (!Array.isArray(d.attempts)) d.attempts = [];
+    if (!Array.isArray(d.vocab)) d.vocab = [];
+    if (!('mixedDay' in d)) d.mixedDay = null;
+    d.attempts = d.attempts.filter(function (a) { return isObj(a) && typeof a.ex === 'string' && typeof a.date === 'number'; });
+    d.vocab = d.vocab.filter(function (x) { return isObj(x) && typeof x.en === 'string'; });
+    return { status: v === DATA_V ? 'ok' : 'migrated', data: d };
+  }
+  var BACKUP_APP = 'english-boost';
+  function makeBackup(data, now) { return JSON.stringify({ app: BACKUP_APP, kind: 'backup', exportedAt: now, data: data }, null, 1); }
+  /* קורא קובץ גיבוי. מחזיר { data, exportedAt, counts } או { error } בעברית. מקבל גם נתונים "חשופים" בלי מעטפה. */
+  function readBackup(text) {
+    var obj;
+    try { obj = JSON.parse(String(text)); } catch (e) { return { error: 'הקובץ לא נקרא. צריך לבחור קובץ גיבוי של English Boost (‎.json).' }; }
+    var raw = isObj(obj) && obj.app === BACKUP_APP && 'data' in obj ? obj.data : obj;
+    if (isObj(obj) && obj.app && obj.app !== BACKUP_APP) return { error: 'זה גיבוי של ערכה אחרת, לא של English Boost.' };
+    var m = migrateData(raw);
+    if (m.status === 'newer') return { error: 'הגיבוי נשמר בגרסה חדשה יותר של הערכה. רענן את הדף ונסה שוב.' };
+    if (m.status === 'invalid' || m.status === 'empty' || !('attempts' in (raw || {}))) return { error: 'בקובץ אין נתונים של English Boost.' };
+    return { data: m.data, exportedAt: isObj(obj) && typeof obj.exportedAt === 'number' ? obj.exportedAt : null,
+      counts: { attempts: m.data.attempts.length, vocab: m.data.vocab.length, topics: Object.keys(m.data.progress).length } };
+  }
+
   var EB = {
     normalize: normalize, check: check, isCorrect: isCorrect, newProgress: newProgress,
     repeatedErrorTag: repeatedErrorTag, todayPlan: todayPlan, sessionExercises: sessionExercises,
     finishSession: finishSession, accuracyLast10: accuracyLast10, reviewVocab: reviewVocab,
     mistakeLog: mistakeLog, mixedReview: mixedReview,
+    DATA_V: DATA_V, emptyData: emptyData, migrateData: migrateData, makeBackup: makeBackup, readBackup: readBackup,
     startOfDay: startOfDay, addDays: addDays, daysBetween: daysBetween, dayKey: dayKey,
     INTERVALS: INTERVALS, STATE_HE: STATE_HE, SESSION_SIZE: SESSION_SIZE
   };

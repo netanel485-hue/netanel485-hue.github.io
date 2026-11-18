@@ -191,3 +191,29 @@ test('mixed review needs at least two started topics', () => {
   // two started topics, but only one has anything to review → not mixed
   assert.deepEqual(EB.mixedReview([A, B], { A: { state: 'learning', box: 1, nextDue: 0 }, B: { state: 'learning', box: 1, nextDue: 0 } }, attempts, at(3)), []);
 });
+
+// ---------- נתונים שמורים: גרסה, עדכון וגיבוי ----------
+test('migrateData: empty, current, old, newer, broken', () => {
+  assert.equal(EB.migrateData(null).status, 'empty');
+  const cur = { v: EB.DATA_V, progress: { a: { state: 'learning' } }, attempts: [{ ex: 'x', date: 1 }], vocab: [], mixedDay: null };
+  const ok = EB.migrateData(cur);
+  assert.equal(ok.status, 'ok'); assert.deepEqual(ok.data, cur); assert.notEqual(ok.data, cur, 'returns a copy');
+  const old = EB.migrateData({ progress: {}, attempts: [{ ex: 'x', date: 1 }, { bad: true }] });
+  assert.equal(old.status, 'migrated'); assert.equal(old.data.v, EB.DATA_V);
+  assert.equal(old.data.attempts.length, 1, 'drops broken attempts'); assert.deepEqual(old.data.vocab, []);
+  assert.equal(EB.migrateData({ v: EB.DATA_V + 1, attempts: [] }).status, 'newer', 'never downgrades data from a newer version');
+  for (const bad of [5, 'x', [], { v: 'one' }, { v: -1 }]) assert.equal(EB.migrateData(bad).status, 'invalid', JSON.stringify(bad));
+});
+
+test('backup round trip and bad files', () => {
+  const data = { v: EB.DATA_V, progress: { t: { state: 'practicing', box: 2, nextDue: 5, last: 4 } },
+    attempts: [{ ex: 'a', date: 10 }, { ex: 'b', date: 11 }], vocab: [{ en: 'since', he: 'מאז' }], mixedDay: '2026-11-18' };
+  const r = EB.readBackup(EB.makeBackup(data, 1234));
+  assert.equal(r.error, undefined); assert.deepEqual(r.data, data); assert.equal(r.exportedAt, 1234);
+  assert.deepEqual(r.counts, { attempts: 2, vocab: 1, topics: 1 });
+  assert.deepEqual(EB.readBackup(JSON.stringify(data)).data, data, 'accepts raw data without the wrapper');
+  for (const bad of ['not json', '5', '{}', JSON.stringify({ app: 'other-kit', data }),
+    JSON.stringify({ app: 'english-boost', data: { v: EB.DATA_V + 1, attempts: [] } })]) {
+    assert.ok(EB.readBackup(bad).error, `should reject ${bad.slice(0, 40)}`);
+  }
+});
