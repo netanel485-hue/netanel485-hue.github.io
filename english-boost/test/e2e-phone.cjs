@@ -137,6 +137,7 @@ async function answer(page, ex, text) {
     step('כלי פיתוח עם ?dev');
     await page.evaluate(() => localStorage.clear());
     await page.goto(URL + '?dev');
+    await page.getByRole('heading', { name: 'כל הנושאים' }).waitFor(); // התוכן נטען לפני שעוברים מסך (אחרת הציור מחדש סוגר את ה-details)
     await page.click('[data-tab="progress"]');
     await page.locator('summary', { hasText: 'כלי פיתוח' }).click();
     await page.locator('#dayPlus').waitFor();
