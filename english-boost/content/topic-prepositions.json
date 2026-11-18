@@ -1,0 +1,115 @@
+{
+  "id": "prepositions",
+  "order": 10,
+  "titleHe": "מילות יחס",
+  "summaryHe": "depend on, interested in, married to, on Monday, in 1990",
+  "ruleHe": [
+    "הרבה מילות יחס לא מתורגמות אחת לאחת מעברית. לומדים אותן יחד עם הפועל: depend on (תלוי ב), interested in (מתעניין ב), married to (נשוי ל), wait for (מחכה ל).",
+    "זמן: on ליום ולתאריך (on Monday), in לחודש, לשנה ולעונה (in 1990, in July), at לשעה (at 5).",
+    "arrive at מקום מסוים (arrive at the airport), arrive in עיר או ארץ (arrive in London). לא arrive to. אבל get to זה בסדר."
+  ],
+  "examples": [
+    "It depends on the price.",
+    "I'm interested in design.",
+    "See you on Monday!",
+    "We arrived at the airport late."
+  ],
+  "tags": {
+    "PREP_VERB": "מילת יחס אחרי פועל/תואר",
+    "PREP_TIME": "מילת יחס של זמן",
+    "PREP_PLACE": "מילת יחס של מקום",
+    "ADJ_ED_ING": "interesting / interested"
+  },
+  "exercises": [
+    {
+      "id": "pr-01",
+      "type": "choose",
+      "promptHe": "בחר:",
+      "promptEn": "It depends ___ the price.",
+      "options": ["on", "of", "from"],
+      "accept": ["on"],
+      "errors": [
+        { "pattern": "^(of|from)$", "tag": "PREP_VERB", "explainHe": "\"תלוי ב\" = depend on." }
+      ],
+      "modelAnswer": "It depends on the price.",
+      "vocab": [{ "en": "it depends on", "he": "זה תלוי ב..." }],
+      "tests": { "accept": ["on"], "flag": { "of": "PREP_VERB", "from": "PREP_VERB" } }
+    },
+    {
+      "id": "pr-02",
+      "type": "translate",
+      "promptHe": "אני מתעניין בעיצוב.",
+      "accept": ["i am (very |really )?interested in (design|designing)"],
+      "errors": [
+        { "pattern": "\\binteresting (in|on|at|about|with)\\b", "tag": "ADJ_ED_ING", "explainHe": "interested = מתעניין (מה שאתה מרגיש). interesting = מעניין." },
+        { "pattern": "\\binterested (on|at|about|with|by)\\b", "tag": "PREP_VERB", "explainHe": "\"מתעניין ב\" = interested in." }
+      ],
+      "modelAnswer": "I'm interested in design.",
+      "tests": { "accept": ["I'm interested in design.", "I am really interested in designing"], "flag": { "I'm interesting in design": "ADJ_ED_ING", "I'm interested on design": "PREP_VERB" } }
+    },
+    {
+      "id": "pr-03",
+      "type": "choose",
+      "promptHe": "בחר:",
+      "promptEn": "See you ___ Monday!",
+      "options": ["on", "in", "at"],
+      "accept": ["on"],
+      "errors": [
+        { "pattern": "^(in|at)$", "tag": "PREP_TIME", "explainHe": "יום בשבוע: on Monday." }
+      ],
+      "modelAnswer": "See you on Monday!",
+      "tests": { "accept": ["on"], "flag": { "in": "PREP_TIME", "at": "PREP_TIME" } }
+    },
+    {
+      "id": "pr-04",
+      "type": "translate",
+      "promptHe": "הגענו לשדה התעופה מאוחר.",
+      "accept": ["we (arrived at|got to) the airport (late|too late)", "we (arrived|got) late (at|to) the airport"],
+      "errors": [
+        { "pattern": "\\barrived (late )?to\\b", "tag": "PREP_PLACE", "explainHe": "arrive at מקום: arrived at the airport. או got to the airport." },
+        { "pattern": "\\barrived (late )?(the|in the) airport\\b", "tag": "PREP_PLACE", "explainHe": "שדה תעופה הוא מקום מסוים: arrived at the airport." }
+      ],
+      "modelAnswer": "We arrived at the airport late.",
+      "alternatives": ["We got to the airport late."],
+      "tests": { "accept": ["We arrived at the airport late.", "We got to the airport too late"], "flag": { "We arrived to the airport late": "PREP_PLACE", "We arrived the airport late": "PREP_PLACE" } }
+    },
+    {
+      "id": "pr-05",
+      "type": "rewrite",
+      "promptHe": "תקן את המשפט:",
+      "promptEn": "She is married with a doctor.",
+      "accept": ["she('s| is) married to a doctor"],
+      "errors": [
+        { "pattern": "\\bmarried with\\b", "tag": "PREP_VERB", "explainHe": "\"נשואה ל\" = married to." }
+      ],
+      "modelAnswer": "She's married to a doctor.",
+      "tests": { "accept": ["She's married to a doctor.", "She is married to a doctor"], "flag": { "She is married with a doctor": "PREP_VERB" } }
+    },
+    {
+      "id": "pr-06",
+      "type": "choose",
+      "promptHe": "בחר:",
+      "promptEn": "I was born ___ 1990.",
+      "options": ["in", "on", "at"],
+      "accept": ["in"],
+      "errors": [
+        { "pattern": "^(on|at)$", "tag": "PREP_TIME", "explainHe": "שנה: in 1990." }
+      ],
+      "modelAnswer": "I was born in 1990.",
+      "tests": { "accept": ["in"], "flag": { "on": "PREP_TIME", "at": "PREP_TIME" } }
+    },
+    {
+      "id": "pr-07",
+      "type": "translate",
+      "promptHe": "אני מחכה לאוטובוס.",
+      "accept": ["i am waiting for (the|a) bus"],
+      "errors": [
+        { "pattern": "\\bwaiting (to|on) (the|a) bus\\b", "tag": "PREP_VERB", "explainHe": "\"מחכה ל\" = waiting for." },
+        { "pattern": "\\bwaiting (the|a) bus\\b", "tag": "PREP_VERB", "explainHe": "אחרי wait צריך for: waiting for the bus." }
+      ],
+      "modelAnswer": "I'm waiting for the bus.",
+      "vocab": [{ "en": "wait for", "he": "לחכות ל..." }],
+      "tests": { "accept": ["I'm waiting for the bus."], "flag": { "I'm waiting to the bus": "PREP_VERB", "I'm waiting the bus": "PREP_VERB" } }
+    }
+  ]
+}

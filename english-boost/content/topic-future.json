@@ -1,0 +1,106 @@
+{
+  "id": "future",
+  "order": 5,
+  "titleHe": "עתיד: will, going to, הווה מתמשך",
+  "summaryHe": "איך מדברים על מחר, ולמה לא \"I call you tomorrow\"",
+  "ruleHe": [
+    "בעברית \"אני מתקשר מחר\" נשמע טבעי. באנגלית עתיד צריך will, going to או הווה מתמשך: I'll call you tomorrow.",
+    "will = החלטה ברגע הדיבור, הבטחה או הצעה: The phone's ringing. I'll get it.",
+    "going to = כוונה שכבר החלטת עליה, או משהו שרואים שעומד לקרות: It's going to rain.",
+    "הווה מתמשך = תוכנית שכבר נקבעה ביומן: I'm meeting my manager on Sunday.",
+    "אחרי will בא פועל בלי to: I will send, לא I will to send. ואחרי going to צריך am/is/are: I'm going to."
+  ],
+  "examples": [
+    "I'll call you tomorrow.",
+    "Look at those clouds. It's going to rain.",
+    "I'm meeting my manager on Sunday.",
+    "They won't come to the party."
+  ],
+  "tags": {
+    "FUT_PRESENT_FOR_FUTURE": "הווה פשוט במקום עתיד",
+    "FUT_WILL_TO": "will to",
+    "FUT_GOING_FORM": "going to בלי am/is/are",
+    "FUT_WILL_GOING": "בלבול will / going to"
+  },
+  "exercises": [
+    {
+      "id": "fut-01",
+      "type": "translate",
+      "promptHe": "אני אתקשר אליך מחר.",
+      "accept": ["i will (call|phone|ring) you tomorrow", "i will give you a call tomorrow", "i am (going to call|calling) you tomorrow", "tomorrow i will (call|phone) you"],
+      "errors": [
+        { "pattern": "^i (call|phone|ring) you tomorrow", "tag": "FUT_PRESENT_FOR_FUTURE", "explainHe": "בעברית \"אני מתקשר מחר\" עובד, באנגלית צריך עתיד: I'll call you tomorrow." },
+        { "pattern": "\\bwill to\\b", "tag": "FUT_WILL_TO", "explainHe": "אחרי will בא פועל בלי to: I'll call." }
+      ],
+      "modelAnswer": "I'll call you tomorrow.",
+      "tests": { "accept": ["I'll call you tomorrow.", "I'm going to call you tomorrow"], "flag": { "I call you tomorrow": "FUT_PRESENT_FOR_FUTURE", "I will to call you tomorrow": "FUT_WILL_TO" } }
+    },
+    {
+      "id": "fut-02",
+      "type": "choose",
+      "promptHe": "בחר:",
+      "promptEn": "Look at those clouds! It ___ rain.",
+      "options": ["is going to", "will to", "rains"],
+      "accept": ["is going to"],
+      "errors": [
+        { "pattern": "^will to$", "tag": "FUT_WILL_TO", "explainHe": "אין will to. וכשרואים סימנים שמשהו עומד לקרות, אומרים going to." },
+        { "pattern": "^rains$", "tag": "FUT_PRESENT_FOR_FUTURE", "explainHe": "זה עוד לא קורה, זה עומד לקרות: It's going to rain." }
+      ],
+      "modelAnswer": "Look at those clouds! It's going to rain.",
+      "tests": { "accept": ["is going to"], "flag": { "will to": "FUT_WILL_TO", "rains": "FUT_PRESENT_FOR_FUTURE" } }
+    },
+    {
+      "id": "fut-03",
+      "type": "translate",
+      "promptHe": "אני נפגש עם המנהל שלי ביום ראשון.",
+      "accept": ["i am (meeting|going to meet|seeing|going to see) (with )?my (manager|boss) on sunday", "i will (meet|see) (with )?my (manager|boss) on sunday", "on sunday i am (meeting|going to meet) (with )?my (manager|boss)"],
+      "errors": [
+        { "pattern": "^i going to\\b", "tag": "FUT_GOING_FORM", "explainHe": "לפני going to צריך am: I'm going to meet." },
+        { "pattern": "^i (meet|see) (with )?my", "tag": "FUT_PRESENT_FOR_FUTURE", "explainHe": "פגישה שכבר נקבעה: I'm meeting my manager on Sunday." }
+      ],
+      "modelAnswer": "I'm meeting my manager on Sunday.",
+      "alternatives": ["I'm going to meet my boss on Sunday."],
+      "tests": { "accept": ["I'm meeting my manager on Sunday.", "I am going to meet with my boss on Sunday"], "flag": { "I meet my manager on Sunday": "FUT_PRESENT_FOR_FUTURE", "I going to meet my manager on Sunday": "FUT_GOING_FORM" } }
+    },
+    {
+      "id": "fut-04",
+      "type": "rewrite",
+      "promptHe": "תקן את המשפט:",
+      "promptEn": "I will to send you the details tonight.",
+      "accept": ["i will send you the details (tonight|this evening)", "i am going to send you the details (tonight|this evening)"],
+      "errors": [
+        { "pattern": "\\bwill to\\b", "tag": "FUT_WILL_TO", "explainHe": "אחרי will בא פועל בלי to: I'll send." }
+      ],
+      "modelAnswer": "I'll send you the details tonight.",
+      "tests": { "accept": ["I'll send you the details tonight."], "flag": { "I will to send you the details tonight": "FUT_WILL_TO" } }
+    },
+    {
+      "id": "fut-05",
+      "type": "choose",
+      "promptHe": "הטלפון מצלצל, ואתה מחליט עכשיו לענות. בחר:",
+      "promptEn": "The phone is ringing. I ___ get it.",
+      "options": ["will", "am going to", "get"],
+      "accept": ["will"],
+      "errors": [
+        { "pattern": "^am going to$", "tag": "FUT_WILL_GOING", "explainHe": "החלטת עכשיו, ברגע הדיבור, ולכן will: I'll get it." },
+        { "pattern": "^get$", "tag": "FUT_PRESENT_FOR_FUTURE", "explainHe": "זו החלטה על מה שתעשה עוד רגע: I'll get it." }
+      ],
+      "modelAnswer": "The phone is ringing. I'll get it.",
+      "tests": { "accept": ["will"], "flag": { "am going to": "FUT_WILL_GOING", "get": "FUT_PRESENT_FOR_FUTURE" } }
+    },
+    {
+      "id": "fut-06",
+      "type": "translate",
+      "promptHe": "הם לא יבואו למסיבה.",
+      "accept": ["they (will not|are not going to) (come|be coming) to the party", "they are not coming to the party", "they (will not|are not going to) (make it to|be at) the party"],
+      "errors": [
+        { "pattern": "^they (do not|are not) come\\b", "tag": "FUT_PRESENT_FOR_FUTURE", "explainHe": "זה עתיד: They won't come, או They aren't coming." },
+        { "pattern": "\\bwill not to\\b", "tag": "FUT_WILL_TO", "explainHe": "אחרי won't בא פועל בלי to: They won't come." }
+      ],
+      "modelAnswer": "They won't come to the party.",
+      "alternatives": ["They aren't coming to the party."],
+      "vocab": [{ "en": "make it to", "he": "להספיק להגיע ל..." }],
+      "tests": { "accept": ["They won't come to the party.", "They aren't coming to the party"], "flag": { "They don't come to the party": "FUT_PRESENT_FOR_FUTURE", "They won't to come to the party": "FUT_WILL_TO" } }
+    }
+  ]
+}

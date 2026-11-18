@@ -129,7 +129,18 @@ body{--c:#1D4ED8}
    הנתונים נשמרים במפתח אחד (eb.data) דרך Platform.storage, ו-shared/cloud.js מגבה אותו לענן כמו בשאר האתר. */
 (function () {
   'use strict';
-  var TOPIC_FILES = ['topic-present-simple-continuous.json', 'topic-present-perfect.json', 'topic-articles.json'];
+  var TOPIC_FILES = [
+    'topic-present-simple-continuous.json',
+    'topic-present-perfect.json',
+    'topic-articles.json',
+    'topic-past-vs-present-perfect.json',
+    'topic-future.json',
+    'topic-time-conditional-clauses.json',
+    'topic-questions.json',
+    'topic-subject-verb.json',
+    'topic-countable-uncountable.json',
+    'topic-prepositions.json'
+  ];
   var KEY = 'eb.data', OFFSET_KEY = 'eb.dayOffset';
   var P = window.Platform;
   var app = document.getElementById('app'), tabsEl = document.getElementById('tabs');
@@ -584,5 +595,9 @@ body{--c:#1D4ED8}
 })();
 </script>
 <script type="module" src="../shared/cloud.js"></script>
+<script id="persist-storage">
+/* שמירה קבועה במכשיר: מבקש מהדפדפן לא למחוק את ההתקדמות כשחסר מקום (כמו בשאר הערכות). */
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(function(){});}catch(e){}
+</script>
 </body>
 </html>

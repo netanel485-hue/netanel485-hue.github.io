@@ -1,0 +1,112 @@
+{
+  "id": "countable-uncountable",
+  "order": 9,
+  "titleHe": "ספיר ולא ספיר",
+  "summaryHe": "information, advice, furniture, much / many",
+  "ruleHe": [
+    "חלק מהמילים שבעברית סופרים, באנגלית לא סופרים: information, advice, furniture, luggage, work, news, equipment.",
+    "למילה לא ספירה אין רבים ואין a: some advice, a piece of advice. לא advices ולא an advice.",
+    "much עם לא ספיר (much money, much time), many עם רבים (many people). במשפט חיובי נוח יותר a lot of לשניהם."
+  ],
+  "examples": [
+    "Thanks for the information.",
+    "He gave me some good advice.",
+    "How much money do we need?",
+    "I have a lot of work this week."
+  ],
+  "tags": {
+    "UNC_PLURAL": "רבים למילה לא ספירה",
+    "UNC_A": "a לפני מילה לא ספירה",
+    "UNC_MUCH_MANY": "much / many"
+  },
+  "exercises": [
+    {
+      "id": "cu-01",
+      "type": "translate",
+      "promptHe": "תודה על המידע.",
+      "accept": ["(thank you|thanks) (for|for all) the (information|info)"],
+      "errors": [
+        { "pattern": "\\binformations\\b", "tag": "UNC_PLURAL", "explainHe": "information לא ספיר, ואין לו רבים." }
+      ],
+      "modelAnswer": "Thanks for the information.",
+      "tests": { "accept": ["Thanks for the information.", "Thank you for the info"], "flag": { "Thanks for the informations": "UNC_PLURAL" } }
+    },
+    {
+      "id": "cu-02",
+      "type": "translate",
+      "promptHe": "הוא נתן לי עצה טובה.",
+      "accept": ["he gave me (a (good|great) piece of advice|(some )?(good|great) advice)"],
+      "errors": [
+        { "pattern": "\\ban? (good |great )?advice\\b", "tag": "UNC_A", "explainHe": "advice לא ספיר, ולכן בלי a: good advice, או a good piece of advice." },
+        { "pattern": "\\badvices\\b", "tag": "UNC_PLURAL", "explainHe": "advice לא ספיר, ואין לו רבים." }
+      ],
+      "modelAnswer": "He gave me some good advice.",
+      "alternatives": ["He gave me a good piece of advice."],
+      "tests": { "accept": ["He gave me some good advice.", "He gave me good advice"], "flag": { "He gave me a good advice": "UNC_A", "He gave me good advices": "UNC_PLURAL" } }
+    },
+    {
+      "id": "cu-03",
+      "type": "choose",
+      "promptHe": "בחר:",
+      "promptEn": "How ___ money do we need?",
+      "options": ["much", "many"],
+      "accept": ["much"],
+      "errors": [
+        { "pattern": "^many$", "tag": "UNC_MUCH_MANY", "explainHe": "money לא ספיר, ולכן much." }
+      ],
+      "modelAnswer": "How much money do we need?",
+      "tests": { "accept": ["much"], "flag": { "many": "UNC_MUCH_MANY" } }
+    },
+    {
+      "id": "cu-04",
+      "type": "choose",
+      "promptHe": "בחר:",
+      "promptEn": "There aren't ___ people here today.",
+      "options": ["many", "much"],
+      "accept": ["many"],
+      "errors": [
+        { "pattern": "^much$", "tag": "UNC_MUCH_MANY", "explainHe": "people ספיר וברבים, ולכן many." }
+      ],
+      "modelAnswer": "There aren't many people here today.",
+      "tests": { "accept": ["many"], "flag": { "much": "UNC_MUCH_MANY" } }
+    },
+    {
+      "id": "cu-05",
+      "type": "rewrite",
+      "promptHe": "תקן את המשפט:",
+      "promptEn": "We bought new furnitures for the office.",
+      "accept": ["we bought (some )?new furniture for the office"],
+      "errors": [
+        { "pattern": "\\bfurnitures\\b", "tag": "UNC_PLURAL", "explainHe": "furniture לא ספיר, ואין לו רבים." }
+      ],
+      "modelAnswer": "We bought new furniture for the office.",
+      "tests": { "accept": ["We bought new furniture for the office."], "flag": { "We bought new furnitures for the office": "UNC_PLURAL" } }
+    },
+    {
+      "id": "cu-06",
+      "type": "translate",
+      "promptHe": "יש לי הרבה עבודה השבוע.",
+      "accept": ["i have (got )?(a lot of|lots of|so much|too much|plenty of) work this week", "this week i have (a lot of|lots of|so much) work"],
+      "errors": [
+        { "pattern": "\\bworks\\b", "tag": "UNC_PLURAL", "explainHe": "work במובן עבודה לא ספיר: a lot of work." },
+        { "pattern": "\\bmany work\\b", "tag": "UNC_MUCH_MANY", "explainHe": "work לא ספיר, ולכן לא many. הכי טבעי: a lot of work." }
+      ],
+      "modelAnswer": "I have a lot of work this week.",
+      "tests": { "accept": ["I have a lot of work this week.", "I've got so much work this week"], "flag": { "I have a lot of works this week": "UNC_PLURAL", "I have many work this week": "UNC_MUCH_MANY" } }
+    },
+    {
+      "id": "cu-07",
+      "type": "translate",
+      "promptHe": "המזוודות שלי כבדות.",
+      "accept": ["my luggage is (very |really |so )?heavy", "my (bags|suitcases) are (very |really |so )?heavy"],
+      "errors": [
+        { "pattern": "\\bluggages\\b", "tag": "UNC_PLURAL", "explainHe": "luggage לא ספיר: my luggage is heavy. או בספיר: my suitcases are heavy." },
+        { "pattern": "\\bluggage are\\b", "tag": "UNC_PLURAL", "explainHe": "luggage לא ספיר, ולכן is." }
+      ],
+      "modelAnswer": "My luggage is heavy.",
+      "alternatives": ["My suitcases are heavy."],
+      "vocab": [{ "en": "luggage", "he": "מזוודות, כבודה" }],
+      "tests": { "accept": ["My luggage is heavy.", "My bags are really heavy"], "flag": { "My luggages are heavy": "UNC_PLURAL", "My luggage are heavy": "UNC_PLURAL" } }
+    }
+  ]
+}

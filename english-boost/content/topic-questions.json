@@ -1,0 +1,110 @@
+{
+  "id": "questions",
+  "order": 7,
+  "titleHe": "שאלות ושאלות עקיפות",
+  "summaryHe": "do/does/did בשאלה, וסדר המילים ב-\"do you know where...\"",
+  "ruleHe": [
+    "בעברית שאלה היא משפט רגיל עם סימן שאלה. באנגלית צריך פועל עזר לפני הנושא: Where do you work? What did she say?",
+    "אחרי do/does/did הפועל חוזר לצורת הבסיס: Does he work? What did she say? (לא works, לא said).",
+    "שאלה עקיפה (Do you know..., Can you tell me..., I'm not sure...): הסדר חוזר להיות כמו במשפט רגיל, ובלי do: Do you know where the station is?"
+  ],
+  "examples": [
+    "Where do you work?",
+    "What time does the meeting start?",
+    "Do you know where the station is?",
+    "I'm not sure if he'll come."
+  ],
+  "tags": {
+    "Q_NO_AUX": "שאלה בלי do/does/did",
+    "Q_ORDER": "סדר מילים בשאלה",
+    "Q_AUX_VERB": "פועל לא בסיסי אחרי do/does/did",
+    "IQ_ORDER": "סדר מילים בשאלה עקיפה"
+  },
+  "exercises": [
+    {
+      "id": "q-01",
+      "type": "translate",
+      "promptHe": "איפה אתה עובד?",
+      "accept": ["where do you work", "where are you working( now| these days)?"],
+      "errors": [
+        { "pattern": "^where you work", "tag": "Q_NO_AUX", "explainHe": "בשאלה צריך do לפני הנושא: Where do you work?" },
+        { "pattern": "^where you are\\b", "tag": "Q_ORDER", "explainHe": "בשאלה are בא לפני you: Where are you working?" }
+      ],
+      "modelAnswer": "Where do you work?",
+      "tests": { "accept": ["Where do you work?"], "flag": { "Where you work?": "Q_NO_AUX", "Where you are working?": "Q_ORDER" } }
+    },
+    {
+      "id": "q-02",
+      "type": "rewrite",
+      "promptHe": "תקן את השאלה:",
+      "promptEn": "What time the meeting starts?",
+      "accept": ["what time does the meeting (start|begin)", "when does the meeting (start|begin)"],
+      "errors": [
+        { "pattern": "^what time the meeting", "tag": "Q_NO_AUX", "explainHe": "חסר does לפני הנושא: What time does the meeting start?" },
+        { "pattern": "\\bdoes the meeting (starts|begins)\\b", "tag": "Q_AUX_VERB", "explainHe": "ה-s עוברת ל-does, והפועל נשאר start." }
+      ],
+      "modelAnswer": "What time does the meeting start?",
+      "tests": { "accept": ["What time does the meeting start?"], "flag": { "What time the meeting starts?": "Q_NO_AUX", "What time does the meeting starts?": "Q_AUX_VERB" } }
+    },
+    {
+      "id": "q-03",
+      "type": "translate",
+      "promptHe": "אתה יודע איפה התחנה?",
+      "accept": ["do you know where the (train |bus )?station is"],
+      "errors": [
+        { "pattern": "\\bwhere is the (train |bus )?station\\b", "tag": "IQ_ORDER", "explainHe": "בשאלה עקיפה הסדר כמו במשפט רגיל: where the station is." }
+      ],
+      "modelAnswer": "Do you know where the station is?",
+      "tests": { "accept": ["Do you know where the station is?", "Do you know where the train station is"], "flag": { "Do you know where is the station?": "IQ_ORDER" } }
+    },
+    {
+      "id": "q-04",
+      "type": "choose",
+      "promptHe": "בחר:",
+      "promptEn": "Can you tell me what time ___?",
+      "options": ["it is", "is it"],
+      "accept": ["it is"],
+      "errors": [
+        { "pattern": "^is it$", "tag": "IQ_ORDER", "explainHe": "אחרי Can you tell me הסדר כמו במשפט רגיל: what time it is." }
+      ],
+      "modelAnswer": "Can you tell me what time it is?",
+      "tests": { "accept": ["it is"], "flag": { "is it": "IQ_ORDER" } }
+    },
+    {
+      "id": "q-05",
+      "type": "translate",
+      "promptHe": "מה היא אמרה?",
+      "accept": ["what did she say"],
+      "errors": [
+        { "pattern": "^what she (said|say)", "tag": "Q_NO_AUX", "explainHe": "בשאלה על עבר צריך did: What did she say?" },
+        { "pattern": "^what did she said", "tag": "Q_AUX_VERB", "explainHe": "ה-did כבר מראה עבר, והפועל חוזר לבסיס: say." }
+      ],
+      "modelAnswer": "What did she say?",
+      "tests": { "accept": ["What did she say?"], "flag": { "What she said?": "Q_NO_AUX", "What did she said?": "Q_AUX_VERB" } }
+    },
+    {
+      "id": "q-06",
+      "type": "translate",
+      "promptHe": "אני לא בטוח אם הוא יבוא.",
+      "accept": ["i am not sure (if|whether) he( will come|( is|'s) coming|( is|'s) going to come|( will|'ll) be coming)", "i do not know (if|whether) he( will come|( is|'s) coming|( is|'s) going to come)"],
+      "errors": [
+        { "pattern": "\\b(if|whether) will he\\b", "tag": "IQ_ORDER", "explainHe": "זו לא שאלה ישירה, ולכן הסדר רגיל: if he will come." }
+      ],
+      "modelAnswer": "I'm not sure if he'll come.",
+      "alternatives": ["I'm not sure whether he's coming."],
+      "tests": { "accept": ["I'm not sure if he'll come.", "I don't know whether he is coming"], "flag": { "I'm not sure if will he come": "IQ_ORDER" } }
+    },
+    {
+      "id": "q-07",
+      "type": "rewrite",
+      "promptHe": "תקן את השאלה:",
+      "promptEn": "Does he works here?",
+      "accept": ["does he work here"],
+      "errors": [
+        { "pattern": "^does he works\\b", "tag": "Q_AUX_VERB", "explainHe": "ה-s עוברת ל-does: Does he work here?" }
+      ],
+      "modelAnswer": "Does he work here?",
+      "tests": { "accept": ["Does he work here?"], "flag": { "Does he works here?": "Q_AUX_VERB" } }
+    }
+  ]
+}
