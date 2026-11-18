@@ -1,0 +1,117 @@
+{
+  "id": "past-vs-present-perfect",
+  "order": 4,
+  "titleHe": "Past simple מול Present perfect",
+  "summaryHe": "מתי saw ומתי have seen, ואיך אומרים \"לפני\" זמן",
+  "ruleHe": [
+    "כשיש זמן מוגדר בעבר (yesterday, last week, in 2020, two years ago, when?) משתמשים ב-past simple: I saw him yesterday.",
+    "בלי זמן מוגדר, כשמדובר בניסיון או בתוצאה שקשורה להיום, משתמשים ב-present perfect: I've been to London three times.",
+    "\"לפני שנתיים\" = two years ago. לא before two years. ago בא אחרי הזמן.",
+    "אחרי it's the first time באים ב-present perfect: It's the first time I've been here. בעברית אומרים \"אני בא\", באנגלית I've been."
+  ],
+  "examples": [
+    "I met her two years ago.",
+    "I've been to London three times.",
+    "When did you start this job?",
+    "It's the first time I've been here."
+  ],
+  "tags": {
+    "PAST_WITH_PP_TIME": "have + זמן מוגדר בעבר",
+    "PP_EXPERIENCE": "חסר present perfect",
+    "AGO_BEFORE": "before במקום ago",
+    "PAST_FORM": "צורת עבר שגויה",
+    "PAST_QUESTION": "שאלה על עבר בלי did"
+  },
+  "exercises": [
+    {
+      "id": "pvp-01",
+      "type": "translate",
+      "promptHe": "ראיתי אותו אתמול.",
+      "accept": ["i saw him yesterday", "yesterday i saw him"],
+      "errors": [
+        { "pattern": "\\bhave seen\\b.*\\byesterday\\b", "tag": "PAST_WITH_PP_TIME", "explainHe": "yesterday הוא זמן מוגדר בעבר, ולכן past simple: I saw him yesterday." },
+        { "pattern": "^i seen\\b", "tag": "PAST_FORM", "explainHe": "seen בא רק אחרי have. העבר של see הוא saw." }
+      ],
+      "modelAnswer": "I saw him yesterday.",
+      "tests": { "accept": ["I saw him yesterday."], "flag": { "I have seen him yesterday": "PAST_WITH_PP_TIME", "I seen him yesterday": "PAST_FORM" } }
+    },
+    {
+      "id": "pvp-02",
+      "type": "choose",
+      "promptHe": "בחר:",
+      "promptEn": "I ___ to London three times.",
+      "options": ["have been", "went", "was"],
+      "accept": ["have been"],
+      "errors": [
+        { "pattern": "^went$", "tag": "PP_EXPERIENCE", "explainHe": "אין כאן זמן מוגדר. זה ניסיון חיים עד היום, ולכן I've been." },
+        { "pattern": "^was$", "tag": "PP_EXPERIENCE", "explainHe": "ניסיון חיים בלי זמן מוגדר: I've been to London. וגם אחרי was לא אומרים to London." }
+      ],
+      "modelAnswer": "I've been to London three times.",
+      "tests": { "accept": ["have been"], "flag": { "went": "PP_EXPERIENCE", "was": "PP_EXPERIENCE" } }
+    },
+    {
+      "id": "pvp-03",
+      "type": "translate",
+      "promptHe": "פגשתי אותה לפני שנתיים.",
+      "accept": ["i met her (about |almost |over )?(two|2) years ago", "(about )?(two|2) years ago i met her"],
+      "errors": [
+        { "pattern": "\\bbefore (two|2) years\\b", "tag": "AGO_BEFORE", "explainHe": "\"לפני שנתיים\" = two years ago. ago בא אחרי הזמן." },
+        { "pattern": "\\bhave met\\b.*\\bago\\b", "tag": "PAST_WITH_PP_TIME", "explainHe": "ago הוא זמן מוגדר בעבר, ולכן past simple: I met her." }
+      ],
+      "modelAnswer": "I met her two years ago.",
+      "tests": { "accept": ["I met her two years ago.", "I met her 2 years ago"], "flag": { "I met her before two years": "AGO_BEFORE", "I have met her two years ago": "PAST_WITH_PP_TIME" } }
+    },
+    {
+      "id": "pvp-04",
+      "type": "rewrite",
+      "promptHe": "תקן את המשפט:",
+      "promptEn": "I have finished the project last week.",
+      "accept": ["i finished the project last week", "last week i finished the project"],
+      "errors": [
+        { "pattern": "\\bhave finished\\b.*\\blast week\\b", "tag": "PAST_WITH_PP_TIME", "explainHe": "last week הוא זמן מוגדר, ולכן I finished בלי have." }
+      ],
+      "modelAnswer": "I finished the project last week.",
+      "tests": { "accept": ["I finished the project last week."], "flag": { "I have finished the project last week": "PAST_WITH_PP_TIME" } }
+    },
+    {
+      "id": "pvp-05",
+      "type": "choose",
+      "promptHe": "בחר:",
+      "promptEn": "When ___ you start this job?",
+      "options": ["did", "have", "do"],
+      "accept": ["did"],
+      "errors": [
+        { "pattern": "^have$", "tag": "PAST_WITH_PP_TIME", "explainHe": "when שואל על זמן מוגדר בעבר, ולכן did ולא have." },
+        { "pattern": "^do$", "tag": "PAST_QUESTION", "explainHe": "ההתחלה הייתה בעבר, ולכן did." }
+      ],
+      "modelAnswer": "When did you start this job?",
+      "tests": { "accept": ["did"], "flag": { "have": "PAST_WITH_PP_TIME", "do": "PAST_QUESTION" } }
+    },
+    {
+      "id": "pvp-06",
+      "type": "translate",
+      "promptHe": "קניתי מכונית חדשה לפני חודש.",
+      "accept": ["i (bought|got) a new car (a|one) month ago", "(a|one) month ago i (bought|got) a new car"],
+      "errors": [
+        { "pattern": "\\bbefore (a|one) month\\b", "tag": "AGO_BEFORE", "explainHe": "\"לפני חודש\" = a month ago." },
+        { "pattern": "\\bhave (bought|got)\\b.*\\bago\\b", "tag": "PAST_WITH_PP_TIME", "explainHe": "ago הוא זמן מוגדר, ולכן I bought בלי have." },
+        { "pattern": "\\bbuyed\\b", "tag": "PAST_FORM", "explainHe": "buy הוא פועל לא רגיל: bought." }
+      ],
+      "modelAnswer": "I bought a new car a month ago.",
+      "tests": { "accept": ["I bought a new car a month ago.", "I got a new car one month ago"], "flag": { "I bought a new car before a month": "AGO_BEFORE", "I buyed a new car a month ago": "PAST_FORM" } }
+    },
+    {
+      "id": "pvp-07",
+      "type": "translate",
+      "promptHe": "זו הפעם הראשונה שאני כאן.",
+      "accept": ["(it is|it's|this is) the first time (that )?i have (been|come) here"],
+      "errors": [
+        { "pattern": "first time (that )?i (am|come|was) here", "tag": "PP_EXPERIENCE", "explainHe": "אחרי the first time באנגלית אומרים I've been here, גם כשבעברית אומרים \"אני כאן\"." }
+      ],
+      "modelAnswer": "It's the first time I've been here.",
+      "alternatives": ["This is the first time I've been here."],
+      "vocab": [{ "en": "it's the first time I've...", "he": "זו הפעם הראשונה ש..." }],
+      "tests": { "accept": ["It's the first time I've been here.", "This is the first time that I have been here"], "flag": { "This is the first time I am here": "PP_EXPERIENCE", "It's the first time I come here": "PP_EXPERIENCE" } }
+    }
+  ]
+}

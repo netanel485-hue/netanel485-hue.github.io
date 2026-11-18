@@ -1,0 +1,116 @@
+{
+  "id": "subject-verb",
+  "order": 8,
+  "titleHe": "התאמת נושא-פועל ואיות -s/-es/-ies",
+  "summaryHe": "he works, she watches, everyone likes, the news is",
+  "ruleHe": [
+    "בהווה פשוט, עם he/she/it וכל נושא ביחיד, מוסיפים s לפועל: She works from home.",
+    "איות: אחרי ch, sh, s, x, o מוסיפים es (watches, goes). עיצור + y הופך ל-ies (worries), אבל play → plays.",
+    "בשלילה ובשאלה ה-s עוברת ל-does, והפועל חוזר לבסיס: He doesn't speak Hebrew.",
+    "everyone, everybody, nobody ביחיד (Everyone likes). people ברבים (People are). news ביחיד (The news is good)."
+  ],
+  "examples": [
+    "She works from home on Mondays.",
+    "My son watches TV every evening.",
+    "Everyone in my family likes coffee.",
+    "The news is good."
+  ],
+  "tags": {
+    "SV_MISSING_S": "חסר s בגוף שלישי",
+    "SV_SPELL_ES": "איות -es / -ies",
+    "SV_PLURAL_VERB": "פועל לא מתאים ליחיד/רבים",
+    "SV_DOES": "do/does בשלילה"
+  },
+  "exercises": [
+    {
+      "id": "sv-01",
+      "type": "translate",
+      "promptHe": "היא עובדת מהבית בימי שני.",
+      "accept": ["she works (from|at) home on mondays", "on mondays she works (from|at) home"],
+      "errors": [
+        { "pattern": "\\bshe work (from|at)\\b", "tag": "SV_MISSING_S", "explainHe": "she + הווה פשוט = works." }
+      ],
+      "modelAnswer": "She works from home on Mondays.",
+      "tests": { "accept": ["She works from home on Mondays."], "flag": { "She work from home on Mondays": "SV_MISSING_S" } }
+    },
+    {
+      "id": "sv-02",
+      "type": "choose",
+      "promptHe": "בחר:",
+      "promptEn": "My son ___ TV every evening.",
+      "options": ["watches", "watchs", "watch"],
+      "accept": ["watches"],
+      "errors": [
+        { "pattern": "^watchs$", "tag": "SV_SPELL_ES", "explainHe": "אחרי ch מוסיפים es: watches." },
+        { "pattern": "^watch$", "tag": "SV_MISSING_S", "explainHe": "my son הוא he, ולכן watches." }
+      ],
+      "modelAnswer": "My son watches TV every evening.",
+      "tests": { "accept": ["watches"], "flag": { "watchs": "SV_SPELL_ES", "watch": "SV_MISSING_S" } }
+    },
+    {
+      "id": "sv-03",
+      "type": "rewrite",
+      "promptHe": "תקן את המשפט:",
+      "promptEn": "Everyone in my family like coffee.",
+      "accept": ["everyone in my family likes coffee", "everybody in my family likes coffee"],
+      "errors": [
+        { "pattern": "^every(one|body) in my family like\\b", "tag": "SV_MISSING_S", "explainHe": "everyone הוא יחיד באנגלית, ולכן likes." }
+      ],
+      "modelAnswer": "Everyone in my family likes coffee.",
+      "tests": { "accept": ["Everyone in my family likes coffee."], "flag": { "Everyone in my family like coffee": "SV_MISSING_S" } }
+    },
+    {
+      "id": "sv-04",
+      "type": "choose",
+      "promptHe": "בחר:",
+      "promptEn": "The people in this office ___ very friendly.",
+      "options": ["are", "is"],
+      "accept": ["are"],
+      "errors": [
+        { "pattern": "^is$", "tag": "SV_PLURAL_VERB", "explainHe": "people הוא רבים, ולכן are." }
+      ],
+      "modelAnswer": "The people in this office are very friendly.",
+      "tests": { "accept": ["are"], "flag": { "is": "SV_PLURAL_VERB" } }
+    },
+    {
+      "id": "sv-05",
+      "type": "translate",
+      "promptHe": "הוא לא מדבר עברית.",
+      "accept": ["he does not speak hebrew"],
+      "errors": [
+        { "pattern": "^he do not\\b", "tag": "SV_DOES", "explainHe": "עם he בשלילה: doesn't." },
+        { "pattern": "^he does not speaks\\b", "tag": "SV_DOES", "explainHe": "ה-s עוברת ל-does, והפועל נשאר speak." },
+        { "pattern": "^he not speak", "tag": "SV_DOES", "explainHe": "שלילה בהווה פשוט צריכה doesn't: He doesn't speak." }
+      ],
+      "modelAnswer": "He doesn't speak Hebrew.",
+      "tests": { "accept": ["He doesn't speak Hebrew."], "flag": { "He don't speak Hebrew": "SV_DOES", "He doesn't speaks Hebrew": "SV_DOES", "He not speak Hebrew": "SV_DOES" } }
+    },
+    {
+      "id": "sv-06",
+      "type": "choose",
+      "promptHe": "בחר:",
+      "promptEn": "She ___ a lot about her job.",
+      "options": ["worries", "worrys", "worry"],
+      "accept": ["worries"],
+      "errors": [
+        { "pattern": "^worrys$", "tag": "SV_SPELL_ES", "explainHe": "עיצור + y הופך ל-ies: worries." },
+        { "pattern": "^worry$", "tag": "SV_MISSING_S", "explainHe": "she + הווה פשוט: worries." }
+      ],
+      "modelAnswer": "She worries a lot about her job.",
+      "tests": { "accept": ["worries"], "flag": { "worrys": "SV_SPELL_ES", "worry": "SV_MISSING_S" } }
+    },
+    {
+      "id": "sv-07",
+      "type": "translate",
+      "promptHe": "החדשות טובות.",
+      "accept": ["the news is (good|great)", "(it|that)('s| is) (good|great) news"],
+      "errors": [
+        { "pattern": "\\bnews are\\b", "tag": "SV_PLURAL_VERB", "explainHe": "news הוא יחיד באנגלית, למרות ה-s: The news is good." },
+        { "pattern": "\\ba (good |great )?news\\b", "tag": "SV_PLURAL_VERB", "explainHe": "news לא ספיר, ולכן בלי a: That's good news." }
+      ],
+      "modelAnswer": "The news is good.",
+      "alternatives": ["That's good news."],
+      "tests": { "accept": ["The news is good.", "That's great news!"], "flag": { "The news are good": "SV_PLURAL_VERB", "It's a good news": "SV_PLURAL_VERB" } }
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "id": "time-conditional-clauses",
+  "order": 6,
+  "titleHe": "משפטי תנאי וזמן: if / when",
+  "summaryHe": "למה \"when I arrive\" ולא \"when I will arrive\"",
+  "ruleHe": [
+    "בעברית אומרים \"כשאגיע\" בעתיד. באנגלית אחרי when, if, as soon as, before, after, until באים בהווה: I'll call you when I arrive.",
+    "ה-will נשאר בחלק השני של המשפט: If it rains, we'll stay home.",
+    "תנאי לא מציאותי (\"אם היה לי... הייתי\"): if + past simple, ובחלק השני would: If I had more time, I'd learn Spanish.",
+    "לא שמים would אחרי if. ובמשפט כזה נהוג If I were you."
+  ],
+  "examples": [
+    "I'll call you when I arrive.",
+    "If it rains tomorrow, we'll stay home.",
+    "As soon as I finish, I'll send you the file.",
+    "If I had more time, I'd learn Spanish."
+  ],
+  "tags": {
+    "CLAUSE_WILL": "will אחרי if/when",
+    "CLAUSE_TENSE": "זמן לא מתאים במשפט התנאי",
+    "COND2_WOULD": "would אחרי if"
+  },
+  "exercises": [
+    {
+      "id": "tc-01",
+      "type": "translate",
+      "promptHe": "אני אתקשר אליך כשאגיע.",
+      "accept": ["i will (call|phone) you (when|once|as soon as) i (arrive|get there|get here|land)", "i will give you a call when i (arrive|get there)", "(when|once|as soon as) i (arrive|get there|get here|land) i will (call|phone) you"],
+      "errors": [
+        { "pattern": "\\b(when|once|as soon as) i will\\b", "tag": "CLAUSE_WILL", "explainHe": "אחרי when באים בהווה, גם כשמדובר בעתיד: when I arrive." }
+      ],
+      "modelAnswer": "I'll call you when I arrive.",
+      "tests": { "accept": ["I'll call you when I arrive.", "When I get there, I'll call you"], "flag": { "I'll call you when I will arrive": "CLAUSE_WILL" } }
+    },
+    {
+      "id": "tc-02",
+      "type": "choose",
+      "promptHe": "בחר:",
+      "promptEn": "If it ___ tomorrow, we'll stay home.",
+      "options": ["rains", "will rain", "rained"],
+      "accept": ["rains"],
+      "errors": [
+        { "pattern": "^will rain$", "tag": "CLAUSE_WILL", "explainHe": "אחרי if באים בהווה: If it rains. ה-will נמצא בחלק השני (we'll stay)." },
+        { "pattern": "^rained$", "tag": "CLAUSE_TENSE", "explainHe": "זה תנאי אמיתי על מחר, ולכן הווה: If it rains." }
+      ],
+      "modelAnswer": "If it rains tomorrow, we'll stay home.",
+      "tests": { "accept": ["rains"], "flag": { "will rain": "CLAUSE_WILL", "rained": "CLAUSE_TENSE" } }
+    },
+    {
+      "id": "tc-03",
+      "type": "rewrite",
+      "promptHe": "תקן את המשפט:",
+      "promptEn": "If you will need help, call me.",
+      "accept": ["if you need (any )?help call me", "call me if you need (any )?help"],
+      "errors": [
+        { "pattern": "\\bif you will need\\b", "tag": "CLAUSE_WILL", "explainHe": "אחרי if באים בהווה: If you need help." }
+      ],
+      "modelAnswer": "If you need help, call me.",
+      "tests": { "accept": ["If you need help, call me.", "Call me if you need any help"], "flag": { "If you will need help call me": "CLAUSE_WILL" } }
+    },
+    {
+      "id": "tc-04",
+      "type": "translate",
+      "promptHe": "אם היה לי יותר זמן, הייתי לומד ספרדית.",
+      "accept": ["if i had more time i( would|'d) (learn|study) spanish", "i( would|'d) (learn|study) spanish if i had more time"],
+      "errors": [
+        { "pattern": "^if i would have\\b", "tag": "COND2_WOULD", "explainHe": "לא שמים would אחרי if. If I had more time, I'd learn." },
+        { "pattern": "^if i (have|will have) more time i( would|'d)", "tag": "CLAUSE_TENSE", "explainHe": "תנאי לא מציאותי: if + עבר (had), ובחלק השני would." }
+      ],
+      "modelAnswer": "If I had more time, I'd learn Spanish.",
+      "alternatives": ["I would study Spanish if I had more time."],
+      "tests": { "accept": ["If I had more time, I'd learn Spanish.", "If I had more time I would study Spanish"], "flag": { "If I would have more time, I would learn Spanish": "COND2_WOULD", "If I have more time I would learn Spanish": "CLAUSE_TENSE" } }
+    },
+    {
+      "id": "tc-05",
+      "type": "translate",
+      "promptHe": "ברגע שאסיים, אשלח לך את הקובץ.",
+      "accept": ["(as soon as|once|when) i (finish|am done|have finished) i will send you the file", "i will send you the file (as soon as|once|when) i (finish|am done|have finished)", "(as soon as|once|when) i (finish|am done|have finished) i will send the file to you"],
+      "errors": [
+        { "pattern": "\\b(as soon as|once|when) i will\\b", "tag": "CLAUSE_WILL", "explainHe": "אחרי as soon as באים בהווה: As soon as I finish." }
+      ],
+      "modelAnswer": "As soon as I finish, I'll send you the file.",
+      "vocab": [{ "en": "as soon as", "he": "ברגע ש..." }],
+      "tests": { "accept": ["As soon as I finish, I'll send you the file.", "I'll send you the file once I'm done"], "flag": { "As soon as I will finish I will send you the file": "CLAUSE_WILL" } }
+    },
+    {
+      "id": "tc-06",
+      "type": "choose",
+      "promptHe": "בחר:",
+      "promptEn": "If I ___ you, I would take the job.",
+      "options": ["were", "am", "would be"],
+      "accept": ["were"],
+      "errors": [
+        { "pattern": "^am$", "tag": "CLAUSE_TENSE", "explainHe": "אתה לא באמת הוא, זה תנאי לא מציאותי: If I were you." },
+        { "pattern": "^would be$", "tag": "COND2_WOULD", "explainHe": "לא שמים would אחרי if: If I were you." }
+      ],
+      "modelAnswer": "If I were you, I would take the job.",
+      "vocab": [{ "en": "if I were you", "he": "במקומך" }],
+      "tests": { "accept": ["were"], "flag": { "am": "CLAUSE_TENSE", "would be": "COND2_WOULD" } }
+    }
+  ]
+}

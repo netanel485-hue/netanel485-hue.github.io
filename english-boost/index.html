@@ -129,7 +129,18 @@ body{--c:#1D4ED8}
    הנתונים נשמרים במפתח אחד (eb.data) דרך Platform.storage, ו-shared/cloud.js מגבה אותו לענן כמו בשאר האתר. */
 (function () {
   'use strict';
-  var TOPIC_FILES = ['topic-present-simple-continuous.json', 'topic-present-perfect.json', 'topic-articles.json'];
+  var TOPIC_FILES = [
+    'topic-present-simple-continuous.json',
+    'topic-present-perfect.json',
+    'topic-articles.json',
+    'topic-past-vs-present-perfect.json',
+    'topic-future.json',
+    'topic-time-conditional-clauses.json',
+    'topic-questions.json',
+    'topic-subject-verb.json',
+    'topic-countable-uncountable.json',
+    'topic-prepositions.json'
+  ];
   var KEY = 'eb.data', OFFSET_KEY = 'eb.dayOffset';
   var P = window.Platform;
   var app = document.getElementById('app'), tabsEl = document.getElementById('tabs');
@@ -151,6 +162,16 @@ body{--c:#1D4ED8}
 
   // ---------- עזר לתצוגה ----------
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  // עברית עם אנגלית באמצע: כל רצף לטיני עטוף ב-bdi, כדי שהפיסוק לא יתהפך ("?Where do you work").
+  var LATIN_RUN = /[A-Za-z][A-Za-z0-9\s':,.?!\/\u2019\u2026-]*[A-Za-z0-9?!]|[A-Za-z]/g;
+  function mixed(s) {
+    s = String(s == null ? '' : s);
+    var out = '', last = 0;
+    try {
+      s.replace(LATIN_RUN, function (m, off) { out += esc(s.slice(last, off)) + '<bdi dir="ltr">' + esc(m) + '</bdi>'; last = off + m.length; return m; });
+      return out + esc(s.slice(last));
+    } catch (e) { return esc(s); }
+  }
   function en(s, tag) { tag = tag || 'div'; return '<' + tag + ' class="en" dir="ltr" lang="en">' + esc(s) + '</' + tag + '>'; }
   function sayBtn(s) { return P.speech.available ? '<button type="button" class="say" data-say="' + esc(s) + '" aria-label="השמעה">🔊</button>' : ''; }
   /* שורת אנגלית עם כפתור השמעה */
@@ -281,7 +302,7 @@ body{--c:#1D4ED8}
     if (L.phase === 'rule') {
       var t = L.topic;
       if (L.focusTag) h += '<p><span class="pill">היום מתמקדים ב: ' + esc(t.tags[L.focusTag] || L.focusTag) + '</span></p>';
-      h += '<div class="card rule"><h2 style="margin-top:0">הכלל</h2>' + t.ruleHe.map(function (l) { return '<p>' + esc(l) + '</p>'; }).join('')
+      h += '<div class="card rule"><h2 style="margin-top:0">הכלל</h2>' + t.ruleHe.map(function (l) { return '<p>' + mixed(l) + '</p>'; }).join('')
         + '<h2>דוגמאות</h2><div class="examples">' + t.examples.map(function (x) { return enS(x); }).join('') + '</div>'
         + '<button type="button" class="btn" id="go">מתחילים תרגול (' + L.items.length + ' תרגילים)</button></div>';
     } else if (L.phase === 'summary') {
@@ -362,7 +383,7 @@ body{--c:#1D4ED8}
       case 'correct':
         return '<div class="fb ok"><h3>' + (L.tries === 1 ? '✓ נכון!' : '✓ נכון, תוקן!') + '</h3>' + modelBlock(ex, 'ניסוח תקין') + vocabButtons(ex) + topicNote(it) + '</div>' + nextBtn();
       case 'error':
-        return '<div class="fb warn"><h3>לא בדיוק</h3><p style="margin:0">' + esc(f.explainHe) + '</p>'
+        return '<div class="fb warn"><h3>לא בדיוק</h3><p style="margin:0">' + mixed(f.explainHe) + '</p>'
           + (f.isRepeat ? '<p class="small muted">זו טעות שחוזרת. הנושא יחזור מחר בתרגילים אחרים.</p>' : '')
           + (L.tries < 2 ? '<p class="small muted">תקן את התשובה ולחץ "בדיקה".</p></div>'
             : modelBlock(ex, 'התשובה הנכונה') + vocabButtons(ex) + topicNote(it) + '</div>' + nextBtn());
@@ -584,5 +605,9 @@ body{--c:#1D4ED8}
 })();
 </script>
 <script type="module" src="../shared/cloud.js"></script>
+<script id="persist-storage">
+/* שמירה קבועה במכשיר: מבקש מהדפדפן לא למחוק את ההתקדמות כשחסר מקום (כמו בשאר הערכות). */
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(function(){});}catch(e){}
+</script>
 </body>
 </html>
