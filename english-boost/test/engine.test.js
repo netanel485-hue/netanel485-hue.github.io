@@ -217,3 +217,36 @@ test('backup round trip and bad files', () => {
     assert.ok(EB.readBackup(bad).error, `should reject ${bad.slice(0, 40)}`);
   }
 });
+
+// ---------- השוואה מילה מול מילה ----------
+const fmt = d => d.ops.map(o => o.op === 'same' ? o.text : o.op === 'del' ? `-${o.text}-` : `+${o.text}+`).join(' ');
+test('wordDiff marks exactly the changed words', () => {
+  assert.equal(fmt(EB.wordDiff('She work from home on Mondays', ['She works from home on Mondays.'])), 'She -work- +works+ from home on Mondays.');
+  assert.equal(fmt(EB.wordDiff('I am software engineer', ["I'm a software engineer."])), 'I am +a+ software engineer.', 'uses the expanded form when closer');
+  assert.equal(fmt(EB.wordDiff('I work in this company since 2019', ["I've worked at this company since 2019."])),
+    'I -work in- +have worked at+ this company since 2019.');
+});
+test('wordDiff picks the closest correct phrasing and ignores case and punctuation', () => {
+  const d = EB.wordDiff('i have been working for this company since 2019', ["I've worked at this company since 2019.", "I've been working for this company since 2019."]);
+  assert.equal(d.changes, 0); assert.ok(d.ops.every(o => o.op === 'same'));
+  assert.deepEqual(EB.wordDiff('   ', ['Hello.']), { ops: [], target: null, changes: 0 });
+  assert.equal(EB.expandContractions("I'm sure they won't, and I can't"), 'I am sure they will not, and I cannot');
+});
+test('wordDiff on every flagged test answer always points at something to fix', () => {
+  for (const t of topics) for (const ex of t.exercises) {
+    if (ex.type === 'choose') continue;
+    for (const a of Object.keys((ex.tests || {}).flag || {})) {
+      const d = EB.wordDiff(a, [ex.modelAnswer].concat(ex.alternatives || []));
+      assert.ok(d.changes > 0 && d.ops.some(o => o.op !== 'same'), `${ex.id}: ${a}`);
+    }
+  }
+});
+
+test('wordDiff never marks an accepted variant as wrong (in / at this company)', () => {
+  const ex = topics.flatMap(t => t.exercises).find(e => e.id === 'pp-since-01');
+  const ok = x => EB.check(x, ex).kind === 'correct';
+  const d1 = EB.wordDiff('I work in this company since 2019', [ex.modelAnswer].concat(ex.alternatives || []), ok);
+  assert.equal(fmt(d1), 'I -work- +have worked+ in this company since 2019.');
+  const d2 = EB.wordDiff('I am working in this company since 2019', [ex.modelAnswer].concat(ex.alternatives || []), ok);
+  assert.ok(!d2.ops.some(o => o.op !== 'same' && /\bin\b/.test(o.text)), fmt(d2));
+});
