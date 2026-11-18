@@ -112,6 +112,10 @@ textarea:disabled{background:#F4F4F0}
 body{--c:#1D4ED8}
 .kit-hero{margin-bottom:6px!important}
 </style>
+<style id="eb-bidi-css">
+/* ביטוי באנגלית בתוך כותרת בעברית לא נשבר באמצע שורה (Present / perfect) */
+h1 bdi,h2 bdi,.task b bdi,.kv b bdi,.kv>span bdi,.mist b bdi{white-space:nowrap}
+</style>
 </head>
 <body class="kit-themed">
 <div class="kit-hero" role="banner" style="--c:#1D4ED8"><span class="kh-pal" aria-hidden="true">🗽</span><div class="kh-t"><div class="kh-title">English Boost</div><div class="kh-sub">חיזוק דקדוק באנגלית · 10 דקות ביום</div></div><a class="kh-home" href="../" aria-label="מרכזי הלמידה">🏠</a></div>
@@ -141,19 +145,36 @@ body{--c:#1D4ED8}
     'topic-countable-uncountable.json',
     'topic-prepositions.json'
   ];
-  var KEY = 'eb.data', OFFSET_KEY = 'eb.dayOffset';
+  var KEY = 'eb.data', OFFSET_KEY = 'eb.dayOffset', SAFE_KEY = 'eb.data.before';
+  var DEV = /[?&]dev\b/.test(location.search);
   var P = window.Platform;
   var app = document.getElementById('app'), tabsEl = document.getElementById('tabs');
   var topics = [], loadError = null, EX = {};
+  /* readOnly, dataNote ו-backupMsg מוגדרים לפני load(), שמשנה אותם בזמן הטעינה */
+  var dataNote = null, saveFailed = false, readOnly = false, backupMsg = null;
   var S = load();
   var view = { tab: 'today' };
   var L = null; // שיעור או חזרה פעילים
   var R = null; // חזרה על אוצר מילים
 
   // ---------- שמירה ----------
-  function emptyData() { return { v: 1, progress: {}, attempts: [], vocab: [], mixedDay: null }; }
-  function load() { var d = P.storage.get(KEY); return d && d.v === 1 ? d : emptyData(); }
-  function save() { P.storage.set(KEY, S); }
+  function emptyData() { return EB.emptyData(); }
+  /* טעינה דרך EB.migrateData: נתונים מגרסה ישנה מתעדכנים; נתונים מגרסה חדשה יותר (מכשיר אחר) או פגומים
+     לא נמחקים: עובדים במצב קריאה בלבד ומבקשים לרענן, כדי שהשמירה הבאה לא תדרוס אותם. */
+  function load() {
+    var raw = P.storage.get(KEY), m = EB.migrateData(raw);
+    if (m.status === 'ok' || m.status === 'empty') return m.data;
+    if (m.status === 'migrated') { P.storage.set(SAFE_KEY, raw); P.storage.set(KEY, m.data); return m.data; }
+    readOnly = true;
+    dataNote = m.status === 'newer'
+      ? 'ההתקדמות שלך נשמרה בגרסה חדשה יותר של הערכה. רענן את הדף כדי לקבל אותה. עד אז שום דבר לא נשמר.'
+      : 'הנתונים השמורים במכשיר לא נקראו. הם לא נמחקו. אפשר לשחזר מגיבוי במסך ההתקדמות.';
+    return emptyData();
+  }
+  function save() {
+    if (readOnly) return;
+    if (!P.storage.set(KEY, S) && !saveFailed) { saveFailed = true; dataNote = 'השמירה במכשיר נכשלה (אולי חסר מקום). כדאי לשמור גיבוי במסך ההתקדמות.'; }
+  }
   function dayOffset() { return parseInt(P.storage.get(OFFSET_KEY), 10) || 0; }
   function setOffset(n) { if (n) P.storage.set(OFFSET_KEY, n); else P.storage.remove(OFFSET_KEY); }
   function now() { return EB.addDays(dayOffset(), Date.now()) + (Date.now() - EB.startOfDay(Date.now())); }
@@ -164,7 +185,7 @@ body{--c:#1D4ED8}
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   // עברית עם אנגלית באמצע: כל רצף לטיני עטוף ב-bdi, כדי שהפיסוק לא יתהפך ("?Where do you work").
   var LATIN_RUN = /[A-Za-z][A-Za-z0-9\s':,.?!\/\u2019\u2026-]*[A-Za-z0-9?!]|[A-Za-z]/g;
-  function mixed(s) {
+  function bidi(s) {
     s = String(s == null ? '' : s);
     var out = '', last = 0;
     try {
@@ -229,11 +250,12 @@ body{--c:#1D4ED8}
     var open = openMistakes();
     var h = '';
     if (loadError) h += '<div class="card err">' + esc(loadError) + '</div>';
+    if (dataNote) h += '<div class="card err" role="alert">' + esc(dataNote) + '</div>';
     h += '<h2>מה לתרגל היום</h2>';
     if (!plan.length && !loadError) h += '<div class="card muted">אין משימות להיום. הנושאים יחזרו לפי לוח החזרות.</div>';
     plan.forEach(function (it, i) {
       h += '<button type="button" class="card task" data-start="' + i + '"><span class="ic" aria-hidden="true">' + KIND_IC[it.kind] + '</span>'
-        + '<span><b>' + esc(it.topic.titleHe) + '</b><small>' + esc(it.reasonHe) + '</small></span><span class="ar" aria-hidden="true">←</span></button>';
+        + '<span><b>' + bidi(it.topic.titleHe) + '</b><small>' + esc(it.reasonHe) + '</small></span><span class="ar" aria-hidden="true">←</span></button>';
     });
     if (mixed.length || due.length || open.length) h += '<h2>עוד היום</h2>';
     if (mixed.length) {
@@ -251,7 +273,7 @@ body{--c:#1D4ED8}
     h += '<h2>כל הנושאים</h2><div class="card">';
     topics.forEach(function (tp) {
       var p = S.progress[tp.id];
-      h += '<div class="kv"><span>' + esc(tp.titleHe) + ' <span class="small muted">· ' + EB.STATE_HE[p ? p.state : 'new'] + '</span></span>'
+      h += '<div class="kv"><span>' + bidi(tp.titleHe) + ' <span class="small muted">· ' + EB.STATE_HE[p ? p.state : 'new'] + '</span></span>'
         + '<button type="button" class="btn sec" style="width:auto;min-height:40px;padding:4px 14px" data-free="' + esc(tp.id) + '">תרגול</button></div>';
     });
     h += '</div>' + installCard();
@@ -298,11 +320,11 @@ body{--c:#1D4ED8}
   function canAnswer() { return L.phase === 'answering' || (L.phase === 'error' && L.tries < 2); }
 
   function drawLesson() {
-    var h = '<div class="top"><h1>' + esc(lessonTitle()) + '</h1><button type="button" class="x" id="exit" aria-label="יציאה">✕</button></div>';
+    var h = '<div class="top"><h1>' + bidi(lessonTitle()) + '</h1><button type="button" class="x" id="exit" aria-label="יציאה">✕</button></div>';
     if (L.phase === 'rule') {
       var t = L.topic;
       if (L.focusTag) h += '<p><span class="pill">היום מתמקדים ב: ' + esc(t.tags[L.focusTag] || L.focusTag) + '</span></p>';
-      h += '<div class="card rule"><h2 style="margin-top:0">הכלל</h2>' + t.ruleHe.map(function (l) { return '<p>' + mixed(l) + '</p>'; }).join('')
+      h += '<div class="card rule"><h2 style="margin-top:0">הכלל</h2>' + t.ruleHe.map(function (l) { return '<p>' + bidi(l) + '</p>'; }).join('')
         + '<h2>דוגמאות</h2><div class="examples">' + t.examples.map(function (x) { return enS(x); }).join('') + '</div>'
         + '<button type="button" class="btn" id="go">מתחילים תרגול (' + L.items.length + ' תרגילים)</button></div>';
     } else if (L.phase === 'summary') {
@@ -315,7 +337,7 @@ body{--c:#1D4ED8}
             + '<div class="kv"><span>חזרה הבאה</span><span class="v">' + daysText(EB.daysBetween(now(), s.nextDue)) + '</span></div>';
           if (s.repeatedTag) h += '<div class="fb warn">שים לב: ' + esc(L.topic.tags[s.repeatedTag] || s.repeatedTag) + ' חזרה כמה פעמים. נחזור אליה מחר במשפטים חדשים.</div>';
         } else {
-          (s.byTopic || []).forEach(function (x) { h += '<div class="kv"><span>' + esc(x.title) + '</span><span class="v">' + x.correct + ' מתוך ' + x.total + '</span></div>'; });
+          (s.byTopic || []).forEach(function (x) { h += '<div class="kv"><span>' + bidi(x.title) + '</span><span class="v">' + x.correct + ' מתוך ' + x.total + '</span></div>'; });
           var left = openMistakes().length;
           h += '<p class="small muted">' + (left ? 'נשארו ' + left + ' טעויות פתוחות במחברת.' : 'אין טעויות פתוחות במחברת 🎉') + '</p>';
         }
@@ -375,7 +397,7 @@ body{--c:#1D4ED8}
         + (saved ? '✓ נשמר: ' : '➕ שמירת ביטוי: ') + en(v.en, 'span') + (saved ? '' : ' – ' + esc(v.he)) + '</button>';
     }).join('');
   }
-  function topicNote(it) { return L.kind === 'topic' ? '' : '<p class="small muted" style="margin:6px 0 0">הנושא: ' + esc((topicById(it.topicId) || {}).titleHe || '') + '</p>'; }
+  function topicNote(it) { return L.kind === 'topic' ? '' : '<p class="small muted" style="margin:6px 0 0">הנושא: ' + bidi((topicById(it.topicId) || {}).titleHe || '') + '</p>'; }
   function nextBtn() { return '<div class="row"><button type="button" class="btn" id="next">' + (L.i + 1 < L.items.length ? 'הבא ←' : 'סיום') + '</button></div>'; }
   function feedback(it) {
     var ex = it.ex, f = L.fb;
@@ -383,9 +405,9 @@ body{--c:#1D4ED8}
       case 'correct':
         return '<div class="fb ok"><h3>' + (L.tries === 1 ? '✓ נכון!' : '✓ נכון, תוקן!') + '</h3>' + modelBlock(ex, 'ניסוח תקין') + vocabButtons(ex) + topicNote(it) + '</div>' + nextBtn();
       case 'error':
-        return '<div class="fb warn"><h3>לא בדיוק</h3><p style="margin:0">' + mixed(f.explainHe) + '</p>'
+        return '<div class="fb warn"><h3>לא בדיוק</h3><p style="margin:0">' + bidi(f.explainHe) + '</p>'
           + (f.isRepeat ? '<p class="small muted">זו טעות שחוזרת. הנושא יחזור מחר בתרגילים אחרים.</p>' : '')
-          + (L.tries < 2 ? '<p class="small muted">תקן את התשובה ולחץ "בדיקה".</p></div>'
+          + (L.tries < 2 ? '<p class="small muted">' + (ex.type === 'choose' ? 'נסה לבחור תשובה אחרת.' : 'תקן את התשובה ולחץ "בדיקה".') + '</p></div>'
             : modelBlock(ex, 'התשובה הנכונה') + vocabButtons(ex) + topicNote(it) + '</div>' + nextBtn());
       case 'unknown':
         return '<div class="fb info"><h3>לא זיהיתי את התשובה אוטומטית</h3><p style="margin:0">השווה לניסוח הזה:</p>' + modelBlock(ex, 'ניסוח לדוגמה')
@@ -470,7 +492,7 @@ body{--c:#1D4ED8}
     log.forEach(function (m) {
       var a = m.attempt, info = EX[a.ex], ex = info.ex;
       var why = a.tag ? tagName(a.topic, a.tag) : 'סימנת "טעיתי" בהשוואה';
-      h += '<div class="mist"><div class="head"><div><b>' + esc((topicById(a.topic) || {}).titleHe || '') + '</b><div class="small muted">' + esc(why) + '</div></div>'
+      h += '<div class="mist"><div class="head"><div><b>' + bidi((topicById(a.topic) || {}).titleHe || '') + '</b><div class="small muted">' + esc(why) + '</div></div>'
         + '<span class="pill ' + (m.resolved ? 'ok">✓ תוקן' : 'open">פתוח') + '</span></div>'
         + '<div class="small muted">' + esc(ex.promptHe) + (ex.promptEn ? ' ' + en(ex.promptEn, 'span') : '') + '</div>'
         + '<div class="yours">' + en(a.answer || '—') + '</div>'
@@ -494,7 +516,7 @@ body{--c:#1D4ED8}
       var p = S.progress[tp.id], st = p ? p.state : 'new', acc = EB.accuracyLast10(tp.id, S.attempts), d = [EB.STATE_HE[st]];
       if (acc != null) d.push('דיוק אחרון: ' + pct(acc));
       if (p && st !== 'new') { var dd = EB.daysBetween(t, p.nextDue); d.push(dd <= 0 ? 'לחזרה היום' : 'חזרה ' + daysText(dd)); }
-      h += '<div class="kv" style="display:block"><b>' + esc(tp.titleHe) + '</b><div class="small muted">' + esc(d.join(' · ')) + '</div></div>';
+      h += '<div class="kv" style="display:block"><b>' + bidi(tp.titleHe) + '</b><div class="small muted">' + esc(d.join(' · ')) + '</div></div>';
     });
     h += '</div>';
 
@@ -505,21 +527,57 @@ body{--c:#1D4ED8}
       var a = EB.accuracyLast10(tp.id, S.attempts); return EB.repeatedErrorTag(tp.id, S.attempts, t) || (a != null && a < 0.6);
     });
     var nextT = EB.todayPlan(topics, S.progress, S.attempts, t)[0];
-    function line(title, arr) { return '<div class="kv" style="display:block"><b>' + title + '</b><div class="small muted">' + (arr.length ? esc(arr.join(', ')) : 'עדיין אין') + '</div></div>'; }
+    function line(title, arr) { return '<div class="kv" style="display:block"><b>' + title + '</b><div class="small muted">' + (arr.length ? arr.map(bidi).join(', ') : 'עדיין אין') + '</div></div>'; }
     h += '<h2>במבט אחד</h2><div class="card">' + line('השתפרת ב', improved.map(function (x) { return x.titleHe; }))
       + line('עדיין דורש תרגול', needs.map(function (x) { return x.titleHe; })) + line('השלב הבא', nextT ? [nextT.topic.titleHe] : []) + '</div>';
 
-    h += '<details class="card"><summary><b>כלי פיתוח</b></summary>'
-      + '<p class="small">התאריך המדומה: ' + (dayOffset() ? '+' + dayOffset() + ' ימים' : 'היום') + '</p>'
-      + '<div class="row"><button type="button" class="btn sec" id="dayPlus">קדם יום אחד</button><button type="button" class="btn quiet" id="dayReset">חזרה לתאריך האמיתי</button></div>'
-      + '<div class="row"><button type="button" class="btn danger" id="wipe">מחיקת כל ההתקדמות</button></div></details>';
+    h += '<h2>גיבוי</h2><div class="card"><p class="small muted" style="margin:0 0 8px">ההתקדמות נשמרת במכשיר ומגובה בענן של האתר. '
+      + 'כדאי לשמור גם קובץ גיבוי מדי פעם, למשל לפני החלפת טלפון.</p>'
+      + '<div class="row"><button type="button" class="btn sec" id="bkSave">שמירת קובץ גיבוי</button>'
+      + '<button type="button" class="btn quiet" id="bkLoad">שחזור מקובץ</button></div>'
+      + '<input type="file" id="bkFile" accept="application/json,.json" hidden>'
+      + (backupMsg ? '<p class="small" role="status" style="margin:8px 0 0">' + esc(backupMsg) + '</p>' : '')
+      + '<details style="margin-top:10px"><summary class="small muted">מחיקת כל ההתקדמות</summary>'
+      + '<p class="small muted">לפני המחיקה נשמר עותק אחרון במכשיר, ליתר ביטחון.</p>'
+      + '<div class="row"><button type="button" class="btn danger" id="wipe">מחיקת כל ההתקדמות</button></div></details></div>';
+    if (DEV || dayOffset()) {
+      h += '<details class="card"' + (dayOffset() ? ' open' : '') + '><summary><b>כלי פיתוח</b></summary>'
+        + '<p class="small">התאריך המדומה: ' + (dayOffset() ? '+' + dayOffset() + ' ימים' : 'היום') + '</p>'
+        + '<div class="row"><button type="button" class="btn sec" id="dayPlus">קדם יום אחד</button><button type="button" class="btn quiet" id="dayReset">חזרה לתאריך האמיתי</button></div></details>';
+    }
     render(h);
-    document.getElementById('dayPlus').onclick = function () { setOffset(dayOffset() + 1); draw(); };
-    document.getElementById('dayReset').onclick = function () { setOffset(0); draw(); };
+    backupMsg = null;
+    var dp = document.getElementById('dayPlus'); if (dp) dp.onclick = function () { setOffset(dayOffset() + 1); draw(); };
+    var dr = document.getElementById('dayReset'); if (dr) dr.onclick = function () { setOffset(0); draw(); };
     document.getElementById('wipe').onclick = function () {
-      if (confirm('למחוק את כל ההתקדמות, הטעויות ואוצר המילים? אי אפשר לבטל.')) { S = emptyData(); save(); draw(); }
+      if (readOnly) return;
+      if (confirm('למחוק את כל ההתקדמות, הטעויות ואוצר המילים?')) { P.storage.set(SAFE_KEY, S); S = emptyData(); save(); draw(); }
     };
-    var det = app.querySelector('details'); if (dayOffset()) det.open = true;
+    document.getElementById('bkSave').onclick = function () {
+      var name = 'english-boost-backup-' + EB.dayKey(Date.now()) + '.json';
+      backupMsg = P.files.save(name, EB.makeBackup(S, Date.now())) ? 'הקובץ ' + name + ' ירד למכשיר.' : 'לא הצלחתי לשמור קובץ בדפדפן הזה.';
+      draw();
+    };
+    var fileIn = document.getElementById('bkFile');
+    document.getElementById('bkLoad').onclick = function () { fileIn.value = ''; fileIn.click(); };
+    fileIn.onchange = function () {
+      var f = fileIn.files && fileIn.files[0]; if (!f) return;
+      var rd = new FileReader();
+      rd.onload = function () { restoreBackup(String(rd.result || '')); };
+      rd.onerror = function () { backupMsg = 'הקובץ לא נקרא.'; draw(); };
+      rd.readAsText(f);
+    };
+  }
+  function restoreBackup(text) {
+    var r = EB.readBackup(text);
+    if (r.error) { backupMsg = r.error; return draw(); }
+    var when = r.exportedAt ? new Date(r.exportedAt).toLocaleDateString('he-IL') : 'תאריך לא ידוע';
+    var msg = 'לשחזר את הגיבוי מ-' + when + '? (' + r.counts.attempts + ' תשובות, ' + r.counts.vocab + ' ביטויים)\n'
+      + 'ההתקדמות שבמכשיר עכשיו תוחלף. עותק שלה יישמר במכשיר ליתר ביטחון.';
+    if (!confirm(msg)) return;
+    if (!readOnly) P.storage.set(SAFE_KEY, S);
+    S = r.data; readOnly = false; saveFailed = false; dataNote = null; save();
+    backupMsg = 'הגיבוי שוחזר.'; draw();
   }
 
   // ---------- אוצר מילים ----------

@@ -19,3 +19,8 @@ jobs:
           else
             python3 tools/check.py
           fi
+      - name: English Boost — בדיקת דפדפן בגודל טלפון
+        run: |
+          npm i --no-save --no-audit --no-fund playwright@1.49.1
+          npx playwright install --with-deps chromium
+          node english-boost/test/e2e-phone.cjs
