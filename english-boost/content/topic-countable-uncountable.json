@@ -98,7 +98,7 @@
       "id": "cu-07",
       "type": "translate",
       "promptHe": "המזוודות שלי כבדות.",
-      "accept": ["my luggage is (very |really |so )?heavy", "my (bags|suitcases) are (very |really |so )?heavy"],
+      "accept": ["my (luggage|baggage) is (very |really |so )?heavy", "my (bags|suitcases) are (very |really |so )?heavy"],
       "errors": [
         { "pattern": "\\bluggages\\b", "tag": "UNC_PLURAL", "explainHe": "luggage לא ספיר: my luggage is heavy. או בספיר: my suitcases are heavy." },
         { "pattern": "\\bluggage are\\b", "tag": "UNC_PLURAL", "explainHe": "luggage לא ספיר, ולכן is." }
@@ -106,7 +106,7 @@
       "modelAnswer": "My luggage is heavy.",
       "alternatives": ["My suitcases are heavy."],
       "vocab": [{ "en": "luggage", "he": "מזוודות, כבודה" }],
-      "tests": { "accept": ["My luggage is heavy.", "My bags are really heavy"], "flag": { "My luggages are heavy": "UNC_PLURAL", "My luggage are heavy": "UNC_PLURAL" } }
+      "tests": { "accept": ["My luggage is heavy.", "My bags are really heavy", "My baggage is heavy"], "flag": { "My luggages are heavy": "UNC_PLURAL", "My luggage are heavy": "UNC_PLURAL" } }
     }
   ]
 }

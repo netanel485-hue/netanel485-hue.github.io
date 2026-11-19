@@ -169,7 +169,13 @@ textarea{font-size:19px}
 .mist.st-ink .dots i{border-color:var(--st-ink);background:var(--st-ink)}
 .nb-strip .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
 .reveal summary{color:var(--ink-soft);cursor:pointer;margin:4px 0}
-.nb-how{margin:8px 0 4px}.nb-how p{margin:6px 0}
+.nb-how{margin:8px 0 4px}
+.card.next{border-inline-start-width:6px;border-inline-start-style:solid}
+.card.next.k0{border-inline-start-color:var(--st-open)}.card.next.k1{border-inline-start-color:var(--st-work)}
+.card.next.k2{border-inline-start-color:var(--st-new)}.card.next.kx{border-inline-start-color:var(--st-ink)}
+.next-t{display:flex;align-items:center;gap:10px;margin-top:4px}.next-t .ic{font-size:28px}.next-t b{font-size:20px}
+.then{margin:-4px 4px 14px}
+.pick summary,.bk summary{cursor:pointer}.nb-how p{margin:6px 0}
 .week{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .week div{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:8px;text-align:center}
 .week b{display:block;font-size:22px}
@@ -355,64 +361,58 @@ textarea{font-size:19px}
     }
     return '';
   }
-  function drawToday() {
-    var t = now();
+  /* תור אחד להיום, לפי סדר קבוע: טעות חוזרת → המחברת → חזרות → נושא חדש → חזרה מעורבת → מילים.
+     כל משימה שהושלמה יוצאת מהתור לבד (מועד החזרה זז, המחברת מתרוקנת וכו'). */
+  function todayQueue() {
+    var t = now(), q = [];
     var plan = EB.todayPlan(topics, S.progress, S.attempts, t);
-    var due = S.vocab.filter(function (v) { return v.nextDue <= t; });
+    var nbq = notebook().queue;
     var mixed = S.mixedDay === EB.dayKey(t) ? [] : EB.mixedReview(topics, S.progress, S.attempts, t);
-    var nbk = notebook(), open = nbk.queue;
+    var due = S.vocab.filter(function (v) { return v.nextDue <= t; });
+    function planItem(it) {
+      return { title: it.topic.titleHe, reason: it.reasonHe, ic: KIND_IC[it.kind], cls: 'k' + it.kind,
+        start: function () { startLesson(it.topic, it.focusTag); } };
+    }
+    plan.filter(function (it) { return it.kind === 0; }).forEach(function (it) { q.push(planItem(it)); });
+    if (nbq.length) q.push({ title: 'המחברת שלי', reason: nbq.length + (nbq.length === 1 ? ' משפט' : ' משפטים') + ': לתקן טעויות ולהוכיח כללים במשפטים חדשים.', ic: '📓', cls: 'k0', start: startMistakePractice });
+    plan.filter(function (it) { return it.kind === 1; }).forEach(function (it) { q.push(planItem(it)); });
+    plan.filter(function (it) { return it.kind === 2; }).forEach(function (it) { q.push(planItem(it)); });
+    if (mixed.length) q.push({ title: 'חזרה מעורבת', reason: mixed.length + ' תרגילים מכמה נושאים, בלי לדעת מראש איזה כלל.', ic: '🔀', cls: 'kx', start: function () { startMixed(mixed, 'mixed'); } });
+    if (due.length) q.push({ title: 'מילים לחזרה', reason: due.length + (due.length === 1 ? ' ביטוי' : ' ביטויים') + ': רואים בעברית, כותבים באנגלית.', ic: '📒', cls: 'k1', start: startReview });
+    return q;
+  }
+  function practicedToday() { var k = EB.dayKey(now()); return S.attempts.some(function (a) { return a.day === k; }); }
+  function drawToday() {
+    var t = now(), q = todayQueue();
     var h = '';
     if (loadError) h += '<div class="card err">' + esc(loadError) + '</div>';
     if (dataNote) h += '<div class="card err" role="alert">' + esc(dataNote) + '</div>';
     var dateHe = ''; try { dateHe = new Date(t).toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' }); } catch (e) {}
-    h += '<div class="page-head"><h2>מה לתרגל היום</h2><span class="date">' + esc(dateHe) + '</span></div>';
-    if (!plan.length && !loadError) h += '<div class="card muted">אין משימות להיום. הנושאים יחזרו לפי לוח החזרות.</div>';
-    plan.forEach(function (it, i) {
-      h += '<button type="button" class="card task k' + it.kind + '" data-start="' + i + '"><span class="ic" aria-hidden="true">' + KIND_IC[it.kind] + '</span>'
-        + '<span><b>' + bidi(it.topic.titleHe) + '</b><small>' + esc(it.reasonHe) + '</small></span><span class="ar" aria-hidden="true">←</span></button>';
-    });
-    if (mixed.length || due.length || open.length) h += '<h2>עוד היום</h2>';
-    if (mixed.length) {
-      h += '<button type="button" class="card task kx" data-mixed="1"><span class="ic" aria-hidden="true">🔀</span>'
-        + '<span><b>חזרה מעורבת</b><small>' + mixed.length + ' תרגילים מכמה נושאים, בלי לדעת מראש איזה כלל. ככה בונים שליטה אמיתית.</small></span><span class="ar" aria-hidden="true">←</span></button>';
+    h += '<div class="page-head"><h2>האימון של היום</h2><span class="date">' + esc(dateHe) + '</span></div>';
+    if (q.length) {
+      var it = q[0];
+      h += '<div class="card next ' + it.cls + '"><div class="small muted">' + (q.length > 1 ? 'נשארו ' + q.length + ' משימות להיום' : practicedToday() ? 'משימה אחרונה להיום' : 'המשימה של היום') + '</div>'
+        + '<div class="next-t"><span class="ic" aria-hidden="true">' + it.ic + '</span><b>' + bidi(it.title) + '</b></div>'
+        + '<p class="muted" style="margin:4px 0 12px">' + esc(it.reason) + '</p>'
+        + '<button type="button" class="btn" id="nextTask">' + (practicedToday() ? 'המשך' : 'להתחיל') + ' ←</button></div>';
+      if (q.length > 1) h += '<p class="small muted then">אחר כך: עוד ' + (q.length - 1 === 1 ? 'משימה אחת' : (q.length - 1) + ' משימות') + '. לוחצים "המשך" וממשיכים.</p>';
+      if (!S.attempts.length) h += '<p class="small muted then">כל יום יחכה כאן אימון קצר. הטעויות שלך נשמרות במחברת וחוזרות עד שהן נסגרות.</p>';
+    } else if (!loadError) {
+      h += '<div class="card next k2"><div class="next-t"><span class="ic" aria-hidden="true">✓</span><b>סיימת את האימון של היום</b></div>'
+        + '<p class="muted" style="margin:4px 0 0">מחר יחכו כאן חזרות ומשפטים חדשים. רוצה עוד? אפשר לבחור נושא למטה.</p></div>';
     }
-    if (open.length) {
-      h += '<button type="button" class="card task k0" data-mist="1"><span class="ic" aria-hidden="true">📝</span>'
-        + '<span><b>' + open.length + ' משפטים מהמחברת</b><small>לתקן טעויות פתוחות ולהוכיח טעויות ישנות במשפטים חדשים.</small></span><span class="ar" aria-hidden="true">←</span></button>';
-    }
-    if (due.length) {
-      h += '<button type="button" class="card task k1" data-review="1"><span class="ic" aria-hidden="true">📒</span>'
-        + '<span><b>' + due.length + ' ביטויים מחכים לחזרה</b><small>רואים בעברית, כותבים באנגלית</small></span><span class="ar" aria-hidden="true">←</span></button>';
-    }
-    if (nbk.cards.length) h += notebookStrip(nbk.cards);
-    h += '<h2>כל הנושאים</h2><div class="card">';
+    h += '<details class="card pick"><summary><b>לבחור נושא אחר</b></summary>';
     topics.forEach(function (tp) {
       var p = S.progress[tp.id];
       h += '<div class="kv"><span>' + bidi(tp.titleHe) + ' ' + statePill(p ? p.state : 'new') + '</span>'
         + '<button type="button" class="btn sec" style="width:auto;min-height:40px;padding:4px 14px" data-free="' + esc(tp.id) + '">תרגול</button></div>';
     });
-    h += '</div>' + installCard();
+    h += '</details>' + installCard();
     if (dayOffset()) h += '<p class="devnote">מצב פיתוח: התאריך מוזז ב-' + dayOffset() + ' ימים</p>';
     render(h);
-    app.querySelectorAll('[data-start]').forEach(function (b) {
-      b.onclick = function () { var it = plan[+b.dataset.start]; startLesson(it.topic, it.focusTag); };
-    });
+    var nt = document.getElementById('nextTask'); if (nt) nt.onclick = function () { q[0].start(); };
     app.querySelectorAll('[data-free]').forEach(function (b) { b.onclick = function () { startLesson(topicById(b.dataset.free), null); }; });
-    var rv = app.querySelector('[data-review]'); if (rv) rv.onclick = startReview;
-    var mx = app.querySelector('[data-mixed]'); if (mx) mx.onclick = function () { startMixed(mixed, 'mixed'); };
-    var ms = app.querySelector('[data-mist]'); if (ms) ms.onclick = startMistakePractice;
-    var ns = app.querySelector('[data-goto-nb]'); if (ns) ns.onclick = function () { view.tab = 'mistakes'; draw(); window.scrollTo(0, 0); };
     var ib = document.getElementById('installBtn'); if (ib) ib.onclick = function () { P.install.prompt().then(draw); };
-  }
-
-  function notebookStrip(cards) {
-    var n = { open: 0, fixing: 0, proving: 0, ink: 0 };
-    cards.forEach(function (c) { n[c.state]++; });
-    var chips = ['open', 'fixing', 'proving', 'ink'].filter(function (k) { return n[k]; }).map(function (k) {
-      return '<span class="pill ' + { open: 'open', fixing: 'st-learning', proving: 'st-practicing', ink: 'st-mastered' }[k] + '">' + n[k] + ' ' + CARD_HE[k] + '</span>';
-    }).join(' ');
-    return '<button type="button" class="card task kx nb-strip" data-goto-nb="1"><span class="ic" aria-hidden="true">📓</span>'
-      + '<span><b>המחברת שלי</b><small class="chips">' + chips + '</small></span><span class="ar" aria-hidden="true">←</span></button>';
   }
 
   // ---------- שיעור ----------
@@ -441,7 +441,7 @@ textarea{font-size:19px}
       i: 0, answer: '', tries: 0, phase: 'answering', fb: null, attempt: null, results: [], summary: null };
   }
   function cur() { return L.items[L.i]; }
-  function lessonTitle() { return L.kind === 'mixed' ? 'חזרה מעורבת' : L.kind === 'mistakes' ? 'תרגול טעויות' : L.topic.titleHe; }
+  function lessonTitle() { return L.kind === 'mixed' ? 'חזרה מעורבת' : L.kind === 'mistakes' ? 'המחברת שלי' : L.topic.titleHe; }
   function exitLesson() { L = null; draw(); window.scrollTo(0, 0); }
   function canAnswer() { return L.phase === 'answering' || (L.phase === 'error' && L.tries < 2); }
 
@@ -452,24 +452,24 @@ textarea{font-size:19px}
       if (L.focusTag) h += '<p><span class="pill">היום מתמקדים ב: ' + esc(t.tags[L.focusTag] || L.focusTag) + '</span></p>';
       h += '<div class="card rule"><h2 style="margin-top:0">הכלל</h2>' + t.ruleHe.map(function (l) { return '<p>' + bidi(l) + '</p>'; }).join('')
         + '<h2>דוגמאות</h2><div class="examples">' + t.examples.map(function (x) { return enS(x); }).join('') + '</div>'
-        + '<button type="button" class="btn" id="go">מתחילים תרגול (' + L.items.length + ' תרגילים)</button></div>';
+        + '<button type="button" class="btn" id="go">להתחיל (' + L.items.length + ' תרגילים) ←</button></div>';
     } else if (L.phase === 'summary') {
       var s = L.summary;
       h += '<div class="card"><h2 style="margin-top:0">סיכום</h2>';
       if (s && s.total) {
         h += '<p class="big">' + s.correct + ' מתוך ' + s.total + ' נכון בניסיון הראשון</p>';
         if (s.state) {
-          h += '<div class="kv"><span>מצב הנושא</span><span class="v">' + statePill(s.state) + '</span></div>'
-            + '<div class="kv"><span>חזרה הבאה</span><span class="v">' + daysText(EB.daysBetween(now(), s.nextDue)) + '</span></div>';
+          h += '<p class="muted" style="margin:0">' + statePill(s.state) + ' · חזרה על הנושא ' + daysText(EB.daysBetween(now(), s.nextDue)) + '</p>';
           if (s.repeatedTag) h += '<div class="fb warn">שים לב: ' + esc(L.topic.tags[s.repeatedTag] || s.repeatedTag) + ' חזרה כמה פעמים. נחזור אליה מחר במשפטים חדשים.</div>';
         } else {
-          (s.byTopic || []).forEach(function (x) { h += '<div class="kv"><span>' + bidi(x.title) + '</span><span class="v">' + x.correct + ' מתוך ' + x.total + '</span></div>'; });
-          var nb2 = notebook(), left = nb2.queue.length, inkN = nb2.cards.filter(function (c) { return c.state === 'ink'; }).length;
-          h += '<p class="small muted">' + (left ? 'במחברת עוד ' + left + ' משפטים לתרגול היום.' : 'סיימת את המחברת להיום. ההוכחות הבאות מחר, במשפטים חדשים.')
-            + (inkN ? ' ' + inkN + ' טעויות כבר בדיו.' : '') + '</p>';
+          if (L.kind === 'mistakes') h += '<p class="muted" style="margin:0">ההתקדמות של כל טעות מופיעה במחברת.</p>';
         }
       } else h += '<p>אין כרגע תרגילים כאן.</p>';
-      h += '<div class="row"><button type="button" class="btn" id="done">חזרה</button></div></div>';
+      var nq = todayQueue();
+      h += nq.length
+        ? '<div class="row" style="margin-top:16px"><button type="button" class="btn" id="cont">המשך ←</button></div>'
+          + '<div class="row"><button type="button" class="btn quiet" id="done">מספיק להיום</button></div></div>'
+        : '<p class="small muted" style="margin:12px 0 0">סיימת את האימון של היום ✓</p><div class="row"><button type="button" class="btn" id="done">סיום</button></div></div>';
     } else {
       var it = cur(), ex = it.ex;
       h += '<div class="muted small">תרגיל ' + (L.i + 1) + ' מתוך ' + L.items.length + '</div>'
@@ -495,6 +495,7 @@ textarea{font-size:19px}
     };
     var go = document.getElementById('go'); if (go) go.onclick = function () { L.phase = L.items.length ? 'answering' : 'summary'; draw(); focusAns(); };
     var done = document.getElementById('done'); if (done) done.onclick = exitLesson;
+    var cont = document.getElementById('cont'); if (cont) cont.onclick = function () { var nq = todayQueue(); L = null; view.tab = 'today'; if (nq.length) nq[0].start(); else draw(); };
     app.querySelectorAll('[data-opt]').forEach(function (b) {
       b.onclick = function () { L.answer = cur().ex.options[+b.dataset.opt]; doCheck(); };
     });
@@ -525,7 +526,7 @@ textarea{font-size:19px}
     }).join('');
   }
   function topicNote(it) { return L.kind === 'topic' ? '' : '<p class="small muted" style="margin:6px 0 0">הנושא: ' + bidi((topicById(it.topicId) || {}).titleHe || '') + '</p>'; }
-  function nextBtn() { return '<div class="row"><button type="button" class="btn" id="next">' + (L.i + 1 < L.items.length ? 'הבא ←' : 'סיום') + '</button></div>'; }
+  function nextBtn() { return '<div class="row"><button type="button" class="btn" id="next">' + (L.i + 1 < L.items.length ? 'המשך ←' : 'לסיכום ←') + '</button></div>'; }
   function feedback(it) {
     var ex = it.ex, f = L.fb;
     switch (L.phase) {
@@ -655,37 +656,16 @@ textarea{font-size:19px}
       var w = EB.weekSummary(S.attempts, notebook().cards, t);
       var cell = function (v, l) { return '<div><b>' + v + '</b><span>' + l + '</span></div>'; };
       h += '<h2>השבוע שלי</h2><div class="card"><div class="week">'
-        + cell(w.days + '/7', 'ימי תרגול') + cell(w.answers, 'תשובות') + cell(w.accuracy == null ? '—' : pct(w.accuracy), 'נכון בניסיון ראשון')
-        + cell(w.newMistakes, 'טעויות חדשות') + cell(w.proofs, 'הוכחות') + cell(w.inked, 'נסגרו בדיו') + '</div>'
-        + '<p class="small muted" style="margin:8px 0 0">7 הימים האחרונים. לא סופרים דקות או נקודות, רק מה שבאמת קרה.</p></div>';
+        + cell(w.days + '/7', 'ימי תרגול') + cell(w.answers, 'תשובות') + cell(w.inked, 'טעויות שנסגרו') + '</div></div>';
     } catch (e) {}
-    h += '<h2>תחומים</h2><div class="card">';
-    var mastered = topics.filter(function (tp) { return (S.progress[tp.id] || {}).state === 'mastered'; }).length;
-    h += '<div class="kv"><span>דקדוק</span><span class="v">' + mastered + ' מתוך ' + topics.length + ' נושאים בשליטה</span></div>';
-    ['כתיבה', 'קריאה', 'הבנת הנשמע', 'דיבור'].forEach(function (n) { h += '<div class="kv"><span>' + n + '</span><span class="v">לא נבדק עדיין</span></div>'; });
-    h += '<p class="small muted" style="margin:8px 0 0">הערכה לכל תחום תגיע עם האבחון הראשוני.</p></div>';
-
-    h += '<h2>נושאי דקדוק</h2><div class="card">';
+    h += '<h2>הנושאים</h2><div class="card">';
     topics.forEach(function (tp) {
-      var p = S.progress[tp.id], st = p ? p.state : 'new', acc = EB.accuracyLast10(tp.id, S.attempts), d = [];
-      if (acc != null) d.push('דיוק אחרון: ' + pct(acc));
-      if (p && st !== 'new') { var dd = EB.daysBetween(t, p.nextDue); d.push(dd <= 0 ? 'לחזרה היום' : 'חזרה ' + daysText(dd)); }
-      h += '<div class="kv" style="display:block"><b>' + bidi(tp.titleHe) + '</b> ' + statePill(st) + (d.length ? '<div class="small muted">' + esc(d.join(' · ')) + '</div>' : '') + '</div>';
+      var p = S.progress[tp.id], st = p ? p.state : 'new', note = '';
+      if (p && st !== 'new') { var dd = EB.daysBetween(t, p.nextDue); note = dd <= 0 ? 'חזרה היום' : 'חזרה ' + daysText(dd); }
+      h += '<div class="kv"><span>' + bidi(tp.titleHe) + '</span><span class="v">' + statePill(st) + (note ? '<div class="small muted">' + note + '</div>' : '') + '</span></div>';
     });
-    h += '</div>';
-
-    var improved = topics.filter(function (tp) {
-      var s = (S.progress[tp.id] || {}).state; return s === 'mastered' || (s === 'practicing' && (EB.accuracyLast10(tp.id, S.attempts) || 0) >= 0.8);
-    });
-    var needs = topics.filter(function (tp) {
-      var a = EB.accuracyLast10(tp.id, S.attempts); return EB.repeatedErrorTag(tp.id, S.attempts, t) || (a != null && a < 0.6);
-    });
-    var nextT = EB.todayPlan(topics, S.progress, S.attempts, t)[0];
-    function line(title, arr) { return '<div class="kv" style="display:block"><b>' + title + '</b><div class="small muted">' + (arr.length ? arr.map(bidi).join(', ') : 'עדיין אין') + '</div></div>'; }
-    h += '<h2>במבט אחד</h2><div class="card">' + line('השתפרת ב', improved.map(function (x) { return x.titleHe; }))
-      + line('עדיין דורש תרגול', needs.map(function (x) { return x.titleHe; })) + line('השלב הבא', nextT ? [nextT.topic.titleHe] : []) + '</div>';
-
-    h += '<h2>גיבוי</h2><div class="card"><p class="small muted" style="margin:0 0 8px">ההתקדמות נשמרת במכשיר ומגובה בענן של האתר. '
+    h += '</div><p class="small muted">כרגע נבדקים כאן דקדוק ואיות בכתיבה. קריאה, שמיעה ודיבור עוד לא נבדקים.</p>';
+    h += '<details class="card bk"' + (backupMsg ? ' open' : '') + '><summary><b>גיבוי</b></summary><p class="small muted" style="margin:8px 0">ההתקדמות נשמרת במכשיר ומגובה בענן של האתר. '
       + 'כדאי לשמור גם קובץ גיבוי מדי פעם, למשל לפני החלפת טלפון.</p>'
       + '<div class="row"><button type="button" class="btn sec" id="bkSave">שמירת קובץ גיבוי</button>'
       + '<button type="button" class="btn quiet" id="bkLoad">שחזור מקובץ</button></div>'
@@ -693,7 +673,7 @@ textarea{font-size:19px}
       + (backupMsg ? '<p class="small" role="status" style="margin:8px 0 0">' + esc(backupMsg) + '</p>' : '')
       + '<details style="margin-top:10px"><summary class="small muted">מחיקת כל ההתקדמות</summary>'
       + '<p class="small muted">לפני המחיקה נשמר עותק אחרון במכשיר, ליתר ביטחון.</p>'
-      + '<div class="row"><button type="button" class="btn danger" id="wipe">מחיקת כל ההתקדמות</button></div></details></div>';
+      + '<div class="row"><button type="button" class="btn danger" id="wipe">מחיקת כל ההתקדמות</button></div></details></details>';
     if (DEV || dayOffset()) {
       h += '<details class="card"' + (dayOffset() ? ' open' : '') + '><summary><b>כלי פיתוח</b></summary>'
         + '<p class="small">התאריך המדומה: ' + (dayOffset() ? '+' + dayOffset() + ' ימים' : 'היום') + '</p>'
@@ -773,10 +753,10 @@ textarea{font-size:19px}
         + (R.result == null ? '' : ' disabled') + '>' + esc(R.answer) + '</textarea>';
       if (R.result == null) h += '<div class="row"><button type="button" class="btn" id="rcheck">בדיקה</button></div>';
       else h += '<div class="fb ' + (R.result ? 'ok' : 'warn') + '"><h3>' + (R.result ? '✓ נכון!' : 'התשובה:') + '</h3>' + enS(it.en)
-        + '<div class="small muted" style="margin-top:6px">בתוך משפט:</div>' + enS(it.context) + '</div><div class="row"><button type="button" class="btn" id="rnext">הבא ←</button></div>';
+        + '<div class="small muted" style="margin-top:6px">בתוך משפט:</div>' + enS(it.context) + '</div><div class="row"><button type="button" class="btn" id="rnext">המשך ←</button></div>';
       h += '</div>';
     } else {
-      h += '<div class="card"><p class="big">' + (R.queue.length ? 'סיימת את החזרה 🎉' : 'אין ביטויים לחזרה כרגע.') + '</p><button type="button" class="btn" id="rdone">חזרה</button></div>';
+      h += '<div class="card"><p class="big">' + (R.queue.length ? 'סיימת את החזרה 🎉' : 'אין ביטויים לחזרה כרגע.') + '</p><button type="button" class="btn" id="rdone">סיום</button></div>';
     }
     render(h);
     var close = function () { R = null; draw(); };

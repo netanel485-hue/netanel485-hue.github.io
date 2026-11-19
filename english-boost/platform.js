@@ -19,11 +19,13 @@
   function pickVoice() {
     try {
       var vs = synth.getVoices().filter(function (v) { return /^en[-_]/i.test(v.lang); });
-      var pref = ['en-US', 'en-GB', 'en-AU'];
+      // אנגלית אמריקאית/קנדית קודם (גם אם קול אחר מותקן מקומית); בתוך אותו מבטא, קול מקומי קודם
+      var pref = ['en-US', 'en-CA'];
       voice = vs.sort(function (a, b) {
         var ia = pref.indexOf(a.lang.replace('_', '-')), ib = pref.indexOf(b.lang.replace('_', '-'));
-        if (a.localService !== b.localService) return a.localService ? -1 : 1;
-        return (ia < 0 ? 9 : ia) - (ib < 0 ? 9 : ib);
+        ia = ia < 0 ? 9 : ia; ib = ib < 0 ? 9 : ib;
+        if (ia !== ib) return ia - ib;
+        return a.localService === b.localService ? 0 : a.localService ? -1 : 1;
       })[0] || null;
     } catch (e) { voice = null; }
   }

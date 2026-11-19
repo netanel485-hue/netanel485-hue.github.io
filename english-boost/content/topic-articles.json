@@ -53,13 +53,13 @@
       "id": "art-03",
       "type": "translate",
       "promptHe": "יש לי פגישה בשלוש.",
-      "accept": ["i have a meeting at (3|three)( o'clock| pm|pm)?", "i have got a meeting at (3|three)( o'clock| pm|pm)?", "i have a meeting at 3:00( pm)?"],
+      "accept": ["i have (got )?a meeting at (3|three)( o'clock| ?p\\.?m\\.?)?", "i have a meeting at 3:00( ?p\\.?m\\.?)?"],
       "errors": [
         { "pattern": "^i (have|have got) meeting", "tag": "ART_MISSING_A",
           "explainHe": "meeting ביחיד, מוזכר בפעם הראשונה, ולכן a meeting." }
       ],
       "modelAnswer": "I have a meeting at three.",
-      "tests": { "accept": ["I have a meeting at 3 pm.", "I've got a meeting at three"], "flag": { "I have meeting at 3": "ART_MISSING_A" } }
+      "tests": { "accept": ["I have a meeting at 3 pm.", "I've got a meeting at three", "I have a meeting at 3 p.m."], "flag": { "I have meeting at 3": "ART_MISSING_A" } }
     },
     {
       "id": "art-04",
