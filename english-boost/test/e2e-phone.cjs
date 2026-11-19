@@ -52,21 +52,23 @@ async function answer(page, ex, text) {
     page.on('pageerror', e => errors.push(String(e)));
     page.on('dialog', d => d.accept());
 
-    step('מסך היום נטען עם כל הנושאים');
+    step('מסך היום: צעד הבא אחד ברור, וכל הנושאים מאחורי "לבחור נושא אחר"');
     await page.goto(URL);
-    await page.getByRole('heading', { name: 'כל הנושאים' }).waitFor();
+    await page.getByRole('heading', { name: 'האימון של היום' }).waitFor();
     const files = fs.readdirSync(CONTENT).filter(f => /^topic-.*\.json$/.test(f)).length;
     assert.equal(await page.locator('[data-free]').count(), files);
+    assert.equal(await page.locator('#nextTask').count(), 1, 'exactly one primary next step');
+    assert.equal(await page.locator('.pick[open]').count(), 0, 'topic list collapsed');
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no horizontal scroll at 375px');
 
     step('כלי פיתוח מוסתרים, גיבוי מוצג');
     await page.click('[data-tab="progress"]');
-    await page.getByRole('heading', { name: 'גיבוי' }).waitFor();
+    await page.locator('summary', { hasText: 'גיבוי' }).waitFor();
     assert.equal(await page.locator('#dayPlus').count(), 0, 'dev tools hidden without ?dev');
 
     step('שיעור מלא: טעות מכוונת בתרגיל הראשון, תיקון, ואז תשובות נכונות');
     await page.click('[data-tab="today"]');
-    await page.click('[data-start="0"]');
+    await page.click('#nextTask');
     await page.click('#go');
     let first = true, n = 0;
     while (await page.locator('.prompt').count()) {
@@ -79,6 +81,7 @@ async function answer(page, ex, text) {
         if (ex.type === 'choose') assert.ok(hint.includes('תשובה אחרת'), 'choose retry hint');
         else {
           assert.ok(hint.includes('בדיקה'), 'write retry hint');
+          assert.ok(hint.includes('רמז:'), 'first try shows a hint, not the full explanation');
           // רמז "עט אדום": מסמן איפה הבעיה בלי לגלות את התשובה
           assert.ok(await page.locator('.fb.warn .diff .hint, .fb.warn .diff .gap').count() > 0, 'hint marks the problem');
           assert.equal(await page.locator('.fb.warn .diff .ins').count(), 0, 'hint does not reveal the answer');
@@ -93,11 +96,19 @@ async function answer(page, ex, text) {
     assert.ok(!first, 'made one deliberate mistake');
     await page.getByRole('heading', { name: 'סיכום' }).waitFor();
     assert.ok(n >= 3, `answered ${n} exercises`);
-    await page.click('#done');
+    // "המשך" מעביר ישר למשימה הבאה, בלי לחזור למסך הראשי
+    assert.equal(await page.locator('#cont').count(), 1, 'continue to the next task');
+    await page.click('#cont');
+    assert.ok(await page.locator('#go, .prompt, #rans').count() > 0, 'next task opened');
+    await page.click('#exit');
+    if (await page.locator('#exit').count()) await page.click('#exit');
 
-    step('הטעות נכנסה למחברת');
+
+    step('הטעות נכנסה למחברת, במצב "בתיקון" (תוקנה בניסיון השני)');
     await page.click('[data-tab="mistakes"]');
-    await page.getByText('1 פתוחות').waitFor();
+    await page.locator('.mist.st-fixing').waitFor();
+    assert.equal(await page.locator('.mist').count(), 1);
+    assert.equal(await page.locator('#practice').count(), 0, 'proof waits for another day');
 
     step('מצב כהה: רקע כהה וטקסט בהיר');
     await page.emulateMedia({ colorScheme: 'dark' });
@@ -107,6 +118,7 @@ async function answer(page, ex, text) {
 
     step('שמירת גיבוי, מחיקה ושחזור');
     await page.click('[data-tab="progress"]');
+    await page.locator('summary', { hasText: 'גיבוי' }).click();
     const [dl] = await Promise.all([page.waitForEvent('download'), page.click('#bkSave')]);
     const file = await dl.path();
     assert.match(dl.suggestedFilename(), /^english-boost-backup-\d{4}-\d{2}-\d{2}\.json$/);
@@ -120,12 +132,35 @@ async function answer(page, ex, text) {
     await page.setInputFiles('#bkFile', file);
     await page.getByText('הגיבוי שוחזר.').waitFor();
     await page.click('[data-tab="mistakes"]');
-    await page.getByText('1 פתוחות').waitFor();
+    await page.locator('.mist.st-fixing').waitFor();
+
+    step('למחרת: משפט חדש עם אותו כלל, והכרטיס עובר להוכחה 1/3');
+    await page.evaluate(() => localStorage.setItem('eb.dayOffset', '1'));
+    await page.reload();
+    await page.getByRole('heading', { name: 'האימון של היום' }).waitFor();
+    await page.click('[data-tab="mistakes"]');
+    await page.click('#practice');
+    const proofEx = await currentExercise(page);
+    const lastWrong = JSON.parse(await page.evaluate(() => localStorage.getItem('eb.data'))).attempts.find(a => a.outcome === 'error');
+    assert.notEqual(proofEx.id, lastWrong.ex, 'proof uses a new sentence');
+    await answer(page, proofEx, proofEx.tests.accept[0]);
+    await page.locator('.fb.ok').waitFor();
+    await page.click('#next');
+    while (await page.locator('.prompt').count()) {
+      const e2 = await currentExercise(page); await answer(page, e2, e2.tests.accept[0]); await page.locator('.fb.ok').waitFor(); await page.click('#next');
+      if (await page.getByRole('heading', { name: 'סיכום' }).count()) break;
+    }
+    await page.click('#done');
+    await page.click('[data-tab="mistakes"]');
+    await page.locator('.mist.st-proving').waitFor();
+    assert.match(await page.locator('.mist.st-proving .pill').textContent(), /1\/3/);
+    await page.evaluate(() => localStorage.removeItem('eb.dayOffset'));
 
     step('נתונים מגרסה חדשה יותר לא נדרסים');
     await page.evaluate(() => localStorage.setItem('eb.data', JSON.stringify({ v: 99, attempts: [{ keep: 1 }] })));
     await page.reload();
     await page.getByText('נשמרה בגרסה חדשה יותר').waitFor();
+    await page.locator('summary', { hasText: 'לבחור נושא אחר' }).click();
     await page.click('[data-free]');
     await page.click('#go');
     const ex = await currentExercise(page);
@@ -137,7 +172,7 @@ async function answer(page, ex, text) {
     step('כלי פיתוח עם ?dev');
     await page.evaluate(() => localStorage.clear());
     await page.goto(URL + '?dev');
-    await page.getByRole('heading', { name: 'כל הנושאים' }).waitFor(); // התוכן נטען לפני שעוברים מסך (אחרת הציור מחדש סוגר את ה-details)
+    await page.getByRole('heading', { name: 'האימון של היום' }).waitFor(); // התוכן נטען לפני שעוברים מסך (אחרת הציור מחדש סוגר את ה-details)
     await page.click('[data-tab="progress"]');
     await page.locator('summary', { hasText: 'כלי פיתוח' }).click();
     await page.locator('#dayPlus').waitFor();

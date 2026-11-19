@@ -7,7 +7,8 @@
     "כשיש זמן מוגדר בעבר (yesterday, last week, in 2020, two years ago, when?) משתמשים ב-past simple: I saw him yesterday.",
     "בלי זמן מוגדר, כשמדובר בניסיון או בתוצאה שקשורה להיום, משתמשים ב-present perfect: I've been to London three times.",
     "\"לפני שנתיים\" = two years ago. לא before two years. ago בא אחרי הזמן.",
-    "אחרי it's the first time באים ב-present perfect: It's the first time I've been here. בעברית אומרים \"אני בא\", באנגלית I've been."
+    "אחרי it's the first time באים ב-present perfect: It's the first time I've been here. בעברית אומרים \"אני בא\", באנגלית I've been.",
+    "באנגלית אמריקאית אומרים גם I just finished ו-Did you eat yet? בעבר פשוט, וזה נכון. עם so far, ever ו-it's the first time נשארים ב-present perfect."
   ],
   "examples": [
     "I met her two years ago.",
@@ -39,14 +40,14 @@
       "id": "pvp-02",
       "type": "choose",
       "promptHe": "בחר:",
-      "promptEn": "I ___ to London three times.",
+      "promptEn": "I ___ to London three times so far.",
       "options": ["have been", "went", "was"],
       "accept": ["have been"],
       "errors": [
-        { "pattern": "^went$", "tag": "PP_EXPERIENCE", "explainHe": "אין כאן זמן מוגדר. זה ניסיון חיים עד היום, ולכן I've been." },
-        { "pattern": "^was$", "tag": "PP_EXPERIENCE", "explainHe": "ניסיון חיים בלי זמן מוגדר: I've been to London. וגם אחרי was לא אומרים to London." }
+        { "pattern": "^went$", "tag": "PP_EXPERIENCE", "explainHe": "so far = עד עכשיו, ולכן present perfect: I've been." },
+        { "pattern": "^was$", "tag": "PP_EXPERIENCE", "explainHe": "so far = עד עכשיו, ולכן present perfect: I've been to London." }
       ],
-      "modelAnswer": "I've been to London three times.",
+      "modelAnswer": "I've been to London three times so far.",
       "tests": { "accept": ["have been"], "flag": { "went": "PP_EXPERIENCE", "was": "PP_EXPERIENCE" } }
     },
     {

@@ -1,7 +1,7 @@
 /* Service worker של כל האתר (13/11/2026): האתר עובד גם בלי אינטרנט.
    כשיש רשת — תמיד הגרסה החדשה (רשת קודם); בלי רשת או ברשת איטית — העותק השמור.
    מוחק רק מטמונים שמתחילים ב-"site-", כדי לא לפגוע במטמונים של כיתה ד׳ ו־ו׳. */
-const C='site-16';
+const C='site-18';
 const CORE=['./','index.html','manifest.webmanifest','favicon.png','apple-touch-icon.png','icon-192.png','icon-512.png','icon-maskable-512.png','shared/site-bar.js','shared/cloud.js','shared/kit-theme.css'];
 const PAGES=['grade1-learning/','adi-english-game/','grade2-math/','grade4-learning/','grade4-mivdak/','grade6-learning/','math-test-prep/','dvir-melachim/','reading/','english-boost/','english-boost/engine.js','english-boost/platform.js','english-boost/manifest.webmanifest','english-boost/icon-192.png','english-boost/apple-touch-icon.png','english-boost/content/topic-present-simple-continuous.json','english-boost/content/topic-present-perfect.json','english-boost/content/topic-articles.json','english-boost/content/topic-past-vs-present-perfect.json','english-boost/content/topic-future.json','english-boost/content/topic-time-conditional-clauses.json','english-boost/content/topic-questions.json','english-boost/content/topic-subject-verb.json','english-boost/content/topic-countable-uncountable.json','english-boost/content/topic-prepositions.json'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(C).then(c=>

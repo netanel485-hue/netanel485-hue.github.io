@@ -250,3 +250,61 @@ test('wordDiff never marks an accepted variant as wrong (in / at this company)',
   const d2 = EB.wordDiff('I am working in this company since 2019', [ex.modelAnswer].concat(ex.alternatives || []), ok);
   assert.ok(!d2.ops.some(o => o.op !== 'same' && /\bin\b/.test(o.text)), fmt(d2));
 });
+
+// ---------- מחזור החיים של טעות ----------
+const mkEx = (id, tags) => ({ id, type: 'write', promptHe: '', accept: ['x'], errors: tags.map(tag => ({ pattern: 'y', tag, explainHe: 'z' })), modelAnswer: 'x' });
+const LT = { id: 'L', order: 1, titleHe: '', summaryHe: '', ruleHe: [], examples: [], tags: { X: 'x', Y: 'y' },
+  exercises: [mkEx('e1', ['X']), mkEx('e2', ['X']), mkEx('e3', ['X']), mkEx('e4', []), mkEx('e5', ['Y'])] };
+let lseq = 0;
+const la = (ex, day, outcome, extra = {}) => Object.assign({ ex, topic: 'L', answer: 'a', outcome, tag: null, date: at(day, ++lseq), prod: true, isNew: true }, extra);
+const card = (atts, now, key = 'L|X') => EB.mistakeCards(atts, [LT], now).find(c => c.key === key);
+
+test('mistake card: open → fixing → proving → ink, only new sentences on later days count', () => {
+  const atts = [la('e1', 0, 'error', { tag: 'X' })];
+  assert.equal(card(atts, at(0, 500)).state, 'open');
+  atts[0].fixed = true;
+  assert.equal(card(atts, at(0, 500)).state, 'fixing', 'fixed on retry');
+  atts.push(la('e2', 0, 'correct'));
+  assert.equal(card(atts, at(0, 500)).proofs, 0, 'same day does not prove');
+  atts.push(la('e2', 1, 'correct'), la('e3', 1, 'correct'));
+  let c = card(atts, at(1, 500));
+  assert.equal(c.state, 'proving'); assert.equal(c.proofs, 1, 'one proof per day'); assert.ok(c.provedToday);
+  atts.push(la('e1', 2, 'correct'));
+  assert.equal(card(atts, at(2, 500)).proofs, 1, 'the same sentence is not a proof when others exist');
+  atts.push(la('e3', 2, 'correct'), la('e2', 4, 'correct'));
+  c = card(atts, at(4, 500));
+  assert.equal(c.state, 'ink'); assert.equal(c.proofs, EB.PROOFS_NEEDED);
+  assert.deepEqual(c.history.map(h => h.type), ['wrong', 'fixed', 'proof', 'proof', 'proof', 'ink']);
+});
+
+test('mistake card: a new mistake of the same kind reopens it; untagged and single-sentence mistakes', () => {
+  const atts = [la('e1', 0, 'error', { tag: 'X' }), la('e2', 1, 'correct'), la('e3', 2, 'correct'), la('e2', 3, 'error', { tag: 'X' })];
+  const c = card(atts, at(3, 500));
+  assert.equal(c.state, 'open'); assert.equal(c.proofs, 0); assert.equal(c.wrongCount, 2); assert.equal(c.last.ex, 'e2');
+  const self = [la('e4', 0, 'selfWrong'), la('e4', 0, 'selfCorrect'), la('e4', 2, 'selfCorrect')];
+  const cs = card(self, at(2, 500), 'ex|e4');
+  assert.equal(cs.state, 'proving'); assert.equal(cs.proofs, 1, 'untagged: the same sentence on a later day');
+  const only = [la('e5', 0, 'error', { tag: 'Y' }), la('e5', 1, 'correct')];
+  assert.equal(card(only, at(1, 500), 'L|Y').proofs, 1, 'only one sentence tests Y, so it counts on a later day');
+});
+
+test('mistake practice: open → same sentence; fixing → another sentence, not on the day of the mistake', () => {
+  const atts = [la('e1', 0, 'error', { tag: 'X', fixed: false })];
+  let q = EB.mistakePractice(EB.mistakeCards(atts, [LT], at(0, 500)), [LT], atts, at(0, 500));
+  assert.deepEqual(q.map(x => x.ex.id), ['e1']);
+  atts[0].fixed = true;
+  q = EB.mistakePractice(EB.mistakeCards(atts, [LT], at(0, 500)), [LT], atts, at(0, 500));
+  assert.deepEqual(q, [], 'fixed today: proof starts tomorrow');
+  q = EB.mistakePractice(EB.mistakeCards(atts, [LT], at(1, 500)), [LT], atts, at(1, 500));
+  assert.equal(q.length, 1); assert.notEqual(q[0].ex.id, 'e1', 'a new sentence for the proof');
+  atts.push(la(q[0].ex.id, 1, 'correct'));
+  q = EB.mistakePractice(EB.mistakeCards(atts, [LT], at(1, 550)), [LT], atts, at(1, 550));
+  assert.deepEqual(q, [], 'already proved today');
+});
+
+test('week summary counts only the last 7 days', () => {
+  const atts = [la('e1', 0, 'error', { tag: 'X' }), la('e2', 8, 'correct'), la('e3', 9, 'correct'), la('e2', 9, 'error', { tag: 'X' })];
+  const w = EB.weekSummary(atts, EB.mistakeCards(atts, [LT], at(9, 500)), at(9, 500));
+  assert.equal(w.days, 2); assert.equal(w.answers, 3); assert.equal(Math.round(w.accuracy * 100), 67);
+  assert.equal(w.newMistakes, 0, 'the X mistake started on day 0'); assert.equal(w.proofs, 2);
+});

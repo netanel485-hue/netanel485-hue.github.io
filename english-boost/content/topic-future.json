@@ -1,7 +1,7 @@
 {
   "id": "future",
   "order": 5,
-  "titleHe": "עתיד: will, going to, הווה מתמשך",
+  "titleHe": "עתיד: will / going to / הווה מתמשך",
   "summaryHe": "איך מדברים על מחר, ולמה לא \"I call you tomorrow\"",
   "ruleHe": [
     "בעברית \"אני מתקשר מחר\" נשמע טבעי. באנגלית עתיד צריך will, going to או הווה מתמשך: I'll call you tomorrow.",
@@ -27,7 +27,7 @@
       "id": "fut-01",
       "type": "translate",
       "promptHe": "אני אתקשר אליך מחר.",
-      "accept": ["i will (call|phone|ring) you tomorrow", "i will give you a call tomorrow", "i am (going to call|calling) you tomorrow", "tomorrow i will (call|phone) you"],
+      "accept": ["i will (call|phone) you tomorrow", "i will give you a call tomorrow", "i am (going to call|calling) you tomorrow", "tomorrow i will (call|phone) you"],
       "errors": [
         { "pattern": "^i (call|phone|ring) you tomorrow", "tag": "FUT_PRESENT_FOR_FUTURE", "explainHe": "בעברית \"אני מתקשר מחר\" עובד, באנגלית צריך עתיד: I'll call you tomorrow." },
         { "pattern": "\\bwill to\\b", "tag": "FUT_WILL_TO", "explainHe": "אחרי will בא פועל בלי to: I'll call." }
