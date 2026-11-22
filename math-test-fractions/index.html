@@ -419,6 +419,17 @@ body{--c:#7C3AED}
 /* פחות טקסט במסך הבית: פעולה ראשית אחת ("ממשיכים"), ונושאים בלי ספירת שאלות (14/11/2026) */
 #homeIntro,.tcard .ct,.pd{display:none!important}
 </style>
+<style id="test-gen-css">
+.genrow{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.genrow label{font-weight:700;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.genrow select{font-size:16px;padding:8px;border-radius:10px;border:2px solid #9bb7a8;background:#fff;font-family:inherit}
+.gpart{margin:8px 0 2px;font-weight:800}
+.gchk{display:flex;align-items:center;gap:8px;padding:6px 4px;font-size:15.5px}
+.gchk input{width:20px;height:20px}
+#printArea{display:none}
+@media print{body>*:not(#printArea){display:none!important}#printArea{display:block;direction:rtl;font-size:14pt;color:#000}
+#printArea .pq{break-inside:avoid;margin:0 0 14pt}#printArea .pans{break-before:page}#printArea .line{border-bottom:1px solid #000;height:22pt;margin-top:6pt}}
+</style>
 <style id="fr-open-css">
 .openbox{display:flex;align-items:center;justify-content:center;gap:14px;margin:12px 0 4px;direction:ltr}
 .oi{width:76px;max-width:26vw;font-size:22px;font-weight:700;text-align:center;padding:10px 6px;border:2px solid #9bb7a8;border-radius:12px;background:#fff;color:#1c2b3a;font-family:inherit}
@@ -481,6 +492,18 @@ body{--c:#7C3AED}
     <button class="tourbtn" onclick="startTour()">🧭 סיור בחומר — שאלה מכל נושא, בסבבים מעורבבים</button>
     </details>
     <div id="partsHost"></div>
+    <details class="homefold" id="genFold"><summary>🛠️ מחולל מבחנים — בוחרים נושאים, אורך ורמה</summary>
+    <div class="card" id="genBox">
+      <p style="margin:0 0 8px;color:#5a6b7d">בנו מבחן בדיוק על מה שצריך. אפשר לענות כאן, או להדפיס עם דף תשובות.</p>
+      <div id="genTopics"></div>
+      <div class="center" style="margin:8px 0"><button class="btn-ghost" type="button" onclick="genAll(true)">סמנו הכול</button> <button class="btn-ghost" type="button" onclick="genAll(false)">נקו הכול</button> <button class="btn-ghost" type="button" onclick="genWeak()">רק נושאים חלשים</button></div>
+      <div class="genrow"><label>מספר שאלות <select id="genN"><option>10</option><option selected>15</option><option>20</option><option>30</option></select></label>
+      <label>רמה <select id="genL"><option value="0" selected>מעורבת</option><option value="1">קלה</option><option value="2">בינונית</option><option value="3">קשה</option></select></label>
+      <label>סוג <select id="genT"><option value="mix" selected>סגורות ופתוחות</option><option value="open">רק פתוחות (הקלדה)</option><option value="closed">רק סגורות</option></select></label></div>
+      <div class="center" style="margin-top:10px"><button class="bigbtn" type="button" onclick="startCustom()">🛠️ צרו מבחן</button> <button class="btn-ghost" type="button" onclick="printTest(true)">🖨️ הדפסה ישירה</button></div>
+      <div id="genMsg" class="openmsg"></div>
+    </div>
+    </details>
     <details class="homefold"><summary>🎓 מבחן מסכם — כמו המבחן האמיתי!</summary>
     <div style="margin:12px 0 6px">
       <button class="bigbtn" onclick="startMock()">🎓 מבחן מדומה — כמו המבחן האמיתי!</button>
@@ -596,7 +619,7 @@ body{--c:#7C3AED}
   <div id="mockPane" style="display:none">
     <div class="topicbar">
       <button class="btn-ghost" onclick="showTopics()">← לכל הנושאים</button>
-      <div class="tn">🎓 מבחן מדומה — מבנה כמו במבחן האמיתי</div>
+      <div class="tn" id="mockTitle">🎓 מבחן מדומה — מבנה כמו במבחן האמיתי</div>
     </div>
     <div class="bar"><span id="mockCounter"></span><span>בהצלחה רבה!</span></div>
     <div class="progress"><div id="mockFill"></div></div>
@@ -611,7 +634,7 @@ body{--c:#7C3AED}
       <div class="center" style="margin-top:8px"><button class="ttsbtn" onclick="speakText('הציון שלך: ' + document.getElementById('mockScoreNum').textContent + '. ' + document.getElementById('mockScoreMsg').textContent)" title="השמעת הציון" aria-label="השמעת הציון">🔊</button></div>
       <div id="mockBreakdown" class="breakdown" style="margin-top:10px"></div>
       <div style="margin-top:12px">
-        <button class="btn btn-new" onclick="startMock()">🎓 מבחן מדומה חדש</button>
+        <button class="btn btn-new" onclick="mockAgain()">🎓 מבחן חדש</button> <button class="btn-ghost" onclick="printTest()">🖨️ הדפסה</button>
         <button class="btn-ghost" onclick="showTopics()">← לכל הנושאים</button>
       </div>
     </div>
@@ -2164,9 +2187,10 @@ function gradeMock(){
  const score=gradeListQuiz(mockQs, mockSel, "mk");
  $("mockSubmit").style.display="none";
  const box=$("mockResult"); box.style.display="";
- $("mockScoreNum").textContent=Math.round(score/mockQs.length*100);
- $("mockScoreMsg").textContent= score>=13? "מדהים! 🏆 מוכן לגמרי למבחן!" : score>=11? "מצוין! 💪" :
-   score>=8? "יפה! 👏 עוד תרגול בנושאים החלשים" : "ממשיכים להתאמן! 💡 רואים למטה באיזה חלק כדאי להתחזק";
+ const pct=Math.round(score/mockQs.length*100);
+ $("mockScoreNum").textContent=pct;
+ $("mockScoreMsg").textContent= pct>=90? "מדהים! 🏆 מוכן לגמרי למבחן!" : pct>=75? "מצוין! 💪" :
+   pct>=55? "יפה! 👏 עוד תרגול בנושאים החלשים" : "ממשיכים להתאמן! 💡 רואים למטה על מה כדאי לחזור";
  speakAuto("הציון שלך: " + $("mockScoreNum").textContent + ". " + $("mockScoreMsg").textContent);
  let html="<b>פירוט לפי חלקים:</b><br>";
  PARTS.forEach((p,pi)=>{
@@ -2174,6 +2198,9 @@ function gradeMock(){
    const good=inPart.filter(([it,i])=> selCorrect(it.q,mockSel[i])).length;
    html+=`${p.emoji} ${p.name}: ${good} מתוך ${inPart.length} נכונות<br>`;
  });
+ const byT={}; mockQs.forEach((it,i)=>{ const o=byT[it.tid]||(byT[it.tid]={a:0,g:0}); o.a++; if(selCorrect(it.q,mockSel[i])) o.g++; });
+ const rows=Object.keys(byT).sort((x,y)=>byT[x].g/byT[x].a-byT[y].g/byT[y].a);
+ html+=`<div style="margin-top:12px"><b>פירוט לפי נושאים (החלשים למעלה):</b></div>`+rows.map(id=>{ const o=byT[id], f=o.g/o.a; return `<div>${f>=0.8?"🟢":f>=0.5?"🟡":"🔴"} ${TOPIC_BY_ID[id].emoji} ${TOPIC_BY_ID[id].name}: ${o.g}/${o.a}${f<0.8?` · <a href="#" onclick="openTopic('${id}');showTrain();return false">לתרגול ←</a>`:""}</div>`; }).join("");
  html+=`<div style="margin-top:10px">${ramzorHtml(0)}</div>`;
  $("mockBreakdown").innerHTML=html;
  updateMeters();
@@ -2625,6 +2652,54 @@ renderHome();
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(function(){});}catch(e){}
 </script>
 <script type="module" src="../shared/cloud.js"></script>
+<script id="test-gen">
+/* מחולל מבחנים (22/11/2026). להסרה: למחוק את הבלוק, את details#genFold, את הסגנון test-gen-css ואת div#printArea. */
+let lastCfg=null;
+function genInit(){
+  const h=$("genTopics"); if(!h||h.dataset.ok) return; h.dataset.ok="1";
+  h.innerHTML=PARTS.map((p,pi)=>`<div class="gpart">${p.emoji} ${p.name}</div>`+TOPICS.filter(x=>x.part===pi).map(x=>`<label class="gchk"><input type="checkbox" value="${x.id}" checked> ${x.emoji} ${x.name}</label>`).join("")).join("");
+}
+function genAll(v){ document.querySelectorAll("#genTopics input").forEach(i=>{ i.checked=v; }); }
+function genWeak(){ let any=false; document.querySelectorAll("#genTopics input").forEach(i=>{ const c=(store.correct[i.value]||[]).length, e=Object.values(store.errors||{}).filter(x=>x.tid===i.value&&!x.resolved).length; const w=e>0||c<30; i.checked=w; any=any||w; }); if(!any) genAll(true); }
+function genConfig(){
+  const tids=[...document.querySelectorAll("#genTopics input:checked")].map(i=>i.value);
+  return {tids, n:+$("genN").value, lvl:+$("genL").value, type:$("genT").value};
+}
+function genBuild(cfg){
+  const items=[], used=new Set(); const lv=[1,2,2,3,3];
+  for(let i=0;i<cfg.n;i++){
+    const tid=cfg.tids[i%cfg.tids.length]; const L=cfg.lvl||lv[Math.floor(i/cfg.tids.length+i)%lv.length];
+    let d=null;
+    for(let k=0;k<60;k++){ const c=drawFromBank(tid,L); const key=c.tid+"|"+c.idx; if(used.has(key)) continue; const o=!!c.q.open; if(cfg.type==="open"&&!o) continue; if(cfg.type==="closed"&&o) continue; d=c; break; }
+    if(!d){ for(let k=0;k<60;k++){ const c=drawFromBank(tid,0); if(!used.has(c.tid+"|"+c.idx)){ d=c; break; } } }
+    if(!d) continue; used.add(d.tid+"|"+d.idx);
+    items.push({...d, part:TOPIC_BY_ID[tid].part, tag:TOPIC_BY_ID[tid].emoji+" "+TOPIC_BY_ID[tid].name});
+  }
+  return items;
+}
+function startCustom(cfg){
+  cfg=cfg||genConfig();
+  if(!cfg.tids.length){ $("genMsg").textContent="בחרו לפחות נושא אחד."; return; }
+  lastCfg=cfg; $("genMsg").textContent="";
+  hideAllPanes(); $("mockPane").style.display="";
+  mockQs=genBuild(cfg); mockSel=Array(mockQs.length).fill(null);
+  $("mockTitle").textContent="🛠️ מבחן שבניתם — "+cfg.tids.length+" נושאים";
+  $("mockCounter").textContent="מבחן מותאם — "+mockQs.length+" שאלות";
+  $("mockFill").style.width="0%"; $("mockResult").style.display="none"; $("mockSubmit").style.display="";
+  renderListQuiz("mockQuiz", mockQs, mockSel, "mk"); window.scrollTo({top:0});
+}
+function mockAgain(){ if(lastCfg) startCustom(lastCfg); else startMock(); }
+function printTest(direct){
+  if(direct||!mockQs.length){ const cfg=genConfig(); if(!cfg.tids.length){ $("genMsg").textContent="בחרו לפחות נושא אחד."; return; } lastCfg=cfg; mockQs=genBuild(cfg); mockSel=Array(mockQs.length).fill(null); }
+  let a=$("printArea"); if(!a){ a=document.createElement("div"); a.id="printArea"; document.body.appendChild(a); }
+  const strip=h=>String(h||"");
+  let q=`<h2>מבחן בשברים — כיתה ו׳</h2><p>שם: ____________ &nbsp; תאריך: ____________ &nbsp; ציון: ______</p>`;
+  mockQs.forEach((it,i)=>{ q+=`<div class="pq"><b>${i+1}.</b> ${strip(it.q.text)}${it.q.viz||""}`+(it.q.open? `<div class="line"></div><div class="line"></div>` : `<div>`+it.q.opts.map((o,j)=>`${"אבגד"[j]}. ${o}`).join(" &nbsp;&nbsp; ")+`</div>`)+`</div>`; });
+  q+=`<div class="pans"><h2>דף תשובות</h2>`+mockQs.map((it,i)=>`<div class="pq"><b>${i+1}.</b> ${it.q.open? it.q.ans : "אבגד"[it.q.opts.indexOf(it.q.ans)]+". "+it.q.ans}</div>`).join("")+`</div>`;
+  a.innerHTML=q; window.print();
+}
+genInit();
+</script>
 <style id="g6-no-tts-css">.ttsbtn,.tts-toggle,.qtools .ttsbtn{display:none!important}</style>
 <script id="g6-no-tts">/* כיתה ו׳: בלי הקראה בקול (22/11/2026). להסרה: למחוק את שני הבלוקים. */
 try{ttsOn=false;}catch(e){}
