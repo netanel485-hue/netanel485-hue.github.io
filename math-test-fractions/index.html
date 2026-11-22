@@ -1,0 +1,2629 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<!-- הקראה: Google TTS דוחה בקשות עם Referer של צד שלישי; בלי השורה הזאת ההקראה נכשלת -->
+<meta name="referrer" content="no-referrer">
+<title>חזרה למבחן בשברים — כיתה ו׳</title>
+<style>
+/* DESIGN-TOKENS-START */
+/* ==========================================================================
+   DESIGN TOKENS — מקור אמת אחד לכל מוצרי הלמידה
+   --------------------------------------------------------------------------
+   הפלטה הקנונית היא פלטת grade6 אחרי העיצוב המחודש (8/11/2026):
+   רקע קרם, כרטיסים ירוקים בהירים, טקסט ירוק כהה, מבטא אחד צהוב-כתום.
+   הערכים כאן מועתקים בדיוק מ־grade6 — אין לעצב מחדש בקובץ הזה.
+
+   כלל ברזל: לא עורכים את הבלוק המוזרק בתוך קובץ מוצר.
+   שינוי טוקן נעשה כאן בלבד, ואז מריצים:
+     node ~/workspace/hub-audit/inject-tokens.js <קובץ מוצר>
+   ובודקים סטייה לפני כל פרסום:
+     node ~/workspace/hub-audit/check-tokens-drift.js
+   אין תלות ריצה: אחרי ההזרקה הטוקנים חיים בתוך כל קובץ מוצר.
+   אין פונטים חיצוניים, אין URL-ים, אין תמונות.
+   ========================================================================== */
+
+:root {
+  /* --- צבעי רקע --- */
+  --bg: #FAF6EB;          /* רקע הדף — קרם */
+  --bar: #FFFDF7;         /* סרגל עליון — קרם בהיר יותר */
+  --card: #EAF4E6;        /* כרטיס — ירוק בהיר רך */
+  --card-focus: #FFFFFF;  /* כרטיס במוקד (שאלה פעילה) — לבן */
+
+  /* --- צבעי טקסט --- */
+  --ink: #1E4634;         /* טקסט ראשי — ירוק כהה */
+  --ink-soft: #4F6B5D;    /* טקסט משני — ירוק-אפור */
+  --muted: #7A8B7F;       /* טקסט חלש / כיתוב קטן */
+
+  /* --- קווים וגבולות --- */
+  --line: #D8E4D4;        /* גבול כרטיסים וכפתורים */
+
+  /* --- מבטא — צהוב-כתום אחד בלבד --- */
+  --accent: #F59E0B;      /* מבטא ראשי (מוקד, פס התקדמות) */
+  --accent-deep: #D97706; /* מבטא כהה — כפתורים ראשיים */
+  --accent-soft: #FDF3DC; /* רקע רך למבטא (בחירה, טיפ) */
+
+  /* --- מצבים: הצלחה / שגיאה / אזהרה --- */
+  --good: #2E7D4F;        /* ירוק הצלחה */
+  --good-bg: #DFF0E3;     /* רקע הצלחה */
+  --bad: #B3382E;         /* אדום שגיאה */
+  --bad-bg: #FBE7E3;      /* רקע שגיאה */
+  /* אזהרה: אין גוון חדש בפלטה — משתמשים במשפחת המבטא בלבד */
+  --warn: #D97706;        /* = --accent-deep */
+  --warn-bg: #FDF3DC;     /* = --accent-soft */
+
+  /* --- מצב מושבת (מועתק מחוקי הכפתורים ב־grade6) --- */
+  --disabled-bg: #E7EDE6;
+  --disabled-ink: #8A9A8F;
+
+  /* --- צל --- */
+  --shadow-card: 0 2px 12px rgba(30, 70, 50, .08);
+
+  /* --- רדיוסים (מועתקים מ־grade6) --- */
+  --radius-card: 24px;    /* כרטיס גדול */
+  --radius-md: 20px;      /* כרטיס נושא / חלונית */
+  --radius-btn: 16px;     /* כפתור ואפשרות תשובה */
+  --radius-sm: 12px;      /* שדה קלט / משוב */
+  --radius-pill: 999px;   /* צ'יפ / פס התקדמות */
+
+  /* --- מרווחים (סקאלה, מבוססת על הערכים הנפוצים ב־grade6) --- */
+  --sp-xs: 8px;
+  --sp-sm: 12px;
+  --sp-md: 16px;
+  --sp-lg: 20px;
+  --sp-xl: 28px;
+}
+
+/* ==========================================================================
+   שפת כפתורים משותפת — class-ים עצמאיים, לא דורסים class-ים קיימים.
+   .btn-primary / .btn-secondary / .btn-ghost / .btn-danger הם שמות חדשים
+   (אין אף מוצר שמגדיר אותם היום), והערכים מועתקים מ־grade6:
+   .btn-primary = .btn-main, .btn-secondary = .btn, .btn-ghost = .btn-ghost.
+   כפתור מסוכן (.btn-danger) חדש — משתמש ב־--bad הקיים, בלי גוון חדש.
+   ========================================================================== */
+
+/* בסיס משותף לכל הכפתורים */
+.btn-primary,
+.btn-secondary,
+.btn-ghost,
+.btn-danger {
+  display: inline-block;
+  border-radius: var(--radius-btn);
+  padding: 13px 26px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  min-height: 52px;
+  touch-action: manipulation;
+  text-align: center;
+}
+
+/* ראשי — הפעולה החשובה בעמוד (התחל / בדוק / המשך) */
+.btn-primary {
+  background: var(--accent-deep);
+  color: #fff;
+  border: none;
+  font-size: 17px;
+  font-weight: 800;
+  min-height: 54px;
+  padding: 14px 28px;
+}
+
+/* משני — פעולה רגילה (חזרה / דלג / ביטול) */
+.btn-secondary {
+  background: #FFFFFF;
+  color: var(--ink);
+  border: 2px solid var(--line);
+}
+
+/* שקט — פעולה זניחה, בלי מסגרת בולטת (סגירה / פרטים) */
+.btn-ghost {
+  background: transparent;
+  border: 2px solid var(--line);
+  color: var(--ink-soft);
+  padding: 10px 16px;
+  font-size: 15px;
+  min-height: 48px;
+}
+
+/* מסוכן — פעולה הרסנית / בלתי הפיכה (מחיקת פרופיל) */
+.btn-danger {
+  background: var(--bad);
+  color: #fff;
+  border: none;
+}
+
+/* מצב מושבת — זהה לכל הכפתורים */
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-ghost:disabled,
+.btn-danger:disabled {
+  background: var(--disabled-bg);
+  color: var(--disabled-ink);
+  border: 2px solid var(--disabled-bg);
+  cursor: not-allowed;
+}
+
+/* מוקד מקלדת נראה — אותו כלל כמו ב־grade6 */
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+/* DESIGN-TOKENS-END */
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { overflow-x: hidden; }
+  body { font-family: "Segoe UI", Arial, sans-serif; background: #f0f6ff; color: #1c2b3a; margin: 0; padding: 12px; font-size: 16px; }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  header { background: linear-gradient(135deg, #3a7bd5, #6a4fd0); color: #fff; border-radius: 18px; padding: 20px 18px; text-align: center; }
+  header h1 { margin: 0 0 6px; font-size: clamp(20px, 5.6vw, 27px); }
+  header p { margin: 0; opacity: .92; font-size: clamp(13px, 3.6vw, 15px); }
+  .tabs { display: flex; gap: 10px; margin: 14px 0; }
+  .tab { flex: 1; min-height: 60px; border-radius: 14px; border: 2px solid #d5e2f2; background: #fff;
+         font-size: clamp(15px, 4vw, 17px); font-weight: 700; cursor: pointer; color: #1c2b3a;
+         touch-action: manipulation; padding: 10px 6px; font-family: inherit; }
+  .tab.active { background: linear-gradient(135deg, #3a7bd5, #6a4fd0); color: #fff; border-color: transparent; }
+  .card { background: #fff; border-radius: 16px; padding: 18px; box-shadow: 0 2px 10px rgba(30,60,110,.08); margin-bottom: 14px; }
+  .qnum { color: #6a4fd0; font-weight: 700; font-size: 13px; margin-bottom: 6px; }
+  .qtext { font-size: clamp(17px, 4.6vw, 20px); line-height: 1.6; margin-bottom: 8px; }
+  .frac { display: inline-block; vertical-align: middle; text-align: center; margin: 0 3px; unicode-bidi: isolate; }
+  .m { direction: ltr; unicode-bidi: isolate; white-space: nowrap; }
+  .frac .top { display: block; border-bottom: 2px solid #1c2b3a; padding: 0 5px; font-size: .92em; }
+  .frac .bot { display: block; padding: 0 5px; font-size: .92em; }
+  .viz { margin: 10px 0 4px; }
+  .vizcap { font-size: 14px; color: #5a6b7d; }
+  .opts { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 12px; }
+  @media (min-width: 640px) { .opts { grid-template-columns: 1fr 1fr; } }
+  .opt { min-height: 56px; border: 2px solid #d5e2f2; background: #f8fbff; border-radius: 12px; padding: 12px;
+         font-size: 19px; cursor: pointer; text-align: center; transition: all .15s;
+         display: flex; align-items: center; justify-content: center;
+         font-family: inherit; color: inherit; width: 100%; touch-action: manipulation; }
+  .opt:hover { border-color: #3a7bd5; }
+  .opt.sel { border-color: #3a7bd5; background: #e3efff; font-weight: 700; }
+  .opt.right { border-color: #43b581; background: #e2f6ec; font-weight: 700; }
+  .opt.wrong { border-color: #e05252; background: #fdecec; }
+  .opt:disabled { cursor: default; opacity: 1; }
+  .btn { display: inline-block; border: none; border-radius: 12px; padding: 13px 26px; font-size: 17px;
+         font-weight: 700; cursor: pointer; min-height: 52px; touch-action: manipulation; font-family: inherit; }
+  .btn-main { background: #3a7bd5; color: #fff; }
+  .btn-main:disabled { background: #b9cbe2; cursor: not-allowed; }
+  .btn-new { background: #43b581; color: #fff; }
+  .center { text-align: center; }
+  .explain { display: none; margin-top: 12px; background: #fff8e1; border: 1px solid #ffe082;
+             border-radius: 10px; padding: 10px 14px; font-size: 16px; line-height: 1.55; }
+  .score { font-size: 44px; font-weight: 800; }
+  .msg { font-size: 19px; margin: 6px 0 2px; }
+  details.parents { background: #eef7ee; border: 1px solid #c8e6c9; border-radius: 14px;
+                    padding: 14px 18px; margin-top: 18px; font-size: 15.5px; line-height: 1.65; }
+  details.parents summary { font-weight: 700; cursor: pointer; font-size: 16.5px; }
+  .bar { display: flex; justify-content: space-between; align-items: center; margin: 14px 2px 8px; font-size: 15px; font-weight: 600; }
+  .progress { height: 12px; background: #dbe7f7; border-radius: 99px; overflow: hidden; margin-bottom: 16px; }
+  .progress > div { height: 100%; background: #43b581; width: 0%; transition: width .3s; }
+  .t-status { background: linear-gradient(135deg, #f2f7ff, #f6f0ff); }
+  .st { font-size: 22px; color: #d5e2f2; }
+  .st.on { color: #ffb400; }
+  .dots { display: inline-flex; gap: 8px; direction: ltr; vertical-align: middle; }
+  .dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #ff9f43; background: #fff; display: inline-block; }
+  .dot.on { background: #ff9f43; }
+  .streakrow { display: flex; align-items: center; gap: 10px; justify-content: center; margin-top: 8px;
+               font-weight: 700; font-size: 16px; flex-wrap: wrap; }
+  .celebrate { position: fixed; inset: 0; background: rgba(20,30,60,.55); z-index: 50;
+               display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .celeb-box { background: #fff; border-radius: 20px; padding: 28px 32px; text-align: center;
+               font-size: clamp(20px, 5.4vw, 25px); font-weight: 800; max-width: 92vw; animation: pop .35s; }
+  @keyframes pop { from { transform: scale(.6); } to { transform: scale(1); } }
+  .intro-emoji { font-size: 44px; }
+  .intro-list { text-align: right; font-size: clamp(16px, 4.4vw, 18px); line-height: 2.05; margin: 12px 0 18px; }
+  .sharebtn { margin-top: 10px; background: rgba(255,255,255,.22); color: #fff; border: 2px solid rgba(255,255,255,.65);
+    border-radius: 99px; padding: 10px 22px; font-size: 16px; font-weight: 700; cursor: pointer;
+    touch-action: manipulation; font-family: inherit; -webkit-tap-highlight-color: transparent; }
+  .sharebtn:active { background: rgba(255,255,255,.35); }
+  .tgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 6px 0 14px; }
+  @media (min-width: 640px) { .tgrid { grid-template-columns: 1fr 1fr 1fr; } }
+  .tcard { background: #fff; border: 2px solid #d5e2f2; border-radius: 16px; padding: 18px 10px;
+           text-align: center; cursor: pointer; font-family: inherit; color: inherit;
+           touch-action: manipulation; min-height: 120px; }
+  .tcard:hover { border-color: #3a7bd5; }
+  .tcard .em { font-size: 40px; }
+  .tcard .nm { font-weight: 800; font-size: clamp(15px, 4vw, 17px); margin: 6px 0 2px; }
+  .tcard .ds { font-size: 13px; color: #5a6b7d; line-height: 1.4; }
+  .tcard .ct { font-size: 12px; color: #6a4fd0; font-weight: 700; margin-top: 6px; }
+  .tcard .pbar { height: 8px; background: #e6eefb; border-radius: 99px; overflow: hidden; margin-top: 8px; }
+  .tcard .pbar > div { height: 100%; background: #43b581; }
+  .tcard .rzmini { font-size: 15px; margin-top: 4px; }
+  .topicbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 14px 2px; }
+  .topicbar .tn { font-weight: 800; font-size: clamp(16px, 4.4vw, 19px); }
+  .btn-ghost { background: #fff; border: 2px solid #d5e2f2; color: #1c2b3a; border-radius: 12px;
+               padding: 10px 16px; font-weight: 700; cursor: pointer; font-family: inherit;
+               font-size: 15px; touch-action: manipulation; min-height: 48px; }
+  .parthead { display:flex; align-items:center; gap:10px; margin:20px 2px 10px; }
+  .parthead .pem { font-size:30px; }
+  .parthead .pt { font-weight:800; font-size:clamp(18px,5vw,22px); }
+  .parthead .pd { font-size:13.5px; color:#5a6b7d; }
+  .ramzor { background:#fff; border:2px solid #d5e2f2; border-radius:14px; padding:12px 14px; margin:10px 0 4px; }
+  .ramzor .rt { font-weight:800; font-size:15.5px; margin-bottom:8px; }
+  .ramzor .rrow { display:flex; gap:8px; flex-wrap:wrap; }
+  .rz { flex:1; min-width:100px; border:2px solid #d5e2f2; background:#f8fbff; border-radius:12px; padding:10px 6px;
+        font-family:inherit; font-size:14.5px; font-weight:700; cursor:pointer; color:inherit; touch-action:manipulation; min-height:48px; }
+  .rz.sel-g { border-color:#43b581; background:#e2f6ec; }
+  .rz.sel-y { border-color:#ffb400; background:#fff6dd; }
+  .rz.sel-r { border-color:#e05252; background:#fdecec; }
+  .learncard { border-right:6px solid #6a4fd0; }
+  .learncard h3 { margin:0 0 8px; font-size:19px; }
+  .learncard .lx { font-size:16.5px; line-height:1.7; }
+  .learncard .ex { background:#f2f7ff; border-radius:10px; padding:10px 14px; margin-top:10px; font-size:16px; line-height:1.65; }
+  .bigbtn { display:block; width:100%; border:none; border-radius:16px; padding:20px; cursor:pointer; font-family:inherit;
+            background:linear-gradient(135deg,#ff9f43,#e05252); color:#fff; font-size:clamp(18px,5vw,22px); font-weight:800;
+            box-shadow:0 3px 12px rgba(224,82,82,.25); touch-action:manipulation; margin-bottom:10px; }
+  .planbtn { display:block; width:100%; border:none; border-radius:16px; padding:20px; cursor:pointer; font-family:inherit;
+            background:linear-gradient(135deg,#43b581,#2b7a5b); color:#fff; font-size:clamp(18px,5vw,22px); font-weight:800;
+            box-shadow:0 3px 12px rgba(67,181,129,.3); touch-action:manipulation; margin-bottom:10px; }
+  .tourbtn { display:block; width:100%; border:none; border-radius:16px; padding:18px; cursor:pointer; font-family:inherit;
+            background:linear-gradient(135deg,#3a7bd5,#6a4fd0); color:#fff; font-size:clamp(17px,4.8vw,21px); font-weight:800;
+            box-shadow:0 3px 12px rgba(58,123,213,.3); touch-action:manipulation; margin-bottom:10px; }
+  .opt svg { max-width:100%; height:auto; }
+  .qfig { text-align:center; margin:8px 0; }
+  .legend { display:flex; flex-wrap:wrap; gap:8px 16px; justify-content:center; font-size:15px; margin-top:6px; }
+  .swatch { display:inline-block; width:14px; height:14px; border-radius:3px; vertical-align:-2px; margin-left:5px; }
+  .breakdown { text-align:right; font-size:16px; line-height:1.9; }
+  .hintbtn { background:#fff3cd; border:2px solid #ffca28; color:#7a5b00; border-radius:12px; padding:9px 18px;
+             font-weight:700; cursor:pointer; font-family:inherit; font-size:15px; touch-action:manipulation; min-height:44px; }
+  .hintbox { display:none; margin-top:10px; background:#fff8e1; border:1px dashed #e0a800; border-radius:10px;
+             padding:10px 14px; font-size:16px; line-height:1.55; }
+  .stepsbox { display:none; margin-top:12px; background:#eef7ee; border:1px solid #a5d6a7; border-radius:10px;
+             padding:10px 14px; font-size:16px; line-height:1.6; }
+  .stepsbox .stt { font-weight:800; margin-bottom:4px; }
+  .stepsbox ol { margin:4px 0 0; padding-right:20px; }
+  .stepsbox li { margin-bottom:3px; }
+  .step1box { display:none; margin-top:12px; background:#fff8e1; border:1px solid #ffe082; border-radius:10px;
+             padding:10px 14px; font-size:16px; line-height:1.55; }
+  .qtools { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; align-items:center; }
+  .meterwrap { display:flex; gap:14px; flex-wrap:wrap; }
+  .meterbox { flex:1; min-width:200px; }
+  .meterbox .mt { font-weight:800; font-size:15.5px; margin-bottom:6px; }
+  .bigbar { height:18px; background:#e6eefb; border-radius:99px; overflow:hidden; }
+  .bigbar > div { height:100%; background:linear-gradient(90deg,#43b581,#2b7a5b); transition:width .4s; }
+  .bigbar.blue > div { background:linear-gradient(90deg,#3a7bd5,#6a4fd0); }
+  .meterbox .mv { font-size:14px; color:#5a6b7d; margin-top:4px; }
+  .daycard { border:2px solid #d5e2f2; border-radius:14px; padding:12px 14px; margin-bottom:10px; background:#fff; }
+  .daycard.today { border-color:#43b581; background:#f2fbf5; }
+  .daycard.done { opacity:.75; }
+  .daycard .dt { font-weight:800; font-size:16.5px; }
+  .daycard .dd { font-size:14.5px; color:#5a6b7d; line-height:1.6; }
+  .dateinput { font-size:18px; padding:10px; border:2px solid #d5e2f2; border-radius:12px; font-family:inherit; }
+  .parentpanel { background:#eef7ee; border:1px solid #c8e6c9; border-radius:14px; padding:14px 18px; font-size:15.5px; line-height:1.7; margin-top:14px; }
+  .sessbar { display:flex; justify-content:space-between; align-items:center; font-size:15px; font-weight:700; margin:10px 2px 8px; }
+  .blocktag { display:inline-block; background:#e3efff; color:#2b5ea7; border-radius:99px; padding:3px 12px; font-size:13.5px; font-weight:700; }
+  .fadeSteps { background:#f2f7ff; border-radius:10px; padding:10px 14px; margin-top:10px; font-size:16px; line-height:1.6; }
+  .minicheck { border-right:6px solid #ffb400; }
+  /* ---- read-aloud (הקראה): big, unmissable speaker buttons ---- */
+  .ttsbtn { min-width:56px; min-height:56px; border-radius:16px; border:2px solid #ffca28; background:#fff3cd; font-size:26px; cursor:pointer; font-family:inherit; touch-action:manipulation; display:inline-flex; align-items:center; justify-content:center; padding:6px 12px; }
+  .ttsbtn:active { background:#ffe082; }
+  .ttsbtn.tts-dead { opacity:.35; filter:grayscale(1); cursor:not-allowed; }
+  .tts-replay { background:#fff3cd; border:2px solid #ffca28; color:#7a5b00; border-radius:14px; padding:12px 20px; font-weight:700; cursor:pointer; font-family:inherit; font-size:16px; touch-action:manipulation; min-height:52px; }
+  .tts-replay:active { background:#ffe082; }
+  .tts-replay.tts-dead { opacity:.35; filter:grayscale(1); cursor:not-allowed; }
+  .tts-toggle { background:#fff; color:#14532d; border:2px solid #c8e6c9; border-radius:99px; padding:10px 22px; font-size:16px; font-weight:700; cursor:pointer; touch-action:manipulation; font-family:inherit; margin-top:10px; }
+  .tts-toggle.off { background:#eef2ee; color:#7a8a7e; border-color:#d5e2d5; }
+  /* ---- illustrations (איורים): flat inline SVG, warm palette ---- */
+  .till { height: 76px; display:flex; align-items:center; justify-content:center; margin-bottom: 6px; }
+  .till svg { height: 76px; width: auto; max-width: 100%; }
+  .mascot { display:flex; justify-content:center; margin: 2px 0; }
+  .mascot svg { height: 118px; width: auto; }
+  .mini-illus { display:flex; justify-content:center; margin: 6px 0; }
+  .mini-illus svg { height: 64px; width: auto; }
+  .inl svg { height: 26px; width: auto; vertical-align: -5px; }
+  .pem svg { height: 34px; width: auto; }
+  /* ---- STAGE 3.6: continue card + folded home controls ---- */
+  .continuecard { border:3px solid #43b581; background:linear-gradient(135deg,#eafaf1,#ffffff); }
+  .continuecard .cc-label { font-size:19px; font-weight:800; color:#14532d; }
+  .continuecard .cc-title { font-size:23px; font-weight:800; margin:6px 0 2px; }
+  .continuecard .cc-sub { font-size:16px; color:#5a6b7d; margin-bottom:10px; }
+  .continuebtn { display:block; width:100%; border:none; border-radius:16px; padding:18px; cursor:pointer; font-family:inherit;
+    background:linear-gradient(135deg,#43b581,#2b7a5b); color:#fff; font-size:clamp(18px,5vw,22px); font-weight:800;
+    box-shadow:0 3px 12px rgba(67,181,129,.3); touch-action:manipulation; }
+  details.homefold { background:#fff; border:2px solid #c8e6c9; border-radius:16px; padding:6px 14px 12px; margin:12px 0; }
+  details.homefold>summary { cursor:pointer; font-size:18px; font-weight:800; color:#14532d; text-align:center; padding:10px 4px; }
+  details.homefold .planbtn, details.homefold .tourbtn { margin-top:10px; }
+  .rzfold>summary { cursor:pointer; font-weight:700; }
+
+  /* ---- STAGE 5 (9/11/2026) — polish: mobile math wrapping, a11y, unified buttons ----
+     CSS-only except two HTML attributes (aria-labels) + one class swap (reset = danger).
+     No content / bank / engine / storage-key changes. Tokens block untouched. */
+
+  /* 5.1 — math expressions wrap instead of clipping (fixes the CAUSE).
+     BEFORE: .m{white-space:nowrap} made each whole expression one unbreakable
+     box; on a 360px screen a long expression overflowed its card and was cut
+     off by html,body{overflow-x:hidden} with no way to see it. Now the
+     expression itself wraps (at spaces first; overflow-wrap:anywhere only
+     breaks a long digit run when nothing else fits), options can wrap too
+     (.opt is a flex row — it also needs flex-wrap + min-width:0), fractions
+     and figure SVGs are capped at the card width, and narrow screens get a
+     slightly smaller question/option size + slimmer card padding. */
+  .m { white-space: normal; overflow-wrap: anywhere; }
+  .qtext, .explain, .learncard .lx, .learncard .ex, .stepsbox, .step1box, .hintbox, .fadeSteps, .breakdown, .daycard .dd { overflow-wrap: break-word; }
+  .opt { min-width: 0; flex-wrap: wrap; overflow-wrap: anywhere; }
+  .opt .m { overflow-wrap: anywhere; }
+  .frac { max-width: 100%; }
+  .frac .top, .frac .bot { padding: 0 3px; overflow-wrap: anywhere; }
+  .qfig svg, .viz svg { max-width: 100%; height: auto; }
+  .card, .qtext, .tcard { min-width: 0; overflow-wrap: break-word; }
+  .topicbar, .bar, .sessbar { flex-wrap: wrap; }
+  @media (max-width: 420px) {
+    .qtext { font-size: 17px; }
+    .opt { font-size: 18px; }
+    .card { padding: 16px 14px; }
+    .frac { margin: 0 1px; }
+  }
+
+  /* 5.2 — visible keyboard focus. The tokens block already gives :focus-visible
+     to button/select/input/textarea/a; <summary> is the only remaining
+     interactive element, so it gets the same ring here. */
+  summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  /* 5.3 — honour reduced-motion: no CSS animation / transition at all. */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+    .celeb-box { animation: none; }
+  }
+
+  /* 5.5 — four button roles only (token values). Primary = one yellow-orange
+     accent, solid --accent-deep (no gradients). Secondary = white + line
+     border. Ghost = transparent + line border. Danger = --bad.
+     Re-skin only: no button is created, removed or re-wired.
+     Answer options (.opt), topic cards (.tcard) and ramzor choices (.rz) keep
+     their own state styling — they are options/cards, not buttons in this sense.
+     .sharebtn is deliberately NOT re-skinned: it sits in the dark header in
+     math-test-prep, where a ghost style would destroy contrast. */
+  .btn { background: #fff; color: var(--ink); border: 2px solid var(--line); }
+  .btn-main, .btn-new, .bigbtn, .planbtn, .continuebtn { background: var(--accent-deep); background-image: none; color: #fff; border: none; box-shadow: none; }
+  .btn-main:disabled, .btn-new:disabled { background: var(--disabled-bg); color: var(--disabled-ink); border: 2px solid var(--disabled-bg); cursor: not-allowed; }
+  .tourbtn { background: #fff; color: var(--ink); border: 2px solid var(--line); box-shadow: none; }
+  .tab { background: #fff; border: 2px solid var(--line); color: var(--ink); }
+  .tab.active { background: var(--accent-deep); background-image: none; color: #fff; border-color: transparent; }
+  .btn-ghost { background: transparent; border: 2px solid var(--line); color: var(--ink-soft); }
+  .tts-toggle { background: #fff; border: 2px solid var(--line); color: var(--ink); }
+  .tts-toggle.off { background: var(--disabled-bg); color: var(--disabled-ink); border-color: var(--disabled-bg); }
+  .ttsbtn, .tts-replay { background: #fff; border: 2px solid var(--line); color: var(--ink); }
+  .ttsbtn:active, .tts-replay:active { background: var(--accent-soft); }
+  .hintbtn { background: #fff; border: 2px solid var(--line); color: var(--ink); }
+  .btn-danger { background: var(--bad); color: #fff; border: none; }
+
+</style>
+<style id="site-unify-css">
+/* איחוד מראה לפי מערכת העיצוב (11/11/2026): רקע, כותרת, כרטיסים וכפתורים בצבעי הטוקנים.
+   להסרה: למחוק את הבלוק הזה. */
+body{background:var(--bg)!important;color:var(--ink)!important;font-family:"Segoe UI",Arial,system-ui,sans-serif}
+header{background:var(--card)!important;color:var(--ink)!important;border:2px solid var(--line);border-radius:24px}
+header h1{color:var(--ink)}header p{color:var(--ink-soft);opacity:1}
+.card{border:2px solid var(--line);border-radius:20px;box-shadow:var(--shadow-card)}
+.btn-main{background:#B85A0A!important;color:#fff}
+.btn-new{background:#246B42!important;color:#fff}
+.btn-ghost{background:#fff;border-color:var(--line);color:var(--ink)}
+header .sharebtn,header .tts-toggle{background:#fff!important;color:var(--ink)!important;border:2px solid var(--line)!important}
+.btn-main:disabled,.btn-new:disabled{background:var(--disabled-bg)!important;color:var(--disabled-ink)}
+</style>
+<link id="kit-theme" rel="stylesheet" href="../shared/kit-theme.css">
+<style id="kit-match-css">
+/* KIT-MATCH — math-test-prep: כותרת בסגנון דף הבית, בלי הכותרת הישנה ובלי מידע להורים (14/11/2026). להסרה: למחוק את הבלוק, את link#kit-theme ואת div.kit-hero */
+body{--c:#7C3AED}
+.wrap>header h1,.wrap>header p,.wrap>header .sharebtn{display:none!important}
+.wrap>header{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0 0 8px!important;text-align:center}
+#homeIntro p{display:none}
+/* פחות טקסט במסך הבית: פעולה ראשית אחת ("ממשיכים"), ונושאים בלי ספירת שאלות (14/11/2026) */
+#homeIntro,.tcard .ct,.pd{display:none!important}
+</style>
+<style id="fr-open-css">
+.openbox{display:flex;align-items:center;justify-content:center;gap:14px;margin:12px 0 4px;direction:ltr}
+.oi{width:76px;max-width:26vw;font-size:22px;font-weight:700;text-align:center;padding:10px 6px;border:2px solid #9bb7a8;border-radius:12px;background:#fff;color:#1c2b3a;font-family:inherit}
+.oi:focus{outline:3px solid #ffb400;border-color:#2b7a5b}
+.oi:disabled{background:#f1f5f2;color:#5a6b7d}
+.oi-fr{display:inline-flex;flex-direction:column;align-items:center;gap:4px}
+.oi-line{display:block;width:100%;height:3px;background:#1c2b3a;border-radius:2px}
+.openhelp{font-size:15px;color:#3b5a4a;background:#eef7f1;border-radius:10px;padding:8px 12px;margin-bottom:6px;line-height:1.5}
+.openmsg{min-height:22px;text-align:center;color:#b3261e;font-weight:700;margin-top:6px}
+.openok{display:block;margin:6px auto 0}
+.openans{margin-top:10px;padding:10px 12px;border-radius:10px;font-weight:700;text-align:center}
+.openans.ok{background:#e3f6ea;color:#14532d}
+.openans.bad{background:#fdecea;color:#7a1d17}
+.wpnote{display:inline-block;margin-top:6px;font-size:15px;color:#7a5a00;background:#fff6d6;border-radius:8px;padding:3px 8px}
+@media (max-width:420px){.openbox{gap:8px}.oi{width:64px;font-size:20px}}
+</style>
+</head>
+<body class="kit-themed">
+<div class="kit-hero" role="banner" style="--c:#7C3AED"><span class="kh-pal" aria-hidden="true">📐</span><div class="kh-t"><div class="kh-title">מבחן בשברים</div><div class="kh-sub">כיתה ו׳ · פעולות בשברים</div></div><a class="kh-home" href="../grade6-learning/" aria-label="חזרה למרכז של כיתה ו׳">🏠</a></div>
+<div class="wrap">
+  <header>
+    <h1>🍕 חזרה למבחן: פעולות בשברים — כיתה ו׳</h1>
+    <p>המבחן הקרוב · חיבור, חיסור, כפל וחילוק של שברים · שאלות סגורות, בעיות מילוליות ושאלות פתוחות</p>
+    <button class="sharebtn" onclick="shareApp()">📤 שיתוף</button>
+    <button class="tts-toggle" id="ttsToggle" aria-label="הקראה" onclick="ttsToggle()">🔊 הקראה פעילה</button>
+  </header>
+
+  <div id="topicPane">
+    <div class="card center continuecard" id="continueCard">
+      <div class="cc-label">💪 ממשיכים מאיפה שהפסקנו</div>
+      <div class="cc-title" id="ccTitle"></div>
+      <div class="cc-sub" id="ccSub"></div>
+      <button class="continuebtn" id="btnContinue" onclick="continueGo()">▶️ ממשיכים!</button>
+    </div>
+    <div class="card center" id="homeIntro">
+      <div class="mascot" id="homeMascot"></div>
+      <h2 style="margin:8px 0">שלום! מתכוננים למבחן ביחד</h2>
+      <p style="margin:0;color:#5a6b7d">בכל נושא יש <b>📖 למידה</b> קצרה, <b>🏋️ אימון רמות</b> עם כוכבים ו<b>📝 מבחן</b> של 10 שאלות.<br>
+      בכל נושא מחכות לך <b>150 שאלות</b> — ובסך הכול <b id="totalBankLbl">2,100</b> שאלות בערכה!</p>
+      <div class="center" style="margin-top:12px"><button class="ttsbtn" onclick="speakText(document.getElementById('homeIntro').innerText)" title="השמעת ההסבר" aria-label="השמעת ההסבר">🔊</button></div>
+    </div>
+    <details class="homefold meterfold"><summary>📊 ההתקדמות שלי</summary>
+    <div class="card">
+      <div class="meterwrap">
+        <div class="meterbox">
+          <div class="mt">🏆 מד מוכנות למבחן</div>
+          <div class="bigbar"><div id="readyFill" style="width:0%"></div></div>
+          <div class="mv" id="readyLbl">עוד לא התחיל האבחון — התחילו את מסלול השבוע כדי למדוד מוכנות</div>
+        </div>
+        <div class="meterbox">
+          <div class="mt">🗂️ כיסוי המאגרים</div>
+          <div class="bigbar blue"><div id="coverFill" style="width:0%"></div></div>
+          <div class="mv" id="coverLbl">ענית נכון על 0 מתוך 2,100 שאלות המאגר</div>
+        </div>
+      </div>
+    </div>
+    </details>
+    <details class="homefold"><summary>🧭 עוד דרכים לתרגל</summary>
+    <button class="planbtn" onclick="openPlan()">📅 מסלול "מוכן למבחן בשבוע" — הדרך המובנית למבחן!</button>
+    <button class="tourbtn" onclick="startTour()">🧭 סיור בחומר — שאלה מכל נושא, בסבבים מעורבבים</button>
+    </details>
+    <div id="partsHost"></div>
+    <details class="homefold"><summary>🎓 מבחן מסכם — כמו המבחן האמיתי!</summary>
+    <div style="margin:12px 0 6px">
+      <button class="bigbtn" onclick="startMock()">🎓 מבחן מדומה — כמו המבחן האמיתי!</button>
+      <p class="center" style="color:#5a6b7d;font-size:14.5px;margin:8px 0 0">14 שאלות מכל ארבעת החלקים — גם סגורות וגם פתוחות — עם ציון ופירוט לפי חלקים</p>
+    </div>
+    </details>
+    <details class="parents">
+      <summary>👨‍👩‍👦 להורים — איך עובדת הערכה?</summary>
+      <div>
+        הערכה הזאת בנויה להכנה למבחן הקרוב בפעולות בשברים (חיבור, חיסור, כפל וחילוק — כולל מספרים מעורבים, בעיות מילוליות ושאלות פתוחות עם הקלדת תשובה). בכל אחד מ־14 הנושאים יש מאגר של <b>150 שאלות קבועות</b> —
+        האימונים והמבחנים שואבים מהמאגר <b>בלי חזרות</b> עד שהוא מתרוקן, בדיוק כמו בהאב המשפחתי.
+        <b>מסלול "מוכן למבחן בשבוע"</b> הוא הדרך המומלצת: אבחון פתיחה, ואז שיעור מובנה אחד ביום (~20–25 דקות) הבנוי על פי מדעי הלמידה —
+        חזרה מרווחת (Leitner), למידה מעורבבת בין נושאים, ודוגמאות שצעדיהן נמוגים בהדרגה.
+        נושא נחשב "שולט" 🟢 רק אם עבר מבחן יציאה וגם בדיקה חוזרת ביום אחר. כל טעות חוזרת שוב ושוב עד שנענתה נכון בשני ימים נפרדים.
+        כדאי לעקוב יחד אחר מד המוכנות ומפת הנושאים כאן בעמוד הבית.
+      </div>
+    </details>
+  </div>
+
+  <div id="mainPane" style="display:none">
+    <div class="topicbar">
+      <button class="btn-ghost" onclick="showTopics()">← לכל הנושאים</button>
+      <div class="tn" id="curTopicName"></div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" id="tabLearn" onclick="showLearn()">📖 למידה</button>
+      <button class="tab" id="tabTrain" onclick="showTrain()">🏋️ אימון רמות</button>
+      <button class="tab" id="tabTest" onclick="showTest()">📝 מבחן</button>
+    </div>
+    <div id="learnPane"></div>
+    <div id="trainPane" style="display:none">
+      <div id="tIntro" class="card center">
+        <div class="mini-illus" id="trainIllus"></div>
+        <h2 style="margin:8px 0">ברוכים הבאים לאימון!</h2>
+        <div class="intro-list">
+          <div>✏️ עונים על שאלה אחת בכל פעם — מתוך מאגר של <b>150 שאלות</b>, בלי חזרות!</div>
+          <div>💡 נתקעתם? לחצו על <b>רמז</b> — זה לא נחשב טעות</div>
+          <div>⭐ כל תשובה נכונה = <b>כוכב</b>! <b>5 כוכבים</b> מעלים אותך רמה</div>
+          <div>🔥 <b>3 נכונות ברצף</b> = עליית רמה מיידית! 🚀</div>
+          <div>💚 טעות? רואים את הצעד הראשון ומנסים שוב פעם אחת</div>
+          <div>🏆 יש <b>3 רמות</b> — מהקל לקשה ביותר!</div>
+        </div>
+        <div class="center" style="margin-bottom:12px"><button class="ttsbtn" onclick="speakText(document.getElementById('tIntro').innerText)" title="השמעת ההסבר" aria-label="השמעת ההסבר">🔊</button></div>
+        <button class="btn btn-new" onclick="acceptIntro()">הבנתי, מתחילים! 🎉</button>
+      </div>
+      <div id="tMain" style="display:none">
+        <div class="card t-status center">
+          <div id="tLevel" style="font-size:18px"></div>
+          <div id="tStars" style="margin:4px 0"></div>
+          <div class="streakrow"><span>🔥 רצף נכונות:</span><span class="dots" id="tDots"></span></div>
+          <div class="streakrow"><span>⭐ כוכבים לרמה הבאה:</span><span id="tProgStars" style="font-size:17px;letter-spacing:2px"></span></div>
+          <div id="tTotal" style="margin-top:6px;color:#5a6b7d;font-size:14px"></div>
+        </div>
+        <div id="tQ"></div>
+        <div class="center">
+          <button class="btn btn-main" id="tNext" style="display:none" onclick="nextTrainQ()">הבא ➜</button>
+        </div>
+      </div>
+      <div id="tMastery" class="card center" style="display:none">
+        <div class="mini-illus" id="masteryIllus"></div>
+        <h2 style="margin:8px 0">אלופים!</h2>
+        <p class="msg">סיימת את כל 3 הרמות בנושא הזה! 🎉</p>
+        <p id="masteryStats" style="font-size:17px"></p>
+        <div class="center" style="margin:8px 0"><button class="ttsbtn" onclick="speakText(document.getElementById('tMastery').innerText)" title="השמעה" aria-label="השמעה">🔊</button></div>
+        <button class="btn btn-new" onclick="showTest()">עכשיו למבחן! 📝</button>
+        <div style="margin-top:10px"><button class="btn-ghost" onclick="restartTrain()">🔄 עוד אימון</button></div>
+      </div>
+    </div>
+    <div id="testPane" style="display:none">
+      <div class="bar"><span id="counter"></span><span>כל שאלה: 10 נקודות</span></div>
+      <div class="progress"><div id="pfill"></div></div>
+      <div id="quiz"></div>
+      <div class="center" style="margin:14px 0">
+        <button class="btn btn-main" id="submitBtn" onclick="gradeTest()">סיימתי — לבדיקת הציון ✅</button>
+      </div>
+      <div id="result" class="card center" style="display:none">
+        <div class="mini-illus" id="scoreIllus"></div>
+        <div class="score" id="scoreNum"></div>
+        <div class="msg" id="scoreMsg"></div>
+        <div class="center" style="margin-top:8px"><button class="ttsbtn" onclick="speakText('הציון שלך: ' + document.getElementById('scoreNum').textContent + '. ' + document.getElementById('scoreMsg').textContent)" title="השמעת הציון" aria-label="השמעת הציון">🔊</button></div>
+        <div id="scoreDetail" style="margin-top:8px"></div>
+        <div style="margin-top:12px">
+          <button class="btn btn-new" onclick="showTest()">📝 מבחן חדש</button>
+          <button class="btn-ghost" onclick="showTopics()">← לכל הנושאים</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tourPane" style="display:none">
+    <div class="topicbar">
+      <button class="btn-ghost" onclick="showTopics()">← לכל הנושאים</button>
+      <div class="tn">🧭 סיור בחומר</div>
+    </div>
+    <div class="bar"><span id="tourCounter"></span><span id="tourRoundLbl"></span></div>
+    <div class="progress"><div id="tourFill"></div></div>
+    <div id="tourQ"></div>
+    <div class="center" style="margin:12px 0">
+      <button class="btn btn-main" id="tourNext" style="display:none" onclick="nextTourQ()">לשאלה הבאה ➜</button>
+      <button class="btn-ghost" id="tourEnd" onclick="endTour()">🏁 סיום וסיכום הסיור</button>
+    </div>
+    <div id="tourSummary" class="card" style="display:none"></div>
+  </div>
+
+  <div id="planPane" style="display:none">
+    <div class="topicbar">
+      <button class="btn-ghost" onclick="showTopics()">← לכל הנושאים</button>
+      <div class="tn">📅 מוכן למבחן בשבוע</div>
+    </div>
+    <div id="planHost"></div>
+  </div>
+
+  <div id="mockPane" style="display:none">
+    <div class="topicbar">
+      <button class="btn-ghost" onclick="showTopics()">← לכל הנושאים</button>
+      <div class="tn">🎓 מבחן מדומה — מבנה כמו במבחן האמיתי</div>
+    </div>
+    <div class="bar"><span id="mockCounter"></span><span>בהצלחה רבה!</span></div>
+    <div class="progress"><div id="mockFill"></div></div>
+    <div id="mockQuiz"></div>
+    <div class="center" style="margin:14px 0">
+      <button class="btn btn-main" id="mockSubmit" onclick="gradeMock()">סיימתי — לבדיקת הציון ✅</button>
+    </div>
+    <div id="mockResult" class="card center" style="display:none">
+      <div class="mini-illus" id="mockIllus"></div>
+      <div class="score" id="mockScoreNum"></div>
+      <div class="msg" id="mockScoreMsg"></div>
+      <div class="center" style="margin-top:8px"><button class="ttsbtn" onclick="speakText('הציון שלך: ' + document.getElementById('mockScoreNum').textContent + '. ' + document.getElementById('mockScoreMsg').textContent)" title="השמעת הציון" aria-label="השמעת הציון">🔊</button></div>
+      <div id="mockBreakdown" class="breakdown" style="margin-top:10px"></div>
+      <div style="margin-top:12px">
+        <button class="btn btn-new" onclick="startMock()">🎓 מבחן מדומה חדש</button>
+        <button class="btn-ghost" onclick="showTopics()">← לכל הנושאים</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="celebrate" class="celebrate" style="display:none">
+  <div class="celeb-box">
+    <div style="font-size:52px" id="celebEmoji">🎉</div>
+    <div id="celebText"></div>
+    <div><button class="ttsbtn" onclick="speakText(document.getElementById('celebText').textContent)" title="השמעה" aria-label="השמעה">🔊</button></div>
+    <div class="mini-illus" id="celebIllus"></div>
+    <div><button class="btn btn-new" style="margin-top:14px" onclick="hideCeleb()">ממשיכים! 🚀</button></div>
+  </div>
+</div>
+<script>
+"use strict";
+/* ================================================================
+   ערכת חזרה למבחן מתמטיקה ו׳ — מאגר 150 שאלות לכל נושא
+   ================================================================ */
+const $ = id => document.getElementById(id);
+
+/* ---------- seeded RNG (deterministic banks, identical every load) ---------- */
+let _seed = 1;
+function srand(s){ _seed = (s>>>0) || 1; }
+function rand(){
+  _seed |= 0; _seed = (_seed + 0x6D2B79F5) | 0;
+  let t = Math.imul(_seed ^ (_seed >>> 15), 1 | _seed);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+function rnd(a,b){ return a + Math.floor(rand()*(b-a+1)); }
+function pick(arr){ return arr[Math.floor(rand()*arr.length)]; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(rand()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ---------- question model ---------- */
+/* ---------- bidi safety: wrap pure-math runs in LTR isolates so expressions
+   never render reversed inside the RTL page. A run whose "=" chain does not
+   evaluate equal is left untouched (it is Hebrew prose with numbers). ---------- */
+function _mathVal(t){
+  t = t.replace(/×/g,"*").replace(/÷/g,"/").replace(/−/g,"-").replace(/,/g,"");
+  t = t.replace(/²/g,"**2").replace(/³/g,"**3");
+  if(!/^[\d\s+\-*/().%]+$/.test(t)) return null;
+  try { const v = Function('"use strict";return('+t+")")(); return (typeof v==="number" && isFinite(v))? v : null; } catch(e){ return null; }
+}
+function fixMath(s){
+  if(typeof s!=="string" || !s || s.indexOf("<svg")>=0) return s;
+  const atoms=[], vals=[];
+  s = s.replace(/<span class="frac"><span class="top">(-?[\d,]+)<\/span><span class="bot">(-?[\d,]+)<\/span><\/span>|<span class="m">([^<]*)<\/span>/g,
+    (mm, tn, td, mv)=>{ atoms.push(mm); vals.push(td!==undefined && td!==null ? parseFloat(tn.replace(/,/g,""))/parseFloat(td.replace(/,/g,"")) : parseFloat(String(mv).replace(/,/g,""))); return "\u0001"+(atoms.length-1)+"\u0002"; });
+  const tags=[];
+  s = s.replace(/<[^>]+>/g, mm=>{ tags.push(mm); return "\u0003"+(tags.length-1)+"\u0004"; });
+  const RUN = /[\d\u0001(\[_\u25a1\u2212-][\d\s+\-\u2212\u00d7\u00f7=<>\.,\/)\]\u00b2\u00b3%\u00b0_\u25a1\u0001\u0002\(\[]*/g;
+  s = s.replace(RUN, run=>{
+    let a=0, b=run.length;
+    while(a<b && /\s/.test(run[a])) a++;
+    while(b>a && /[\s+\-\u2212\u00d7\u00f7=<>\.,\/]/.test(run[b-1])) b--;
+    if(b-a<1) return run;
+    const core = run.slice(a,b);
+    if(!/[\d\u0001]/.test(core)) return run;
+    let ok = true;
+    if(core.indexOf("=")>=0){
+      const vs = core.split("=").map(p=> _mathVal(p.trim().replace(/\u0001(\d+)\u0002/g, (m,i)=>"("+(vals[+i]===undefined? "NaN" : vals[+i])+")")));
+      if(vs.every(v=>v!==null)) ok = vs.every(v=>Math.abs(v-vs[0])<1e-9);
+    }
+    if(!ok) return run;
+    return run.slice(0,a) + '<span class="m">' + core + '</span>' + run.slice(b);
+  });
+  s = s.replace(/\u0001(\d+)\u0002/g, (m,i)=>atoms[+i]);
+  s = s.replace(/\u0003(\d+)\u0004/g, (m,i)=>tags[+i]);
+  return s;
+}
+
+function Q(text, viz, opts, ans, why, meta, hint, steps){
+  return { text: fixMath(text), viz: viz||"", opts: (opts||[]).map(o=>fixMath(o)), ans: fixMath(ans), why: fixMath(why), meta: meta||{}, hint: fixMath(hint||""), steps: steps? steps.map(x=>fixMath(x)) : null };
+}
+function fracHTML(n, d){
+  if(d===1) return `<span class="m">${n}</span>`;
+  return `<span class="frac"><span class="top">${n}</span><span class="bot">${d}</span></span>`;
+}
+function mixedHTML(w, n, d){
+  if(n===0) return `<span class="m">${w}</span>`;
+  if(w===0) return fracHTML(n,d);
+  return `<span class="m">${w}</span>` + fracHTML(n,d);
+}
+function dispFrac(n, d){ const g=gcd(n,d); const nn=n/g, dd=d/g; return mixedHTML(Math.floor(nn/dd), nn%dd, dd); }
+function fracStr(n, d){ const g=gcd(Math.abs(n), Math.abs(d)); const nn=n/g, dd=d/g; return dd===1? String(nn) : nn+"/"+dd; }
+function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ [a,b]=[b,a%b]; } return a||1; }
+function fmtN(x){ return x.toLocaleString("en-US"); }
+const YESNO = ["נכון","לא נכון"];
+const TOPT = { t:"נכון", f:"לא נכון" };
+function makeOpts(correct, wrongs){
+  const seen = new Set([correct]); const ws=[];
+  for(const w of wrongs){ if(w!==correct && !seen.has(w)){ seen.add(w); ws.push(w); } if(ws.length>=3) break; }
+  while(ws.length<3){ const pad = correct+"׳".repeat(ws.length+1); if(!seen.has(pad)){ seen.add(pad); ws.push(pad); } }
+  return shuffle([correct, ...ws]);
+}
+function numOpts(ans, offs){
+  const ws=[]; const seen=new Set([ans]);
+  for(const o of offs){ const v=ans+o; if(o!==0 && !seen.has(v)){ seen.add(v); ws.push(fmtN(v)); } if(ws.length>=3) break; }
+  return makeOpts(fmtN(ans), ws);
+}
+function fracOpts(n, d){
+  const c=fracStr(n,d), cor=dispFrac(n,d);
+  const cands=[[n+1,d],[n,d+1],[Math.max(1,n-1),d],[n+2,d],[n,d+2],[n+1,d+1],[n,d*2]];
+  const seen=new Set([c]); const ws=[];
+  for(const [cn,cd] of cands){ const k=fracStr(cn,cd); if(!seen.has(k)){ seen.add(k); ws.push(dispFrac(cn,cd)); if(ws.length>=3) break; } }
+  return makeOpts(cor, ws);
+}
+function stripTags(s){ return String(s||"").replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim(); }
+function normKey(q){
+  /* uniqueness: question text + figure markup (SVG coordinates ARE the question) + answer */
+  return stripTags(q.text)+" | "+String(q.viz||"").replace(/\s+/g," ")+" | "+String(q.ans||"").replace(/\s+/g," ");
+}
+
+/* ================= READ-ALOUD — הקראה ================= */
+/* Primary voice: Google Translate TTS (tl=he) — native-standard female voice.
+   Device speechSynthesis is FALLBACK only: its Hebrew accent is wrong.
+   Playback: try fetch->blob (cached in memory per session) first; if that
+   fails (the TTS endpoint sends no CORS headers, so fetch usually fails),
+   play the Google TTS URL directly in an <audio> element (media playback
+   needs no CORS). If Google fails entirely, fall back to speechSynthesis.
+   Nothing is persisted except the on/off toggle (mathFracPrepV1:tts). */
+const TTS_KEY = "mathFracPrepV1:tts";
+const TTS_MAX = 180;
+const ttsCache = new Map();
+let ttsOn = true;
+try { if (localStorage.getItem(TTS_KEY) === "off") ttsOn = false; } catch(e){}
+let ttsAudio = null;
+let ttsSeq = 0;
+let ttsDead = false;
+let ttsNeedsGesture = false;
+let ttsGestureArmed = false;
+let ttsLastAuto = "";
+
+function ttsStripNikud(s){
+  return String(s||"").replace(/[\u0591-\u05BD\u05BF\u05C1-\u05C2\u05C4-\u05C5\u05C7]/g, "");
+}
+function ttsClean(raw){
+  let s = stripTags(raw);
+  s = ttsStripNikud(s);
+  s = s.replace(/____/g, " כמה ");
+  s = s.replace(/×/g, " כפול ").replace(/÷/g, " לחלק ל ").replace(/−/g, " מינוס ");
+  s = s.replace(/=/g, " שווה ").replace(/\+/g, " ועוד ");
+  s = s.replace(/%/g, " אחוז ");
+  s = s.replace(/·/g, ", ").replace(/[—–]/g, ". ");
+  s = s.replace(/(\d),(\d)/g, "$1$2");
+  s = s.replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}\u{FE0F}\u{200D}\u{05B3}\u{05B4}]/gu, " ");
+  s = s.replace(/\s+/g, " ").trim();
+  return s;
+}
+function ttsChunks(text){
+  const clean = ttsClean(text);
+  if(!clean) return [];
+  const sents = clean.match(/[^.!?׃]+[.!?׃]?/g) || [clean];
+  const out = [];
+  for(const s of sents){
+    const t = s.trim(); if(!t) continue;
+    if(t.length <= TTS_MAX){ out.push(t); continue; }
+    const parts = t.split(/,\s*/);
+    let cur = "";
+    for(const p of parts){
+      const cand = cur ? cur+", "+p : p;
+      if(cand.length <= TTS_MAX) cur = cand;
+      else {
+        if(cur) out.push(cur);
+        if(p.length <= TTS_MAX) cur = p;
+        else {
+          const words = p.split(" "); let w = "";
+          for(const wd of words){ const c2 = w ? w+" "+wd : wd; if(c2.length<=TTS_MAX) w=c2; else { if(w) out.push(w); w=wd; } }
+          cur = w;
+        }
+      }
+    }
+    if(cur) out.push(cur);
+  }
+  return out;
+}
+function ttsUrl(text){
+  return "https://translate.google.com/translate_tts?ie=UTF-8&tl=he&client=tw-ob&q=" + encodeURIComponent(text);
+}
+function ttsStopAudio(){
+  if(ttsAudio){ try{ ttsAudio.pause(); }catch(e){} ttsAudio = null; }
+}
+function ttsPlayUrl(url, seq){
+  return new Promise((resolve)=>{
+    if(seq !== ttsSeq){ resolve(false); return; }
+    ttsStopAudio();
+    const a = new Audio(url);
+    ttsAudio = a;
+    let done = false;
+    const finish = (ok)=>{
+      if(done) return; done = true;
+      if(ttsAudio === a) ttsAudio = null;
+      resolve(ok);
+    };
+    const watchdog = setTimeout(()=>{ try{ a.pause(); }catch(e){} finish(false); }, 30000);
+    a.onended = ()=>{ clearTimeout(watchdog); finish(true); };
+    a.onerror = ()=>{ clearTimeout(watchdog); finish(false); };
+    let pr = null;
+    try { pr = a.play(); } catch(e){ clearTimeout(watchdog); finish(false); return; }
+    if(pr && pr.catch) pr.catch((err)=>{
+      clearTimeout(watchdog);
+      if(err && err.name === "NotAllowedError") ttsNeedsGesture = true;
+      finish(false);
+    });
+  });
+}
+async function ttsPlayChunk(text, seq){
+  if(ttsCache.has(text)) return await ttsPlayUrl(ttsCache.get(text), seq);
+  try {
+    const res = await fetch(ttsUrl(text), {mode:"cors"});
+    if(res && res.ok){
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      ttsCache.set(text, url);
+      return await ttsPlayUrl(url, seq);
+    }
+  } catch(e){ /* CORS/network — fall through to direct <audio> src */ }
+  return await ttsPlayUrl(ttsUrl(text), seq);
+}
+function ttsDeviceVoice(){
+  try {
+    const vs = (window.speechSynthesis && speechSynthesis.getVoices()) || [];
+    return vs.find(v=>/^he/i.test(v.lang||"") && /female|נקבה|google|microsoft/i.test(v.name||""))
+        || vs.find(v=>/^he/i.test(v.lang||"")) || null;
+  } catch(e){ return null; }
+}
+function ttsSpeakDevice(text, seq){
+  return new Promise((resolve)=>{
+    if(!("speechSynthesis" in window)){ resolve(false); return; }
+    let done = false;
+    const finish = (ok)=>{ if(done) return; done = true; resolve(ok); };
+    const watchdog = setTimeout(()=>finish(false), 30000);
+    try {
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "he-IL"; u.rate = 0.9;
+      const v = ttsDeviceVoice(); if(v) u.voice = v;
+      u.onend = ()=>{ clearTimeout(watchdog); finish(true); };
+      u.onerror = ()=>{ clearTimeout(watchdog); finish(false); };
+      if(seq !== ttsSeq){ clearTimeout(watchdog); resolve(false); return; }
+      try { speechSynthesis.cancel(); } catch(e){}
+      setTimeout(()=>{ if(seq !== ttsSeq){ clearTimeout(watchdog); finish(false); return; } try{ speechSynthesis.speak(u); }catch(e){ clearTimeout(watchdog); finish(false); } }, 60);
+    } catch(e){ clearTimeout(watchdog); finish(false); }
+  });
+}
+function ttsMarkDead(dead){
+  ttsDead = dead;
+  document.querySelectorAll(".ttsbtn,.tts-replay").forEach(b=>{
+    b.classList.toggle("tts-dead", dead);
+    b.disabled = dead;
+  });
+}
+function stopTts(){
+  ttsSeq++;
+  ttsStopAudio();
+  try { speechSynthesis.cancel(); } catch(e){}
+}
+async function speakText(raw, opts){
+  opts = opts || {};
+  const seq = ++ttsSeq;
+  ttsStopAudio();
+  try { speechSynthesis.cancel(); } catch(e){}
+  const chunks = ttsChunks(raw);
+  if(!chunks.length) return false;
+  let anyOk = false;
+  for(const ch of chunks){
+    if(seq !== ttsSeq) return anyOk;
+    let ok = await ttsPlayChunk(ch, seq);
+    if(!ok && seq === ttsSeq) ok = await ttsSpeakDevice(ch, seq);
+    if(ok){ anyOk = true; continue; }
+    break; /* chunk failed on both paths — don't cascade errors */
+  }
+  if(seq === ttsSeq){
+    if(!anyOk) ttsMarkDead(true); else if(ttsDead) ttsMarkDead(false);
+  }
+  return anyOk;
+}
+function speakAuto(raw){
+  if(!ttsOn || !raw) return;
+  ttsLastAuto = raw;
+  speakText(raw).then(ok=>{
+    if(!ok && ttsNeedsGesture) ttsArmGestureRetry();
+  });
+}
+function ttsArmGestureRetry(){
+  if(ttsGestureArmed) return;
+  ttsGestureArmed = true;
+  const h = ()=>{
+    ttsGestureArmed = false;
+    document.removeEventListener("pointerdown", h);
+    if(ttsOn && ttsLastAuto){ ttsNeedsGesture = false; speakText(ttsLastAuto); }
+  };
+  document.addEventListener("pointerdown", h);
+}
+function ttsToggle(){
+  ttsOn = !ttsOn;
+  try { localStorage.setItem(TTS_KEY, ttsOn ? "on" : "off"); } catch(e){}
+  if(!ttsOn) stopTts();
+  ttsUpdateToggleBtn();
+}
+function ttsUpdateToggleBtn(){
+  const b = $("ttsToggle"); if(!b) return;
+  b.textContent = ttsOn ? "🔊 הקראה פעילה" : "🔇 הקראה כבויה";
+  b.classList.toggle("off", !ttsOn);
+}
+/* speaker button (icon) + replay button (text) — both read the given text */
+function ttsBtnFor(getText, label){
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "ttsbtn"; b.innerHTML = "🔊";
+  b.title = label || "השמעה";
+  b.setAttribute("aria-label", label || "השמעה");
+  b.onclick = (ev)=>{ ev.stopPropagation(); const t = getText(); if(t) speakText(t); };
+  if(ttsDead){ b.classList.add("tts-dead"); b.disabled = true; }
+  return b;
+}
+function ttsReplayBtn(getText){
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "tts-replay"; b.textContent = "🔊 שמע שוב";
+  b.onclick = (ev)=>{ ev.stopPropagation(); const t = getText(); if(t) speakText(t); };
+  if(ttsDead){ b.classList.add("tts-dead"); b.disabled = true; }
+  return b;
+}
+const TTS_ORD = ["ראשונה","שנייה","שלישית","רביעית"];
+function qSpeakText(q){
+  if(q.open) return stripTags(q.text) + ". זו שאלה פתוחה — כותבים את התשובה במשבצות.";
+  const opts = (q.opts||[]).map((o,i)=>`אפשרות ${TTS_ORD[i]||("מספר "+(i+1))}: ${stripTags(o)}`).join(". ");
+  return stripTags(q.text) + (opts ? ". התשובות הן: " + opts + "." : "");
+}
+function qFeedbackText(q, ok){
+  const steps = stepsOf(q);
+  return (ok ? "נכון! כל הכבוד! " : "לא בדיוק. ") + steps.join(". ") + (q.why ? ". " + stripTags(q.why) : "");
+}
+
+/* ================= ILLUSTRATIONS — איורים ================= */
+/* Flat, warm, hand-drawn-style INLINE SVG. No external files, no <img>.
+   Decorative only (aria-hidden) — the read-aloud button reads the text,
+   so illustrations never carry information the voice doesn't.
+   Palette: dark green #1d3a2a, green #2b7a5b/#43b581, amber #ffb400,
+   orange #ff9f43, cream #fff3cd, soft red #e05252 (sparingly). */
+function svgStar(cx, cy, r, color){
+  let pts=[];
+  for(let i=0;i<10;i++){ const a=-Math.PI/2 + i*Math.PI/5; const rr=i%2? r*0.45 : r;
+    pts.push((cx+rr*Math.cos(a)).toFixed(1)+","+(cy+rr*Math.sin(a)).toFixed(1)); }
+  return `<polygon points="${pts.join(" ")}" fill="${color}"/>`;
+}
+function svgRod(x, y, color, w, h){
+  w=w||13; h=h||58;
+  let s=`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="${color}"/>`;
+  for(let i=1;i<10;i++){ const ly=y+h*i/10; s+=`<rect x="${x}" y="${(ly-0.75).toFixed(1)}" width="${w}" height="1.5" fill="#fffdf5"/>`; }
+  return s;
+}
+function svgCube(x, y, sz, color){ return `<rect x="${x}" y="${y}" width="${sz}" height="${sz}" rx="2.5" fill="${color}"/>`; }
+const SVG120 = '<svg viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">';
+const SVG64 = '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">';
+const SVG80 = '<svg viewBox="0 0 80 60" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">';
+const STAGE = '<rect x="2" y="2" width="116" height="86" rx="16" fill="#fffdf5"/>';
+const ILLUS = {
+  /* Friendly owl mascot with pencil + graduation cap — greets the learner on the home screen */
+  mascot: `<svg viewBox="0 0 140 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+<circle cx="70" cy="62" r="56" fill="#fffdf5"/>
+<rect x="54" y="4" width="32" height="9" rx="2.5" fill="#14532d"/>
+<rect x="60" y="13" width="20" height="7" rx="2" fill="#2b7a5b"/>
+<line x1="86" y1="8" x2="92" y2="20" stroke="#ffb400" stroke-width="2.5" stroke-linecap="round"/>
+<circle cx="92" cy="22" r="3" fill="#ffb400"/>
+<path d="M46,32 L52,16 L60,30 Z" fill="#ff9f43"/>
+<path d="M94,32 L88,16 L80,30 Z" fill="#ff9f43"/>
+<ellipse cx="70" cy="66" rx="34" ry="38" fill="#ff9f43"/>
+<ellipse cx="70" cy="80" rx="20" ry="22" fill="#fff3cd"/>
+<ellipse cx="38" cy="68" rx="8" ry="17" fill="#f08c1e" transform="rotate(12 38 68)"/>
+<ellipse cx="102" cy="68" rx="8" ry="17" fill="#f08c1e" transform="rotate(-12 102 68)"/>
+<circle cx="57" cy="52" r="11" fill="#fff"/>
+<circle cx="83" cy="52" r="11" fill="#fff"/>
+<circle cx="58" cy="53" r="5" fill="#1d3a2a"/>
+<circle cx="82" cy="53" r="5" fill="#1d3a2a"/>
+<circle cx="60" cy="51" r="1.8" fill="#fff"/>
+<circle cx="84" cy="51" r="1.8" fill="#fff"/>
+<path d="M66,62 L74,62 L70,70 Z" fill="#f57c00"/>
+<circle cx="47" cy="66" r="5" fill="#f6b8b8" opacity="0.8"/>
+<circle cx="93" cy="66" r="5" fill="#f6b8b8" opacity="0.8"/>
+<rect x="56" y="102" width="12" height="5" rx="2.5" fill="#ffb400"/>
+<rect x="72" y="102" width="12" height="5" rx="2.5" fill="#ffb400"/>
+<g transform="rotate(28 104 82)"><rect x="100" y="70" width="7" height="24" rx="2" fill="#ffd54f"/><polygon points="100,94 107,94 103.5,103" fill="#2b7a5b"/><rect x="100" y="70" width="7" height="5" rx="2" fill="#e05252"/></g>
+</svg>`,
+  /* Small feedback minis (64x64, also used inline at 26px) */
+  starMini: SVG64 + svgStar(32,32,24,"#ffb400")
+    + '<circle cx="25" cy="30" r="2.6" fill="#1d3a2a"/><circle cx="39" cy="30" r="2.6" fill="#1d3a2a"/>'
+    + '<path d="M25,38 Q32,44 39,38" stroke="#1d3a2a" stroke-width="2.5" fill="none" stroke-linecap="round"/>'
+    + '<circle cx="21" cy="36" r="3" fill="#f6b8b8" opacity="0.8"/><circle cx="43" cy="36" r="3" fill="#f6b8b8" opacity="0.8"/></svg>',
+  sproutMini: SVG64
+    + '<path d="M20,40 L44,40 L41,54 L23,54 Z" fill="#ff9f43"/>'
+    + '<rect x="18" y="37" width="28" height="6" rx="3" fill="#f08c1e"/>'
+    + '<line x1="32" y1="38" x2="32" y2="26" stroke="#2b7a5b" stroke-width="3" stroke-linecap="round"/>'
+    + '<ellipse cx="24" cy="25" rx="8" ry="5" fill="#43b581" transform="rotate(-30 24 25)"/>'
+    + '<ellipse cx="40" cy="25" rx="8" ry="5" fill="#43b581" transform="rotate(30 40 25)"/></svg>',
+  trophyMini: SVG64
+    + '<path d="M20,18 Q10,18 12,27 Q13,33 20,31" stroke="#ffb400" stroke-width="4" fill="none" stroke-linecap="round"/>'
+    + '<path d="M44,18 Q54,18 52,27 Q51,33 44,31" stroke="#ffb400" stroke-width="4" fill="none" stroke-linecap="round"/>'
+    + '<path d="M20,12 L44,12 L44,26 Q44,36 32,36 Q20,36 20,26 Z" fill="#ffb400"/>'
+    + svgStar(32,24,7,"#fffdf5")
+    + '<rect x="29" y="36" width="6" height="8" fill="#ffb400"/>'
+    + '<rect x="22" y="44" width="20" height="7" rx="3" fill="#ff9f43"/></svg>',
+  medalMini: SVG64
+    + '<path d="M24,4 L32,24 L20,24 Z" fill="#e05252"/>'
+    + '<path d="M40,4 L32,24 L44,24 Z" fill="#ff9f43"/>'
+    + '<circle cx="32" cy="40" r="16" fill="#ffb400" stroke="#f08c1e" stroke-width="2"/>'
+    + svgStar(32,40,8,"#fffdf5") + '</svg>',
+  flagMini: SVG64
+    + '<rect x="18" y="8" width="4" height="48" fill="#8d5a2b"/>'
+    + '<path d="M22,10 L48,16 L22,24 Z" fill="#43b581"/>'
+    + '<circle cx="48" cy="44" r="8" fill="#ffb400"/>'
+    + '<line x1="48" y1="32" x2="48" y2="27" stroke="#ffb400" stroke-width="2.5" stroke-linecap="round"/>'
+    + '<line x1="60" y1="44" x2="65" y2="44" stroke="#ffb400" stroke-width="2.5" stroke-linecap="round"/>'
+    + '<line x1="48" y1="56" x2="48" y2="61" stroke="#ffb400" stroke-width="2.5" stroke-linecap="round"/>'
+    + '<rect x="10" y="56" width="44" height="3" rx="1.5" fill="#c8e6c9"/></svg>',
+  mapMini: SVG64
+    + '<circle cx="32" cy="32" r="24" fill="#fffdf5" stroke="#2b7a5b" stroke-width="3"/>'
+    + '<polygon points="32,12 38,32 26,32" fill="#e05252"/>'
+    + '<polygon points="26,32 38,32 32,52" fill="#c8e6c9"/>'
+    + '<circle cx="32" cy="32" r="3" fill="#1d3a2a"/></svg>',
+  rocketMini: SVG64
+    + '<path d="M32,6 Q44,18 44,30 L44,40 L20,40 L20,30 Q20,18 32,6 Z" fill="#ff9f43"/>'
+    + '<circle cx="32" cy="28" r="7" fill="#bfe6f5" stroke="#fffdf5" stroke-width="2"/>'
+    + '<path d="M20,36 L12,48 L20,46 Z" fill="#e05252"/>'
+    + '<path d="M44,36 L52,48 L44,46 Z" fill="#e05252"/>'
+    + '<path d="M28,40 L36,40 L32,56 Z" fill="#ffb400"/></svg>',
+  /* One scene per topic (120x90, white stage) — 21 topics, math-test-prep */
+  topics: {},
+  /* Small scenes for the part headers (80x60) */
+  parts: {
+    0: SVG80 + '<polygon points="14,46 34,14 54,46" fill="#e2f6ec" stroke="#2b7a5b" stroke-width="2.5"/>'
+      + '<rect x="56" y="26" width="18" height="18" rx="3" fill="#ff9f43"/>'
+      + '<line x1="34" y1="14" x2="34" y2="46" stroke="#e05252" stroke-width="2" stroke-dasharray="4 3"/></svg>',
+    1: SVG80 + '<circle cx="26" cy="30" r="16" fill="#43b581"/>'
+      + '<text x="26" y="37" font-size="22" text-anchor="middle" fill="#fff" font-weight="700">+</text>'
+      + '<circle cx="56" cy="30" r="16" fill="#e05252"/>'
+      + '<text x="56" y="37" font-size="22" text-anchor="middle" fill="#fff" font-weight="700">−</text></svg>',
+    2: SVG80
+      + '<path d="M8,14 Q24,9 38,14 L38,46 Q24,41 8,46 Z" fill="#fffdf5" stroke="#2b7a5b" stroke-width="2"/>'
+      + '<path d="M72,14 Q56,9 42,14 L42,46 Q56,41 72,46 Z" fill="#fffdf5" stroke="#2b7a5b" stroke-width="2"/>'
+      + '<rect x="14" y="22" width="18" height="3" rx="1.5" fill="#c8e6c9"/>'
+      + '<rect x="14" y="30" width="18" height="3" rx="1.5" fill="#c8e6c9"/>'
+      + '<rect x="48" y="22" width="18" height="3" rx="1.5" fill="#c8e6c9"/>'
+      + '<rect x="48" y="30" width="18" height="3" rx="1.5" fill="#c8e6c9"/></svg>',
+    3: SVG80
+      + '<path d="M40,4 Q50,14 50,26 L50,36 L30,36 L30,26 Q30,14 40,4 Z" fill="#ff9f43"/>'
+      + '<circle cx="40" cy="24" r="6" fill="#bfe6f5" stroke="#fffdf5" stroke-width="2"/>'
+      + '<path d="M30,32 L22,44 L30,42 Z" fill="#e05252"/>'
+      + '<path d="M50,32 L58,44 L50,42 Z" fill="#e05252"/>'
+      + '<path d="M36,36 L44,36 L40,50 Z" fill="#ffb400"/></svg>',
+  },
+};
+
+/* ===== topic illustrations (fractions) ===== */
+function frPie(cx,cy,r,n,d,fill){
+  let s=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="#fff" stroke="#2b7a5b" stroke-width="2"/>`;
+  for(let i=0;i<n;i++){ const a0=-Math.PI/2+2*Math.PI*i/d, a1=-Math.PI/2+2*Math.PI*(i+1)/d;
+    s+=`<path d="M${cx},${cy} L${(cx+r*Math.cos(a0)).toFixed(1)},${(cy+r*Math.sin(a0)).toFixed(1)} A${r},${r} 0 ${d/n===1?1:0} 1 ${(cx+r*Math.cos(a1)).toFixed(1)},${(cy+r*Math.sin(a1)).toFixed(1)} Z" fill="${fill}"/>`; }
+  if(n===d) s=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="#2b7a5b" stroke-width="2"/>`;
+  for(let i=0;i<d;i++){ const a=-Math.PI/2+2*Math.PI*i/d; s+=`<line x1="${cx}" y1="${cy}" x2="${(cx+r*Math.cos(a)).toFixed(1)}" y2="${(cy+r*Math.sin(a)).toFixed(1)}" stroke="#2b7a5b" stroke-width="1.4"/>`; }
+  return s;
+}
+function frSym(t,x,y,sz,col){ return `<text x="${x}" y="${y}" font-size="${sz||26}" text-anchor="middle" fill="${col||"#1d3a2a"}" font-weight="800" direction="ltr" style="unicode-bidi:bidi-override">${t}</text>`; }
+function frIll(body){ return SVG120 + STAGE + body + "</svg>"; }
+function frBar(x,y,w,h,n,d,fill){ let s=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#fff" stroke="#2b7a5b" stroke-width="2"/>`; s+=`<rect x="${x}" y="${y}" width="${w*n/d}" height="${h}" fill="${fill}"/>`; for(let i=1;i<d;i++) s+=`<line x1="${x+w*i/d}" y1="${y}" x2="${x+w*i/d}" y2="${y+h}" stroke="#2b7a5b" stroke-width="1.2"/>`; return s; }
+ILLUS.topics = {
+  f1: frIll(frPie(30,45,22,1,2,"#43b581")+frSym("=",60,54)+frPie(90,45,22,2,4,"#43b581")),
+  f2: frIll(frPie(30,45,22,4,4,"#ffb400")+frPie(75,45,22,1,4,"#ffb400")+frSym("1¼",103,80,14)),
+  f3: frIll(frBar(14,20,92,16,3,4,"#43b581")+frBar(14,50,92,16,2,3,"#ff9f43")+frSym("&gt;",60,16,12)),
+  f4: frIll(frPie(26,45,20,1,3,"#43b581")+frSym("+",60,54)+frPie(94,45,20,1,4,"#ffb400")),
+  f5: frIll(frPie(26,45,20,3,4,"#43b581")+frSym("−",60,54)+frPie(94,45,20,1,4,"#e05252")),
+  f6: frIll(frSym("2¾",28,56,28,"#2b7a5b")+frSym("+",60,54)+frSym("1½",92,56,28,"#e05252")),
+  f7: frIll(frBar(12,28,96,26,3,4,"#ff9f43")+frSym("¾ × 20",60,76,16)),
+  f8: `${SVG120}${STAGE}<rect x="24" y="14" width="72" height="60" fill="#fff" stroke="#2b7a5b" stroke-width="2"/><rect x="24" y="14" width="48" height="30" fill="#43b581" opacity=".8"/><line x1="48" y1="14" x2="48" y2="74" stroke="#2b7a5b"/><line x1="72" y1="14" x2="72" y2="74" stroke="#2b7a5b"/><line x1="24" y1="44" x2="96" y2="44" stroke="#2b7a5b"/>${frSym("×",60,86,14)}</svg>`,
+  f9: frIll(frBar(12,22,96,22,1,1,"#ffb400")+frBar(12,50,96,22,1,4,"#43b581").replace(/<rect x="12" y="50"[^>]*fill="#fff"[^>]*\/>/,"")+frSym("÷",60,16,14)),
+  f10: frIll(frPie(26,45,20,3,4,"#43b581")+frSym("÷",60,54)+frPie(94,45,20,3,8,"#ffb400")),
+  f11: frIll(frSym("( + ) × ÷",60,54,22,"#2b7a5b")),
+  w1: frIll('<circle cx="60" cy="44" r="26" fill="#fff" stroke="#1d3a2a" stroke-width="2.5"/><polygon points="60,32 70,40 66,52 54,52 50,40" fill="#1d3a2a"/><line x1="60" y1="32" x2="60" y2="18" stroke="#1d3a2a" stroke-width="2"/>'),
+  w2: frIll('<rect x="18" y="38" width="84" height="22" rx="8" fill="#e05252"/><rect x="34" y="26" width="48" height="16" rx="6" fill="#ff9f43"/><circle cx="38" cy="62" r="9" fill="#1d3a2a"/><circle cx="82" cy="62" r="9" fill="#1d3a2a"/>'),
+  w3: frIll('<rect x="20" y="34" width="80" height="34" rx="4" fill="#ffb400"/><circle cx="36" cy="30" r="6" fill="#ffb400" stroke="#d99a00" stroke-width="2"/><circle cx="60" cy="30" r="6" fill="#ffb400" stroke="#d99a00" stroke-width="2"/><circle cx="84" cy="30" r="6" fill="#ffb400" stroke="#d99a00" stroke-width="2"/>'+frSym("✍",60,60,24,"#1d3a2a"))
+};
+ILLUS.parts[0] = SVG80 + frPie(40,30,22,3,4,"#43b581") + "</svg>";
+ILLUS.parts[2] = SVG80 + frSym("×",24,40,30,"#e05252") + frSym("÷",56,40,30,"#2b7a5b") + "</svg>";
+
+/* ================= OPEN (TYPED) ANSWERS — שאלות פתוחות ================= */
+function openInputHTML(){
+  return `<div class="openbox" dir="ltr"><input class="oi oi-w" type="text" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="שלם" aria-label="מספר שלם"><span class="oi-fr"><input class="oi oi-n" type="text" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="מונה" aria-label="מונה"><i class="oi-line"></i><input class="oi oi-d" type="text" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="מכנה" aria-label="מכנה"></span></div>`;
+}
+function readOpen(box){ const g=c=>box.querySelector(c).value.trim(); return {w:g(".oi-w"),n:g(".oi-n"),d:g(".oi-d")}; }
+function openJudge(q, inp){
+  const has=s=>s!=="" && s!==null && s!==undefined;
+  if(!has(inp.w) && !has(inp.n) && !has(inp.d)) return {st:"empty", msg:"כתבו תשובה במשבצות 🙂"};
+  const ok=s=>/^\d+$/.test(s);
+  if((has(inp.w)&&!ok(inp.w)) || (has(inp.n)&&!ok(inp.n)) || (has(inp.d)&&!ok(inp.d))) return {st:"incomplete", msg:"כותבים רק ספרות — בלי רווחים ובלי סימנים."};
+  if(has(inp.n)!==has(inp.d)) return {st:"incomplete", msg:"בשבר צריך לכתוב גם מונה (למעלה) וגם מכנה (למטה)."};
+  const w=has(inp.w)? parseInt(inp.w,10):0, hasF=has(inp.n), n=hasF? parseInt(inp.n,10):0, d=hasF? parseInt(inp.d,10):1;
+  if(d<=0) return {st:"incomplete", msg:"המכנה לא יכול להיות 0."};
+  const val=R(w*d+n,d), o=q.open;
+  if(!(val.n===o.n && val.d===o.d)) return {st:"wrong"};
+  if(hasF && n>0 && gcd(n,d)>1) return {st:"unreduced", msg:"הערך נכון! אבל השבר לא מצומצם — צמצמו עד הסוף."};
+  if(hasF && w>0 && n>=d) return {st:"form", msg:"הערך נכון, אבל במספר מעורב החלק השברי חייב להיות קטן מ־1."};
+  if(o.fmt==="improper" && hasF && w>0) return {st:"form", msg:"הערך נכון! בקשו שבר מדומה — בלי שלם (למשל 17/5)."};
+  if(o.fmt==="mixed" && val.d!==1 && val.n>val.d && !(hasF && w>0)) return {st:"form", msg:"הערך נכון! כתבו אותו כמספר מעורב (שלם ושבר)."};
+  return {st:"ok"};
+}
+function selCorrect(q, s){ if(q.open) return !!s && openJudge(q,s).st==="ok"; return s===q.ans; }
+function openStatusHTML(q, s){
+  if(!s) return `<div class="openans bad">לא ענית. 📌 התשובה הנכונה: ${q.ans}</div>`;
+  const j=openJudge(q,s);
+  if(j.st==="ok") return `<div class="openans ok">✅ נכון! ${q.ans}</div>`;
+  if(j.st==="wrong") return `<div class="openans bad">❌ לא מדויק. 📌 התשובה הנכונה: ${q.ans}</div>`;
+  return `<div class="openans bad">${j.msg||""} 📌 התשובה המצופה: ${q.ans}</div>`;
+}
+
+/* ================= FRACTIONS TOOLKIT — פעולות בשברים ================= */
+function lcm(a,b){ return a*b/gcd(a,b); }
+function R(n,d){ if(d===undefined) d=1; if(d<0){ n=-n; d=-d; } const g=gcd(n,d); return {n:n/g,d:d/g}; }
+const radd=(a,b)=>R(a.n*b.d+b.n*a.d,a.d*b.d), rsub=(a,b)=>R(a.n*b.d-b.n*a.d,a.d*b.d);
+const rmul=(a,b)=>R(a.n*b.n,a.d*b.d), rdiv=(a,b)=>R(a.n*b.d,a.d*b.n);
+const rcmp=(a,b)=>a.n*b.d-b.n*a.d;
+function fr(n,d){ return fracHTML(n,d); }
+function fm(r){ return dispFrac(r.n,r.d); }
+function fi(r){ return fracHTML(r.n,r.d); }
+function rt(r){ return r.d===1? String(r.n) : r.n+"/"+r.d; }
+function mt(r){ const w=Math.floor(r.n/r.d), n=r.n%r.d; return n===0? String(w) : w===0? n+"/"+r.d : w+" "+n+"/"+r.d; }
+function mixR(w,n,d){ return R(w*d+n,d); }
+function frOf(r){ return r.d===1? `<span class="m">${r.n}</span>` : (r.n>r.d? fm(r) : fi(r)); }
+function wrongOpts(r, cands){
+  const out=[], seen=new Set([rt(r)]);
+  const add=x=>{ if(!x||!(x.d>0)||x.n<=0) return; const k=rt(x); if(seen.has(k)) return; seen.add(k); out.push(x); };
+  (cands||[]).forEach(add);
+  const pad = r.d===1
+    ? [R(r.n+1),R(r.n-1),R(r.n+2),R(r.n-2),R(r.n+10),R(r.n*2),R(r.n+5),R(r.n-5)]
+    : [R(r.n+1,r.d),R(r.n,r.d+1),R(Math.max(1,r.n-1),r.d),R(r.n+r.d,r.d),R(r.n*2,r.d),R(r.n,r.d*2),R(r.n+2,r.d),R(r.n,r.d+2),R(r.d,r.n),R(r.n+1,r.d+1)];
+  pad.forEach(add);
+  return out;
+}
+/* FQ: r = exact result; wrongStr = raw-HTML distractors for typical errors; open = typed answer */
+function FQ(o){
+  const r=o.r, fmt=o.fmt||"auto", L=o.L||2;
+  const show=x=> fmt==="improper"? fi(x) : fm(x);
+  const open = o.open!==undefined? o.open : (L===3? rand()<0.6 : L===2? rand()<0.3 : rand()<0.1);
+  const cor=show(r);
+  const ws=(o.wrongStr||[]).filter(s=>s!==cor);
+  const rest=wrongOpts(r,o.wrongs).map(show);
+  const q=Q(o.text, o.viz||"", open? [] : makeOpts(cor, ws.concat(rest)), cor, o.why, Object.assign({val:rt(r)},o.meta||{}), o.hint, o.steps);
+  if(open) q.open={n:r.n,d:r.d,fmt:fmt};
+  if(o.note) q.text+=o.note;
+  return q;
+}
+function addSteps(a,b,sub){
+  const Lc=lcm(a.d,b.d), e1=a.n*(Lc/a.d), e2=b.n*(Lc/b.d), s=sub? e1-e2 : e1+e2, res=R(s,Lc), op=sub?"−":"+";
+  const st=[];
+  if(a.d===b.d) st.push(`המכנים שווים (${a.d}) — עובדים רק על המונים, והמכנה לא משתנה`);
+  else { st.push(`מכנה משותף: ${Lc} (כפולה משותפת של ${a.d} ושל ${b.d})`); const ex=[]; if(Lc!==a.d) ex.push(`${a.n}/${a.d} = ${e1}/${Lc}`); if(Lc!==b.d) ex.push(`${b.n}/${b.d} = ${e2}/${Lc}`); st.push(`מרחיבים: ${ex.join(" ו־")}`); }
+  st.push(`${sub?"מחסרים":"מחברים"} את המונים: ${e1} ${op} ${e2} = ${s}, כלומר ${s}/${Lc}`);
+  if(res.d!==Lc || res.n>res.d) st.push(`מצמצמים ו/או הופכים למספר מעורב: ${mt(res)}`);
+  return st;
+}
+function mixSteps(a,b,sub){
+  const Lc=lcm(a.d,b.d), n1=a.n*(Lc/a.d), n2=b.n*(Lc/b.d), st=[];
+  let W1=a.w, N1=n1;
+  if(a.d!==b.d){ const ex=[]; if(Lc!==a.d) ex.push(`${a.n}/${a.d} = ${n1}/${Lc}`); if(Lc!==b.d) ex.push(`${b.n}/${b.d} = ${n2}/${Lc}`); st.push(`מביאים למכנה משותף ${Lc}: ${ex.join(" ו־")}`); }
+  if(!sub){
+    const W=a.w+b.w, F=n1+n2;
+    st.push(`מחברים שלמים: ${a.w} + ${b.w} = ${W}, ומחברים שברים: ${n1}/${Lc} + ${n2}/${Lc} = ${F}/${Lc}`);
+    if(F>=Lc) st.push(`${F}/${Lc} הוא יותר משלם — מוציאים שלם אחד: ${W+1} ועוד ${F-Lc}/${Lc}`);
+  } else {
+    if(N1<n2){ st.push(`אי אפשר להחסיר ${n2}/${Lc} מ־${N1}/${Lc} — לווים שלם אחד מהשלמים: ${W1} ← ${W1-1}, והשבר נהיה ${N1+Lc}/${Lc}`); W1--; N1+=Lc; }
+    st.push(`מחסרים שלמים: ${W1} − ${b.w} = ${W1-b.w}, ומחסרים שברים: ${N1}/${Lc} − ${n2}/${Lc} = ${N1-n2}/${Lc}`);
+  }
+  const res=(sub? rsub : radd)(mixR(a.w,a.n,a.d), mixR(b.w,b.n,b.d));
+  st.push(`התוצאה (מצומצמת): ${mt(res)}`);
+  return st;
+}
+function dpair(L){
+  if(L===1){ const d=pick([4,5,6,7,8,9,10,12]); return [d,d]; }
+  if(L===2){ const d=pick([2,3,4,5,6]); const k=pick([2,3,4]); const big=d*k; return rnd(0,1)? [d,big] : [big,d]; }
+  return pick([[3,4],[2,5],[3,5],[4,5],[5,6],[3,8],[5,8],[4,9],[3,10],[7,10],[2,7],[4,7],[6,8],[4,6],[9,12],[6,9],[8,12],[2,9]]);
+}
+function propN(d){ return rnd(1,d-1); }
+function cop(b){ const c=[]; for(let i=1;i<b;i++) if(gcd(i,b)===1) c.push(i); return pick(c); }
+function qfr(top,bot){ return `<span class="frac"><span class="top">${top}</span><span class="bot">${bot}</span></span>`; }
+function TOK(q,html){ q.text=q.text.replace("⟬T⟭", `<span class="m">${html}</span>`); return q; }
+function wholes(w){ return w===1? "שלם אחד" : w+" שלמים"; }
+
+/* ===== f1 — צמצום והרחבה ===== */
+function genF1(L){
+  const kind = L===1? pick([1,1,2,5]) : L===2? pick([1,2,3,4,5]) : pick([2,3,4,4,6]);
+  if(kind===1){
+    const [a,b]=pick([[1,2],[1,3],[2,3],[3,4],[1,4],[2,5],[3,5],[1,5],[5,6],[3,8],[5,8],[7,10],[4,9]]); const k=rnd(2,L===1?5:9);
+    return TOK(FQ({L, r:R(a*k), text:`השלימו את המספר החסר: ⟬T⟭`,
+      why:`המכנה גדל פי ${k} (${b} ← ${b*k}), לכן גם המונה צריך לגדול פי ${k}: ${a} × ${k} = ${a*k}.`,
+      hint:"מה עשו למכנה? אותו הדבר עושים גם למונה.",
+      steps:[`בודקים בכמה כפלו את המכנה: ${b} × ${k} = ${b*k}`,`כופלים את המונה באותו מספר: ${a} × ${k} = ${a*k}`,`התשובה: ${a*k}`]}), `${fr(a,b)} = ${qfr("?",b*k)}`);
+  }
+  if(kind===2){
+    const [p,q]=pick([[1,2],[1,3],[2,3],[3,4],[2,5],[3,5],[5,6],[3,8],[5,8],[7,10],[4,9],[5,12],[7,9],[8,15]]);
+    const g=rnd(2,L===1?4:L===2?7:12); const a=p*g, b=q*g;
+    const part=[2,3,5].filter(x=>g%x===0 && x<g).map(x=>fr(a/x,b/x));
+    return FQ({L, r:R(p,q), wrongStr:part, text:`צמצמו את השבר עד הסוף: ${fr(a,b)}`,
+      why:`המחלק המשותף הגדול של ${a} ו־${b} הוא ${g}. ${a} ÷ ${g} = ${p}, ${b} ÷ ${g} = ${q}. התוצאה: ${p}/${q}.`,
+      hint:"מחפשים מספר שמחלק גם את המונה וגם את המכנה — ומחלקים את שניהם.",
+      steps:[`מוצאים מחלק משותף של ${a} ושל ${b}: ${g}`,`מחלקים את המונה: ${a} ÷ ${g} = ${p}`,`מחלקים את המכנה: ${b} ÷ ${g} = ${q}`,`התוצאה: ${p}/${q} — אי אפשר לצמצם עוד`]});
+  }
+  if(kind===3){
+    const [a,b]=pick([[1,2],[1,3],[2,3],[3,4],[2,5],[3,5],[5,6],[3,8],[4,7],[5,9]]); const k=rnd(2,6);
+    const corr=fr(a*k,b*k);
+    return Q(`איזה מהשברים הבאים שווה ל־${fr(a,b)}?`,"",makeOpts(corr,[fr(a*k+1,b*k),fr(a*k,b*k+1),fr(a+k,b+k)]),corr,
+      `כופלים את המונה ואת המכנה באותו מספר (${k}): ${a}×${k} = ${a*k}, ${b}×${k} = ${b*k}. לכן ${a}/${b} = ${a*k}/${b*k}. חיבור מספר לשניהם (כמו ${a+k}/${b+k}) משנה את הערך!`,
+      {val:a+"/"+b},"שבר שווה מקבלים רק בכפל או בחילוק — לא בחיבור!",
+      [`צריך לכפול (או לחלק) את המונה והמכנה באותו מספר`,`${a} × ${k} = ${a*k} ו־${b} × ${k} = ${b*k}`,`התשובה: ${a*k}/${b*k}`]);
+  }
+  if(kind===4){
+    const [p,q]=pick([[1,2],[1,3],[2,3],[3,4],[2,5],[3,5],[5,6],[3,8],[4,7],[5,9]]); const k=rnd(2,L===3?9:6);
+    return TOK(FQ({L, r:R(q*k), text:`השלימו את המכנה החסר: ⟬T⟭`,
+      why:`המונה גדל פי ${k} (${p} ← ${p*k}), לכן גם המכנה גדל פי ${k}. המכנה החסר הוא ${q}: ${p}/${q} = ${p*k}/${q*k}.`,
+      hint:"משווים: המונה והמכנה בשבר הגדול הם פי כמה מהקטן?",
+      steps:[`המונה: ${p} ← ${p*k}, כלומר ×${k}`,`אז המכנה החסר הוא ${q*k} ÷ ${k} = ${q}`,`התשובה: ${q}`]}), `${qfr(p,"?")} = ${fr(p*k,q*k)}`);
+  }
+  if(kind===5){
+    const [a,b]=pick([[2,3],[3,4],[1,5],[2,7],[5,6],[3,8],[4,9],[7,10]]); const k=rnd(2,7), t=rnd(0,1)===1;
+    const c = t? a*k : a*k+(rnd(0,1)?1:-1)||a*k+1; const d=t? b*k : b*k;
+    return Q(`נכון או לא נכון: ${fr(a,b)} = ${fr(c,d)}`,"",YESNO.slice(),t?"נכון":"לא נכון",
+      t? `כופלים מונה ומכנה ב־${k}: ${a}×${k} = ${a*k} ו־${b}×${k} = ${b*k}. הטענה נכונה.` : `${a}/${b} שווה ל־${a*k}/${b*k}, ולא ל־${c}/${d}. הטענה לא נכונה.`,
+      {val:t?"t":"f"},"בודקים: בכמה כפלו את המכנה? האם המונה הוכפל באותו מספר?",
+      [`מה עשו למכנה? ${b} ← ${d} (פי ${d/b})`,`האם המונה ${a} הוכפל באותו מספר? ${a} × ${d/b} = ${a*d/b}`,t?"כן — הטענה נכונה":"לא — הטענה לא נכונה"]);
+  }
+  /* kind 6 — improper reduce, L3 */
+  const [p,q]=pick([[5,2],[7,3],[9,4],[11,5],[13,6],[7,4],[8,3],[11,4]]); const g=rnd(2,6);
+  return FQ({L, r:R(p,q), text:`צמצמו עד הסוף: ${fr(p*g,q*g)}`,
+    why:`מחלקים מונה ומכנה ב־${g}: ${p*g}/${q*g} = ${p}/${q} = ${mt(R(p,q))}.`, hint:"מחלקים את המונה והמכנה באותו מספר.",
+    steps:[`מחלק משותף: ${g}`,`${p*g} ÷ ${g} = ${p}, ${q*g} ÷ ${g} = ${q}`,`התוצאה: ${p}/${q} = ${mt(R(p,q))}`]});
+}
+
+/* ===== f2 — מספר מעורב ושבר מדומה ===== */
+function genF2(L){
+  const dmax = L===1? 5 : L===2? 9 : 12;
+  const kind = L===1? pick([1,2,3]) : pick([1,2,3,4,5,1,2]);
+  const d=rnd(2,dmax);
+  if(kind===1){
+    const w=rnd(1,L===1?4:9); let n=rnd(1,d-1); const r=R(w*d+n,d);
+    return FQ({L, fmt:"mixed", r, text:`הפכו את השבר המדומה למספר מעורב: ${fr(w*d+n,d)}`,
+      why:`מחלקים: ${w*d+n} ÷ ${d} = ${w} ושארית ${n}. לכן ${w*d+n}/${d} = ${mt(r)}.`, hint:"כמה שלמים יש במונה? מחלקים את המונה במכנה — השארית היא המונה החדש.",
+      steps:[`מחלקים את המונה במכנה: ${w*d+n} ÷ ${d} = ${w} ושארית ${n}`,`${w} הם השלמים, והשארית ${n} היא המונה`,`התוצאה: ${mt(R(w*d+n,d))}`]});
+  }
+  if(kind===2){
+    let n=rnd(1,d-1); const w=rnd(1,L===1?4:9); if(d>2){ while(gcd(n,d)>1) n=rnd(1,d-1); } else n=1;
+    return FQ({L, fmt:"improper", r:R(w*d+n,d), text:`הפכו את המספר המעורב לשבר מדומה: ${mixedHTML(w,n,d)}`,
+      why:`כופלים את השלם במכנה ומוסיפים את המונה: ${w} × ${d} + ${n} = ${w*d+n}. המכנה נשאר ${d}: ${w*d+n}/${d}.`, hint:"שלם × מכנה + מונה — וזה המונה החדש.",
+      steps:[`${w} × ${d} = ${w*d}`,`מוסיפים את המונה: ${w*d} + ${n} = ${w*d+n}`,`המכנה נשאר ${d}. התוצאה: ${w*d+n}/${d}`]});
+  }
+  if(kind===3){
+    const w=rnd(1,L===1?4:7); const dd=rnd(2,L===1?5:10); const n=L===1? 0 : rnd(0,dd-1);
+    const tot=w*dd+n; const nm={2:"חצאים",3:"שלישים",4:"רבעים",5:"חמישיות",6:"שישיות",7:"שביעיות",8:"שמיניות",9:"תשיעיות",10:"עשיריות"}[dd];
+    return FQ({L, r:R(tot), text: n===0? `כמה ${nm} יש ב־${w}?` : `כמה ${nm} יש ב־${mixedHTML(w,n,dd)}?`,
+      why:`בכל שלם יש ${dd} ${nm}. ${w} × ${dd} = ${w*dd}${n? `, ועוד ${n} — יחד ${tot}`:""}.`, hint:`בכל שלם אחד יש ${dd} ${nm}.`,
+      steps:[`בכל שלם יש ${dd} ${nm}`,`${wholes(w)}: ${w} × ${dd} = ${w*dd}`, n? `מוסיפים ${n}: ${w*dd} + ${n} = ${tot}` : `התשובה: ${tot}`]});
+  }
+  if(kind===4){
+    let n=rnd(1,d-1); const w=rnd(1,6); while(d>2 && gcd(n,d)>1) n=rnd(1,d-1); if(d===2) n=1;
+    const corr=mixedHTML(w,n,d), tot=w*d+n;
+    return Q(`איזה מספר שווה ל־${fr(tot,d)}?`,"",makeOpts(corr,[mixedHTML(w+1,n,d),mixedHTML(w,d>n+1?n+1:n-1||1,d),mixedHTML(n>1?n:w+2,w,Math.max(w+1,d))]),corr,
+      `${tot} ÷ ${d} = ${w} ושארית ${n}, לכן ${tot}/${d} = ${w} ${n}/${d}.`,{val:rt(R(tot,d))},"מחלקים את המונה במכנה: המנה היא השלמים והשארית היא המונה.",
+      [`${tot} ÷ ${d} = ${w} ושארית ${n}`,`השלמים: ${w}, והשבר: ${n}/${d}`,`התשובה: ${w} ${n}/${d}`]);
+  }
+  const w=rnd(1,8); let n=rnd(1,d-1); const lo=w, hi=w+1;
+  const corr=`בין ${lo} ל־${hi}`;
+  return Q(`בין אילו שני מספרים שלמים נמצא ${fr(w*d+n,d)}?`,"",makeOpts(corr,[`בין ${lo+1} ל־${hi+1}`,`בין ${Math.max(0,lo-1)} ל־${lo}`,`בין ${lo*2} ל־${hi*2}`]),corr,
+    `${w*d+n} ÷ ${d} = ${w} ושארית ${n}, כלומר ${w} שלמים ועוד חלק — המספר בין ${lo} ל־${hi}.`,{val:rt(R(w*d+n,d))},"הופכים למספר מעורב — השלם הוא המספר שמתחת.",
+    [`מחלקים: ${w*d+n} ÷ ${d} = ${w} ושארית ${n}`,`המספר המעורב הוא ${w} ${n}/${d}`,`הוא נמצא בין ${lo} ל־${hi}`]);
+}
+
+/* ===== f3 — השוואה וסידור ===== */
+function genF3(L){
+  const kind = L===1? pick([1,2,1]) : L===2? pick([3,4,3,1]) : pick([4,5,5,6,3]);
+  const cmpOpts=["השבר הראשון גדול יותר","השבר השני גדול יותר","השברים שווים"];
+  const mk=(A,B,why,steps,hint)=>{ const c=rcmp(A.r,B.r); const ans=c>0?cmpOpts[0]:c<0?cmpOpts[1]:cmpOpts[2];
+    return Q(`איזה שבר גדול יותר: ${A.h} או ${B.h}?`,"",cmpOpts.slice(),ans,why,{val:c>0?"a":c<0?"b":"e"},hint,steps); };
+  if(kind===1){ /* same denominator */
+    const d=rnd(3,12); let a=rnd(1,d-1), b=rnd(1,d-1); if(a===b) b=a%(d-1)+1;
+    const A={r:R(a,d),h:fr(a,d)}, B={r:R(b,d),h:fr(b,d)};
+    return mk(A,B,`המכנים שווים (${d}), אז משווים מונים: ${a} ו־${b}. ${a>b?a+" גדול מ־"+b:b+" גדול מ־"+a}.`,[`המכנים שווים — משווים רק את המונים`,`${a} לעומת ${b}`,a>b?"השבר הראשון גדול יותר":"השבר השני גדול יותר"],"כשהמכנים שווים — המונה הגדול יותר נותן שבר גדול יותר.");
+  }
+  if(kind===2){ /* same numerator */
+    const n=rnd(1,5); let d1=rnd(n+1,12), d2=rnd(n+1,12); if(d1===d2) d2=d1+1;
+    const A={r:R(n,d1),h:fr(n,d1)}, B={r:R(n,d2),h:fr(n,d2)};
+    return mk(A,B,`המונים שווים (${n}). ${d1<d2? `חלוקה ל־${d1} חלקים נותנת חלקים גדולים יותר מחלוקה ל־${d2}`:`חלוקה ל־${d2} חלקים נותנת חלקים גדולים יותר מחלוקה ל־${d1}`}, לכן ${d1<d2?"השבר הראשון":"השבר השני"} גדול יותר.`,
+      [`המונים שווים — מסתכלים על המכנים`,`מכנה גדול יותר = חלקים קטנים יותר`,d1<d2?"השבר הראשון גדול יותר":"השבר השני גדול יותר"],"כשהמונים שווים — המכנה הקטן יותר נותן שבר גדול יותר.");
+  }
+  if(kind===3){ /* multiple denominators */
+    const [d1,d2]=dpair(2); const a=rnd(1,d1-1), b=rnd(1,d2-1);
+    const A={r:R(a,d1),h:fr(a,d1)}, B={r:R(b,d2),h:fr(b,d2)}; const Lc=lcm(d1,d2);
+    return mk(A,B,`מביאים למכנה משותף ${Lc}: ${a}/${d1} = ${a*Lc/d1}/${Lc} ו־${b}/${d2} = ${b*Lc/d2}/${Lc}. משווים מונים: ${a*Lc/d1} ו־${b*Lc/d2}.`,
+      [`מכנה משותף: ${Lc}`,`${a}/${d1} = ${a*Lc/d1}/${Lc} ו־${b}/${d2} = ${b*Lc/d2}/${Lc}`,`משווים את המונים: ${a*Lc/d1} ו־${b*Lc/d2}`],"מביאים את שני השברים לאותו מכנה, ואז משווים מונים.");
+  }
+  if(kind===4){ /* coprime denominators */
+    const [d1,d2]=dpair(3); const a=rnd(1,d1-1), b=rnd(1,d2-1);
+    const A={r:R(a,d1),h:fr(a,d1)}, B={r:R(b,d2),h:fr(b,d2)}; const Lc=lcm(d1,d2);
+    return mk(A,B,`מכנה משותף ${Lc}: ${a}/${d1} = ${a*Lc/d1}/${Lc} ו־${b}/${d2} = ${b*Lc/d2}/${Lc}. משווים מונים: ${a*Lc/d1} ו־${b*Lc/d2}.`,
+      [`מכנה משותף: ${Lc}`,`${a}/${d1} = ${a*Lc/d1}/${Lc} ו־${b}/${d2} = ${b*Lc/d2}/${Lc}`,`משווים את המונים: ${a*Lc/d1} ו־${b*Lc/d2}`],"מוצאים מכנה משותף — הכפולה המשותפת הקטנה של שני המכנים.");
+  }
+  if(kind===5){ /* mixed vs improper */
+    const d1=rnd(2,6), d2=rnd(2,6); const w=rnd(1,4), n=rnd(1,d1-1); const A={r:mixR(w,n,d1),h:mixedHTML(w,n,d1)};
+    const num=rnd(w*d2+1,(w+2)*d2); const B={r:R(num,d2),h:fr(num,d2)};
+    return mk(A,B,`הופכים את שניהם לאותה צורה: ${w} ${n}/${d1} = ${rt(A.r)} ו־${num}/${d2} = ${mt(B.r)}. משווים.`,
+      [`הופכים את ${num}/${d2} למספר מעורב: ${mt(B.r)}`,`משווים לשלם הראשון, ואם שווים — לשבר`,`${w} ${n}/${d1} לעומת ${mt(B.r)}`],"הופכים את המספר המדומה למספר מעורב, או להפך — ואז משווים.");
+  }
+  /* kind 6 — order three fractions */
+  const base=pick([[2,3,6],[3,4,8],[2,5,10],[3,4,12],[2,3,12],[4,5,20],[3,5,15],[5,6,12]]);
+  const d=lcm(lcm(base[0],base[1]),base[2]); const set=new Set(); const fs=[];
+  while(fs.length<3){ const dd=pick(base), nn=rnd(1,dd-1); const k=nn+"/"+dd; if(!set.has(R(nn,dd).n+"/"+R(nn,dd).d)){ set.add(R(nn,dd).n+"/"+R(nn,dd).d); fs.push({r:R(nn,dd),n:nn,d:dd}); } }
+  const sorted=fs.slice().sort((a,b)=>rcmp(a.r,b.r)); const showL=l=>l.map(x=>fr(x.n,x.d)).join(" , ");
+  const corr=showL(sorted); const perms=[[0,2,1],[1,0,2],[2,1,0],[1,2,0],[2,0,1]].map(p=>p.map(i=>sorted[i])); 
+  return Q(`סדרו מהקטן לגדול: ${showL(shuffle(fs))}`,"",makeOpts(corr,perms.map(showL)),corr,
+    `מביאים למכנה משותף ${d}: ${sorted.map(x=>`${x.n}/${x.d} = ${x.r.n*d/x.r.d}/${d}`).join(", ")}. מסדרים לפי המונים.`,{val:sorted.map(x=>rt(x.r)).join(",")},"מביאים את כולם למכנה משותף ומשווים מונים.",
+    [`מכנה משותף לכולם: ${d}`,`ממירים: ${sorted.map(x=>`${x.n}/${x.d} = ${x.r.n*d/x.r.d}/${d}`).join(" ; ")}`,`מסדרים לפי המונים מהקטן לגדול`]);
+}
+
+/* ===== f4 — חיבור שברים ===== */
+function genF4(L){
+  const kind = L===3? pick([1,1,2]) : 1;
+  if(kind===2){ /* three addends */
+    const d=pick([4,6,8,10,12]); const parts=[1,2,3].map(()=>rnd(1,d-1)); const rs=parts.map(p=>R(p,d));
+    const sum=radd(radd(rs[0],rs[1]),rs[2]);
+    return FQ({L, r:sum, text:`חשבו: ${fr(parts[0],d)} + ${fr(parts[1],d)} + ${fr(parts[2],d)}`,
+      why:`המכנים שווים — מחברים את כל המונים: ${parts.join(" + ")} = ${parts[0]+parts[1]+parts[2]}, כלומר ${parts[0]+parts[1]+parts[2]}/${d} = ${mt(sum)}.`, hint:"מכנים שווים — מחברים רק מונים. ובסוף מצמצמים.",
+      steps:[`המכנים שווים (${d})`,`מחברים מונים: ${parts.join(" + ")} = ${parts[0]+parts[1]+parts[2]}`,`התוצאה: ${parts[0]+parts[1]+parts[2]}/${d} = ${mt(sum)}`]});
+  }
+  let d1,d2,a,b; for(let t=0;t<80;t++){ [d1,d2]=dpair(L); a=rnd(1,d1-1+(L===1?3:0)); b=rnd(1,d2-1+(L===1?2:0)); if(L===1||(gcd(a,d1)===1&&gcd(b,d2)===1)) break; }
+  const A=R(a,d1), B=R(b,d2), res=radd(A,B);
+  const wrong=[fr(a+b,d1+d2)]; if(d1===d2) wrong.push(fr(a+b,2*d1)); else wrong.push(fr(a+b,Math.max(d1,d2)));
+  return FQ({L, r:res, wrongStr:wrong, text:`חשבו: ${fr(a,d1)} + ${fr(b,d2)}`,
+    why:addSteps({n:a,d:d1},{n:b,d:d2},false).join(". ")+".", hint:d1===d2?"מכנים שווים — מחברים רק את המונים.":"קודם מכנה משותף! אחר כך מחברים רק מונים.",
+    steps:addSteps({n:a,d:d1},{n:b,d:d2},false)});
+}
+
+/* ===== f5 — חיסור שברים ===== */
+function genF5(L){
+  const kind = L===3? pick([1,1,2,3]) : L===2? pick([1,1,2]) : pick([1,1,1,2]);
+  if(kind===2){ /* 1 - fraction  or  whole - fraction */
+    const d=rnd(3,L===1?8:12); const n=rnd(1,d-1); const w= L===1? 1 : rnd(1,5)+1; const res=rsub(R(w),R(n,d));
+    return FQ({L, r:res, text:`חשבו: ${w} − ${fr(n,d)}`,
+      why:w===1? `1 = ${d}/${d}. ${d}/${d} − ${n}/${d} = ${d-n}/${d} = ${mt(res)}.` : `לווים שלם אחד: ${w} = ${w-1} + ${d}/${d}. ${d}/${d} − ${n}/${d} = ${d-n}/${d}. יחד: ${mt(res)}.`,
+      hint:"הופכים שלם אחד לשבר עם אותו מכנה (למשל 1 = 8/8) ואז מחסרים.",
+      steps:w===1?[`1 = ${d}/${d}`,`${d} − ${n} = ${d-n}`,`התוצאה: ${mt(res)}`]:[`לווים שלם אחד: ${w} = ${w-1} + ${d}/${d}`,`מחסרים: ${d}/${d} − ${n}/${d} = ${d-n}/${d}`,`מחברים את השלמים שנשארו: ${w-1} ועוד ${d-n}/${d} = ${mt(res)}`]});
+  }
+  if(kind===3){ /* frac - frac where result unreduced */
+    const d=pick([6,8,10,12]); let a,b,tt=0; do{ a=rnd(2,d-1); b=rnd(1,a-1); tt++; }while(tt<100 && gcd(a-b,d)===1);
+    const res=R(a-b,d);
+    return FQ({L, r:res, text:`חשבו וצמצמו: ${fr(a,d)} − ${fr(b,d)}`,
+      why:`${a} − ${b} = ${a-b}, ולכן ${a-b}/${d}${res.d!==d?` = ${rt(res)} (מצמצמים)`:""}.`, hint:"מחסרים מונים, ובסוף בודקים אם אפשר לצמצם.",
+      steps:[`המכנים שווים (${d})`,`${a} − ${b} = ${a-b}`,`${a-b}/${d} = ${mt(res)} לאחר צמצום`]});
+  }
+  const [d1,d2]=dpair(L); let A,B,a,b;
+  for(let t=0;t<60;t++){ a=rnd(1,d1-1+(L===1?3:0)); b=rnd(1,d2-1); A=R(a,d1); B=R(b,d2); if(rcmp(A,B)>0 && (L===1||(gcd(a,d1)===1&&gcd(b,d2)===1))) break; }
+  if(!(rcmp(A,B)>0)) return genF5(L);
+  const res=rsub(A,B);
+  const wrong=[]; if(d1!==d2) wrong.push(fr(Math.max(1,a-b),Math.max(d1,d2))); if(a>b&&d1>d2) wrong.push(fr(a-b,d1-d2));
+  return FQ({L, r:res, wrongStr:wrong, text:`חשבו: ${fr(a,d1)} − ${fr(b,d2)}`,
+    why:addSteps({n:a,d:d1},{n:b,d:d2},true).join(". ")+".", hint:d1===d2?"מכנים שווים — מחסרים רק מונים.":"קודם מכנה משותף! אחר כך מחסרים מונים.",
+    steps:addSteps({n:a,d:d1},{n:b,d:d2},true)});
+}
+
+/* ===== f6 — מספרים מעורבים: חיבור וחיסור ===== */
+function genF6(L){
+  const sub = L===1? rnd(0,1)===1 : rnd(0,2)>0 ? rnd(0,1)===1 : false;
+  let a,b;
+  for(let t=0;t<200;t++){
+    const [d1,d2]=L===1? (()=>{const d=pick([3,4,5,6,8,10]);return [d,d];})() : L===2? dpair(2) : dpair(3);
+    a={w:rnd(1,9),n:rnd(1,d1-1),d:d1}; b={w:rnd(1,sub?a.w:8),n:rnd(1,d2-1),d:d2};
+    if(gcd(a.n,a.d)>1||gcd(b.n,b.d)>1) continue;
+    const Lc=lcm(d1,d2), n1=a.n*Lc/d1, n2=b.n*Lc/d2;
+    if(sub){ if(b.w>a.w) continue; if(rcmp(mixR(a.w,a.n,a.d),mixR(b.w,b.n,b.d))<=0) continue; if(L<=2 && n1<n2) continue; if(L===3 && n1>=n2) continue; }
+    else { if(L===1 && n1+n2>=Lc) continue; if(L===2 && n1+n2<Lc && rnd(0,1)) continue; if(L===3 && n1+n2<Lc) continue; }
+    break;
+  }
+  const A=mixR(a.w,a.n,a.d), B=mixR(b.w,b.n,b.d), res=(sub?rsub:radd)(A,B);
+  const wrongs=[]; if(sub){ wrongs.push(R(Math.abs((a.w-b.w)*a.d+Math.abs(a.n-b.n)),a.d)); }
+  return FQ({L, r:res, wrongs, text:`חשבו: ${mixedHTML(a.w,a.n,a.d)} ${sub?"−":"+"} ${mixedHTML(b.w,b.n,b.d)}`,
+    why:mixSteps(a,b,sub).join(". ")+".", hint:sub?"מחסרים שלמים משלמים ושברים משברים. אם אי אפשר להחסיר שבר — לווים שלם אחד.":"מחברים שלמים לשלמים ושברים לשברים. אם השבר הגיע ליותר משלם — מוציאים שלם.",
+    steps:mixSteps(a,b,sub)});
+}
+
+/* ===== f7 — כפל שבר בשלם / חלק מכמות ===== */
+function genF7(L){
+  const kind = L===1? pick([1,1,2]) : L===2? pick([2,3,1,5]) : pick([3,4,4,5]);
+  if(kind===1){
+    const b=pick([2,3,4,5,6,8,10]), a=cop(b), k=rnd(2,L===1?8:12), N=b*k;
+    return FQ({L, r:R(a*k), text:`כמה זה ${fr(a,b)} מ־${N}?`, wrongStr:[],
+      why:`מחלקים ל־${b} חלקים שווים: ${N} ÷ ${b} = ${k}. לוקחים ${a} חלקים: ${a} × ${k} = ${a*k}.`, hint:`״${a}/${b} מ־${N}״ — קודם מחלקים ב־${b}, אחר כך כופלים ב־${a}.`,
+      steps:[`מחלקים ל־${b} חלקים שווים: ${N} ÷ ${b} = ${k}`,`לוקחים ${a} חלקים: ${a} × ${k} = ${a*k}`,`התשובה: ${a*k}`]});
+  }
+  if(kind===2 || kind===3){
+    const b=pick([3,4,5,6,8,10]), a=cop(b), N=rnd(2,L===2?9:15), r=rmul(R(N),R(a,b));
+    const txt = kind===2? `${N} × ${fr(a,b)}` : `${fr(a,b)} × ${N}`;
+    return FQ({L, r, wrongStr:[fr(N*a,N*b)], text:`חשבו: ${txt}`,
+      why:`כופלים את השלם במונה: ${N} × ${a} = ${N*a}, והמכנה נשאר ${b}: ${N*a}/${b}${r.d!==b||r.n>r.d? ` = ${mt(r)}`:""}.`, hint:"שלם × שבר: כופלים את השלם במונה בלבד. המכנה לא משתנה! ובסוף מצמצמים.",
+      steps:[`כופלים את המונה בשלם: ${a} × ${N} = ${a*N}`,`המכנה נשאר ${b}: ${a*N}/${b}`,`מצמצמים ו/או הופכים למספר מעורב: ${mt(r)}`]});
+  }
+  if(kind===4){
+    const d=pick([2,3,4,5,6]), n=rnd(1,d-1), w=rnd(1,5), N=rnd(2,L===3?9:6), r=rmul(mixR(w,n,d),R(N));
+    return FQ({L, r, wrongStr:[], text:`חשבו: ${mixedHTML(w,n,d)} × ${N}`,
+      why:`הופכים לשבר מדומה: ${w} ${n}/${d} = ${w*d+n}/${d}. כופלים: ${w*d+n} × ${N} = ${(w*d+n)*N}, כלומר ${(w*d+n)*N}/${d} = ${mt(r)}.`, hint:"קודם הופכים את המספר המעורב לשבר מדומה, ורק אז כופלים.",
+      steps:[`הופכים לשבר מדומה: ${w} ${n}/${d} = ${w*d+n}/${d}`,`כופלים את המונה: ${w*d+n} × ${N} = ${(w*d+n)*N}`,`התוצאה: ${(w*d+n)*N}/${d} = ${mt(r)}`]});
+  }
+  const b=pick([3,4,5,6,7,8]), a=cop(b), N=rnd(b+1,b*4); if(N%b===0) return genF7(L);
+  const r=rmul(R(N),R(a,b));
+  return FQ({L, r, wrongStr:[], text:`כמה זה ${fr(a,b)} מ־${N}? (כתבו כשבר או כמספר מעורב)`,
+    why:`״${a}/${b} מ־${N}״ זה ${a}/${b} × ${N} = ${a*N}/${b} = ${mt(r)}.`, hint:"״חלק מ־״ פירושו כפל: שבר × המספר.",
+    steps:[`״מ־״ פירושו כפל: ${a}/${b} × ${N}`,`${a} × ${N} = ${a*N}, והמכנה נשאר ${b}`,`${a*N}/${b} = ${mt(r)}`]});
+}
+
+/* ===== f8 — כפל שברים ===== */
+function genF8(L){
+  const kind = L===1? 1 : L===2? pick([2,2,1,4]) : pick([3,3,5,2]);
+  if(kind===1 || kind===4){
+    const b=pick([2,3,4,5,6,7,8]), d=pick([2,3,4,5,7,9]); const a=cop(b), c=cop(d);
+    const r=rmul(R(a,b),R(c,d));
+    const txt = kind===4? `${fr(c,d)} מ־${fr(a,b)}` : `${fr(a,b)} × ${fr(c,d)}`;
+    return FQ({L, r, wrongStr:[fr(a*c,b), fr(a*d,b*c)], text:`חשבו: ${txt}`,
+      why:`כופלים מונה במונה ומכנה במכנה: ${a}×${c} = ${a*c}, ${b}×${d} = ${b*d}. התוצאה ${a*c}/${b*d}${r.d!==b*d? ` = ${rt(r)}`:""}.`, hint:"בכפל שברים לא צריך מכנה משותף! מונה × מונה, מכנה × מכנה.",
+      steps:[`מונה × מונה: ${a} × ${c} = ${a*c}`,`מכנה × מכנה: ${b} × ${d} = ${b*d}`,`התוצאה: ${a*c}/${b*d}${r.d!==b*d? ` = ${rt(r)} (מצמצמים)`:""}`]});
+  }
+  if(kind===2){ /* cross cancellation */
+    let a,b,c,d,t=0; do{ a=rnd(1,9); b=rnd(2,12); c=rnd(1,9); d=rnd(2,12); t++; }while(t<300 && !( (gcd(a,d)>1||gcd(c,b)>1) && a<b+3 && c<d+3 && a*c<=60 ));
+    const r=rmul(R(a,b),R(c,d));
+    return FQ({L, r, wrongStr:[fr(a*c,b)], text:`חשבו וצמצמו: ${fr(a,b)} × ${fr(c,d)}`,
+      why:`אפשר לצמצם לפני הכפל (מונה עם מכנה של השבר השני). בסוף: ${a*c}/${b*d} = ${rt(r)} = ${mt(r)}.`, hint:"לפני שכופלים — בודקים אם אפשר לצמצם מונה אחד עם מכנה של השבר השני.",
+      steps:[`כופלים: ${a} × ${c} = ${a*c} במונה, ${b} × ${d} = ${b*d} במכנה`,`${a*c}/${b*d}`,`מצמצמים עד הסוף: ${mt(r)}`]});
+  }
+  if(kind===3){ /* mixed × fraction / mixed × mixed */
+    const d1=pick([2,3,4,5]), d2=pick([2,3,4,5,6]); const w1=rnd(1,4), n1=rnd(1,d1-1);
+    const two = rnd(0,1)===1; const w2=rnd(1,3), n2=rnd(1,d2-1);
+    const A=mixR(w1,n1,d1), B= two? mixR(w2,n2,d2) : R(n2,d2); const r=rmul(A,B);
+    const txt = `${mixedHTML(w1,n1,d1)} × ${two? mixedHTML(w2,n2,d2) : fr(n2,d2)}`;
+    const sA=`${w1} ${n1}/${d1} = ${A.n===w1*d1+n1? A.n+"/"+A.d : (w1*d1+n1)+"/"+d1}`;
+    return FQ({L, r, wrongStr:[], text:`חשבו: ${txt}`,
+      why:`הופכים מספרים מעורבים לשברים מדומים (${w1*d1+n1}/${d1}${two? ` ו־${w2*d2+n2}/${d2}`:""}), כופלים ומצמצמים: ${rt(r)} = ${mt(r)}.`, hint:"מספר מעורב? קודם הופכים לשבר מדומה — ואז כופלים כרגיל.",
+      steps:[`הופכים לשברים מדומים: ${w1} ${n1}/${d1} = ${w1*d1+n1}/${d1}${two? `, ${w2} ${n2}/${d2} = ${w2*d2+n2}/${d2}`:""}`,`כופלים מונה במונה ומכנה במכנה (ומצמצמים)`,`התוצאה: ${mt(r)}`]});
+  }
+  /* kind 5 — whole × mixed with simplification */
+  const d=pick([2,4,5,6]), w=rnd(1,6), n=rnd(1,d-1), c=pick([2,3,4,5,6,8]), e=pick([3,4,5,6,8]); const a=rnd(1,e-1);
+  const r=rmul(mixR(w,n,d),R(a,e));
+  return FQ({L, r, wrongStr:[], text:`חשבו: ${mixedHTML(w,n,d)} × ${fr(a,e)}`,
+    why:`${w} ${n}/${d} = ${w*d+n}/${d}. כופלים: ${(w*d+n)*a}/${d*e} = ${mt(r)}.`, hint:"הופכים למדומה, כופלים, מצמצמים.",
+    steps:[`${w} ${n}/${d} = ${w*d+n}/${d}`,`${w*d+n} × ${a} = ${(w*d+n)*a} ו־${d} × ${e} = ${d*e}`,`מצמצמים: ${mt(r)}`]});
+}
+
+/* ===== f9 — חילוק שבר בשלם ושלם בשבר ===== */
+function genF9(L){
+  const kind = L===1? pick([1,1,2,3]) : L===2? pick([2,3,4,3]) : pick([3,4,5,4]);
+  if(kind===1){
+    const d=pick([2,3,4,5,6,8,10]), N=rnd(2,L===1?12:15);
+    return FQ({L, r:R(N*d), text:`כמה פעמים ${fr(1,d)} נכנס ב־${N}? כלומר: ${N} ÷ ${fr(1,d)}`,
+      why:`בכל שלם יש ${d} חלקים של ${fr(1,d)}. ב־${N} שלמים: ${N} × ${d} = ${N*d}.`, hint:`בכל שלם אחד נכנסים ${d} חלקים כאלה.`,
+      steps:[`בשלם אחד נכנסים ${d} חלקים של 1/${d}`,`ב־${N} שלמים: ${N} × ${d} = ${N*d}`,`התשובה: ${N*d}`]});
+  }
+  if(kind===2){
+    const d=pick([2,3,4,5,6,8,10]), N=rnd(2,L===1?7:9), r=R(1,d*N);
+    return FQ({L, r, wrongStr:[fr(N,d)], text:`חשבו: ${fr(1,d)} ÷ ${N}`,
+      why:`מחלקים חלק אחד של 1/${d} ל־${N} חלקים שווים — המכנה גדל פי ${N}: 1/${d*N}.`, hint:"חילוק שבר בשלם — המכנה מוכפל בשלם.",
+      steps:[`חילוק שבר בשלם = כפל בהופכי: ${rt(R(1,d))} × 1/${N}`,`מכפילים מכנים: ${d} × ${N} = ${d*N}`,`התוצאה: 1/${d*N}`]});
+  }
+  if(kind===3){
+    const b=pick([3,4,5,6,7,8,9,10]), a=cop(b), N=rnd(2,L===2?6:9), r=rmul(R(a,b),R(1,N));
+    return FQ({L, r, wrongStr:[fr(a*N,b)], text:`חשבו: ${fr(a,b)} ÷ ${N}`,
+      why:`חילוק בשלם = כפל בהופכי: ${a}/${b} × 1/${N} = ${a}/${b*N}${r.n!==a? ` = ${rt(r)}`:""}.`, hint:`מחלקים ב־${N} = מכפילים ב־1/${N}. אפשר גם לצמצם לפני הכפל.`,
+      steps:[`הופכים את החילוק לכפל בהופכי: ${a}/${b} × 1/${N}`,`מכפילים: ${a}/${b*N}`,`מצמצמים אם אפשר: ${rt(r)}`]});
+  }
+  if(kind===4){
+    const b=pick([2,3,4,5,6,8]), a=cop(b); let k=rnd(1,L===2?4:6), N=a*k; if(L===3 && rnd(0,1)) N=rnd(2,9);
+    const r=rdiv(R(N),R(a,b));
+    return FQ({L, r, wrongStr:[fr(N*a,b), fr(b,N*a)], text:`חשבו: ${N} ÷ ${fr(a,b)}`,
+      why:`חילוק בשבר = כפל בהופכי: ${N} × ${b}/${a} = ${N*b}/${a} = ${mt(r)}.`, hint:"חילוק בשבר? הופכים את השבר (המכנה למעלה) והופכים את הפעולה לכפל.",
+      steps:[`הופכים את הפעולה לכפל, ואת השבר להופכי: ${N} × ${b}/${a}`,`כופלים: ${N*b}/${a}`,`מצמצמים: ${mt(r)}`]});
+  }
+  const d=pick([2,3,4,5]), n=rnd(1,d-1), w=rnd(1,5), N=pick([2,3,4,5]); const A=mixR(w,n,d), r=rmul(A,R(1,N));
+  return FQ({L, r, wrongStr:[], text:`חשבו: ${mixedHTML(w,n,d)} ÷ ${N}`,
+    why:`${w} ${n}/${d} = ${w*d+n}/${d}. ÷ ${N} = × 1/${N}: ${w*d+n}/${d*N} = ${mt(r)}.`, hint:"קודם הופכים את המספר המעורב לשבר מדומה, ואז מחלקים.",
+    steps:[`הופכים למדומה: ${w} ${n}/${d} = ${w*d+n}/${d}`,`מחלקים ב־${N} = כופלים ב־1/${N}: ${w*d+n}/${d*N}`,`מצמצמים: ${mt(r)}`]});
+}
+
+/* ===== f10 — חילוק שברים ומספרים מעורבים ===== */
+function genF10(L){
+  const kind = L===1? 1 : L===2? pick([2,2,1]) : pick([3,3,4,2]);
+  const wr=(a,b,c,d)=>[fr(a*c,b*d), fr(b*c,a*d)];
+  if(kind===1){
+    const d=pick([4,5,6,8,10,12]), a=rnd(1,d-1), c=rnd(1,d-1), r=R(a,c);
+    return FQ({L, r, wrongStr:[fr(a*c,d*d)], text:`חשבו: ${fr(a,d)} ÷ ${fr(c,d)}`,
+      why:`הופכים את השבר השני וכופלים: ${a}/${d} × ${d}/${c} = ${a}/${c} = ${mt(r)}.`, hint:"חילוק שברים: הופכים את השבר השני וכופלים. כשהמכנים שווים — נשאר מונה ÷ מונה.",
+      steps:[`הופכים את הפעולה לכפל בהופכי: ${a}/${d} × ${d}/${c}`,`המכנים מצטמצמים: ${a}/${c}`,`התוצאה: ${mt(r)}`]});
+  }
+  if(kind===2){
+    let a,b,c,d,t=0,r; do{ a=rnd(1,7); b=rnd(2,9); c=rnd(1,7); d=rnd(2,9); r=rdiv(R(a,b),R(c,d)); t++; }while(t<400 && !(a<b&&c<d&&r.n<=24&&r.d<=24&&rt(r)!=="1"));
+    return FQ({L, r, wrongStr:wr(a,b,c,d), text:`חשבו: ${fr(a,b)} ÷ ${fr(c,d)}`,
+      why:`הופכים את השבר השני וכופלים: ${a}/${b} × ${d}/${c} = ${a*d}/${b*c} = ${mt(r)}.`, hint:"הופכים את השבר השני (המחלק) ועוברים לכפל. השבר הראשון נשאר כמו שהוא!",
+      steps:[`הופכים את הפעולה לכפל, ואת המחלק להופכי: ${a}/${b} × ${d}/${c}`,`כופלים: ${a*d}/${b*c}`,`מצמצמים: ${mt(r)}`]});
+  }
+  if(kind===3){
+    let w,n,d,c,e,r,t=0; do{ d=pick([2,3,4,5,6]); w=rnd(1,4); n=rnd(1,d-1); e=pick([2,3,4,5,6,8]); c=rnd(1,e-1); r=rdiv(mixR(w,n,d),R(c,e)); t++; }while(t<300 && !(r.n<=40&&r.d<=20));
+    return FQ({L, r, wrongStr:[], text:`חשבו: ${mixedHTML(w,n,d)} ÷ ${fr(c,e)}`,
+      why:`${w} ${n}/${d} = ${w*d+n}/${d}. הופכים את המחלק וכופלים: ${w*d+n}/${d} × ${e}/${c} = ${(w*d+n)*e}/${d*c} = ${mt(r)}.`, hint:"קודם הופכים מעורב למדומה, אחר כך הופכים את המחלק וכופלים.",
+      steps:[`הופכים למדומה: ${w} ${n}/${d} = ${w*d+n}/${d}`,`הופכים לכפל בהופכי: ${w*d+n}/${d} × ${e}/${c}`,`כופלים ומצמצמים: ${mt(r)}`]});
+  }
+  let w1,n1,d1,w2,n2,d2,r,t=0; do{ d1=pick([2,3,4,5]); d2=pick([2,3,4,5]); w1=rnd(1,5); n1=rnd(1,d1-1); w2=rnd(1,3); n2=rnd(1,d2-1); r=rdiv(mixR(w1,n1,d1),mixR(w2,n2,d2)); t++; }while(t<300 && !(r.n<=40&&r.d<=24));
+  return FQ({L, r, wrongStr:[], text:`חשבו: ${mixedHTML(w1,n1,d1)} ÷ ${mixedHTML(w2,n2,d2)}`,
+    why:`${w1} ${n1}/${d1} = ${w1*d1+n1}/${d1} ו־${w2} ${n2}/${d2} = ${w2*d2+n2}/${d2}. ${w1*d1+n1}/${d1} × ${d2}/${w2*d2+n2} = ${mt(r)}.`, hint:"שני המספרים המעורבים הופכים למדומים. אחר כך: הופכים את המחלק וכופלים.",
+    steps:[`הופכים שניהם למדומים: ${w1*d1+n1}/${d1} ו־${w2*d2+n2}/${d2}`,`הופכים לכפל בהופכי: ${w1*d1+n1}/${d1} × ${d2}/${w2*d2+n2}`,`כופלים ומצמצמים: ${mt(r)}`]});
+}
+
+/* ===== f11 — ארבע פעולות וסדר פעולות ===== */
+function genF11(L){
+  const F=()=>{ const d=pick([2,3,4,5,6,8]); return R(rnd(1,d-1),d); };
+  const sh=x=>fr(x.n,x.d), tx=x=>rt(x);
+  for(let t=0;t<500;t++){
+    const A=F(),B=F(),C=F(); let text,val,steps,why,hint,kind;
+    if(L===1){
+      kind=rnd(1,3);
+      if(kind===1){ const s=radd(A,B); val=rsub(s,C); if(rcmp(s,C)<=0) continue; text=`${sh(A)} + ${sh(B)} − ${sh(C)}`; steps=[`מחשבים משמאל לימין: ${tx(A)} + ${tx(B)} = ${tx(s)}`,`${tx(s)} − ${tx(C)} = ${tx(val)}`]; hint="חיבור וחיסור — משמאל לימין."; }
+      else if(kind===2){ const N=rnd(2,6), m=rmul(R(N),A); val=radd(m,B); text=`${N} × ${sh(A)} + ${sh(B)}`; steps=[`כפל קודם: ${N} × ${tx(A)} = ${tx(m)}`,`אחר כך חיבור: ${tx(m)} + ${tx(B)} = ${tx(val)}`]; hint="כפל וחילוק קודם, אחר כך חיבור וחיסור."; }
+      else { const s=radd(A,B); const N=rnd(2,5); val=rmul(s,R(N)); text=`(${sh(A)} + ${sh(B)}) × ${N}`; steps=[`סוגריים קודם: ${tx(A)} + ${tx(B)} = ${tx(s)}`,`אחר כך כפל: ${tx(s)} × ${N} = ${tx(val)}`]; hint="סוגריים קודם!"; }
+    } else if(L===2){
+      kind=rnd(1,4);
+      if(kind===1){ const m=rmul(B,C); val=radd(A,m); text=`${sh(A)} + ${sh(B)} × ${sh(C)}`; steps=[`כפל קודם: ${tx(B)} × ${tx(C)} = ${tx(m)}`,`אחר כך חיבור: ${tx(A)} + ${tx(m)} = ${tx(val)}`]; hint="כפל לפני חיבור — גם בשברים!"; }
+      else if(kind===2){ const m=rmul(B,C); if(rcmp(A,m)<=0) continue; val=rsub(A,m); text=`${sh(A)} − ${sh(B)} × ${sh(C)}`; steps=[`כפל קודם: ${tx(B)} × ${tx(C)} = ${tx(m)}`,`אחר כך חיסור: ${tx(A)} − ${tx(m)} = ${tx(val)}`]; hint="כפל לפני חיסור."; }
+      else if(kind===3){ const q=rdiv(A,B); val=radd(q,C); text=`${sh(A)} ÷ ${sh(B)} + ${sh(C)}`; steps=[`חילוק קודם: ${tx(A)} ÷ ${tx(B)} = ${tx(q)}`,`אחר כך חיבור: ${tx(q)} + ${tx(C)} = ${tx(val)}`]; hint="חילוק לפני חיבור."; }
+      else { const s=radd(A,B); val=rmul(s,C); text=`(${sh(A)} + ${sh(B)}) × ${sh(C)}`; steps=[`סוגריים קודם: ${tx(A)} + ${tx(B)} = ${tx(s)}`,`אחר כך כפל: ${tx(s)} × ${tx(C)} = ${tx(val)}`]; hint="סוגריים קודם."; }
+    } else {
+      kind=rnd(1,4);
+      if(kind===1){ if(rcmp(A,B)<=0) continue; const s=rsub(A,B); val=rdiv(s,C); text=`(${sh(A)} − ${sh(B)}) ÷ ${sh(C)}`; steps=[`סוגריים קודם: ${tx(A)} − ${tx(B)} = ${tx(s)}`,`אחר כך חילוק: ${tx(s)} ÷ ${tx(C)} = ${tx(s)} × ${tx(R(C.d,C.n))} = ${tx(val)}`]; hint="סוגריים, ואז חילוק = כפל בהופכי."; }
+      else if(kind===2){ const s=radd(B,C); val=rmul(A,s); text=`${sh(A)} × (${sh(B)} + ${sh(C)})`; steps=[`סוגריים קודם: ${tx(B)} + ${tx(C)} = ${tx(s)}`,`אחר כך כפל: ${tx(A)} × ${tx(s)} = ${tx(val)}`]; hint="סוגריים קודם, ואחר כך כפל."; }
+      else if(kind===3){ const s=radd(B,C); val=rdiv(A,s); text=`${sh(A)} ÷ (${sh(B)} + ${sh(C)})`; steps=[`סוגריים קודם: ${tx(B)} + ${tx(C)} = ${tx(s)}`,`אחר כך חילוק: ${tx(A)} ÷ ${tx(s)} = ${tx(val)}`]; hint="סוגריים קודם, ואחר כך חילוק."; }
+      else { const m=rmul(A,B), q=rdiv(C,A); val=radd(m,q); text=`${sh(A)} × ${sh(B)} + ${sh(C)} ÷ ${sh(A)}`; steps=[`כפל וחילוק קודם: ${tx(A)} × ${tx(B)} = ${tx(m)} ו־${tx(C)} ÷ ${tx(A)} = ${tx(q)}`,`אחר כך חיבור: ${tx(m)} + ${tx(q)} = ${tx(val)}`]; hint="כפל וחילוק לפני חיבור — מחשבים כל אחד לחוד."; }
+    }
+    if(!(val.n>0) || val.d>30 || val.n>90) continue;
+    steps.push(`התוצאה (מצומצמת): ${mt(val)}`);
+    return FQ({L, r:val, text:`חשבו לפי סדר הפעולות: ${text}`, why:steps.join(". ")+".", hint, steps});
+  }
+  return genF11(L);
+}
+
+/* ================= PART D — בעיות מילוליות ================= */
+function wf(L,needLess1){
+  for(let t=0;t<300;t++){
+    const [d1,d2]=dpair(L); const n1=rnd(1,d1-1), n2=rnd(1,d2-1); if(gcd(n1,d1)>1||gcd(n2,d2)>1) continue; const A=R(n1,d1), B=R(n2,d2), s=radd(A,B);
+    if(!needLess1 || rcmp(s,R(1))<0) return {n1,d1,n2,d2,A,B,s};
+  }
+  return {n1:1,d1:4,n2:1,d2:4,A:R(1,4),B:R(1,4),s:R(1,2)};
+}
+function mixPair(L,sub){
+  for(let t=0;t<400;t++){
+    const [d1,d2]= L===1? (()=>{const d=pick([3,4,5,6,8,10]);return [d,d];})() : L===2? dpair(2) : dpair(3);
+    const a={w:rnd(1,9),n:rnd(1,d1-1),d:d1}, b={w:rnd(1,sub?a.w:8),n:rnd(1,d2-1),d:d2};
+    if(gcd(a.n,a.d)>1||gcd(b.n,b.d)>1) continue;
+    const Lc=lcm(d1,d2), n1=a.n*Lc/d1, n2=b.n*Lc/d2;
+    if(sub){ if(b.w>a.w) continue; if(rcmp(mixR(a.w,a.n,a.d),mixR(b.w,b.n,b.d))<=0) continue; if(L<=2 && n1<n2) continue; if(L===3 && n1>=n2) continue; }
+    else { if(L===1 && n1+n2>=Lc) continue; if(L>=2 && n1+n2<Lc && rnd(0,2)>0) continue; }
+    return [a,b];
+  }
+  return [{w:3,n:1,d:4},{w:1,n:1,d:4}];
+}
+const MIXP = o=>mixedHTML(o.w,o.n,o.d);
+const WP1=[
+ function(L){ const f=wf(L,true);
+   return FQ({L, r:f.s, wrongStr:[fr(f.n1+f.n2,f.d1+f.d2)], text:`בקבוצת הלגו בונים מגדל. ביום ראשון השתמשו ב־${fr(f.n1,f.d1)} מהקוביות, וביום שני בעוד ${fr(f.n2,f.d2)} מהקוביות. איזה חלק מהקוביות הושקע בשני הימים יחד?`,
+     why:`״יחד״ — מחברים: ${f.n1}/${f.d1} + ${f.n2}/${f.d2}. `+addSteps({n:f.n1,d:f.d1},{n:f.n2,d:f.d2},false).join(". ")+".", hint:"״יחד״ פירושו חיבור. אם המכנים שונים — קודם מכנה משותף.",
+     steps:["כותבים תרגיל: "+f.n1+"/"+f.d1+" + "+f.n2+"/"+f.d2].concat(addSteps({n:f.n1,d:f.d1},{n:f.n2,d:f.d2},false))}); },
+ function(L){ const f=wf(L,true); const r=rsub(R(1),f.s);
+   return FQ({L, r, wrongStr:[fm(f.s)], text:`בקבוצת הלגו יש קופסה אחת של קוביות. השתמשו ב־${fr(f.n1,f.d1)} מהקוביות בבוקר וב־${fr(f.n2,f.d2)} מהקוביות אחר הצהריים. איזה חלק מהקוביות נשאר בקופסה?`,
+     why:`קודם מוצאים כמה השתמשו: ${rt(f.A)} + ${rt(f.B)} = ${rt(f.s)}. הקופסה כולה היא 1, לכן נשאר 1 − ${rt(f.s)} = ${rt(r)}.`, hint:"״נשאר״ — מחסרים מהשלם (1). קודם מחברים כמה הלך.",
+     steps:[`כמה השתמשו בסך הכול: ${rt(f.A)} + ${rt(f.B)} = ${rt(f.s)}`,`הקופסה כולה היא 1 = ${f.s.d}/${f.s.d}`,`נשאר: 1 − ${rt(f.s)} = ${rt(r)}`]}); },
+ function(L){ const [d1,d2]=dpair(L); let A,B,a,b,t=0; do{ a=rnd(2,d1-1+ (d1===2?1:0)); b=rnd(1,d2-1); A=R(a,d1); B=R(b,d2); t++; }while(t<200 && !(rcmp(A,B)>0 && a<d1));
+   if(!(rcmp(A,B)>0)) return WP1[0](L); const r=rsub(A,B);
+   return FQ({L, r, wrongStr:[fr(Math.max(1,a-b),Math.abs(d1-d2)||d1)], text:`במיכל הדלק של מכונית היו ${fr(a,d1)} מהמיכל לפני הנסיעה. בסוף הנסיעה נשארו ${fr(b,d2)} מהמיכל. איזה חלק מהמיכל נצרך בנסיעה?`,
+     why:`הדלק שנצרך = מה שהיה − מה שנשאר: ${a}/${d1} − ${b}/${d2}. `+addSteps({n:a,d:d1},{n:b,d:d2},true).join(". ")+".", hint:"כמה נצרך = מה שהיה פחות מה שנשאר.",
+     steps:[`כותבים תרגיל: ${a}/${d1} − ${b}/${d2}`].concat(addSteps({n:a,d:d1},{n:b,d:d2},true))}); },
+ function(L){ const [a,b]=mixPair(L,false); const r=radd(mixR(a.w,a.n,a.d),mixR(b.w,b.n,b.d));
+   return FQ({L, r, text:`אימון כדורגל התחיל בחימום של ${MIXP(a)} שעות, ואחריו תרגול שערים של ${MIXP(b)} שעות. כמה שעות נמשך האימון בסך הכול?`,
+     why:`״בסך הכול״ — מחברים: ${a.w} ${a.n}/${a.d} + ${b.w} ${b.n}/${b.d}. `+mixSteps(a,b,false).join(". ")+".", hint:"בסך הכול = חיבור. שלמים עם שלמים ושברים עם שברים.",
+     steps:["כותבים תרגיל: "+a.w+" "+a.n+"/"+a.d+" + "+b.w+" "+b.n+"/"+b.d].concat(mixSteps(a,b,false))}); },
+ function(L){ const [a,b]=mixPair(L,true); const r=rsub(mixR(a.w,a.n,a.d),mixR(b.w,b.n,b.d));
+   return FQ({L, r, text:`לכבל באורך ${MIXP(a)} מטר חתכו חתיכה באורך ${MIXP(b)} מטר. כמה מטר נשארו בכבל?`,
+     why:`״נשארו״ — מחסרים: ${a.w} ${a.n}/${a.d} − ${b.w} ${b.n}/${b.d}. `+mixSteps(a,b,true).join(". ")+".", hint:"נשארו = חיסור. אם אי אפשר להחסיר שבר — לווים שלם אחד.",
+     steps:["כותבים תרגיל: "+a.w+" "+a.n+"/"+a.d+" − "+b.w+" "+b.n+"/"+b.d].concat(mixSteps(a,b,true))}); },
+ function(L){ const [a,b]=mixPair(L,true); const r=rsub(mixR(a.w,a.n,a.d),mixR(b.w,b.n,b.d));
+   return FQ({L, r, text:`בקרוס קאנטרי רצה קבוצת הכדורגל ${MIXP(a)} ק״מ ביום ראשון, וביום שני ${MIXP(b)} ק״מ. כמה ק״מ יותר רצו ביום ראשון?`,
+     why:`״כמה יותר״ — מחסרים את הקטן מהגדול: ${a.w} ${a.n}/${a.d} − ${b.w} ${b.n}/${b.d}. `+mixSteps(a,b,true).join(". ")+".", hint:"״כמה יותר״ = הפרש = חיסור.",
+     steps:["כותבים תרגיל: "+a.w+" "+a.n+"/"+a.d+" − "+b.w+" "+b.n+"/"+b.d].concat(mixSteps(a,b,true))}); }
+];
+function genW1(L){ return pick(WP1)(L); }
+const WP2=[
+ function(L){ const b=pick([2,3,4,5,6,8,10]), a=cop(b), k=rnd(2,L===1?5:8), N=b*k;
+   return FQ({L, r:R(a*k), text:`בכיתה ${N} תלמידים. ${fr(a,b)} מהם משחקים כדורגל בהפסקה. כמה תלמידים משחקים כדורגל בהפסקה?`,
+     why:`״${a}/${b} מ־${N}״: ${N} ÷ ${b} = ${k}, ו־${k} × ${a} = ${a*k}.`, hint:"חלק מכמות: מחלקים במכנה, כופלים במונה.",
+     steps:[`חלק מכמות — כותבים: ${a}/${b} × ${N}`,`${N} ÷ ${b} = ${k}`,`${k} × ${a} = ${a*k}. תשובה: ${a*k} תלמידים`]}); },
+ function(L){ const b=pick([3,4,5,6,8,10]), a=cop(b), k=rnd(2,L===1?5:8), N=b*k;
+   return FQ({L, r:R((b-a)*k), text:`במגרש החניה יש ${N} מכוניות. ${fr(a,b)} מהן לבנות. כמה מכוניות אינן לבנות?`,
+     why:`הלבנות: ${N} ÷ ${b} × ${a} = ${a*k}. שאינן לבנות: ${N} − ${a*k} = ${(b-a)*k}. (אפשר גם: ${b-a}/${b} מ־${N}).`, hint:"אפשר למצוא את הלבנות ולהחסיר, או למצוא ישר את החלק שנשאר (1 פחות השבר).",
+     steps:[`הלבנות: ${N} ÷ ${b} = ${k}, ו־${k} × ${a} = ${a*k}`,`שאינן לבנות: ${N} − ${a*k} = ${(b-a)*k}`,`תשובה: ${(b-a)*k} מכוניות`]}); },
+ function(L){ const b=pick([2,3,4,5,6]), a=cop(b), N=rnd(3,L===1?6:12), r=rmul(R(N),R(a,b));
+   return FQ({L, r, wrongStr:[], text:`לכל דגם לגו דרושה ${fr(a,b)} קופסה של קוביות. כמה קופסאות דרושות ל־${N} דגמים?`,
+     why:`כל דגם ${a}/${b} קופסה, ו־${N} דגמים: ${N} × ${a}/${b} = ${N*a}/${b} = ${mt(r)}.`, hint:"כמה פעמים אותה כמות — כפל: מספר הדגמים × החלק מהקופסה.",
+     steps:[`כותבים תרגיל: ${N} × ${a}/${b}`,`כופלים את המונה: ${N} × ${a} = ${N*a}, המכנה נשאר ${b}`,`${N*a}/${b} = ${mt(r)}`]}); },
+ function(L){ const b=pick([2,3,4,5,8]), a=cop(b), k=rnd(2,L===1?5:9), N=a*k; if(a===b) return WP2[0](L);
+   return FQ({L, r:R(k*b), text:`חותכים חבל באורך ${N} מטר לחתיכות. כל חתיכה באורך ${fr(a,b)} מטר. כמה חתיכות מקבלים?`,
+     why:`כמה פעמים ${a}/${b} נכנס ב־${N}: ${N} ÷ ${a}/${b} = ${N} × ${b}/${a} = ${N*b}/${a} = ${k*b}.`, hint:"״כמה חתיכות״ — כמה פעמים נכנס? זה חילוק: האורך הכולל ÷ אורך חתיכה.",
+     steps:[`כותבים תרגיל: ${N} ÷ ${a}/${b}`,`הופכים לכפל בהופכי: ${N} × ${b}/${a} = ${N*b}/${a}`,`תשובה: ${k*b} חתיכות`]}); },
+ function(L){ const b=pick([2,3,4,5,6,8]), a=cop(b), k=rnd(2,L===1?3:6), r=R(a,b*k);
+   return FQ({L, r, wrongStr:[fr(a*k,b)], text:`בבקבוק יש ${fr(a,b)} ליטר מים. מחלקים את המים שווה בשווה ל־${k} כוסות. כמה ליטר יש בכל כוס?`,
+     why:`חלוקה שווה — חילוק: ${a}/${b} ÷ ${k} = ${a}/${b} × 1/${k} = ${a}/${b*k}${r.n!==a?` = ${rt(r)}`:""}.`, hint:"״שווה בשווה״ — חילוק. חילוק שבר בשלם = המכנה מוכפל.",
+     steps:[`כותבים תרגיל: ${a}/${b} ÷ ${k}`,`כפל בהופכי: ${a}/${b} × 1/${k} = ${a}/${b*k}`,`מצמצמים: ${rt(r)} ליטר`]}); },
+ function(L){ const b=pick([2,3,4,5,6,8]), a=cop(b), d=pick([2,3,4,5]), c=cop(d), r=rmul(R(a,b),R(c,d));
+   return FQ({L, r, wrongStr:[fr(a*c,b)], text:`נשארו ${fr(a,b)} מהפיצה. אכלו ${fr(c,d)} מהשארית. איזה חלק מהפיצה כולה נאכל?`,
+     why:`״${c}/${d} מ־${a}/${b}״ — כפל: ${c}/${d} × ${a}/${b} = ${a*c}/${b*d} = ${rt(r)}.`, hint:"״חלק מ־״ פירושו כפל. כאן חלק משבר — שבר × שבר.",
+     steps:[`״מ־״ פירושו כפל: ${c}/${d} × ${a}/${b}`,`מונה × מונה: ${a*c}, מכנה × מכנה: ${b*d}`,`התוצאה: ${rt(r)}`]}); },
+ function(L){ if(L<3) return WP2[0](L); const b=pick([3,4,5,6,8]), a=cop(b), k=rnd(2,6), N=(b-a)*k, T=b*k;
+   return FQ({L, r:R(T), text:`אחרי ש־${fr(a,b)} מהכסף בקופה הוצאו, נשארו ${N} ש״ח. כמה כסף היה בקופה בהתחלה?`,
+     why:`הוצאו ${a}/${b}, לכן נשאר ${b-a}/${b}. ${b-a}/${b} מהסכום = ${N}. כל ${fr(1,b)} שווה ${N} ÷ ${b-a} = ${k}, והכול (${b} חלקים): ${b} × ${k} = ${T}.`, hint:"קודם: איזה חלק נשאר? אחר כך: כמה שווה חלק אחד, וכמה שווים כל החלקים?",
+     steps:[`נשאר ${b-a}/${b} מהכסף, והוא שווה ${N} ש״ח`,`חלק אחד (1/${b}): ${N} ÷ ${b-a} = ${k}`,`כל ${b} החלקים: ${b} × ${k} = ${T} ש״ח`]}); },
+ function(L){ const b=pick([3,4,5,6,8,10]), a=cop(b), k=rnd(2,L===1?4:8), N=b*k;
+   return FQ({L, r:R(a*k), text:`שחקן כדורגל בעט ${N} בעיטות לשער. ${fr(a,b)} מהבעיטות נכנסו לשער. כמה שערים הבקיע?`,
+     why:`${N} ÷ ${b} = ${k} (חלק אחד), ו־${a} חלקים: ${a} × ${k} = ${a*k} שערים.`, hint:"חלק מכמות: מחלקים במכנה, כופלים במונה.",
+     steps:[`מחלקים ל־${b} חלקים: ${N} ÷ ${b} = ${k}`,`לוקחים ${a} חלקים: ${a} × ${k} = ${a*k}`,`תשובה: ${a*k} שערים`]}); }
+];
+function genW2(L){ return pick(WP2)(L); }
+const NOTE3 = `<br><span class="wpnote">✍️ כתבו קודם את התרגיל במחברת — ורק אחר כך את התשובה כאן.</span>`;
+const WP3=[
+ function(L){ const f=wf(L,true), r=rsub(R(1),f.s);
+   return FQ({L, open:true, r, text:`קורא קרא ביום ראשון ${fr(f.n1,f.d1)} מהספר, וביום שני עוד ${fr(f.n2,f.d2)} מהספר. איזה חלק מהספר נשאר לו לקרוא?`, note:NOTE3,
+     why:`קודם מחברים מה שקרא: ${rt(f.A)} + ${rt(f.B)} = ${rt(f.s)}. אחר כך: 1 − ${rt(f.s)} = ${rt(r)}.`, hint:"שני שלבים: (1) כמה קרא בסך הכול? (2) כמה נשאר — מחסרים מ־1.",
+     steps:[`שלב 1: ${rt(f.A)} + ${rt(f.B)} = ${rt(f.s)}`,`שלב 2: 1 − ${rt(f.s)} = ${rt(r)}`,`תשובה: ${rt(r)} מהספר`]}); },
+ function(L){ const b=pick([2,3,4,5]), d=pick([2,3,4,5]), a=cop(b), c=cop(d), k=rnd(1,3), N=b*d*k;
+   const after1=N*(b-a)/b, sold2=after1*c/d, left=after1-sold2;
+   return FQ({L, open:true, r:R(left), text:`בחנות ספורט היו ${N} כדורי כדורגל. בבוקר נמכרו ${fr(a,b)} מהם, ואחר הצהריים נמכרו ${fr(c,d)} מהכדורים שנשארו. כמה כדורים נשארו בסוף היום?`, note:NOTE3,
+     why:`בבוקר נמכרו ${N*a/b}, נשארו ${after1}. אחר הצהריים נמכרו ${sold2}, ולכן נשארו ${after1} − ${sold2} = ${left}.`, hint:"שימו לב: השבר השני הוא חלק ממה שנשאר — לא מכל הכדורים.",
+     steps:[`בבוקר: ${a}/${b} מ־${N} = ${N*a/b} נמכרו, נשארו ${N} − ${N*a/b} = ${after1}`,`אחר הצהריים: ${c}/${d} מ־${after1} = ${sold2} נמכרו`,`נשארו: ${after1} − ${sold2} = ${left} כדורים`]}); },
+ function(L){ const d=pick([2,3,4,5]), n=rnd(1,d-1), w=rnd(1,4), V=pick([40,50,60,80,90,100,120]); const A=mixR(w,n,d), r=rmul(A,R(V));
+   return FQ({L, open:true, r, text:`מכונית נסעה ${mixedHTML(w,n,d)} שעות במהירות קבועה של ${V} ק״מ לשעה. כמה ק״מ היא נסעה?`, note:NOTE3,
+     why:`מרחק = זמן × מהירות: ${w} ${n}/${d} × ${V} = ${(w*d+n)*V}/${d} = ${mt(r)}.`, hint:"מרחק = מהירות × זמן. הופכים את המספר המעורב לשבר מדומה.",
+     steps:[`כותבים תרגיל: ${w} ${n}/${d} × ${V}`,`הופכים למדומה: ${w*d+n}/${d} × ${V} = ${(w*d+n)*V}/${d}`,`תשובה: ${mt(r)} ק״מ`]}); },
+ function(L){ const b=pick([2,3,4,5,6]), a=cop(b), k=rnd(3,9), total=rmul(R(k),R(a,b));
+   return FQ({L, open:true, r:R(k), text:`כדי להכין דגלים לאוהדי הקבוצה יש בד באורך ${fm(total)} מטר. לכל דגל דרושים ${fr(a,b)} מטר בד. כמה דגלים אפשר להכין?`, note:NOTE3,
+     why:`כמה פעמים ${a}/${b} נכנס ב־${rt(total)}: ${rt(total)} ÷ ${a}/${b} = ${rt(total)} × ${b}/${a} = ${k}.`, hint:"״כמה אפשר להכין״ — כמה פעמים נכנס? חילוק: אורך הבד ÷ אורך דגל.",
+     steps:[`כותבים תרגיל: ${rt(total)} ÷ ${a}/${b}`,`הופכים לכפל בהופכי: ${rt(total)} × ${b}/${a}`,`תשובה: ${k} דגלים`]}); },
+ function(L){ const b=pick([3,4,5,6,8]), a=cop(b), k=rnd(2,5), r=R(a,b*k);
+   return FQ({L, open:true, r, text:`נשארו ${fr(a,b)} מהשוקולד. מחלקים אותם שווה בשווה בין ${k} חברים. איזה חלק מהשוקולד כולו מקבל כל חבר?`, note:NOTE3,
+     why:`חילוק בשלם: ${a}/${b} ÷ ${k} = ${a}/${b} × 1/${k} = ${a}/${b*k}${r.n!==a?` = ${rt(r)}`:""}.`, hint:"שווה בשווה = חילוק. חילוק שבר בשלם — המכנה מוכפל.",
+     steps:[`כותבים תרגיל: ${a}/${b} ÷ ${k}`,`כפל בהופכי: ${a}/${b} × 1/${k} = ${a}/${b*k}`,`מצמצמים: ${rt(r)}`]}); },
+ function(L){ const d=pick([2,3,4]), n=rnd(1,d-1), w=rnd(2,6), b=pick([2,3,4,5]), a=cop(b); const A=mixR(w,n,d), add=rmul(A,R(a,b)), r=radd(A,add);
+   return FQ({L, open:true, r, text:`מגדל לגו היה בגובה ${mixedHTML(w,n,d)} ס״מ. הוסיפו עליו קומה בגובה ${fr(a,b)} מגובהו המקורי. מהו הגובה החדש של המגדל?`, note:NOTE3,
+     why:`הקומה החדשה: ${a}/${b} × ${rt(A)} = ${rt(add)}. הגובה החדש: ${rt(A)} + ${rt(add)} = ${rt(r)} = ${mt(r)} ס״מ.`, hint:"שני שלבים: (1) כמה גובהה הקומה החדשה? (חלק מהגובה — כפל) (2) מחברים לגובה המקורי.",
+     steps:[`שלב 1 — גובה הקומה: ${a}/${b} × ${rt(A)} = ${rt(add)}`,`שלב 2 — מחברים: ${rt(A)} + ${rt(add)} = ${rt(r)}`,`תשובה: ${mt(r)} ס״מ`]}); }
+];
+function genW3(L){ return pick(WP3)(L); }
+
+/* ================= TOPICS / PARTS ================= */
+const TOPICS=[
+ {id:"f1",part:0,emoji:"🟰",name:"שברים שווים — הרחבה וצמצום",desc:"מכפילים או מחלקים מונה ומכנה באותו מספר",gen:genF1,
+  learn:[
+   {t:"שברים שווים",x:"מכפילים (או מחלקים) את המונה ואת המכנה באותו מספר — ערך השבר לא משתנה. זו הרחבה (כפל) וצמצום (חילוק). אסור לחבר או להחסיר מספר משותף!",e:"2/3 = 4/6 = 6/9 (כפלנו ב־2 וב־3). אבל 2/3 אינו 3/4 — חיברנו 1 לשניהם, וזה משנה את הערך."},
+   {t:"צמצום עד הסוף",x:"מחלקים את המונה והמכנה במחלק משותף, וחוזרים עד שאין עוד מחלק משותף (חוץ מ־1). במבחן — תמיד כותבים תשובה מצומצמת!",e:"18/24: מחלקים ב־6 ← 3/4. אפשר גם בשני צעדים: ÷2 ← 9/12, ÷3 ← 3/4."}]},
+ {id:"f2",part:0,emoji:"🔁",name:"מספר מעורב ושבר מדומה",desc:"הופכים מעורב למדומה ומדומה למעורב",gen:genF2,
+  learn:[
+   {t:"ממדומה למעורב",x:"שבר מדומה: המונה גדול מהמכנה (או שווה לו). כדי להפוך למעורב: מחלקים את המונה במכנה. המנה היא השלמים, והשארית היא המונה החדש.",e:"17/5: 17 ÷ 5 = 3 ושארית 2 ← 3 2/5."},
+   {t:"ממעורב למדומה",x:"שלם × מכנה + מונה = המונה החדש. המכנה נשאר אותו דבר.",e:"3 2/5: 3 × 5 + 2 = 17 ← 17/5."}]},
+ {id:"f3",part:0,emoji:"⚖️",name:"השוואה וסידור שברים",desc:"איזה שבר גדול יותר? מסדרים מהקטן לגדול",gen:genF3,
+  learn:[
+   {t:"איך משווים?",x:"אותו מכנה — המונה הגדול יותר גדול יותר. אותו מונה — המכנה הקטן יותר נותן שבר גדול יותר. מכנים שונים — מביאים למכנה משותף ואז משווים מונים.",e:"3/4 לעומת 5/8: מכנה משותף 8 ← 6/8 לעומת 5/8, לכן 3/4 גדול יותר."},
+   {t:"מעורבים ומדומים",x:"כדי להשוות מספר מעורב לשבר מדומה — הופכים את שניהם לאותה צורה (שניהם מעורבים, או שניהם מדומים).",e:"2 1/3 לעומת 7/3: 7/3 = 2 1/3 — שווים."}]},
+ {id:"f4",part:1,emoji:"➕",name:"חיבור שברים",desc:"מכנים שווים ושונים, תוצאה מצומצמת",gen:genF4,
+  learn:[
+   {t:"מחברים שברים",x:"מכנים שווים: מחברים רק את המונים, והמכנה נשאר. מכנים שונים: קודם מכנה משותף (הכפולה המשותפת הקטנה), מרחיבים כל שבר, מחברים מונים. ובסוף — מצמצמים!",e:"1/6 + 3/4: מכנה משותף 12 ← 2/12 + 9/12 = 11/12."},
+   {t:"טעות נפוצה",x:"לא מחברים מכנים! 1/2 + 1/2 הם לא 2/4 — חצי וחצי הם שלם אחד.",e:"1/2 + 1/2 = 2/2 = 1."}]},
+ {id:"f5",part:1,emoji:"➖",name:"חיסור שברים",desc:"מכנים שווים ושונים, שלם פחות שבר",gen:genF5,
+  learn:[
+   {t:"מחסרים שברים",x:"בדיוק כמו בחיבור: מכנה משותף, ואז מחסרים רק את המונים. המכנה נשאר.",e:"5/6 − 1/4: מכנה משותף 12 ← 10/12 − 3/12 = 7/12."},
+   {t:"שלם פחות שבר",x:"הופכים שלם אחד לשבר עם אותו מכנה: 1 = 5/5. אם יש יותר משלם אחד — לווים אחד מהשלמים.",e:"3 − 2/5 = 2 5/5 − 2/5 = 2 3/5."}]},
+ {id:"f6",part:1,emoji:"➕",name:"חיבור וחיסור מספרים מעורבים",desc:"כולל פריטה (״לווים״ שלם) והוצאת שלם",gen:genF6,
+  learn:[
+   {t:"חיבור מעורבים",x:"מחברים שלמים לשלמים ושברים לשברים (עם מכנה משותף). אם סכום השברים הוא יותר משלם — מוציאים שלם ומוסיפים אותו לשלמים.",e:"2 3/4 + 1 3/4 = 3 6/4 = 4 2/4 = 4 1/2."},
+   {t:"חיסור מעורבים — פריטה",x:"אם השבר העליון קטן מהתחתון — לווים שלם אחד: מורידים 1 מהשלמים ומוסיפים אותו כשבר (4/4, 5/5...) לשבר.",e:"5 1/4 − 2 3/4: לווים ← 4 5/4 − 2 3/4 = 2 2/4 = 2 1/2."}]},
+ {id:"f7",part:2,emoji:"✖️",name:"כפל שבר בשלם — חלק מכמות",desc:"״שליש מ־24״, ״3/4 מ־20״, שלם × שבר",gen:genF7,
+  learn:[
+   {t:"חלק מכמות",x:"״a/b מ־N״: מחלקים את N ל־b חלקים שווים, ולוקחים a חלקים. בכתיב: a/b × N.",e:"3/4 מ־20: 20 ÷ 4 = 5, ו־5 × 3 = 15."},
+   {t:"שלם × שבר",x:"כופלים את השלם במונה, והמכנה נשאר. אחר כך מצמצמים או הופכים למספר מעורב.",e:"6 × 3/8 = 18/8 = 9/4 = 2 1/4."}]},
+ {id:"f8",part:2,emoji:"✖️",name:"כפל שברים ומספרים מעורבים",desc:"שבר × שבר, צמצום לפני כפל, מעורב × מעורב",gen:genF8,
+  learn:[
+   {t:"שבר × שבר",x:"בכפל אין צורך במכנה משותף! מונה × מונה, מכנה × מכנה. כדאי לצמצם לפני הכפל: מונה אחד עם מכנה של השבר האחר.",e:"3/8 × 4/9: מצמצמים 4 עם 8 (÷4) ו־3 עם 9 (÷3) ← 1/2 × 1/3 = 1/6."},
+   {t:"מספרים מעורבים",x:"קודם הופכים כל מספר מעורב לשבר מדומה, ואז כופלים ומצמצמים. ובסוף הופכים בחזרה למעורב.",e:"1 1/2 × 2 2/3 = 3/2 × 8/3 = 24/6 = 4."}]},
+ {id:"f9",part:2,emoji:"➗",name:"חילוק שבר בשלם ושלם בשבר",desc:"״כמה פעמים נכנס?״, חילוק במספר שלם",gen:genF9,
+  learn:[
+   {t:"חילוק בשבר = כפל בהופכי",x:"הופכים את המחלק (המונה והמכנה מתחלפים) ועוברים מחילוק לכפל. ההופכי של 3/4 הוא 4/3. ההופכי של שלם N הוא 1/N.",e:"6 ÷ 2/3 = 6 × 3/2 = 18/2 = 9. כלומר 2/3 נכנס 9 פעמים ב־6."},
+   {t:"שבר ÷ שלם",x:"חילוק שבר בשלם — המכנה מוכפל בשלם (או: כפל ב־1/N).",e:"3/4 ÷ 3 = 3/4 × 1/3 = 1/4."}]},
+ {id:"f10",part:2,emoji:"➗",name:"חילוק שברים ומספרים מעורבים",desc:"שבר ÷ שבר, מעורב ÷ שבר, מעורב ÷ מעורב",gen:genF10,
+  learn:[
+   {t:"שבר ÷ שבר",x:"השבר הראשון נשאר, הפעולה הופכת לכפל, והשבר השני מתהפך. ואז כופלים ומצמצמים.",e:"2/3 ÷ 4/9 = 2/3 × 9/4 = 18/12 = 3/2 = 1 1/2."},
+   {t:"מספרים מעורבים",x:"קודם הופכים לשברים מדומים — ואז כמו שבר ÷ שבר. אל תהפכו את השבר הראשון, רק את המחלק (השני)!",e:"2 1/2 ÷ 1 1/4 = 5/2 ÷ 5/4 = 5/2 × 4/5 = 2."}]},
+ {id:"f11",part:2,emoji:"🔣",name:"סדר פעולות בשברים",desc:"סוגריים, כפל וחילוק לפני חיבור וחיסור",gen:genF11,
+  learn:[
+   {t:"סדר הפעולות — גם בשברים",x:"1) סוגריים. 2) כפל וחילוק (משמאל לימין). 3) חיבור וחיסור (משמאל לימין). מחשבים כל צעד לחוד, ובסוף מצמצמים.",e:"1/2 + 1/3 × 3/4: כפל קודם ← 1/3 × 3/4 = 1/4. אחר כך 1/2 + 1/4 = 3/4."}]},
+ {id:"w1",part:3,emoji:"📖",name:"בעיות מילוליות — חיבור וחיסור",desc:"לגו, מכוניות וכדורגל: ״יחד״, ״נשאר״, ״כמה יותר״",gen:genW1,
+  learn:[
+   {t:"המתכון לבעיה מילולית",x:"1) קוראים עד הסוף. 2) מה ידוע? מה שואלים? 3) כותבים תרגיל. 4) פותרים. 5) בודקים שהתשובה הגיונית וכותבים אותה במשפט.",e:"״יחד / בסך הכול״ ← חיבור. ״נשאר / כמה פחות / כמה יותר״ ← חיסור. ״הקופסה כולה״ היא 1."}]},
+ {id:"w2",part:3,emoji:"📖",name:"בעיות מילוליות — כפל וחילוק",desc:"חלק מכמות, ״כמה חתיכות״, חלוקה שווה, שבר משבר",gen:genW2,
+  learn:[
+   {t:"מילים שמלמדות מה לעשות",x:"״a/b מ־...״ ← כפל. ״כמה פעמים נכנס / כמה חתיכות / כמה דגלים״ ← חילוק. ״מחלקים שווה בשווה״ ← חילוק. ״נשארו a/b — כמה היה בהתחלה?״ ← מחשבים כמה שווה חלק אחד.",e:"נשארו 3/5 מהכסף והם 12 ש״ח: חלק אחד = 12 ÷ 3 = 4, והכול = 5 × 4 = 20 ש״ח."}]},
+ {id:"w3",part:3,emoji:"✍️",name:"שאלות פתוחות — כותבים את הפתרון",desc:"בעיות בכמה שלבים: כותבים תרגיל ואז תשובה",gen:genW3,
+  learn:[
+   {t:"איך פותרים שאלה פתוחה?",x:"במבחן אין אפשרויות לבחור — כותבים לבד! 1) כותבים את התרגיל. 2) פותרים שלב־שלב. 3) כותבים תשובה מצומצמת ועם יחידות (מטר, ש״ח...). כאן מקלידים רק את התשובה, אבל כדאי לכתוב את כל הפתרון במחברת.",e:"שני שלבים? מחשבים קודם את הביניים (למשל כמה נמכר), ורק אז את השאלה (כמה נשאר)."}]}
+];
+const TOPIC_BY_ID = {}; TOPICS.forEach(t=>TOPIC_BY_ID[t.id]=t);
+const PARTS=[
+ {emoji:"🟰",name:"חלק א׳ — יסודות השברים",desc:"צמצום והרחבה, מעורבים ומדומים, השוואה"},
+ {emoji:"➕",name:"חלק ב׳ — חיבור וחיסור שברים",desc:"מכנים שווים ושונים, מספרים מעורבים, פריטה"},
+ {emoji:"✖️",name:"חלק ג׳ — כפל וחילוק שברים",desc:"חלק מכמות, כפל, חילוק וסדר פעולות"},
+ {emoji:"📖",name:"חלק ד׳ — בעיות מילוליות ושאלות פתוחות",desc:"סיפורים על לגו, מכוניות וכדורגל"}];
+
+const TOPIC_HINTS = {
+  f1:"מכפילים או מחלקים את המונה והמכנה באותו מספר.",
+  f2:"מדומה ← מעורב: מחלקים. מעורב ← מדומה: שלם × מכנה + מונה.",
+  f3:"מביאים למכנה משותף ומשווים מונים.",
+  f4:"מכנה משותף, מחברים מונים, ובסוף מצמצמים.",
+  f5:"מכנה משותף, מחסרים מונים. שלם פחות שבר — לווים שלם.",
+  f6:"שלמים עם שלמים, שברים עם שברים. צריך לשאול? לווים שלם.",
+  f7:"״חלק מ־״ = כפל. מחלקים במכנה וכופלים במונה.",
+  f8:"מונה × מונה, מכנה × מכנה — ומצמצמים (גם לפני הכפל).",
+  f9:"חילוק בשבר = כפל בהופכי.",
+  f10:"שבר ÷ שבר: הופכים את השני וכופלים. מעורב? קודם מדומה.",
+  f11:"סוגריים, אחר כך כפל וחילוק, ואחר כך חיבור וחיסור.",
+  w1:"״יחד״ — חיבור. ״נשאר״ — חיסור. השלם הוא 1.",
+  w2:"״חלק מ־״ — כפל. ״כמה נכנס״ — חילוק.",
+  w3:"כותבים תרגיל, פותרים בשלבים, ובודקים שהתשובה הגיונית."
+};
+
+/* ================= BANKS: exactly 150 unique questions per topic ================= */
+function buildBank(topic, seed){
+  srand(seed);
+  const items=[]; const seen=new Set();
+  let attempts=0;
+  while(items.length<150 && attempts<120000){
+    attempts++;
+    const L=(items.length%3)+1;
+    let q=null;
+    try { q = topic.bankDraw ? topic.bankDraw(items.length) : topic.gen(L); } catch(e){ q=null; }
+    if(!q || !Array.isArray(q.opts)) continue;
+    if(q.open){ if(!(q.open.n>0&&q.open.d>0)) continue; } else { if(q.opts.length<2) continue; if(!q.opts.includes(q.ans)) continue; }
+    const key=normKey(q);
+    if(seen.has(key)) continue;
+    seen.add(key);
+    q.lvl=L; q.bankIdx=items.length;
+    if(!q.steps || !q.steps.length) q.steps = q.why? [q.why] : [];
+    if(!q.hint) q.hint = fixMath(TOPIC_HINTS[topic.id]||"חשבו צעד־צעד.");
+    items.push(q);
+  }
+  return items;
+}
+const BANKS={};
+TOPICS.forEach((t,i)=>{ BANKS[t.id]=buildBank(t, 1000+i*7919); });
+const TOTAL_BANK = TOPICS.reduce((s,t)=> s+BANKS[t.id].length, 0);
+
+/* ---------- decks: draw without repeats until exhausted ---------- */
+const decks={};
+function deckIdxs(tid, lvl){
+  let idxs = BANKS[tid].map((q,i)=>i);
+  if(lvl) idxs = idxs.filter(i=>BANKS[tid][i].lvl===lvl);
+  return idxs.length? idxs : BANKS[tid].map((q,i)=>i);
+}
+function drawFromBank(tid, lvl){
+  const k = tid+"|"+(lvl||0);
+  if(!decks[k] || decks[k].pos>=decks[k].order.length){
+    decks[k]={ order: shuffle(deckIdxs(tid,lvl)), pos:0 };
+  }
+  const idx = decks[k].order[decks[k].pos++];
+  return { tid, idx, q: BANKS[tid][idx] };
+}
+
+/* ================= PERSISTENT STORE (progress + plan) ================= */
+const LS_KEY="mathFracKitV1";
+function epochDay(){ return Math.floor(Date.now()/86400000); }
+function loadStore(){
+  try { const s=JSON.parse(localStorage.getItem(LS_KEY)); if(s && s.v===2) return s; } catch(e){}
+  return { v:2, correct:{}, seen:{}, leitner:{}, errors:{}, ramzor:{}, plan:null };
+}
+let store = loadStore();
+function saveStore(){ try { localStorage.setItem(LS_KEY, JSON.stringify(store)); } catch(e){} }
+function recordAnswer(tid, idx, correct){
+  const today = epochDay();
+  if(!store.seen[tid]) store.seen[tid]=[];
+  if(!store.seen[tid].includes(idx)) store.seen[tid].push(idx);
+  if(!store.leitner[tid]) store.leitner[tid]={};
+  const L = store.leitner[tid][idx] || {box:0, due:today};
+  const ekey = tid+":"+idx;
+  if(correct){
+    if(!store.correct[tid]) store.correct[tid]=[];
+    if(!store.correct[tid].includes(idx)) store.correct[tid].push(idx);
+    L.box = Math.min(3, (L.box||0)+1);
+    L.due = today + [1,1,2,4][L.box];
+    const er = store.errors[ekey];
+    if(er && !er.resolved){
+      if(!er.correctDays.includes(today)) er.correctDays.push(today);
+      if(er.correctDays.length>=2) er.resolved=true;
+    }
+  } else {
+    L.box = 0; L.due = today+1;
+    if(!store.errors[ekey]) store.errors[ekey] = {tid, idx, correctDays:[], resolved:false, firstDay:today};
+    else if(store.errors[ekey].resolved){ store.errors[ekey]={tid, idx, correctDays:[], resolved:false, firstDay:today}; }
+  }
+  store.leitner[tid][idx]=L;
+  saveStore();
+}
+function coverageCount(){ return TOPICS.reduce((s,t)=> s+((store.correct[t.id]||[]).length), 0); }
+function greenCount(){
+  if(!store.plan || !store.plan.topicState) return 0;
+  return TOPICS.filter(t=> store.plan.topicState[t.id] && store.plan.topicState[t.id].status==="green").length;
+}
+function readinessPct(){ return Math.round(100*greenCount()/TOPICS.length); }
+function updateMeters(){
+  const cov = coverageCount();
+  $("coverFill").style.width = (100*cov/TOTAL_BANK)+"%";
+  $("coverLbl").textContent = `ענית נכון על ${fmtN(cov)} מתוך ${fmtN(TOTAL_BANK)} שאלות המאגר`;
+  if(store.plan){
+    $("readyFill").style.width = readinessPct()+"%";
+    $("readyLbl").textContent = `${greenCount()} מתוך ${TOPICS.length} נושאים במצב "שולט" 🟢 · יום ${planDayNumber()} מתוך ${store.plan.totalDays} במסלול`;
+  } else {
+    $("readyFill").style.width = "0%";
+    $("readyLbl").textContent = "עוד לא התחיל האבחון — התחילו את מסלול השבוע כדי למדוד מוכנות";
+  }
+}
+function topicStatusIcon(tid){
+  const p=store.plan; if(!p || !p.topicState || !p.topicState[tid]) return "";
+  const s=p.topicState[tid].status;
+  return s==="green"? " 🟢" : s==="learned"? " 🟡" : s==="yellow"? " 🟡" : s==="red"? " 🔴" : "";
+}
+
+/* ================= SHARED INTERACTIVE QUESTION (teaching layer) ================= */
+function stepsOf(q){ return (q.steps && q.steps.length)? q.steps : [q.why]; }
+function mountQuestion(host, q, opts, onResult){
+  opts = opts||{};
+  host.innerHTML="";
+  const card=document.createElement("div"); card.className="card";
+  card.innerHTML=`${opts.tag? `<div class="qnum">${opts.tag}</div>`:""}<div class="qtext">${q.text}</div>${q.viz||""}`;
+  if(opts.preSteps && opts.preSteps.length){
+    const fs=document.createElement("div"); fs.className="fadeSteps";
+    fs.innerHTML=`<b>✏️ דוגמה מודרכת — הצעדים הראשונים נתונים, ואת האחרון משלימים לבד:</b><ol>${opts.preSteps.map(s=>`<li>${s}</li>`).join("")}<li>…? — ענו כאן על השאלה</li></ol>`;
+    card.appendChild(fs);
+  }
+  const optsDiv=document.createElement("div"); optsDiv.className="opts"; card.appendChild(optsDiv);
+  const tools=document.createElement("div"); tools.className="qtools";
+  tools.appendChild(ttsBtnFor(()=>qSpeakText(q), "השמעת השאלה והתשובות"));
+  tools.appendChild(ttsReplayBtn(()=>qSpeakText(q)));
+  let hintBox=null;
+  if(opts.showHint!==false){
+    const hb=document.createElement("button"); hb.className="hintbtn"; hb.textContent="💡 רמז";
+    hintBox=document.createElement("div"); hintBox.className="hintbox"; hintBox.innerHTML="💡 "+(q.hint||"");
+    hb.onclick=()=>{ hintBox.style.display = hintBox.style.display==="block"? "none":"block"; };
+    tools.appendChild(hb);
+  }
+  card.appendChild(tools);
+  if(hintBox) card.appendChild(hintBox);
+  const step1Box=document.createElement("div"); step1Box.className="step1box"; card.appendChild(step1Box);
+  const stepsBox=document.createElement("div"); stepsBox.className="stepsbox"; card.appendChild(stepsBox);
+  const ex=document.createElement("div"); ex.className="explain"; card.appendChild(ex);
+  host.appendChild(card);
+  let attemptsMade=0, done=false;
+  function finish(finalCorrect, firstTry){
+    if(done) return; done=true;
+    optsDiv.querySelectorAll(".opt").forEach(b=>{ b.disabled=true; if(b.innerHTML===q.ans) b.classList.add("right"); });
+    if(q.open){ optsDiv.querySelectorAll("input,button").forEach(x=>{ x.disabled=true; }); const mm=optsDiv.querySelector(".openmsg"); if(mm) mm.textContent=""; optsDiv.insertAdjacentHTML("beforeend", `<div class="openans ${finalCorrect?"ok":"bad"}">${finalCorrect?"✅":"📌 התשובה הנכונה:"} ${q.ans}</div>`); }
+    const steps=stepsOf(q);
+    stepsBox.innerHTML=`<div class="stt">${finalCorrect? '<span class="inl">'+ILLUS.starMini+'</span> ✅ נכון! כך פותרים, צעד־צעד:' : '<span class="inl">'+ILLUS.sproutMini+'</span> 📘 הפתרון המלא, צעד־צעד:'}</div><ol>${steps.map(s=>`<li>${s}</li>`).join("")}</ol>`;
+    stepsBox.style.display="block";
+    ex.innerHTML=`💡 <b>הסבר:</b> ${q.why}`; ex.style.display="block";
+    speakAuto(qFeedbackText(q, finalCorrect));
+    onResult(firstTry, finalCorrect);
+  }
+  if(q.open){
+    optsDiv.innerHTML=`<div class="openhelp">✍️ שאלה פתוחה — כותבים את התשובה. שבר: מונה למעלה ומכנה למטה. מספר שלם? רק במשבצת ״שלם״. מספר מעורב: שלם + שבר.</div>`+openInputHTML()+`<div class="openmsg" aria-live="polite"></div><button class="btn btn-main openok" type="button">בדיקה ✅</button>`;
+    const box=optsDiv.querySelector(".openbox"), msg=optsDiv.querySelector(".openmsg"), okb=optsDiv.querySelector(".openok");
+    const submit=()=>{
+      if(done) return;
+      const j=openJudge(q, readOpen(box));
+      if(j.st==="ok"){ finish(true, attemptsMade===0); }
+      else if(j.st==="wrong"){
+        attemptsMade++;
+        if(attemptsMade===1 && opts.retry!==false){
+          msg.textContent="❌ לא מדויק — נסו שוב!";
+          step1Box.innerHTML=`<span class="inl">${ILLUS.sproutMini}</span> 💚 לא נורא! הנה הצעד הראשון של הפתרון: <b>${stepsOf(q)[0]}</b> — ועכשיו נסו שוב!`;
+          step1Box.style.display="block";
+          speakAuto("לא נורא! הנה הצעד הראשון של הפתרון: " + stripTags(stepsOf(q)[0]) + ". ועכשיו נסו שוב!");
+        } else finish(false,false);
+      } else { msg.textContent=j.msg||""; }
+    };
+    okb.onclick=submit;
+    box.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); submit(); } });
+    box.addEventListener("input",()=>{ msg.textContent=""; });
+  }
+  (q.open? [] : q.opts).forEach(op=>{
+    const b=document.createElement("button"); b.className="opt"; b.innerHTML=op;
+    b.onclick=()=>{
+      if(done) return;
+      if(op===q.ans){ b.classList.add("right"); finish(true, attemptsMade===0); }
+      else {
+        attemptsMade++;
+        b.disabled=true; b.classList.add("wrong");
+        if(attemptsMade===1 && opts.retry!==false){
+          step1Box.innerHTML=`<span class="inl">${ILLUS.sproutMini}</span> 💚 לא נורא! הנה הצעד הראשון של הפתרון: <b>${stepsOf(q)[0]}</b> — ועכשיו נסו שוב!`;
+          step1Box.style.display="block";
+          speakAuto("לא נורא! הנה הצעד הראשון של הפתרון: " + stripTags(stepsOf(q)[0]) + ". ועכשיו נסו שוב!");
+        } else finish(false, false);
+      }
+    };
+    optsDiv.appendChild(b);
+  });
+  if(opts.autoRead!==false) speakAuto(qSpeakText(q));
+  return { isDone:()=>done };
+}
+
+/* ================= UI — HOME / MAP ================= */
+let curTopic=null, trainState=null, testQs=[], testSel=[], mockQs=[], mockSel=[];
+const ramzorState = store.ramzor || {};
+function shareApp(){ const data={title:document.title,text:"חזרה למבחן בשברים — כיתה ו׳",url:location.href};
+ if(navigator.share){ navigator.share(data).catch(()=>{}); }
+ else if(navigator.clipboard){ navigator.clipboard.writeText(location.href).then(()=>alert("הקישור הועתק! 📋")).catch(()=>alert(location.href)); }
+ else alert(location.href); }
+function ramzorHtml(p){ const sel=ramzorState[p];
+ return `<div class="ramzor" id="rz-${p}"><details class="rzfold"><summary>🚦 רמזור למידה — חלק ${"א׳ב׳ג׳ד׳"[p]}</summary><div class="rt">איך הרגשת בפתרון פרק זה?</div>
+ <div class="rrow">
+  <button class="rz ${sel===0?"sel-g":""}" onclick="setRamzor(${p},0)">🟢 מבין מצוין<br>ופתרתי בקלות</button>
+  <button class="rz ${sel===1?"sel-y":""}" onclick="setRamzor(${p},1)">🟡 הבנתי את הרוב<br>נזקקתי למעט עזרה</button>
+  <button class="rz ${sel===2?"sel-r":""}" onclick="setRamzor(${p},2)">🔴 נושא זה דורש<br>ממני תרגול נוסף</button>
+ </div></details></div>`; }
+function setRamzor(p,v){ ramzorState[p]=v; store.ramzor=ramzorState; saveStore();
+ document.querySelectorAll(`[id="rz-${p}"]`).forEach(el=>{ el.outerHTML=ramzorHtml(p); }); }
+/* ---------- STAGE 3.6: continue card — resume from EXISTING progress only (no new keys) ---------- */
+let continueTarget=null; /* {kind:"plan",day} or {kind:"topic",tid} */
+function computeContinue(){
+  if(store.plan){ continueTarget={kind:"plan",day:planDayNumber()}; return; }
+  let last=null;
+  TOPICS.forEach(t=>{ if((store.correct[t.id]||[]).length>0) last=t; });
+  if(!last){ continueTarget={kind:"topic",tid:TOPICS[0].id}; return; }
+  if((store.correct[last.id]||[]).length < BANKS[last.id].length){ continueTarget={kind:"topic",tid:last.id}; return; }
+  const next=TOPICS.find(t=> (store.correct[t.id]||[]).length < BANKS[t.id].length);
+  continueTarget={kind:"topic",tid: next? next.id : TOPICS[0].id};
+}
+function renderContinue(){
+  computeContinue();
+  const t=$("ccTitle"), s=$("ccSub"), b=$("btnContinue");
+  if(!t||!s||!b) return;
+  if(continueTarget.kind==="plan"){
+    const plan=store.plan, day=continueTarget.day, done=(plan.sessionsDone||{})[day];
+    t.textContent="📅 מסלול השבוע — יום "+day+" מתוך "+plan.totalDays;
+    s.textContent= done? "שיעור היום כבר הושלם — אפשר עוד אחד לכיף!" : dayKindLabel(plan,day);
+    b.textContent= done? "🔁 עוד שיעור היום" : "▶️ ממשיכים בשיעור היום";
+  } else {
+    const topic=TOPIC_BY_ID[continueTarget.tid];
+    const done=(store.correct[topic.id]||[]).length, total=BANKS[topic.id].length;
+    t.textContent=topic.emoji+" "+topic.name;
+    s.textContent= done===0? "עוד לא התחלנו את הנושא הזה — בואו נתחיל באימון!" : "ענית נכון על "+done+" מתוך "+total+" שאלות — ממשיכים באימון";
+    b.textContent="▶️ ממשיכים באימון";
+  }
+}
+function continueGo(){
+  if(!continueTarget) computeContinue();
+  if(continueTarget.kind==="plan"){ startSession(continueTarget.day); return; }
+  openTopic(continueTarget.tid); showTrain();
+}
+function renderHome(){
+ const host=$("partsHost"); host.innerHTML="";
+ PARTS.forEach((part,p)=>{
+   const sec=document.createElement("div");
+   sec.innerHTML=`<div class="parthead"><div class="pem">${ILLUS.parts[p]||part.emoji}</div><div><div class="pt">${part.name}</div><div class="pd">${part.desc}</div></div></div>`;
+   const grid=document.createElement("div"); grid.className="tgrid";
+   TOPICS.filter(t=>t.part===p).forEach(t=>{
+     const done=(store.correct[t.id]||[]).length;
+     const b=document.createElement("button"); b.className="tcard";
+     b.innerHTML=`<div class="till">${ILLUS.topics[t.id]||""}</div><div class="nm">${t.name}${topicStatusIcon(t.id)}</div><div class="ds">${t.desc}</div>`+
+       `<div class="ct">🗂️ ${BANKS[t.id].length} שאלות · ✓ ענית נכון על ${done}</div>`+
+       `<div class="pbar"><div style="width:${Math.round(100*done/BANKS[t.id].length)}%"></div></div>`;
+     b.onclick=()=>openTopic(t.id); grid.appendChild(b);
+   });
+   sec.appendChild(grid);
+   const rz=document.createElement("div"); rz.innerHTML=ramzorHtml(p); sec.appendChild(rz);
+   host.appendChild(sec);
+ });
+ renderContinue();
+ updateMeters();
+}
+function hideAllPanes(){ ["topicPane","mainPane","mockPane","tourPane","planPane"].forEach(id=>{ $(id).style.display="none"; }); }
+function showTopics(){ hideAllPanes(); $("topicPane").style.display=""; renderHome(); window.scrollTo({top:0,behavior:"smooth"}); }
+function openTopic(id){ curTopic=TOPIC_BY_ID[id]; trainState=null;
+ hideAllPanes(); $("mainPane").style.display="";
+ $("curTopicName").textContent=curTopic.emoji+" "+curTopic.name; showLearn(); window.scrollTo({top:0}); }
+function setTabs(which){ for(const [id,key] of [["tabLearn","learn"],["tabTrain","train"],["tabTest","test"]]) $(id).classList.toggle("active",key===which);
+ $("learnPane").style.display=which==="learn"?"":"none";
+ $("trainPane").style.display=which==="train"?"":"none";
+ $("testPane").style.display=which==="test"?"":"none"; }
+
+/* ---------- LEARN + mini-check ---------- */
+function showLearn(){ if(!curTopic)return; setTabs("learn");
+ const host=$("learnPane"); host.innerHTML="";
+ curTopic.learn.forEach((c,i)=>{
+   const d=document.createElement("div"); d.className="card learncard";
+   d.innerHTML=`<h3>${i+1}. ${c.t}</h3><div class="lx">${fixMath(c.x)}</div>${c.e? `<div class="ex">💡 <b>דוגמה:</b> ${fixMath(c.e)}</div>`:""}`;
+   const spk=ttsBtnFor(()=>`${c.t}. ${stripTags(fixMath(c.x))}${c.e? ". דוגמה: "+stripTags(fixMath(c.e)) : ""}`, "השמעת כרטיס הלמידה");
+   const spw=document.createElement("div"); spw.className="center"; spw.style.marginTop="10px"; spw.appendChild(spk);
+   d.appendChild(spw);
+   host.appendChild(d);
+ });
+  speakAuto(curTopic.learn.map(c=>`${c.t}. ${stripTags(fixMath(c.x))}${c.e? ". דוגמה: "+stripTags(fixMath(c.e)) : ""}`).join(". "));
+ /* interactive mini-check: one quick bank question with instant feedback (skippable) */
+ const mc=document.createElement("div"); mc.className="card minicheck";
+ mc.innerHTML=`<h3 style="margin:0 0 6px">✋ נסו בעצמכם — בדיקה קצרה אחת</h3><div id="mcHost"></div>
+   <div class="center" style="margin-top:10px"><button class="btn-ghost" onclick="showTrain()">דלגו לאימון ⏭</button></div>`;
+ host.appendChild(mc);
+ const d=drawFromBank(curTopic.id, 1);
+ mountQuestion($("mcHost"), d.q, {tag:"שאלת בדיקה מהמאגר", autoRead:false}, (firstTry, finalCorrect)=>{
+   recordAnswer(d.tid, d.idx, finalCorrect); updateMeters();
+ });
+ const b=document.createElement("div"); b.className="center";
+ b.innerHTML=`<button class="btn btn-new" onclick="showTrain()">הבנתי — לאימון! 🏋️</button>`;
+ host.appendChild(b);
+}
+
+/* ---------- TRAIN (from the bank, by level, teaching interactions) ---------- */
+function showTrain(){ if(!curTopic)return; setTabs("train");
+ if(!trainState){ trainState={level:1,stars:0,streak:0,total:0,correct:0,cur:null,curRef:null};
+   $("tIntro").style.display=""; $("tMain").style.display="none"; $("tMastery").style.display="none";
+   speakAuto($("tIntro").innerText); }
+ else { $("tIntro").style.display="none"; $("tMain").style.display=""; if(!trainState.cur) nextTrainQ(); }
+}
+function acceptIntro(){ $("tIntro").style.display="none"; $("tMain").style.display=""; updateTrainStatus(); nextTrainQ(); }
+function restartTrain(){ trainState={level:1,stars:0,streak:0,total:0,correct:0,cur:null,curRef:null};
+ $("tMastery").style.display="none"; $("tMain").style.display=""; updateTrainStatus(); nextTrainQ(); }
+function updateTrainStatus(){ const st=trainState; if(!st)return;
+ $("tLevel").innerHTML=`<b>רמה ${st.level} מתוך 3</b> ${st.level===1?"🌱":st.level===2?"🌿":"🌳"}`;
+ $("tStars").innerHTML=""; for(let i=0;i<5;i++){ const sp=document.createElement("span"); sp.className="st"+(i<st.stars?" on":""); sp.textContent="★"; sp.style.fontSize="26px"; $("tStars").appendChild(sp); }
+ $("tDots").innerHTML=""; for(let i=0;i<3;i++){ const d=document.createElement("span"); d.className="dot"+(i<st.streak?" on":""); $("tDots").appendChild(d); }
+ $("tProgStars").textContent="⭐".repeat(st.stars)+"☆".repeat(5-st.stars);
+ $("tTotal").textContent=`ענית על ${st.total} שאלות · ${st.correct} נכונות · מהמאגר של ${BANKS[curTopic.id].length} שאלות`;
+}
+function nextTrainQ(){ const st=trainState; if(!st) return;
+ const d=drawFromBank(curTopic.id, st.level); st.cur=d.q; st.curRef=d;
+ $("tNext").style.display="none";
+ mountQuestion($("tQ"), d.q, {tag:`שאלה · רמה ${st.level} · מהמאגר`}, (firstTry, finalCorrect)=>{
+   st.total++;
+   if(finalCorrect){ st.correct++; st.stars++; st.streak = firstTry? st.streak+1 : 0; }
+   else st.streak=0;
+   recordAnswer(d.tid, d.idx, finalCorrect);
+   let leveled=false;
+   if(st.streak>=3 && st.level<3){ st.level++; st.stars=0; st.streak=0; leveled=true; }
+   else if(st.stars>=5){ if(st.level<3){ st.level++; st.stars=0; leveled=true; } else { updateTrainStatus(); mastery(); return; } }
+   updateTrainStatus();
+   if(leveled) showCeleb("🚀",`עלית לרמה ${st.level}! כל הכבוד!`);
+   $("tNext").style.display="";
+ });
+}
+function mastery(){ $("tMain").style.display="none"; const m=$("tMastery"); m.style.display="";
+ $("masteryStats").textContent=`ענית על ${trainState.total} שאלות, ${trainState.correct} נכונות!`;
+ showCeleb("🏆","סיימת את כל הרמות! מוכנים למבחן!"); }
+function showCeleb(em,tx){ $("celebEmoji").textContent=em; $("celebText").textContent=tx; $("celebrate").style.display="flex"; speakAuto(tx); }
+function hideCeleb(){ $("celebrate").style.display="none"; }
+
+/* ---------- TEST (10 bank questions, list style) ---------- */
+function renderListQuiz(hostId, items, sel, prefix){
+ const host=$(hostId); host.innerHTML="";
+ const bump=()=>{ if(prefix==="qz") $("pfill").style.width=(sel.filter(x=>x!==null).length/items.length*100)+"%";
+   if(prefix==="mk") $("mockFill").style.width=(sel.filter(x=>x!==null).length/items.length*100)+"%"; };
+ items.forEach((it,i)=>{
+   const q=it.q;
+   const card=document.createElement("div"); card.className="card";
+   card.innerHTML=`<div class="qnum">שאלה ${i+1} מתוך ${items.length}${it.tag? " · "+it.tag:""}${q.open? " · ✍️ שאלה פתוחה":""}</div><div class="qtext">${q.text}</div>${q.viz||""}`;
+   const opts=document.createElement("div"); opts.className="opts";
+   if(q.open){
+     opts.innerHTML=`<div class="openhelp">✍️ כותבים את התשובה. שבר: מונה למעלה ומכנה למטה. מספר שלם? רק במשבצת ״שלם״.</div>`+openInputHTML();
+     const box=opts.querySelector(".openbox");
+     box.addEventListener("input",()=>{ const v=readOpen(box); sel[i]=(v.w===""&&v.n===""&&v.d==="")? null : v; bump(); });
+   } else q.opts.forEach(op=>{
+     const b=document.createElement("button"); b.className="opt"; b.innerHTML=op;
+     b.onclick=()=>{ sel[i]=op; [...opts.children].forEach(x=>x.classList.remove("sel")); b.classList.add("sel"); bump(); };
+     opts.appendChild(b);
+   });
+   card.appendChild(opts);
+   const tools=document.createElement("div"); tools.className="qtools";
+   tools.appendChild(ttsBtnFor(()=>qSpeakText(q), "השמעת השאלה והתשובות"));
+   card.appendChild(tools);
+   const ex=document.createElement("div"); ex.className="explain"; ex.id=prefix+"Ex"+i; ex.innerHTML=`💡 <b>הסבר:</b> ${q.why}`;
+   card.appendChild(ex); host.appendChild(card);
+ });
+}
+function gradeListQuiz(items, sel, prefix){
+ let score=0;
+ items.forEach((it,i)=>{
+   const q=it.q;
+   const card=$(prefix==="qz"? "quiz":"mockQuiz").children[i];
+   card.querySelectorAll(".opt").forEach(b=>{
+     b.disabled=true;
+     if(b.innerHTML===q.ans) b.classList.add("right");
+     else if(sel[i]===b.innerHTML) b.classList.add("wrong");
+   });
+   if(q.open){ card.querySelectorAll("input").forEach(x=>{ x.disabled=true; }); card.querySelector(".opts").insertAdjacentHTML("beforeend", openStatusHTML(q, sel[i])); }
+   const ok = selCorrect(q, sel[i]);
+   if(ok) score++;
+   recordAnswer(it.tid, it.idx, ok);
+   $(prefix+"Ex"+i).style.display="block";
+ });
+ return score;
+}
+function showTest(){ if(!curTopic)return; setTabs("test");
+ const levels=[3,2,3,3,2,3,2,3,3,2];
+ testQs = levels.map(lv=> drawFromBank(curTopic.id, lv));
+ testSel = Array(testQs.length).fill(null);
+ $("counter").textContent=`מבחן ב${curTopic.name} — 10 שאלות מהמאגר`;
+ $("pfill").style.width="0%"; $("result").style.display="none"; $("submitBtn").style.display="";
+ renderListQuiz("quiz", testQs, testSel, "qz");
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+function gradeTest(){
+ if(testSel.some(s=>s===null)){ alert("עוד לא ענית על כל השאלות 🙂"); return; }
+ const score=gradeListQuiz(testQs, testSel, "qz");
+ $("submitBtn").style.display="none";
+ const box=$("result"); box.style.display="";
+ $("scoreNum").textContent=score*10;
+ $("scoreMsg").textContent= score===10? "מושלם! 🏆 מוכנים למבחן!" : score>=8? "מצוין! 💪 כמעט מושלם" :
+   score>=6? "יפה! 👏 עוד קצת אימון ותשלוט בזה" : "לא נורא! 💡 חוזרים ללמידה ולאימון — ומנסים שוב";
+ speakAuto("הציון שלך: " + (score*10) + ". " + $("scoreMsg").textContent);
+ const ex=document.createElement("div"); ex.innerHTML=ramzorHtml(curTopic.part);
+ $("scoreDetail").innerHTML=""; $("scoreDetail").appendChild(ex);
+ updateMeters();
+ box.scrollIntoView({behavior:"smooth"});
+}
+
+/* ---------- MOCK TEST (from the banks) ---------- */
+let mockRound=0;
+function startMock(){
+ hideAllPanes(); $("mockPane").style.display="";
+ mockRound++;
+ const rot=(arr,n,off)=>{ const out=[]; for(let i=0;i<n;i++) out.push(arr[(off+i)%arr.length]); return out; };
+ const items=[];
+ [[0,2],[1,4],[2,5],[3,3]].forEach(([p,n])=>{ rot(TOPICS.filter(t=>t.part===p),n,mockRound).forEach((t,i)=> items.push({...drawFromBank(t.id,(i%2)?3:2), part:p, tag:PARTS[p].name})); });
+ /* interleave like the real exam: by part order A,B,C,D blocks */
+ mockQs=items; mockSel=Array(items.length).fill(null);
+ $("mockCounter").textContent=`מבחן מדומה — ${items.length} שאלות מהמאגרים`;
+ $("mockFill").style.width="0%"; $("mockResult").style.display="none"; $("mockSubmit").style.display="";
+ renderListQuiz("mockQuiz", mockQs, mockSel, "mk");
+ window.scrollTo({top:0});
+}
+function gradeMock(){
+ if(mockSel.some(s=>s===null)){ alert("עוד לא ענית על כל השאלות 🙂"); return; }
+ const score=gradeListQuiz(mockQs, mockSel, "mk");
+ $("mockSubmit").style.display="none";
+ const box=$("mockResult"); box.style.display="";
+ $("mockScoreNum").textContent=Math.round(score/mockQs.length*100);
+ $("mockScoreMsg").textContent= score>=13? "מדהים! 🏆 מוכן לגמרי למבחן!" : score>=11? "מצוין! 💪" :
+   score>=8? "יפה! 👏 עוד תרגול בנושאים החלשים" : "ממשיכים להתאמן! 💡 רואים למטה באיזה חלק כדאי להתחזק";
+ speakAuto("הציון שלך: " + $("mockScoreNum").textContent + ". " + $("mockScoreMsg").textContent);
+ let html="<b>פירוט לפי חלקים:</b><br>";
+ PARTS.forEach((p,pi)=>{
+   const inPart=mockQs.map((it,i)=>[it,i]).filter(([it])=>it.part===pi);
+   const good=inPart.filter(([it,i])=> selCorrect(it.q,mockSel[i])).length;
+   html+=`${p.emoji} ${p.name}: ${good} מתוך ${inPart.length} נכונות<br>`;
+ });
+ html+=`<div style="margin-top:10px">${ramzorHtml(0)}</div>`;
+ $("mockBreakdown").innerHTML=html;
+ updateMeters();
+ box.scrollIntoView({behavior:"smooth"});
+}
+
+/* ================= TOUR — סיור בחומר ================= */
+let tour=null;
+function startTour(){
+  hideAllPanes(); $("tourPane").style.display="";
+  tour={ round:1, order: shuffle(TOPICS.map(t=>t.id)), idx:0, stats:{}, answered:0, correct:0, coveredThisRound:0 };
+  TOPICS.forEach(t=> tour.stats[t.id]={a:0,c:0});
+  $("tourSummary").style.display="none";
+  renderTourQ();
+  window.scrollTo({top:0});
+}
+function renderTourQ(){
+  const tid=tour.order[tour.idx]; const t=TOPIC_BY_ID[tid];
+  const d=drawFromBank(tid);
+  $("tourCounter").textContent=`סבב ${tour.round} · נושא ${tour.idx+1} מתוך ${tour.order.length}`;
+  $("tourRoundLbl").textContent=`🧭 עברת על ${tour.coveredThisRound} מתוך ${TOPICS.length} נושאים בסבב זה`;
+  $("tourFill").style.width=(100*tour.coveredThisRound/tour.order.length)+"%";
+  $("tourNext").style.display="none";
+  mountQuestion($("tourQ"), d.q, {tag:`${PARTS[t.part].emoji} ${PARTS[t.part].name} · ${t.emoji} ${t.name}`}, (ft,fc)=>{
+    tour.answered++; if(fc) tour.correct++;
+    tour.stats[tid].a++; if(fc) tour.stats[tid].c++;
+    tour.coveredThisRound++;
+    recordAnswer(d.tid, d.idx, fc);
+    $("tourFill").style.width=(100*tour.coveredThisRound/tour.order.length)+"%";
+    $("tourRoundLbl").textContent=`🧭 עברת על ${tour.coveredThisRound} מתוך ${TOPICS.length} נושאים בסבב זה`;
+    $("tourNext").style.display="";
+  });
+}
+function nextTourQ(){
+  tour.idx++;
+  if(tour.idx>=tour.order.length){ tour.round++; tour.idx=0; tour.coveredThisRound=0; tour.order=shuffle(TOPICS.map(t=>t.id)); }
+  renderTourQ(); window.scrollTo({top:0,behavior:"smooth"});
+}
+function endTour(){
+  let html=`<h3 style="margin-top:0">🏁 סיכום הסיור</h3><div class="mini-illus">${ILLUS.mapMini}</div>`;
+  html+=`<p>ענית על ${tour.answered} שאלות, ${tour.correct} נכונות (${tour.answered? Math.round(100*tour.correct/tour.answered):0}%). כך נראית התמונה לפי חלקים:</p>`;
+  PARTS.forEach((p,pi)=>{
+    const ts=TOPICS.filter(t=>t.part===pi);
+    const a=ts.reduce((s,t)=>s+tour.stats[t.id].a,0), c=ts.reduce((s,t)=>s+tour.stats[t.id].c,0);
+    html+=`<div style="margin-top:8px">🚦 ${p.emoji} <b>${p.name}</b>: ${c}/${a} נכונות ${a? (c/a>=0.8? "🟢 שולט" : c/a>=0.5? "🟡 בדרך":"🔴 צריך חיזוק"):"—"}</div>`;
+    html+= ts.map(t=>`<div style="font-size:14px;color:#5a6b7d">· ${t.emoji} ${t.name}: ${tour.stats[t.id].c}/${tour.stats[t.id].a}</div>`).join("");
+  });
+  html+=`<div class="center" style="margin-top:12px"><button class="btn btn-new" onclick="startTour()">🧭 סיור נוסף</button> <button class="btn-ghost" onclick="showTopics()">← לכל הנושאים</button></div>`;
+  const s=$("tourSummary"); s.innerHTML=html; s.style.display="";
+ const tourTxt = `סיימת את הסיור! ענית על ${tour.answered} שאלות, ${tour.correct} נכונות.`;
+ const tb = ttsBtnFor(()=>stripTags(html), "השמעת הסיכום");
+ const tw = document.createElement("div"); tw.className="center"; tw.style.marginTop="10px"; tw.appendChild(tb);
+ s.appendChild(tw);
+ speakAuto(tourTxt);
+  s.scrollIntoView({behavior:"smooth"});
+}
+
+/* ================= PLAN — מוכן למבחן בשבוע ================= */
+const PLAN_TIPS=[
+  "שינה טובה הלילה שווה יותר מעוד שעת תרגול — הזיכרון מתגבש דווקא בשינה.",
+  "תרגול קצר מדי יום מנצח מרתון חד־פעמי: המוח אוהב חזרות מרווחות.",
+  "טעות שמתקנים וחוזרים אליה ביום אחר — נזכרת הכי טוב. טעויות הן חלק מהשיטה.",
+  "ערבוב נושאים (פעם חיבור, פעם חילוק) קשה יותר בזמן התרגול — ומחזיק מעמד טוב יותר במבחן.",
+  "בדקו הבנה בשאלות חדשות מהמאגר, לא בשינון של אותן שאלות שוב ושוב.",
+  "ביום המבחן: שינה מלאה וארוחת בוקר טובה. בלי תרגול כבד בבוקר המבחן."
+];
+function isoOfEpochDay(d){ return new Date(d*86400000).toISOString().slice(0,10); }
+function planDayNumber(){
+  if(!store.plan) return 0;
+  const d = epochDay()-store.plan.startDay+1;
+  return Math.max(1, Math.min(store.plan.totalDays, d));
+}
+function daysLeftToExam(){ if(!store.plan) return 0; return Math.max(0, store.plan.examDay-epochDay()); }
+function planDayKind(plan, day){
+  const T=plan.totalDays;
+  if(T===1) return "combined";
+  if(T===2) return day===1? "coverage" : "mockEve";
+  if(day===T) return "eve";
+  if(day===T-1) return "mock";
+  return "coverage";
+}
+function coverageDaysCount(plan){ const T=plan.totalDays; return T>=3? T-2 : 1; }
+function buildAssignments(plan){
+  const diag=plan.diag||{};
+  const reds=TOPICS.filter(t=> diag[t.id]===false).map(t=>t.id);
+  const yels=TOPICS.filter(t=> diag[t.id]!==false).map(t=>t.id);
+  const ordered=[...reds, ...yels];
+  const cd=coverageDaysCount(plan);
+  const dayOf={};
+  ordered.forEach((tid,i)=>{ dayOf[tid]=Math.min(cd, Math.floor(i*cd/ordered.length)+1); });
+  const byDay={}, extra={};
+  ordered.forEach(tid=>{ (byDay[dayOf[tid]]=byDay[dayOf[tid]]||[]).push(tid); });
+  /* weakest topics also reappear (practice only) on the next coverage day */
+  reds.forEach(tid=>{ const nd=Math.min(cd, dayOf[tid]+1); if(nd!==dayOf[tid]) (extra[nd]=extra[nd]||[]).push(tid); });
+  return { byDay, extra };
+}
+function coveredTopicsUpTo(plan, day){
+  const set=new Set();
+  for(let d=1; d<=day; d++){ ((plan.assignments.byDay[d]||[])).forEach(t=>set.add(t)); ((plan.assignments.extra[d]||[])).forEach(t=>set.add(t)); }
+  return [...set];
+}
+/* ---------- diagnostic ---------- */
+let diagRun=null, pendingExamISO="";
+function openPlan(){
+  hideAllPanes(); $("planPane").style.display="";
+  if(store.plan) renderPlanHome(); else renderPlanSetup();
+  window.scrollTo({top:0});
+}
+function renderPlanSetup(){
+  const def = (Date.parse("2026-11-26T12:00:00")>Date.now())? "2026-11-26" : isoOfEpochDay(epochDay()+6);
+  $("planHost").innerHTML=`
+  <div class="card" id="planSetupCard">
+    <h3 style="margin-top:0">📅 איך זה עובד?</h3>
+    <div class="center"><button class="ttsbtn" onclick="speakText(document.getElementById('planSetupCard').innerText)" title="השמעת ההסבר" aria-label="השמעת ההסבר">🔊</button></div>
+    <div style="line-height:1.75">
+      1️⃣ <b>אבחון פתיחה</b> — ${TOPICS.length} שאלות קצרות, אחת מכל נושא. ככה נדע בדיוק מה חזק ומה צריך חיזוק.<br>
+      2️⃣ <b>שיעור אחד ביום</b> (~20–25 דקות): חימום חוזר על טעויות ועל שאלות שהגיע זמנן, נושאי היום עם דוגמאות שצעדיהן נמוגים,
+      סט מעורב מכל מה שנלמד, ומיני־מבחן יציאה.<br>
+      3️⃣ <b>נושא נהיה 🟢 "שולט"</b> רק כשעוברים מבחן יציאה — וגם בדיקה חוזרת ביום אחר.<br>
+      4️⃣ <b>יום לפני אחרון</b>: מבחן מדומה מלא + תיקון נקודות תורפה. <b>ערב המבחן</b>: רק טעויות עבר והצלחות — קצר וקליל.
+    </div>
+    <div style="margin-top:14px">
+      <label style="font-weight:700">מתי המבחן? </label>
+      <input type="date" id="examDateInput" class="dateinput" value="${def}">
+      <div style="color:#5a6b7d;font-size:14px;margin-top:4px">ברירת המחדל: יום חמישי 26.11 — מועד המבחן. אם נשארו פחות ימים — התוכנית תתכווץ בלי לדלג על אף נושא.</div>
+    </div>
+    <div class="center" style="margin-top:16px"><button class="btn btn-main" onclick="beginDiagnostic()">🔍 התחל אבחון פתיחה (${TOPICS.length} שאלות)</button></div>
+  </div>`;
+}
+function beginDiagnostic(){
+  const inp=$("examDateInput");
+  pendingExamISO = inp? inp.value : "";
+  diagRun={ items: TOPICS.map(t=> drawFromBank(t.id, 2)), idx:0, results:{} };
+  renderDiagQ();
+}
+function renderDiagQ(){
+  const host=$("planHost");
+  const it=diagRun.items[diagRun.idx]; const t=TOPIC_BY_ID[it.tid];
+  host.innerHTML=`<div class="card center"><b>🔍 אבחון פתיחה</b> — שאלה ${diagRun.idx+1} מתוך ${diagRun.items.length}<br><span style="color:#5a6b7d">שאלה אחת מכל נושא · עונים בכנות — ככה התוכנית תדע במה להתמקד</span></div><div id="diagQ"></div><div id="diagNav" class="center" style="margin:12px 0"></div>`;
+  mountQuestion($("diagQ"), it.q, {tag:`${t.emoji} ${t.name}`}, (ft,fc)=>{
+    diagRun.results[it.tid]=fc;
+    recordAnswer(it.tid, it.idx, fc);
+    $("diagNav").innerHTML=`<button class="btn btn-main" onclick="diagNext()">${diagRun.idx<diagRun.items.length-1? "לשאלה הבאה ➜":"סיום האבחון 🏁"}</button>`;
+  });
+}
+function diagNext(){
+  diagRun.idx++;
+  if(diagRun.idx>=diagRun.items.length) finishDiagnostic(); else renderDiagQ();
+  window.scrollTo({top:0});
+}
+function finishDiagnostic(){
+  const today=epochDay();
+  let examDay = today+6;
+  if(pendingExamISO){ const d=new Date(pendingExamISO+"T12:00:00"); if(!isNaN(d.getTime())) examDay=Math.floor(d.getTime()/86400000); }
+  let totalDays = examDay - today + 1;
+  totalDays = Math.max(1, Math.min(7, totalDays));
+  examDay = today + totalDays - 1;
+  const plan={ startDay: today, examDay, totalDays, diag:{...diagRun.results}, topicState:{}, sessionsDone:{}, assignments:null };
+  TOPICS.forEach(t=>{ plan.topicState[t.id]={ status: diagRun.results[t.id]? "yellow":"red", exitDay:0, exitPass:false, recheckPass:false }; });
+  plan.assignments=buildAssignments(plan);
+  store.plan=plan; saveStore();
+  renderPlanHome();
+  showCeleb("🗓️","האבחון הסתיים והתוכנית מוכנה! רואים אותך ביום 1 💪");
+}
+/* ---------- plan home ---------- */
+function dayKindLabel(plan, day){
+  const k=planDayKind(plan, day);
+  return k==="coverage"? "📚 יום כיסוי נושאים" : k==="mock"? "🎓 מבחן מדומה + תיקונים" : k==="mockEve"? "🎓 מבחן קצר + מחזור טעויות" : k==="eve"? "🌙 ערב מבחן — חזרה קלילה" : "⚡ יום מרוכז";
+}
+function renderPlanHome(){
+  const plan=store.plan, today=planDayNumber();
+  const greens=greenCount();
+  const yellows=TOPICS.filter(t=>["yellow","learned"].includes(plan.topicState[t.id].status)).length;
+  const reds=TOPICS.filter(t=> plan.topicState[t.id].status==="red").length;
+  let html=`<div class="card" id="planHomeCard">
+    <h3 style="margin:0 0 6px">🗓️ היום: יום ${today} מתוך ${plan.totalDays} · נשארו ${daysLeftToExam()} ימים למבחן</h3>
+    <div class="center"><button class="ttsbtn" onclick="speakText(document.getElementById('planHomeCard').innerText)" title="השמעת התוכנית" aria-label="השמעת התוכנית">🔊</button></div>
+    <div class="bigbar"><div style="width:${readinessPct()}%"></div></div>
+    <div style="color:#5a6b7d;font-size:14.5px;margin-top:4px">מוכנות: ${greens} מתוך ${TOPICS.length} נושאים במצב 🟢 שולט · 🟡 ${yellows} בדרך · 🔴 ${reds} צריכים חיזוק</div>
+    <div class="center" style="margin-top:12px">
+      ${plan.sessionsDone[today]? `<div style="font-weight:700;color:#2b7a5b">✅ שיעור היום הושלם! אפשר לעשות עוד אחד לכיף</div><button class="btn btn-new" style="margin-top:8px" onclick="startSession(${today})">🔁 שיעור נוסף היום</button>`
+        : `<button class="btn btn-main" onclick="startSession(${today})">▶️ התחל את שיעור יום ${today} — ${dayKindLabel(plan,today)}</button>`}
+    </div>
+  </div>`;
+  html+=`<div class="card"><h3 style="margin-top:0">📆 השבוע במבט אחד</h3>`;
+  for(let d=1; d<=plan.totalDays; d++){
+    const topics=(plan.assignments.byDay[d]||[]).map(id=> TOPIC_BY_ID[id].emoji+" "+TOPIC_BY_ID[id].name).join(" · ");
+    const extras=(plan.assignments.extra[d]||[]).map(id=> TOPIC_BY_ID[id].name).join(", ");
+    html+=`<div class="daycard ${d===today? "today":""} ${plan.sessionsDone[d]? "done":""}">
+      <div class="dt">יום ${d} — ${dayKindLabel(plan,d)} ${plan.sessionsDone[d]? "✅":""}</div>
+      <div class="dd">${planDayKind(plan,d)==="coverage"? (topics||"—") + (extras? `<br>🔁 חיזוק חוזר: ${extras}`:"") : planDayKind(plan,d)==="mock"? "מבחן מדומה במבנה המבחן + תיקון ממוקד של נושאים שנפלו בו" : planDayKind(plan,d)==="mockEve"? "מבחן מדומה קצר + מחזור טעויות והצלחות" : planDayKind(plan,d)==="eve"? "רק שאלות שפעם טעינו בהן + שאלות שכבר הצלחנו בהן — קצר ומחזק ביטחון" : "כל הנושאים ביום אחד, בקצב מרוכז"}</div>
+    </div>`;
+  }
+  html+=`</div>`;
+  html+=`<div class="card"><h3 style="margin-top:0">🗺️ מצב הנושאים</h3><div style="line-height:2">`;
+  html+= TOPICS.map(t=>{ const s=plan.topicState[t.id].status;
+    return `${t.emoji} ${t.name} ${s==="green"? "🟢 שולט": s==="learned"? "🟡 נלמד — ממתין לבדיקה חוזרת": s==="yellow"? "🟡 בדרך":"🔴 צריך חיזוק"}`; }).join("<br>");
+  html+=`</div></div>`;
+  const unres=Object.values(store.errors).filter(e=>!e.resolved).length;
+  html+=`<div class="parentpanel"><b>👨‍👩‍👦 מבט להורים:</b><br>
+    שיעור היום: ${plan.sessionsDone[today]? "הושלם ✅":"טרם בוצע"} · נושאים: 🟢 ${greens} שולטים, 🟡 ${yellows} בתהליך, 🔴 ${reds} לחיזוק · ימים למבחן: ${daysLeftToExam()} · שאלות פתוחות למחזור טעויות: ${unres}.<br>
+    💡 טיפ היום: ${PLAN_TIPS[(today-1)%PLAN_TIPS.length]}
+    <div style="margin-top:10px"><button class="btn-danger" onclick="resetPlan()">↺ התחלה מחדש של המסלול (איפוס תוכנית)</button></div>
+  </div>`;
+  $("planHost").innerHTML=html;
+}
+function resetPlan(){
+  if(!confirm("לאפס את מסלול השבוע ולהתחיל אבחון מחדש? (ההתקדמות במאגרי השאלות תישמר)")) return;
+  store.plan=null; saveStore(); renderPlanSetup(); updateMeters();
+}
+
+/* ---------- guided daily session ---------- */
+let sess=null;
+function sessTake(tid, lvl, purpose, extra){
+  for(let i=0;i<10;i++){
+    const d=drawFromBank(tid, lvl||undefined);
+    const key=tid+":"+d.idx;
+    if(sess.used.has(key)) continue;
+    sess.used.add(key);
+    return Object.assign({type:"q", ref:d, purpose:purpose||"practice"}, extra||{});
+  }
+  return null;
+}
+function sessRefItem(tid, idx, purpose, extra){
+  const key=tid+":"+idx;
+  if(sess.used.has(key)) return null;
+  sess.used.add(key);
+  return Object.assign({type:"q", ref:{tid, idx, q:BANKS[tid][idx]}, purpose}, extra||{});
+}
+function dueLeitner(limit){
+  const today=epochDay(), out=[];
+  for(const tid of Object.keys(store.leitner)){
+    for(const idxS of Object.keys(store.leitner[tid])){
+      const e=store.leitner[tid][idxS];
+      if(e.due<=today && (e.box||0)<3) out.push({tid, idx:+idxS});
+    }
+  }
+  return out.slice(0, limit);
+}
+function learnCardHtml(t){
+  return `<b>${t.emoji} ${t.name} — נזכרים בקצרה:</b>` + t.learn.map(c=>`<div style="margin-top:8px"><b>${c.t}:</b> ${c.x}${c.e? `<br>💡 <i>${c.e}</i>`:""}</div>`).join("");
+}
+function buildSessionBlocks(day){
+  const plan=store.plan, kind=planDayKind(plan, day);
+  const B=[];
+  const card=(html)=> B.push({type:"card", html});
+  /* A. warm-up: unresolved errors first, then Leitner-due reviews */
+  const warm=[];
+  Object.values(store.errors).filter(e=>!e.resolved).slice(0,4).forEach(e=>{ const s=sessRefItem(e.tid,e.idx,"warmup",{tag:"🔁 חימום — שאלה שפעם טעינו בה"}); if(s) warm.push(s); });
+  dueLeitner(4).forEach(r=>{ const s=sessRefItem(r.tid,r.idx,"warmup",{tag:"🔁 חימום חוזר — הגיע זמנה של השאלה"}); if(s) warm.push(s); });
+  if(warm.length){ card(`<b>🔁 חימום חוזר</b> — מתחילים משאלות שחוזרות מהזיכרון. דווקא המאמץ להיזכר הוא מה שמעביר את החומר לזיכרון ארוך־טווח.`); B.push(...warm); }
+  /* B. mastery re-checks: topics whose exit passed on an EARLIER plan day */
+  const recheckTopics=TOPICS.filter(t=>{ const s=plan.topicState[t.id]; return s.exitPass && !s.recheckPass && s.exitDay < day; }).map(t=>t.id);
+  for(const tid of recheckTopics){
+    card(`<b>🔂 בדיקת זיכרון חוזרת: ${TOPIC_BY_ID[tid].emoji} ${TOPIC_BY_ID[tid].name}</b><br>הנושא עבר מבחן יציאה ביום ${plan.topicState[tid].exitDay}. אם גם כאן יהיו 4 מתוך 5 נכונות — הנושא נהיה 🟢 שולט באופן רשמי!`);
+    for(let i=0;i<5;i++){ const s=sessTake(tid, i%2?3:2, "recheck", {exitTid:tid}); if(s) B.push(s); }
+  }
+  /* C. topic blocks (coverage days) */
+  if(kind==="coverage" || kind==="combined"){
+    const todays = kind==="combined"? TOPICS.map(t=>t.id) : (plan.assignments.byDay[day]||[]);
+    const extras = kind==="combined"? [] : (plan.assignments.extra[day]||[]).filter(tid=> !todays.includes(tid));
+    for(const tid of todays){
+      const t=TOPIC_BY_ID[tid];
+      card(learnCardHtml(t));
+      if(kind!=="combined"){
+        const ex1=sessTake(tid,1,"exampleFull"); if(ex1) B.push(ex1);
+        const ex2=sessTake(tid,2,"exampleFade"); if(ex2){ ex2.preSteps=stepsOf(ex2.ref.q).slice(0,-1); B.push(ex2); }
+        for(let i=0;i<4;i++){ const s=sessTake(tid, i<2?2:3, "practice"); if(s) B.push(s); }
+      } else {
+        for(let i=0;i<2;i++){ const s=sessTake(tid,2,"practice"); if(s) B.push(s); }
+      }
+    }
+    for(const tid of extras){
+      card(`<b>🔁 חיזוק נוסף: ${TOPIC_BY_ID[tid].emoji} ${TOPIC_BY_ID[tid].name}</b> — נושא שסומן באבחון כטעון חיזוק מקבל היום סיבוב נוסף.`);
+      for(let i=0;i<3;i++){ const s=sessTake(tid,2,"practice"); if(s) B.push(s); }
+    }
+    if(kind!=="combined"){
+      const covered=coveredTopicsUpTo(plan, day);
+      if(covered.length>1){
+        card(`<b>🔀 סט מעורב</b> — שאלות מכל הנושאים שלמדנו עד עכשיו, מעורבבות כמו במבחן האמיתי.`);
+        for(let i=0;i<6;i++){ const s=sessTake(covered[i%covered.length], 0, "mixed"); if(s) B.push(s); }
+      }
+      for(const tid of todays){
+        card(`<b>📝 מיני־מבחן יציאה: ${TOPIC_BY_ID[tid].emoji} ${TOPIC_BY_ID[tid].name}</b><br>5 שאלות. 4 נכונות ומעלה = הנושא "נלמד" היום — וביום אחר תהיה בדיקה חוזרת שתהפוך אותו ל־🟢 שולט.`);
+        for(let i=0;i<5;i++){ const s=sessTake(tid, i%2?3:2, "exit", {exitTid:tid}); if(s) B.push(s); }
+      }
+    }
+  }
+  /* D. mock day */
+  if(kind==="mock" || kind==="mockEve"){
+    const nMock = kind==="mock"? 14 : 10;
+    card(`<b>🎓 מבחן מדומה</b> — ${nMock} שאלות במבנה המבחן האמיתי. הפעם בלי רמזים — כמו במבחן! בסוף נתקן יחד את הנושאים שנפלו.`);
+    const items=[];
+    const spec = nMock===14? [[0,2],[1,4],[2,5],[3,3]] : [[0,1],[1,3],[2,4],[3,2]];
+    spec.forEach(([p,n])=>{ const arr=TOPICS.filter(t=>t.part===p); for(let i=0;i<n;i++){ const t=arr[(day+i)%arr.length]; const s=sessTake(t.id,(i%2)?3:2,"mock",{tag:PARTS[p].emoji+" "+PARTS[p].name}); if(s) items.push(s); } });
+    B.push(...items);
+  }
+  /* E. exam-eve: errors + confidence only */
+  if(kind==="eve" || kind==="mockEve"){
+    card(`<b>🌙 חזרה קלילה</b> — רק שאלות שפעם טעינו בהן (הן חוזרות עד שייענו נכון בשני ימים נפרדים) ושאלות שכבר הצלחנו בהן פעם — הוכחת התקדמות. בלי חומר חדש!`);
+    Object.values(store.errors).filter(e=>!e.resolved).slice(0,8).forEach(e=>{ const s=sessRefItem(e.tid,e.idx,"errors",{tag:"🔁 מחזור טעויות"}); if(s) B.push(s); });
+    Object.values(store.errors).filter(e=>e.resolved).slice(0,6).forEach(e=>{ const s=sessRefItem(e.tid,e.idx,"confidence",{tag:"💪 הוכחת התקדמות — פעם טעינו בזה, ואחר כך הצלחנו!"}); if(s) B.push(s); });
+  }
+  return B;
+}
+function startSession(day){
+  hideAllPanes(); $("planPane").style.display="";
+  sess={ day, pos:0, used:new Set(), exitScores:{}, recheckScores:{}, missed:[], missedKeys:new Set(),
+         mockMisses:{}, endRetryDone:false, repairsAdded:new Set(), mockRepairDone:false };
+  sess.blocks=buildSessionBlocks(day);
+  renderSessStep();
+  window.scrollTo({top:0});
+}
+const PURPOSE_LBL={warmup:"🔁 חימום חוזר",recheck:"🔂 בדיקה חוזרת",exampleFull:"👀 דוגמה פתורה",exampleFade:"✏️ דוגמה — משלימים צעד",practice:"🏋️ תרגול",mixed:"🔀 סט מעורב",exit:"📝 מבחן יציאה",mock:"🎓 מבחן מדומה",errors:"🔁 מחזור טעויות",confidence:"💪 ביטחון",retryEnd:"🔁 חזרה על טעויות היום",repair:"🔧 תיקון ממוקד"};
+function renderSessStep(){
+  const host=$("planHost");
+  if(sess.pos>=sess.blocks.length){
+    if(!sess.endRetryDone && sess.missed.length){
+      sess.endRetryDone=true;
+      sess.blocks.push({type:"card", html:`<b>🔁 לפני שמסיימים — חוזרים פעם נוספת על השאלות של היום שבהן טעינו</b>, כדי שהן ייכנסו למחזור החזרות ולא ילכו לאיבוד.`});
+      const seen=new Set();
+      sess.missed.forEach(r=>{ const key=r.tid+":"+r.idx; if(!seen.has(key)){ seen.add(key); sess.blocks.push({type:"q", ref:r, purpose:"retryEnd", tag:"🔁 ניסיון נוסף — שאלה מהיום"}); } });
+    } else { finishSession(); return; }
+  }
+  const step=sess.blocks[sess.pos];
+  const total=sess.blocks.length;
+  host.innerHTML=`<div class="sessbar"><span>📅 שיעור יום ${sess.day} · צעד ${sess.pos+1} מתוך ${total}</span><span class="blocktag">${step.type==="card"? "📖 הסבר" : (PURPOSE_LBL[step.purpose]||"")}</span></div><div class="progress"><div style="width:${Math.round(100*sess.pos/total)}%"></div></div><div id="sessQ"></div><div id="sessNav" class="center" style="margin:12px 0"></div>`;
+  if(step.type==="card"){
+    $("sessQ").innerHTML=`<div class="card learncard"><div class="lx">${step.html}</div></div>`;
+    const spk=ttsBtnFor(()=>stripTags(step.html), "השמעת ההסבר");
+    const spw=document.createElement("div"); spw.className="center"; spw.style.marginTop="10px"; spw.appendChild(spk);
+    $("sessQ").firstChild.appendChild(spw);
+    speakAuto(stripTags(step.html));
+    $("sessNav").innerHTML=`<button class="btn btn-main" onclick="sessAdvance()">ממשיכים ➜</button>`;
+    return;
+  }
+  if(step.purpose==="exampleFull"){ renderExampleFull(step); return; }
+  mountQuestion($("sessQ"), step.ref.q, {tag: step.tag||PURPOSE_LBL[step.purpose]||"", preSteps: step.preSteps||null, showHint: step.purpose!=="mock"}, (ft,fc)=>{
+    onSessAnswer(step, ft, fc);
+    $("sessNav").innerHTML=`<button class="btn btn-main" onclick="sessAdvance()">הבא ➜</button>`;
+  });
+}
+function renderExampleFull(step){
+  const q=step.ref.q;
+  const host=$("sessQ");
+  const card=document.createElement("div"); card.className="card";
+  card.innerHTML=`<div class="qnum">👀 דוגמה פתורה — מסתכלים איך פותרים, צעד־צעד</div><div class="qtext">${q.text}</div>${q.viz||""}`;
+  const opts=document.createElement("div"); opts.className="opts";
+  (q.open? [q.ans] : q.opts).forEach(op=>{ const b=document.createElement("button"); b.className="opt"+(op===q.ans?" right":""); b.innerHTML=op; b.disabled=true; opts.appendChild(b); });
+  card.appendChild(opts);
+  const sb=document.createElement("div"); sb.className="stepsbox"; sb.style.display="block";
+  sb.innerHTML=`<div class="stt">📘 הפתרון המלא:</div><ol>${stepsOf(q).map(s=>`<li>${s}</li>`).join("")}</ol><div style="margin-top:6px">💡 ${q.why}</div>`;
+  card.appendChild(sb);
+  const exTxt = stripTags(q.text) + ". " + stepsOf(q).map(st=>stripTags(st)).join(". ") + ". " + stripTags(q.why);
+  const spk=ttsBtnFor(()=>exTxt, "השמעת הדוגמה");
+  const spw=document.createElement("div"); spw.className="center"; spw.style.marginTop="10px"; spw.appendChild(spk);
+  card.appendChild(spw);
+  host.appendChild(card);
+  speakAuto(exTxt);
+  $("sessNav").innerHTML=`<button class="btn btn-main" onclick="sessAdvance()">הבנתי — ממשיכים ➜</button>`;
+}
+function sessAdvance(){ sess.pos++; renderSessStep(); window.scrollTo({top:0,behavior:"smooth"}); }
+function onSessAnswer(step, firstTry, finalCorrect){
+  const {tid, idx}=step.ref;
+  recordAnswer(tid, idx, finalCorrect);
+  if(!finalCorrect){ const key=tid+":"+idx; if(!sess.missedKeys.has(key)){ sess.missedKeys.add(key); sess.missed.push(step.ref); } }
+  if(step.purpose==="exit" && step.exitTid){
+    const s=(sess.exitScores[step.exitTid] = sess.exitScores[step.exitTid]||{a:0,c:0});
+    s.a++; if(finalCorrect) s.c++;
+  }
+  if(step.purpose==="recheck" && step.exitTid){
+    const s=(sess.recheckScores[step.exitTid] = sess.recheckScores[step.exitTid]||{a:0,c:0});
+    s.a++; if(finalCorrect) s.c++;
+    if(s.a===5){
+      const plan=store.plan, ts=plan.topicState[step.exitTid];
+      if(s.c>=4){ ts.recheckPass=true; ts.status="green"; }
+      else if(!sess.repairsAdded.has(step.exitTid)){
+        sess.repairsAdded.add(step.exitTid);
+        sess.blocks.push({type:"card", html:`<b>🔧 הבדיקה החוזרת ב${TOPIC_BY_ID[step.exitTid].name} לא עברה הפעם — לא נורא!</b> עושים עכשיו תיקון קצר של 4 שאלות, והנושא ייבדק שוב ביום הבא.`});
+        for(let i=0;i<4;i++){ const r=sessTake(step.exitTid, 2, "repair"); if(r) sess.blocks.push(r); }
+      }
+      saveStore();
+    }
+  }
+  if(step.purpose==="mock"){
+    if(!finalCorrect) sess.mockMisses[tid]=(sess.mockMisses[tid]||0)+1;
+    const moreMock = sess.blocks.slice(sess.pos+1).some(b=>b.type==="q" && b.purpose==="mock");
+    if(!moreMock && !sess.mockRepairDone){
+      sess.mockRepairDone=true;
+      const missTopics=Object.keys(sess.mockMisses).slice(0,3);
+      if(missTopics.length){
+        sess.blocks.push({type:"card", html:`<b>🔧 תיקון נקודות תורפה מהמבחן המדומה</b> — נתרגל עכשיו בקצרה את הנושאים שנפלו: ${missTopics.map(id=> TOPIC_BY_ID[id].emoji+" "+TOPIC_BY_ID[id].name).join(", ")}.`});
+        missTopics.forEach(mt=>{ for(let i=0;i<4;i++){ const r=sessTake(mt, 2, "repair"); if(r) sess.blocks.push(r); } });
+      }
+    }
+  }
+}
+function finishSession(){
+  const plan=store.plan, day=sess.day;
+  const lines=[];
+  for(const tid of Object.keys(sess.exitScores)){
+    const s=sess.exitScores[tid], ts=plan.topicState[tid];
+    const pass = s.a>=4 && s.c>=Math.ceil(0.8*s.a) && s.c>=4;
+    if(pass && !ts.exitPass){ ts.exitPass=true; ts.exitDay=day; if(ts.status!=="green") ts.status="learned"; }
+    if(pass) lines.push(`📝 <b>${TOPIC_BY_ID[tid].name}</b>: מבחן היציאה עבר (${s.c}/${s.a}) — ${ts.status==="green"? "🟢 שולט" : "נלמד! ביום אחר תהיה בדיקה חוזרת לסגירת ה־🟢"}`);
+    else {
+      lines.push(`📝 <b>${TOPIC_BY_ID[tid].name}</b>: מבחן יציאה ${s.c}/${s.a} — עדיין לא 80%. הנושא יחזור לתרגול נוסף.`);
+      const nd=day+1;
+      if(nd<=coverageDaysCount(plan) && planDayKind(plan, nd)==="coverage"){ (plan.assignments.extra[nd]=plan.assignments.extra[nd]||[]); if(!plan.assignments.extra[nd].includes(tid)) plan.assignments.extra[nd].push(tid); }
+    }
+  }
+  for(const tid of Object.keys(sess.recheckScores)){
+    const s=sess.recheckScores[tid];
+    lines.push(`🔂 <b>${TOPIC_BY_ID[tid].name}</b>: בדיקה חוזרת ${s.c}/${s.a} — ${plan.topicState[tid].status==="green"? "🟢 הנושא שולט באופן רשמי!" : "ייבדק שוב ביום הבא"}`);
+  }
+  plan.sessionsDone[day]=epochDay();
+  saveStore();
+  const unres=Object.values(store.errors).filter(e=>!e.resolved).length;
+  $("planHost").innerHTML=`<div class="card center">
+    <div class="mini-illus">${ILLUS.flagMini}</div>
+    <h3 style="margin:6px 0">שיעור יום ${day} הושלם!</h3>
+    <div style="text-align:right;line-height:1.9">${lines.length? lines.join("<br>") : "עבדת יפה היום! כל הכבוד."}</div>
+    <div style="margin-top:10px">🏆 מוכנות: <b>${readinessPct()}%</b> (${greenCount()}/${TOPICS.length} נושאים 🟢) · כיסוי מאגרים: ${Math.round(100*coverageCount()/TOTAL_BANK)}% · טעויות פתוחות למחזור: ${unres}</div>
+    <div style="margin-top:14px"><button class="btn btn-main" onclick="renderPlanHome()">🗓️ חזרה לתוכנית</button> <button class="btn-ghost" onclick="showTopics()">← לעמוד הבית</button></div>
+  </div>`;
+  const finTxt = `שיעור יום ${day} הושלם! ` + stripTags(lines.length ? lines.join(" ") : "עבדת יפה היום!");
+  const finBtn = ttsBtnFor(()=>finTxt, "השמעת הסיכום");
+  const finWrap = document.createElement("div"); finWrap.className="center"; finWrap.style.marginTop="10px"; finWrap.appendChild(finBtn);
+  $("planHost").firstChild.appendChild(finWrap);
+  speakAuto(finTxt);
+  sess=null;
+  updateMeters();
+  window.scrollTo({top:0});
+}
+
+/* ================= INIT ================= */
+$("totalBankLbl").textContent = fmtN(TOTAL_BANK);
+ttsUpdateToggleBtn();
+$("homeMascot").innerHTML = ILLUS.mascot;
+$("trainIllus").innerHTML = ILLUS.rocketMini;
+$("masteryIllus").innerHTML = ILLUS.trophyMini;
+$("celebIllus").innerHTML = ILLUS.starMini;
+$("scoreIllus").innerHTML = ILLUS.medalMini;
+$("mockIllus").innerHTML = ILLUS.medalMini;
+renderHome();
+</script>
+<script id="persist-storage">
+/* מבקש מהדפדפן אחסון קבוע, כדי שההתקדמות לא תימחק כשהמכשיר מפנה מקום (11/11/2026). */
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(function(){});}catch(e){}
+</script>
+<script type="module" src="../shared/cloud.js"></script>
+</body>
+</html>
