@@ -11,6 +11,7 @@
 | כיתה ב׳ | מתמטיקה — שבילים פלוס 4 | https://netanel485-hue.github.io/grade2-math/ |
 | כיתה ד׳ | מרכז הלמידה | https://netanel485-hue.github.io/grade4-learning/ |
 | כיתה ו׳ | מרכז הלמידה | https://netanel485-hue.github.io/grade6-learning/ |
+| מתמטיקה — שברים | הכנה למבחן בפעולות בשברים (שאלות סגורות, מילוליות ופתוחות) — כיתה ו׳ | https://netanel485-hue.github.io/math-test-fractions/ |
 | מתמטיקה | מסלול השבוע למבחן — כיתה ו׳ | https://netanel485-hue.github.io/math-test-prep/ |
 | חזרה למבדק | חזרה למבדק תחילת שנה — כיתה ד׳ | https://netanel485-hue.github.io/grade4-mivdak/ |
 | משחק אנגלית | משחק אנגלית — אותיות ומילים | https://netanel485-hue.github.io/adi-english-game/ |

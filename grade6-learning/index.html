@@ -634,6 +634,18 @@ body:not(.g6-enddetail) #hubEnd #hubEndTips+div{display:none}
 #hubExtra small{display:block;font-size:13.5px;font-weight:600;color:var(--ink-soft,#4F6B5D);margin-top:2px}
 #hubExtra .hx-ar{margin-right:auto;font-size:22px;font-weight:900;color:#B85A0A}
 </style>
+<style id="hub-frac-css">
+/* HUB-FRAC — כרטיס להכנה למבחן בשברים (22/11/2026). להסרה: למחוק את הבלוק הזה, את a#hubFrac ואת a#mathFracLink. */
+#hubFrac,#mathFracLink{display:flex;align-items:center;gap:12px;margin:14px 0 4px;min-height:72px;padding:12px 16px;border-radius:20px;text-decoration:none;
+  background:var(--card-focus,#fff);color:var(--ink,#1E4634);border:2px solid #C9B8F5;box-shadow:0 5px 0 #7C3AED;transition:transform .08s ease,box-shadow .08s ease}
+#hubFrac:active,#mathFracLink:active{transform:translateY(4px);box-shadow:0 1px 0 #7C3AED}
+#hubFrac:focus-visible,#mathFracLink:focus-visible{outline:3px solid #7C3AED;outline-offset:2px}
+#hubFrac .hx-em,#mathFracLink .hx-em{font-size:32px;line-height:1}
+#hubFrac b,#mathFracLink b{display:block;font-size:18px;font-weight:800}
+#hubFrac small,#mathFracLink small{display:block;font-size:13.5px;font-weight:600;color:var(--ink-soft,#4F6B5D);margin-top:2px}
+#hubFrac .hx-ar,#mathFracLink .hx-ar{margin-right:auto;font-size:22px;font-weight:900;color:#6D28D9}
+#mathFracLink{max-width:736px;margin:10px auto 0}
+</style>
 <style id="hub-unify-css">
 /* ==========================================================================
    HUB-UNIFY — בתוך מקצוע ובתוך חשבון: אותו עיצוב כמו במסך הבית (13/11/2026).
@@ -730,7 +742,8 @@ body:not(.kc-opts) #mathWrap .tabs:has(#modeTopics){display:none!important}
   </div>
   <div id="hubHomeTop"></div>
   <div id="hubGrid" class="h-grid"></div>
-<a id="hubExtra" href="../math-test-prep/"><span class="hx-em" aria-hidden="true">📐</span><span><b>חזרה למבחן במתמטיקה</b><small>מסלול השבוע למבחן</small></span><i class="hx-ar" aria-hidden="true">←</i></a>
+<a id="hubFrac" href="../math-test-fractions/"><span class="hx-em" aria-hidden="true">🍕</span><span><b>מבחן בשברים — הכנה למבחן הקרוב</b><small>חיבור, חיסור, כפל וחילוק · שאלות סגורות, מילוליות ופתוחות</small></span><i class="hx-ar" aria-hidden="true">←</i></a>
+<a id="hubExtra" href="../math-test-prep/"><span class="hx-em" aria-hidden="true">📐</span><span><b>חזרה למבחן הקודם</b><small>גאומטריה וחישוב · מסלול השבוע</small></span><i class="hx-ar" aria-hidden="true">←</i></a>
   <div class="h-rowbtns" style="justify-content:center;margin-top:16px">
     <button class="btn-ghost" onclick="hubShare()">📤 שיתוף האתר</button>
   </div>
@@ -1030,6 +1043,7 @@ body:not(.kc-opts) #mathWrap .tabs:has(#modeTopics){display:none!important}
   <div style="max-width:760px;margin:0 auto;padding:10px 12px 0">
     <button class="btn-ghost" onclick="hubCloseMath()">🏠 כל המקצועות</button>
   </div>
+  <div style="max-width:760px;margin:0 auto;padding:0 12px"><a id="mathFracLink" href="../math-test-fractions/"><span class="hx-em" aria-hidden="true">🍕</span><span><b>מבחן בשברים — הכנה למבחן הקרוב</b><small>חיבור, חיסור, כפל וחילוק · שאלות סגורות, מילוליות ופתוחות</small></span><i class="hx-ar" aria-hidden="true">←</i></a></div>
   
 <div class="wrap">
   <header>
