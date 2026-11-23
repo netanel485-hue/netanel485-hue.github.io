@@ -468,7 +468,7 @@ body{--c:#7C3AED}
       <div class="mascot" id="homeMascot"></div>
       <h2 style="margin:8px 0">שלום! מתכוננים למבחן ביחד</h2>
       <p style="margin:0;color:#5a6b7d">בכל נושא יש <b>📖 למידה</b> קצרה, <b>🏋️ אימון רמות</b> עם כוכבים ו<b>📝 מבחן</b> של 10 שאלות.<br>
-      בכל נושא מחכות לך <b>150 שאלות</b> — ובסך הכול <b id="totalBankLbl">2,100</b> שאלות בערכה!</p>
+      בכל נושא מחכות לך <b>430 שאלות</b> — ובסך הכול <b id="totalBankLbl">6,282</b> שאלות בערכה!</p>
       <div class="center" style="margin-top:12px"><button class="ttsbtn" onclick="speakText(document.getElementById('homeIntro').innerText)" title="השמעת ההסבר" aria-label="השמעת ההסבר">🔊</button></div>
     </div>
     <details class="homefold meterfold"><summary>📊 ההתקדמות שלי</summary>
@@ -482,7 +482,7 @@ body{--c:#7C3AED}
         <div class="meterbox">
           <div class="mt">🗂️ כיסוי המאגרים</div>
           <div class="bigbar blue"><div id="coverFill" style="width:0%"></div></div>
-          <div class="mv" id="coverLbl">ענית נכון על 0 מתוך 2,100 שאלות המאגר</div>
+          <div class="mv" id="coverLbl">ענית נכון על 0 מתוך 6,282 שאלות המאגר</div>
         </div>
       </div>
     </div>
@@ -539,7 +539,7 @@ body{--c:#7C3AED}
         <div class="mini-illus" id="trainIllus"></div>
         <h2 style="margin:8px 0">ברוכים הבאים לאימון!</h2>
         <div class="intro-list">
-          <div>✏️ עונים על שאלה אחת בכל פעם — מתוך מאגר של <b>150 שאלות</b>, בלי חזרות!</div>
+          <div>✏️ עונים על שאלה אחת בכל פעם — מתוך מאגר של <b>430 שאלות</b>, בלי חזרות!</div>
           <div>💡 נתקעתם? לחצו על <b>רמז</b> — זה לא נחשב טעות</div>
           <div>⭐ כל תשובה נכונה = <b>כוכב</b>! <b>5 כוכבים</b> מעלים אותך רמה</div>
           <div>🔥 <b>3 נכונות ברצף</b> = עליית רמה מיידית! 🚀</div>
@@ -653,7 +653,7 @@ body{--c:#7C3AED}
 <script>
 "use strict";
 /* ================================================================
-   ערכת חזרה למבחן מתמטיקה ו׳ — מאגר 150 שאלות לכל נושא
+   ערכת חזרה למבחן מתמטיקה ו׳ — מאגר 430 שאלות לכל נושא
    ================================================================ */
 const $ = id => document.getElementById(id);
 
@@ -1279,36 +1279,36 @@ function genF1(L){
 
 /* ===== f2 — מספר מעורב ושבר מדומה ===== */
 function genF2(L){
-  const dmax = L===1? 5 : L===2? 9 : 12;
+  const dmax = L===1? 6 : L===2? 10 : 15;
   const kind = L===1? pick([1,2,3]) : pick([1,2,3,4,5,1,2]);
   const d=rnd(2,dmax);
   if(kind===1){
-    const w=rnd(1,L===1?4:9); let n=rnd(1,d-1); const r=R(w*d+n,d);
+    const w=rnd(1,L===1?5:16); let n=rnd(1,d-1); const r=R(w*d+n,d);
     return FQ({L, fmt:"mixed", r, text:`הפכו את השבר המדומה למספר מעורב: ${fr(w*d+n,d)}`,
       why:`מחלקים: ${w*d+n} ÷ ${d} = ${w} ושארית ${n}. לכן ${w*d+n}/${d} = ${mt(r)}.`, hint:"כמה שלמים יש במונה? מחלקים את המונה במכנה — השארית היא המונה החדש.",
       steps:[`מחלקים את המונה במכנה: ${w*d+n} ÷ ${d} = ${w} ושארית ${n}`,`${w} הם השלמים, והשארית ${n} היא המונה`,`התוצאה: ${mt(R(w*d+n,d))}`]});
   }
   if(kind===2){
-    let n=rnd(1,d-1); const w=rnd(1,L===1?4:9); if(d>2){ while(gcd(n,d)>1) n=rnd(1,d-1); } else n=1;
+    let n=rnd(1,d-1); const w=rnd(1,L===1?5:16); if(d>2){ while(gcd(n,d)>1) n=rnd(1,d-1); } else n=1;
     return FQ({L, fmt:"improper", r:R(w*d+n,d), text:`הפכו את המספר המעורב לשבר מדומה: ${mixedHTML(w,n,d)}`,
       why:`כופלים את השלם במכנה ומוסיפים את המונה: ${w} × ${d} + ${n} = ${w*d+n}. המכנה נשאר ${d}: ${w*d+n}/${d}.`, hint:"שלם × מכנה + מונה — וזה המונה החדש.",
       steps:[`${w} × ${d} = ${w*d}`,`מוסיפים את המונה: ${w*d} + ${n} = ${w*d+n}`,`המכנה נשאר ${d}. התוצאה: ${w*d+n}/${d}`]});
   }
   if(kind===3){
-    const w=rnd(1,L===1?4:7); const dd=rnd(2,L===1?5:10); const n=L===1? 0 : rnd(0,dd-1);
+    const w=rnd(1,L===1?5:12); const dd=rnd(2,L===1?5:10); const n=L===1? 0 : rnd(0,dd-1);
     const tot=w*dd+n; const nm={2:"חצאים",3:"שלישים",4:"רבעים",5:"חמישיות",6:"שישיות",7:"שביעיות",8:"שמיניות",9:"תשיעיות",10:"עשיריות"}[dd];
     return FQ({L, r:R(tot), text: n===0? `כמה ${nm} יש ב־${w}?` : `כמה ${nm} יש ב־${mixedHTML(w,n,dd)}?`,
       why:`בכל שלם יש ${dd} ${nm}. ${w} × ${dd} = ${w*dd}${n? `, ועוד ${n} — יחד ${tot}`:""}.`, hint:`בכל שלם אחד יש ${dd} ${nm}.`,
       steps:[`בכל שלם יש ${dd} ${nm}`,`${wholes(w)}: ${w} × ${dd} = ${w*dd}`, n? `מוסיפים ${n}: ${w*dd} + ${n} = ${tot}` : `התשובה: ${tot}`]});
   }
   if(kind===4){
-    let n=rnd(1,d-1); const w=rnd(1,6); while(d>2 && gcd(n,d)>1) n=rnd(1,d-1); if(d===2) n=1;
+    let n=rnd(1,d-1); const w=rnd(1,14); while(d>2 && gcd(n,d)>1) n=rnd(1,d-1); if(d===2) n=1;
     const corr=mixedHTML(w,n,d), tot=w*d+n;
     return Q(`איזה מספר שווה ל־${fr(tot,d)}?`,"",makeOpts(corr,[mixedHTML(w+1,n,d),mixedHTML(w,d>n+1?n+1:n-1||1,d),mixedHTML(n>1?n:w+2,w,Math.max(w+1,d))]),corr,
       `${tot} ÷ ${d} = ${w} ושארית ${n}, לכן ${tot}/${d} = ${w} ${n}/${d}.`,{val:rt(R(tot,d))},"מחלקים את המונה במכנה: המנה היא השלמים והשארית היא המונה.",
       [`${tot} ÷ ${d} = ${w} ושארית ${n}`,`השלמים: ${w}, והשבר: ${n}/${d}`,`התשובה: ${w} ${n}/${d}`]);
   }
-  const w=rnd(1,8); let n=rnd(1,d-1); const lo=w, hi=w+1;
+  const w=rnd(1,14); let n=rnd(1,d-1); const lo=w, hi=w+1;
   const corr=`בין ${lo} ל־${hi}`;
   return Q(`בין אילו שני מספרים שלמים נמצא ${fr(w*d+n,d)}?`,"",makeOpts(corr,[`בין ${lo+1} ל־${hi+1}`,`בין ${Math.max(0,lo-1)} ל־${lo}`,`בין ${lo*2} ל־${hi*2}`]),corr,
     `${w*d+n} ÷ ${d} = ${w} ושארית ${n}, כלומר ${w} שלמים ועוד חלק — המספר בין ${lo} ל־${hi}.`,{val:rt(R(w*d+n,d))},"הופכים למספר מעורב — השלם הוא המספר שמתחת.",
@@ -1777,12 +1777,13 @@ const TOPIC_HINTS = {
   w3:"כותבים תרגיל, פותרים בשלבים, ובודקים שהתשובה הגיונית."
 };
 
-/* ================= BANKS: exactly 150 unique questions per topic ================= */
+const BANK_N=450;
+/* ================= BANKS: BANK_N unique questions per topic ================= */
 function buildBank(topic, seed){
   srand(seed);
   const items=[]; const seen=new Set();
   let attempts=0;
-  while(items.length<150 && attempts<120000){
+  while(items.length<BANK_N && attempts<150000){
     attempts++;
     const L=(items.length%3)+1;
     let q=null;
@@ -2043,6 +2044,7 @@ function setTabs(which){ for(const [id,key] of [["tabLearn","learn"],["tabTrain"
 /* ---------- LEARN + mini-check ---------- */
 function showLearn(){ if(!curTopic)return; setTabs("learn");
  const host=$("learnPane"); host.innerHTML="";
+ if(window.mountVideos) mountVideos(host,curTopic.id);
  if(window.mountLesson) mountLesson(host,curTopic.id);
  curTopic.learn.forEach((c,i)=>{
    const d=document.createElement("div"); d.className="card learncard";
@@ -2914,6 +2916,57 @@ window.mountLesson=function(host,id){
   nx.onclick=()=>{ if(restart){ restart=false; i=0; passed.fill(false); render(); return; } if(i<S.length-1){ i++; render(); } else { body.innerHTML=`<div class="ls-say">${mas("🏆")}כל הכבוד! סיימתם את השיעור. עכשיו אפשר לעבור לכרטיסי הלמידה למטה, ואחר כך לאימון.</div>`; msg.textContent=""; dots.innerHTML=S.map(()=>'<i class="done"></i>').join(""); nx.textContent="שיעור מחדש 🔁"; restart=true; } };
   bk.onclick=()=>{ if(i>0){ i--; render(); } };
   render();
+};
+})();
+</script>
+<style id="videos-css">
+.vids{border:2px solid #DC2626;background:linear-gradient(180deg,#FFF1F1,#fff)}
+.vids h3{margin:0 0 8px;color:#B91C1C}
+.vlist{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.vbtn{position:relative;display:block;width:100%;padding:0;border:0;border-radius:12px;overflow:hidden;cursor:pointer;background:#000;aspect-ratio:16/9}
+.vbtn img{width:100%;height:100%;object-fit:cover;display:block;opacity:.85}
+.vbtn .play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:54px;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.6)}
+.vbtn .len{position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.75);color:#fff;font-size:13px;padding:2px 6px;border-radius:6px;direction:ltr}
+.vcap{font-size:15px;margin:6px 2px 0;color:#444}
+.vframe{width:100%;aspect-ratio:16/9;border:0;border-radius:12px;display:block}
+</style>
+<script id="videos-js">
+(function(){
+/* Hebrew explainer videos (checked 23.11.2026: playable, embeddable, family-safe) */
+const V={
+ f1:[["O97coOjZpIw","צמצום והרחבה של שברים","6:26"]],
+ f2:[["kASckcBjgmk","מספר מעורב לשבר מדומה — הסבר לילדים","5:32"],["tjQVPThXafk","ממספר מעורב לשבר גדול משלם","4:47"]],
+ f3:[["OMQbNKyfpJA","השוואת שברים","6:07"],["FVIBw9h5Fdg","השוואת שברים עם הרחבה וצמצום","3:54"]],
+ f4:[["GxueRTrfjhE","שברים בדקה — חיבור שברים","1:31"],["zb3hwAKBNO8","חיבור וחיסור שברים","6:38"]],
+ f5:[["wRnoHLJ4yNQ","שברים בדקה — חיסור שברים","1:11"],["zb3hwAKBNO8","חיבור וחיסור שברים","6:38"]],
+ f6:[["mibm--A20fk","חיבור מספרים מעורבים","6:23"],["kpw1KBtkPwU","חיסור מספרים מעורבים עם פריטה","4:10"]],
+ f7:[["OX5GXezqbkI","איך כופלים מספר שלם בשבר?","0:59"],["-B5iRqnRwoA","חלק מכמות","8:20"]],
+ f8:[["DD1F3ldxICc","שברים בדקה — כפל שברים","1:01"],["xRcOj6535Ew","כפל שברים כולל בעיות מילוליות","4:48"]],
+ f9:[["A5Gngc8XUFw","חילוק שברים: שבר בשלם, שלם בשבר","2:57"]],
+ f10:[["1mfVkrP1SaQ","שברים בדקה — חילוק שברים","1:01"],["A5Gngc8XUFw","חילוק שברים — כל הסוגים","2:57"]],
+ f11:[["n_S2QqG1r44","סדר פעולות חשבון","3:35"]],
+ w1:[["-B5iRqnRwoA","בעיות מילוליות בשברים","8:20"],["vyhhF2mEcsk","בעיות מילוליות בשברים — כיתה ו׳","14:28"]],
+ w2:[["xRcOj6535Ew","בעיות מילוליות בכפל שברים","4:48"],["vyhhF2mEcsk","בעיות מילוליות בשברים — כיתה ו׳","14:28"]],
+ w3:[["vyhhF2mEcsk","בעיות מילוליות בשברים — כיתה ו׳","14:28"]]
+};
+window.mountVideos=function(host,id){
+  const L=V[id]; if(!L) return;
+  const c=document.createElement("div"); c.className="card vids";
+  c.innerHTML=`<h3>🎥 צפו בסרטון הסבר</h3><div class="vlist"></div>`;
+  const list=c.querySelector(".vlist");
+  L.forEach(([vid,t,len])=>{
+    const w=document.createElement("div");
+    w.innerHTML=`<button class="vbtn" aria-label="הפעלת סרטון: ${t}"><img loading="lazy" alt="" src="https://i.ytimg.com/vi/${vid}/hqdefault.jpg"><span class="play">▶️</span><span class="len">${len}</span></button><div class="vcap">${t}</div>`;
+    w.querySelector(".vbtn").onclick=()=>{
+      const f=document.createElement("iframe"); f.className="vframe";
+      f.src=`https://www.youtube-nocookie.com/embed/${vid}?autoplay=1&rel=0&modestbranding=1&hl=he`;
+      f.allow="autoplay; encrypted-media; picture-in-picture; fullscreen"; f.allowFullscreen=true;
+      f.referrerPolicy="strict-origin-when-cross-origin"; f.title=t;
+      w.querySelector(".vbtn").replaceWith(f);
+    };
+    list.appendChild(w);
+  });
+  host.appendChild(c);
 };
 })();
 </script>
