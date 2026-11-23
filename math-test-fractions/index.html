@@ -2043,6 +2043,7 @@ function setTabs(which){ for(const [id,key] of [["tabLearn","learn"],["tabTrain"
 /* ---------- LEARN + mini-check ---------- */
 function showLearn(){ if(!curTopic)return; setTabs("learn");
  const host=$("learnPane"); host.innerHTML="";
+ if(window.mountLesson) mountLesson(host,curTopic.id);
  curTopic.learn.forEach((c,i)=>{
    const d=document.createElement("div"); d.className="card learncard";
    d.innerHTML=`<h3>${i+1}. ${c.t}</h3><div class="lx">${fixMath(c.x)}</div>${c.e? `<div class="ex">💡 <b>דוגמה:</b> ${fixMath(c.e)}</div>`:""}`;
@@ -2711,6 +2712,210 @@ genInit();
 <script id="g6-no-tts">/* כיתה ו׳: בלי הקראה בקול (22/11/2026). להסרה: למחוק את שני הבלוקים. */
 try{ttsOn=false;}catch(e){}
 speakAuto=function(){};speakText=function(){};
+</script>
+<style id="lessons-css">
+.lesson{border:2px solid #7C3AED;background:linear-gradient(180deg,#F5F0FF,#fff)}
+.lesson h3{margin:0 0 4px;color:#5B21B6}
+.ls-dots{display:flex;gap:6px;justify-content:center;margin:6px 0 10px}
+.ls-dots i{width:10px;height:10px;border-radius:50%;background:#D8CCF5}
+.ls-dots i.on{background:#7C3AED}.ls-dots i.done{background:#34A853}
+.ls-say{font-size:1.08em;line-height:1.75;margin:8px 0;animation:lsIn .35s}
+.ls-say .mas{font-size:1.6em;vertical-align:middle;margin-left:6px}
+.lm{display:inline-block;direction:ltr;unicode-bidi:isolate;white-space:nowrap}
+.ls-vis{display:flex;flex-direction:column;gap:10px;margin:10px 0}
+.lrow{display:flex;align-items:center;gap:10px}
+.llab{min-width:64px;text-align:center;font-weight:700;direction:ltr}
+.lbars{flex:1;display:flex;flex-direction:column;gap:5px}
+.lbar{display:flex;direction:ltr;border:2px solid #4B5563;border-radius:8px;overflow:hidden;height:34px;background:#fff}
+.lcell{flex:1;border-left:2px solid #4B5563;background:#fff;position:relative;transition:background .3s}
+.lcell:first-child{border-left:0}
+.lcell.on.a{background:#60A5FA}.lcell.on.b{background:#FBBF24}.lcell.on.c{background:#34D399}
+.lcell.x::after{content:"✕";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#B3382E;font-weight:900}
+.lcell.x{background:#FEE2E2!important}
+.lrow.tap .lcell{cursor:pointer}.lrow.tap .lcell:hover{background:#DBEAFE}
+.lcell.pop{animation:lsPop .25s}
+.lgrid{display:grid;direction:ltr;gap:3px;margin:0 auto}
+.lgrid i{width:34px;height:30px;border:2px solid #4B5563;border-radius:5px;background:#fff}
+.lgrid i.r{background:#93C5FD}.lgrid i.c{background:#FCD34D}.lgrid i.r.c{background:#34D399}
+.ls-ask{background:#fff;border:2px dashed #A78BFA;border-radius:12px;padding:10px;margin:10px 0}
+.ls-opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.ls-opts button{flex:1 1 120px;font:inherit;font-size:1.05em;padding:10px;border-radius:10px;border:2px solid #C4B5FD;background:#fff;cursor:pointer;min-height:44px}
+.ls-opts button.ok{background:#D1FAE5;border-color:#34A853}
+.ls-opts button.no{background:#FEE2E2;border-color:#B3382E;animation:lsShake .3s}
+.ls-nav{display:flex;justify-content:space-between;gap:8px;margin-top:10px}
+.ls-nav button{font:inherit;padding:10px 16px;border-radius:12px;border:0;min-height:44px;cursor:pointer}
+.ls-nav .nx{background:#7C3AED;color:#fff;font-weight:700}.ls-nav .nx:disabled{background:#CBD5E1;cursor:not-allowed}
+.ls-nav .bk{background:#EDE9FE;color:#5B21B6}
+.ls-msg{min-height:1.4em;color:#B3382E;font-weight:600}
+@keyframes lsIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes lsPop{50%{transform:scale(1.2)}}
+@keyframes lsShake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@media (max-width:420px){.llab{min-width:48px}.lgrid i{width:28px;height:26px}}
+</style>
+<script id="lessons-js">
+(function(){
+const F=(n,d)=>fracHTML(n,d), M=(...p)=>`<span class="lm">${p.join(" ")}</span>`, X=(w,n,d)=>mixedHTML(w,n,d);
+const mas=e=>`<span class="mas">${e}</span>`;
+const cm=(t,ok)=>({ask:t[0],opts:t.slice(1),ok:ok});
+/* slide: {say, rows:[{d,n,s,x,w,c,lab,tap}] | grid:[R,C,r,c], ask:{ask,opts,ok}} */
+const L={
+f1:[
+ {say:`${mas("🍕")}חצי פיצה = 2 מתוך 4 חלקים = 4 מתוך 8 חלקים. חתכנו כל חלק לשניים, והכמות <b>לא השתנתה</b>!`,
+  rows:[{d:2,n:1,lab:F(1,2)},{d:4,n:2,lab:F(2,4)},{d:8,n:4,lab:F(4,8)}],
+  ask:cm(["מה עשינו למונה ולמכנה כשחתכנו כל חלק לשניים?","שניהם הוכפלו ב־2","רק המכנה הוכפל","הוספנו 2 לשניהם"],0)},
+ {say:`${mas("🎨")}עכשיו אתם! לחצו על החלקים וצבעו <b>3 חלקים מתוך 6</b>. מה שקיבלתם הוא בדיוק חצי.`,
+  rows:[{d:6,n:3,tap:true,lab:F(3,6)},{d:2,n:1,lab:F(1,2)}]},
+ {say:`${mas("✂️")}ואפשר גם הפוך: לחלק מונה ומכנה באותו מספר. זה <b>צמצום</b>. כאן חילקנו את ${M(F(4,6))} ב־2 וקיבלנו ${M(F(2,3))}.`,
+  rows:[{d:6,n:4,lab:F(4,6)},{d:3,n:2,lab:F(2,3)}],
+  ask:cm(["מתי צמצמנו עד הסוף?","כשאין מספר (חוץ מ־1) שמחלק גם את המונה וגם את המכנה","כשהמונה קטן מהמכנה","כשהמכנה זוגי"],0)}],
+f2:[
+ {say:`${mas("🍕")}${M(F(7,4))} זה 7 רבעים. ארבעה רבעים הם פיצה שלמה, ונשארים עוד 3 רבעים. לכן ${M(F(7,4),"=",X(1,3,4))}.`,
+  rows:[{d:4,w:1,n:3,lab:F(7,4)}],
+  ask:cm(["כמה שלמים יש ב־"+M(F(9,4))+"?","2","1","3"],0)},
+ {say:`${mas("🔁")}הפוך: ${M(X(2,3,5))}. כל שלם הוא 5 חמישיות, ו־2 שלמים הם 10 חמישיות. ועוד 3 חמישיות: ${M(F(13,5))}.`,
+  rows:[{d:5,w:2,n:3,lab:X(2,3,5)}],
+  ask:cm(["כמה חמישיות יש ב־2 שלמים?","10","2","7"],0)}],
+f3:[
+ {say:`${mas("⚖️")}מי גדול יותר: ${M(F(3,4))} או ${M(F(5,8))}? כשהחלקים לא באותו גודל קשה לראות.`,
+  rows:[{d:4,n:3,c:"a",lab:F(3,4)},{d:8,n:5,c:"b",lab:F(5,8)}]},
+ {say:`${mas("✂️")}חותכים כל רבע לשניים: ${M(F(3,4),"=",F(6,8))}. עכשיו החלקים שווים ואפשר לספור: 6 מול 5.`,
+  rows:[{d:8,n:6,c:"a",lab:F(6,8)},{d:8,n:5,c:"b",lab:F(5,8)}],
+  ask:cm(["איזה שבר גדול יותר?",M(F(3,4)),M(F(5,8))],0)},
+ {say:`${mas("🔎")}טריק: כשהמונה אותו דבר, ככל שהמכנה <b>גדול</b> יותר החלקים <b>קטנים</b> יותר.`,
+  rows:[{d:3,n:1,c:"a",lab:F(1,3)},{d:5,n:1,c:"b",lab:F(1,5)}],
+  ask:cm(["מי גדול יותר?",M(F(1,3)),M(F(1,5))],0)}],
+f4:[
+ {say:`${mas("➕")}מכנים שווים: סופרים חלקים. ${M(F(2,5),"+",F(1,5),"=",F(3,5))}. <b>המכנה לא משתנה</b>, כי החלקים נשארו חמישיות.`,
+  rows:[{d:5,n:2,c:"a",lab:F(2,5)},{d:5,n:1,c:"b",lab:F(1,5)},{d:5,n:3,c:"c",lab:F(3,5)}],
+  ask:cm([M(F(2,5),"+",F(1,5)),M(F(3,10)),M(F(3,5)),M(F(2,5))],1)},
+ {say:`${mas("🔧")}מכנים שונים? קודם מביאים למכנה משותף. ${M(F(1,2),"+",F(1,4))}: חותכים את החצי לשני רבעים. ${M(F(2,4),"+",F(1,4),"=",F(3,4))}.`,
+  rows:[{d:2,n:1,c:"a",lab:F(1,2)},{d:4,n:2,c:"a",lab:F(2,4)},{d:4,n:1,c:"b",lab:F(1,4)},{d:4,n:3,c:"c",lab:F(3,4)}],
+  ask:cm(["מהו מכנה משותף של 2 ושל 4?","4","6","1"],0)}],
+f5:[
+ {say:`${mas("➖")}${M(F(5,8),"−",F(2,8))}: מוחקים 2 חלקים מתוך 5, ונשארים 3 שמיניות. המכנה לא משתנה.`,
+  rows:[{d:8,n:5,x:[3,4],c:"a",lab:F(5,8)},{d:8,n:3,c:"c",lab:F(3,8)}],
+  ask:cm([M(F(5,8),"−",F(2,8)),M(F(3,8)),"3",M(F(7,8))],0)},
+ {say:`${mas("1️⃣")}${M("1","−",F(3,5))}: הופכים את השלם ל־${M(F(5,5))}. מוחקים 3 חמישיות ונשארות 2.`,
+  rows:[{d:5,n:5,x:[2,3,4],c:"a",lab:F(5,5)},{d:5,n:2,c:"c",lab:F(2,5)}],
+  ask:cm([M("1","−",F(3,5)),M(F(2,5)),M(F(3,5)),M(F(4,5))],0)}],
+f6:[
+ {say:`${mas("🧩")}מספרים מעורבים: שלמים עם שלמים, שברים עם שברים. ${M(X(2,1,3),"+",X(1,1,3),"=",X(3,2,3))}.`,
+  rows:[{d:3,w:2,n:1,c:"a",lab:X(2,1,3)},{d:3,w:1,n:1,c:"b",lab:X(1,1,3)},{d:3,w:3,n:2,c:"c",lab:X(3,2,3)}],
+  ask:cm([M(X(2,1,3),"+",X(1,1,3)),M(X(3,2,3)),M(X(3,1,3)),"4"],0)},
+ {say:`${mas("🏦")}${M("3","−",X(1,1,4))}: אי אפשר להחסיר רבע מ־0 רבעים, אז <b>לווים שלם</b>: ${M("3","=",X(2,4,4))}. אחר כך מחסרים: ${M(X(2,4,4),"−",X(1,1,4),"=",X(1,3,4))}.`,
+  rows:[{d:4,w:3,n:0,lab:"3"},{d:4,w:2,n:4,lab:X(2,4,4)},{d:4,w:1,n:3,c:"c",lab:X(1,3,4)}],
+  ask:cm([M("3","−",X(1,1,4)),M(X(1,3,4)),M(X(2,3,4)),M(X(1,1,4))],0)}],
+f7:[
+ {say:`${mas("🔁")}${M("3","×",F(2,5))} זה 3 קבוצות של ${M(F(2,5))}. מחברים 2+2+2 = 6 חמישיות: ${M(F(6,5),"=",X(1,1,5))}.`,
+  rows:[{d:5,n:2,c:"a",lab:F(2,5)},{d:5,n:2,c:"a",lab:F(2,5)},{d:5,n:2,c:"a",lab:F(2,5)},{d:5,w:1,n:1,c:"c",lab:F(6,5)}],
+  ask:cm([M("3","×",F(2,5)),M(F(6,5)),M(F(6,15)),M(F(2,15))],0)},
+ {say:`${mas("🍬")}${M(F(2,3))} מתוך 12 סוכריות: מחלקים ל־3 קבוצות (12÷3 = 4 בכל קבוצה) ולוקחים 2 קבוצות: 4×2 = 8.`,
+  rows:[{d:3,n:2,c:"a",lab:F(2,3)},{d:12,n:8,c:"b",lab:"12"}],
+  ask:cm([M(F(2,3)," מתוך 12"),"8","6","18"],0)}],
+f8:[
+ {say:`${mas("🟦")}כפל שברים הוא <b>שטח</b>! ${M(F(2,3),"×",F(3,4))}: צובעים 2 שורות מתוך 3 (כחול) ו־3 עמודות מתוך 4 (צהוב). החפיפה (ירוק) היא התשובה: 6 מתוך 12.`,
+  grid:[3,4,2,3],
+  ask:cm(["כמה משבצות ירוקות?","6","5","7"],0)},
+ {say:`${mas("🧮")}קיצור: מונה × מונה, ומכנה × מכנה. ${M(F(2,3),"×",F(3,4),"=",F(6,12),"=",F(1,2))}. ואז מצמצמים!`,
+  grid:[2,3,1,2],
+  ask:cm([M(F(1,2),"×",F(2,3)),M(F(2,6)),M(F(3,5)),M(F(2,3))],0)}],
+f9:[
+ {say:`${mas("🍕")}${M(F(1,2),"÷","3")}: חצי פיצה מתחלקת בין 3 ילדים. כל חצי נחתך ל־3 חלקים, ויוצאים 6 חלקים בפיצה. כל ילד מקבל <b>${M(F(1,6))}</b>.`,
+  rows:[{d:2,n:1,c:"a",lab:F(1,2)},{d:6,n:1,c:"c",lab:F(1,6)}],
+  ask:cm([M(F(1,2),"÷","3"),M(F(1,6)),M(F(3,2)),M(F(1,5))],0)},
+ {say:`${mas("🔄")}טריק: חילוק בשלם = כפל במכנה. ${M(F(3,4),"÷","2","=",F(3,4),"×",F(1,2),"=",F(3,8))}.`,
+  rows:[{d:4,n:3,c:"a",lab:F(3,4)},{d:8,n:3,c:"c",lab:F(3,8)}],
+  ask:cm([M(F(3,4),"÷","2"),M(F(3,8)),M(F(3,2)),M(F(6,4))],0)}],
+f10:[
+ {say:`${mas("🔢")}${M(F(3,4),"÷",F(1,4))} שואל: <b>כמה רבעים נכנסים בשלושה רבעים?</b> שלושה!`,
+  rows:[{d:4,n:3,c:"a",lab:F(3,4)},{d:4,n:1,c:"b",lab:F(1,4)}],
+  ask:cm([M(F(3,4),"÷",F(1,4)),"3","4",M(F(1,3))],0)},
+ {say:`${mas("🔁")}הכלל: חילוק = כפל בהופכי. ${M(F(2,3),"÷",F(4,5),"=",F(2,3),"×",F(5,4),"=",F(10,12),"=",F(5,6))}.`,
+  ask:cm(["מהו ההופכי של "+M(F(4,5))+"?",M(F(5,4)),M(F(4,5)),M("−",F(4,5))],0)},
+ {say:`${mas("⚠️")}מספר מעורב? קודם הופכים אותו לשבר מדומה, ורק אחר כך מחלקים: ${M(X(1,1,2),"÷",F(3,4),"=",F(3,2),"×",F(4,3),"=",F(12,6),"=","2")}.`,
+  ask:cm(["מה עושים קודם עם "+M(X(1,1,2)),"הופכים לשבר מדומה","מצמצמים","מחברים"],0)}],
+f11:[
+ {say:`${mas("📋")}הסדר: <b>1) סוגריים, 2) כפל וחילוק, 3) חיבור וחיסור</b>. ללא סוגריים, כפל לפני חיבור.`,
+  ask:cm(["ב־"+M(F(1,2),"+",F(1,4),"×","2")+" מה עושים קודם?",M(F(1,4),"×","2"),M(F(1,2),"+",F(1,4)),"לא משנה"],0)},
+ {say:`${mas("➗")}${M(F(1,2),"+",F(1,4),"×","2","=",F(1,2),"+",F(1,2),"=","1")}. ועם סוגריים הכול משתנה: ${M("(",F(1,2),"+",F(1,4),")","×","2","=",F(3,4),"×","2","=",X(1,1,2))}.`,
+  ask:cm(["ב־"+M("(",F(1,2),"+",F(1,4),")","×","2")+" מה קודם?","הסוגריים","הכפל","החיבור והכפל יחד"],0)}],
+w1:[
+ {say:`${mas("🕵️")}בעיה מילולית? 4 צעדים: <b>1) קוראים ומסמנים נתונים, 2) מחליטים על פעולה, 3) כותבים תרגיל, 4) פותרים ובודקים</b>.`,
+  ask:cm(["המילה \"נשאר\" מרמזת על…","חיסור","חיבור","כפל"],0)},
+ {say:`${mas("🔑")}מילים שמסמנות פעולה: <b>יחד, סך הכול</b> = חיבור. <b>נשאר, הפרש, כמה יותר</b> = חיסור. כתבו את התרגיל לפני שפותרים.`,
+  ask:cm(["\"אכלו "+M(F(1,4))+" ועוד "+M(F(1,2))+" – כמה אכלו יחד?\"","חיבור","חיסור","חילוק"],0)}],
+w2:[
+ {say:`${mas("🔑")}<b>\"מ־\"</b> או <b>\"פעמים\"</b> = כפל. <b>\"מחלקים שווה בשווה\"</b> = חילוק. ${M(F(2,3))} מ־12 זה ${M(F(2,3),"×","12")}.`,
+  ask:cm(["\"חצי מ־"+"10\" זה…","כפל","חיבור","חיסור"],0)},
+ {say:`${mas("🥤")}מחלקים ${M(F(3,4))} ליטר ל־3 כוסות? חילוק: ${M(F(3,4),"÷","3","=",F(1,4))} ליטר בכל כוס.`,
+  ask:cm(["מחלקים שווה בשווה – איזו פעולה?","חילוק","חיבור","חיסור"],0)}],
+w3:[
+ {say:`${mas("📝")}שאלה פתוחה: כותבים <b>תרגיל + חישוב + תשובה במשפט</b>. כל שלב מקבל נקודות, אפילו אם טעיתם בסוף!`,
+  ask:cm(["מה כותבים בסוף?","תשובה במשפט עם יחידות","רק מספר","כלום"],0)},
+ {say:`${mas("🪜")}בעיה רב־שלבית: פותרים צעד־צעד. קודם מה שאפשר לחשב, ואז משתמשים בתוצאה בצעד הבא.`,
+  ask:cm(["מה עושים כשיש שני שלבים?","פותרים בסדר ושומרים את התוצאה הביניים","מנחשים","מדלגים"],0)}]
+};
+function bar(r){
+  const host=document.createElement("div"); host.className="lbars";
+  const wholes=r.w||0; const cnt=r.d;
+  const mk=(shadedFn,xs)=>{ const b=document.createElement("div"); b.className="lbar";
+    for(let i=0;i<cnt;i++){ const c=document.createElement("div"); c.className="lcell"+(shadedFn(i)?" on "+(r.c||"a"):"")+(xs&&xs.includes(i)?" x":""); b.appendChild(c);} return b; };
+  for(let k=0;k<wholes;k++) host.appendChild(mk(()=>true));
+  if(r.n!==0 || !wholes){
+    const set=r.s||Array.from({length:r.n},(_,i)=>i);
+    const b=mk(i=>set.includes(i), r.x); host.appendChild(b);
+    if(r.tap){ b.querySelectorAll(".lcell").forEach(c=>{ c.onclick=()=>{ c.classList.toggle("on"); c.classList.add(r.c||"a"); c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop"); r._chk&&r._chk(); }; });
+      r._el=b; r._chk=null; }
+  }
+  return host;
+}
+window.mountLesson=function(host,id){
+  const S=L[id]; if(!S) return;
+  const card=document.createElement("div"); card.className="card lesson";
+  card.innerHTML=`<h3>🎬 שיעור מצויר ואינטראקטיבי</h3><div class="ls-dots"></div><div class="ls-body"></div><div class="ls-msg" aria-live="polite"></div><div class="ls-nav"><button class="bk">⬅ חזרה</button><button class="nx">הבא ➡</button></div>`;
+  host.appendChild(card);
+  const dots=card.querySelector(".ls-dots"), body=card.querySelector(".ls-body"), msg=card.querySelector(".ls-msg"), nx=card.querySelector(".nx"), bk=card.querySelector(".bk");
+  let i=0, restart=false; const passed=S.map(()=>false);
+  function ready(){ nx.disabled=!passed[i]; }
+  function render(){
+    msg.textContent=""; body.innerHTML="";
+    dots.innerHTML=S.map((_,k)=>`<i class="${k===i?"on":passed[k]?"done":""}"></i>`).join("");
+    const s=S[i], say=document.createElement("div"); say.className="ls-say"; say.innerHTML=s.say; body.appendChild(say);
+    const vis=document.createElement("div"); vis.className="ls-vis";
+    let needTap=null;
+    if(s.rows) s.rows.forEach(r0=>{ const r=Object.assign({},r0); const row=document.createElement("div"); row.className="lrow"+(r.tap?" tap":"");
+      const lab=document.createElement("div"); lab.className="llab"; lab.innerHTML=r.lab||""; row.appendChild(lab);
+      const b=bar(r); row.appendChild(b); vis.appendChild(row);
+      if(r.tap){ needTap={n:r0.n,b:b}; const first=b.querySelector(".lbar"); first.querySelectorAll(".lcell").forEach(c=>c.classList.remove("on")); }
+    });
+    if(s.grid){ const [R,C,rr,cc]=s.grid, g=document.createElement("div"); g.className="lgrid"; g.style.gridTemplateColumns=`repeat(${C},auto)`;
+      for(let a=0;a<R;a++)for(let b2=0;b2<C;b2++){ const e=document.createElement("i"); if(a<rr)e.classList.add("r"); if(b2<cc)e.classList.add("c"); g.appendChild(e);} vis.appendChild(g); }
+    if(vis.children.length) body.appendChild(vis);
+    if(needTap){
+      const chk=()=>{ const n=needTap.b.querySelectorAll(".lcell.on").length; msg.style.color=n===needTap.n?"#2E7D4F":"#7C3AED";
+        msg.textContent=n===needTap.n?"👏 בדיוק!":`צבועים ${n} מתוך ${needTap.n}`; passed[i]=n===needTap.n; ready(); };
+      needTap.b.querySelectorAll(".lcell").forEach(c=>c.addEventListener("click",()=>setTimeout(chk,0)));
+    }
+    if(s.ask){
+      const a=document.createElement("div"); a.className="ls-ask"; a.innerHTML=`<b>🤔 ${s.ask.ask}</b>`;
+      const ob=document.createElement("div"); ob.className="ls-opts";
+      const order=s.ask.opts.map((o,k)=>[o,k]).sort(()=>Math.random()-.5);
+      order.forEach(([o,k])=>{ const bt=document.createElement("button"); bt.innerHTML=o; bt.onclick=()=>{
+        if(k===s.ask.ok){ bt.className="ok"; msg.style.color="#2E7D4F"; msg.textContent="🎉 נכון! כל הכבוד"; passed[i]=true; ob.querySelectorAll("button").forEach(x=>x.disabled=true); ready(); }
+        else { bt.className="no"; msg.style.color="#B3382E"; msg.textContent="כמעט… נסו שוב, חשבו על התמונה למעלה"; } };
+        ob.appendChild(bt); });
+      a.appendChild(ob); body.appendChild(a);
+    }
+    if(!s.ask && !needTap) passed[i]=true;
+    bk.style.visibility=i?"visible":"hidden";
+    nx.textContent=i===S.length-1?"סיימתי 🎉":"הבא ➡";
+    ready();
+  }
+  nx.onclick=()=>{ if(restart){ restart=false; i=0; passed.fill(false); render(); return; } if(i<S.length-1){ i++; render(); } else { body.innerHTML=`<div class="ls-say">${mas("🏆")}כל הכבוד! סיימתם את השיעור. עכשיו אפשר לעבור לכרטיסי הלמידה למטה, ואחר כך לאימון.</div>`; msg.textContent=""; dots.innerHTML=S.map(()=>'<i class="done"></i>').join(""); nx.textContent="שיעור מחדש 🔁"; restart=true; } };
+  bk.onclick=()=>{ if(i>0){ i--; render(); } };
+  render();
+};
+})();
 </script>
 </body>
 </html>
