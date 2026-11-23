@@ -682,6 +682,7 @@ function _mathVal(t){
 }
 function fixMath(s){
   if(typeof s!=="string" || !s || s.indexOf("<svg")>=0) return s;
+  s = slashFrac(s);
   const atoms=[], vals=[];
   s = s.replace(/<span class="frac"><span class="top">(-?[\d,]+)<\/span><span class="bot">(-?[\d,]+)<\/span><\/span>|<span class="m">([^<]*)<\/span>/g,
     (mm, tn, td, mv)=>{ atoms.push(mm); vals.push(td!==undefined && td!==null ? parseFloat(tn.replace(/,/g,""))/parseFloat(td.replace(/,/g,"")) : parseFloat(String(mv).replace(/,/g,""))); return "\u0001"+(atoms.length-1)+"\u0002"; });
@@ -708,8 +709,14 @@ function fixMath(s){
   return s;
 }
 
+/* slash fractions (3/8) in plain text -> stacked fractions (horizontal bar) */
+function slashFrac(s){
+  if(typeof s!=="string" || s.indexOf("/")<0 || s.indexOf("<svg")>=0) return s;
+  return s.replace(/(<[^>]+>)|(\d+)\s*\/\s*(\d+)/g, (m,tag,a,b)=> tag? tag : `<span class="frac"><span class="top">${a}</span><span class="bot">${b}</span></span>`);
+}
 function Q(text, viz, opts, ans, why, meta, hint, steps){
-  return { text: fixMath(text), viz: viz||"", opts: (opts||[]).map(o=>fixMath(o)), ans: fixMath(ans), why: fixMath(why), meta: meta||{}, hint: fixMath(hint||""), steps: steps? steps.map(x=>fixMath(x)) : null };
+  const F=fixMath;
+  return { text: F(text), viz: viz||"", opts: (opts||[]).map(o=>F(o)), ans: F(ans), why: F(why), meta: meta||{}, hint: F(hint||""), steps: steps? steps.map(x=>F(x)) : null };
 }
 function fracHTML(n, d){
   if(d===1) return `<span class="m">${n}</span>`;
