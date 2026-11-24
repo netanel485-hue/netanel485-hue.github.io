@@ -648,7 +648,7 @@ function fixMath(s){
   s = s.replace(/<span class="frac"><span class="top">(-?[\d,]+)<\/span><span class="bot">(-?[\d,]+)<\/span><\/span>|<span class="m">([^<]*)<\/span>/g,
     (mm, tn, td, mv)=>{ atoms.push(mm); vals.push(td!==undefined && td!==null ? parseFloat(tn.replace(/,/g,""))/parseFloat(td.replace(/,/g,"")) : parseFloat(String(mv).replace(/,/g,""))); return "\u0001"+(atoms.length-1)+"\u0002"; });
   const tags=[];
-  s = s.replace(/<[^>]+>/g, mm=>{ tags.push(mm); return "\u0003"+(tags.length-1)+"\u0004"; });
+  s = s.replace(/<[^>]+>/g, mm=>{ tags.push(mm); return "\u0003"+String.fromCharCode(0xE000+tags.length-1)+"\u0004"; }); /* AUDIT 24.11: index as a non-digit so math wrapping cannot break it */
   const RUN = /[\d\u0001(\[_\u25a1\u2212-][\d\s+\-\u2212\u00d7\u00f7=<>\.,\/)\]\u00b2\u00b3%\u00b0_\u25a1\u0001\u0002\(\[]*/g;
   s = s.replace(RUN, run=>{
     let a=0, b=run.length;
@@ -666,7 +666,7 @@ function fixMath(s){
     return run.slice(0,a) + '<span class="m">' + core + '</span>' + run.slice(b);
   });
   s = s.replace(/\u0001(\d+)\u0002/g, (m,i)=>atoms[+i]);
-  s = s.replace(/\u0003(\d+)\u0004/g, (m,i)=>tags[+i]);
+  s = s.replace(/\u0003([\uE000-\uF8FF])\u0004/g, (m,ch)=>tags[ch.charCodeAt(0)-0xE000]);
   return s;
 }
 
@@ -1198,7 +1198,9 @@ function angleSVG(deg){
 /* היקף: תחילת כיתה ב׳ — מספרים עד 100, חיבור וחיסור עד 100 (בלי ועם המרה),
    בעיות מילוליות, סדרות ואומדן. בלי שברים, בלי עשרוניים, בלי כפל וחילוק,
    בלי מספרים שליליים. כל השאלות בעברית פשוטה, מספרים שלמים בלבד. */
-const G2_NAMES=[["נוֹעָה",1],["דָּנָה",1],["מִיכַל",1],["תָּמָר",1],["הִילָה",1],["אוֹרִי",1],["יוֹאָב",0],["אָבִי",0],["רוֹנִי",0],["לִיאוֹר",0]];
+// AUDIT 24.11: after the prefix לְ the name loses its first dagesh (לְדָנָה, not לְדָּנָה)
+function g2nd(n){return n.replace(/^([\u05D0-\u05EA][\u05B0-\u05BB\u05C1\u05C2]*)\u05BC/,'$1');}
+const G2_NAMES=[["נוֹעָה",1],["דָּנָה",1],["מִיכַל",1],["תָּמָר",1],["הִילָה",1],["אוֹרִי",0],["יוֹאָב",0],["אָבִי",0],["רוֹנִי",0],["לִיאוֹר",0]];
 function g2name(){ const p=pick(G2_NAMES); return {nm:p[0], f:p[1]===1}; }
 /* תשובות שגויות מספריות: רק מספרים שלמים 0–100, שונים מהתשובה וזה מזה */
 function wrongNums(ans, cands){
@@ -1594,16 +1596,16 @@ function genMissing(L){
 }
 
 /* ---- g10: בעיות מילוליות — צעד אחד ---- */
-const G2_OBJS=[["מַדְבֵּקוֹת","מַדְבֶּקֶת"],["גּוּלוֹת","גּוּלֶת"],["סְפָרִים","סֵפֶר"],["עֶפְרוֹנוֹת","עִפָּרוֹן"],["בָּלוֹנִים","בָּלוֹן"],["תַּפֻּוחִים","תַּפֻּוחַ"],["עֻוגִיּוֹת","עֻוגִייָּה"],["כַּדֻּורִים","כַּדֻּור"],["בּוּבוֹת","בּוּבָּה"],["מְכוֹנִיּוֹת","מְכוֹנִית"]];
+const G2_OBJS=[["מַדְבֵּקוֹת","מַדְבֶּקֶת"],["גּוּלוֹת","גּוּלֶת"],["סְפָרִים","סֵפֶר"],["עֶפְרוֹנוֹת","עִפָּרוֹן"],["בָּלוֹנִים","בָּלוֹן"],["תַּפּוּחִים","תַּפּוּחַ"],["עוּגִיּוֹת","עוּגִייָּה"],["כַּדּוּרִים","כַּדּוּר"],["בּוּבוֹת","בּוּבָּה"],["מְכוֹנִיּוֹת","מְכוֹנִית"]];
 function genWord1(L){
   const maxN = L===1? 50 : L===2? 80 : 100;
   const kind=rnd(1,5);
   const nm=g2name();
   const [objPlural, objSing]=pick(G2_OBJS);
-  const buy=nm.f?"קָנְתָה":"קָנָה", got=nm.f?"קִיבְּלָה":"קִיבְּלֵ", gave=nm.f?"נָתְנָה":"נָתַן", has=nm.f?"יֵשׁ לָהּ":"יֵשׁ לוֹ", left=nm.f?"נִשְׁאֲרוּ לָהּ":"נִשְׁאֲרוּ לוֹ";
+  const buy=nm.f?"קָנְתָה":"קָנָה", got=nm.f?"קִבְּלָה":"קִבֵּל", gave=nm.f?"נָתְנָה":"נָתַן", has=nm.f?"יֵשׁ לָהּ":"יֵשׁ לוֹ", left=nm.f?"נִשְׁאֲרוּ לָהּ":"נִשְׁאֲרוּ לוֹ";
   if(kind===1){
     const a=rnd(11,maxN-10), b=rnd(5,Math.min(30,maxN-a));
-    return Q(`לְ${nm.nm} הָיוּ ${a} ${objPlural}. ${nm.f?"הִיא":"הוּא"} ${got} עוֹד ${b} ${objPlural}. כַּמָּה ${objPlural} ${has} עַכְשָׁיו?`, "",
+    return Q(`לְ${g2nd(nm.nm)} הָיוּ ${a} ${objPlural}. ${nm.f?"הִיא":"הוּא"} ${got} עוֹד ${b} ${objPlural}. כַּמָּה ${objPlural} ${has} עַכְשָׁיו?`, "",
       g2Opts(a+b,[a+b+10,a+b-10,a-b>0?a-b:a+b+1]), String(a+b),
       `הָיוּ ${a}, וְעוֹד ${b} — יַחַד ${a+b} ${objPlural}.`, {type:"wpAdd"},
       "כשמוסיפים דברים — מחברים.",
@@ -1611,7 +1613,7 @@ function genWord1(L){
   }
   if(kind===2){
     const a=rnd(21,maxN), b=rnd(5,a-1);
-    return Q(`לְ${nm.nm} הָיוּ ${a} ${objPlural}. ${nm.f?"הִיא":"הוּא"} ${gave} ${b} ${objPlural} לַחֲבֵרָה. כַּמָּה ${objPlural} ${left}?`, "",
+    return Q(`לְ${g2nd(nm.nm)} הָיוּ ${a} ${objPlural}. ${nm.f?"הִיא":"הוּא"} ${gave} ${b} ${objPlural} לַחֲבֵרָה. כַּמָּה ${objPlural} ${left}?`, "",
       g2Opts(a-b,[a-b+10,a-b-10,a+b<=100?a+b:a-b+1]), String(a-b),
       `הָיוּ ${a}, נָתְנוּ ${b} — נִשְׁאֲרוּ ${a-b} ${objPlural}.`, {type:"wpSubGive"},
       "כשנותנים דברים — מחסרים.",
@@ -1619,7 +1621,7 @@ function genWord1(L){
   }
   if(kind===3){
     const a=rnd(11,maxN-10), b=rnd(5,Math.min(40,a-1));
-    return Q(`לְ${nm.nm} הָיוּ ${a} שְׁקָלִים. ${nm.f?"הִיא":"הוּא"} ${buy} ${objSing} בְּ־${b} שְׁקָלִים. כַּמָּה שְׁקָלִים ${left}?`, "",
+    return Q(`לְ${g2nd(nm.nm)} הָיוּ ${a} שְׁקָלִים. ${nm.f?"הִיא":"הוּא"} ${buy} ${objSing} בְּ־${b} שְׁקָלִים. כַּמָּה שְׁקָלִים ${left}?`, "",
       g2Opts(a-b,[a-b+10,a-b-10,a+b<=100?a+b:a-b+1]), String(a-b),
       `הָיוּ ${a} שְׁקָלִים, קָנוּ בְּ־${b} — נִשְׁאֲרוּ ${a-b} שְׁקָלִים.`, {type:"wpMoney"},
       "כשקונים — מחסרים את המחיר ממה שהיה.",
@@ -1627,19 +1629,19 @@ function genWord1(L){
   }
   if(kind===4){
     const a=rnd(10,maxN-10), b=rnd(5,Math.min(30,maxN-a));
-    return Q(`בַּכִּיתָּה יֵשׁ ${a} בָּנִים וְ־${b} בָּנוֹת. כַּמָּה יְלָדִים יֵשׁ בַּכִּיתָּה?`, "",
+    return Q(`בַּכִּתָּה יֵשׁ ${a} בָּנִים וְ־${b} בָּנוֹת. כַּמָּה יְלָדִים יֵשׁ בַּכִּתָּה?`, "",
       g2Opts(a+b,[a+b+10,a+b-10,a-b>0?a-b:a+b+1]), String(a+b),
       `${a} בָּנִים וְעוֹד ${b} בָּנוֹת — יַחַד ${a+b} יְלָדִים.`, {type:"wpClass"},
       "כדי לדעת כמה יש בסך הכול — מחברים.",
       [`בָּנִים: ${a}`, `בָּנוֹת: ${b}`, `${a} + ${b} = ${a+b}`]);
   }
   const a=rnd(21,maxN), b=rnd(5,a-1);
-  const nm2=g2name();
-  return Q(`לְ${nm.nm} יֵשׁ ${a} ${objPlural}, וּלְ${nm2.nm} יֵשׁ ${b} ${objPlural}. בְּכַמָּה ${objPlural} יֵשׁ לְ${nm.nm} יוֹתֵר?`, "",
+  let nm2=g2name(); while(nm2.nm===nm.nm) nm2=g2name();
+  return Q(`לְ${g2nd(nm.nm)} יֵשׁ ${a} ${objPlural}, וּלְ${g2nd(nm2.nm)} יֵשׁ ${b} ${objPlural}. בְּכַמָּה ${objPlural} יֵשׁ לְ${g2nd(nm.nm)} יוֹתֵר?`, "",
     g2Opts(a-b,[a-b+10,a-b-10,a+b<=100?a+b:a-b+1]), String(a-b),
-    `לְ${nm.nm} יֵשׁ ${a} וּלְ${nm2.nm} יֵשׁ ${b} — הַהֶפְרֵשׁ הוּא ${a-b}.`, {type:"wpCompare"},
+    `לְ${g2nd(nm.nm)} יֵשׁ ${a} וּלְ${g2nd(nm2.nm)} יֵשׁ ${b} — הַהֶפְרֵשׁ הוּא ${a-b}.`, {type:"wpCompare"},
     "כדי לדעת בכמה יותר — מחסרים את הקטן מהגדול.",
-    [`${a} − ${b} = ${a-b}`, `לְ${nm.nm} יֵשׁ ${a-b} ${objPlural} יוֹתֵר`]);
+    [`${a} − ${b} = ${a-b}`, `לְ${g2nd(nm.nm)} יֵשׁ ${a-b} ${objPlural} יוֹתֵר`]);
 }
 
 /* ---- g11: בעיות מילוליות — שני צעדים ---- */
@@ -1648,10 +1650,10 @@ function genWord2(L){
   const kind=rnd(1,4);
   const nm=g2name();
   const [objPlural, objSing]=pick(G2_OBJS);
-  const buy=nm.f?"קָנְתָה":"קָנָה", ate=nm.f?"אָכְלָה":"אָכַל", got=nm.f?"קִיבְּלָה":"קִיבְּלֵ", collect=nm.f?"אָסְפָה":"אָסַף";
+  const buy=nm.f?"קָנְתָה":"קָנָה", ate=nm.f?"אָכְלָה":"אָכַל", got=nm.f?"קִבְּלָה":"קִבֵּל", collect=nm.f?"אָסְפָה":"אָסַף";
   if(kind===1){
     const m=rnd(30,maxN), p1=rnd(5,Math.min(20,m-10)), p2=rnd(2,Math.min(10,m-p1-1));
-    return Q(`לְ${nm.nm} הָיוּ ${m} שְׁקָלִים. ${nm.f?"הִיא":"הוּא"} ${buy} מַחְבֶּרֶת בְּ־${p1} שְׁקָלִים וְעִפָּרוֹן בְּ־${p2} שְׁקָלִים. כַּמָּה שְׁקָלִים נִשְׁאֲרוּ ${nm.f?"לָהּ":"לוֹ"}?`, "",
+    return Q(`לְ${g2nd(nm.nm)} הָיוּ ${m} שְׁקָלִים. ${nm.f?"הִיא":"הוּא"} ${buy} מַחְבֶּרֶת בְּ־${p1} שְׁקָלִים וְעִפָּרוֹן בְּ־${p2} שְׁקָלִים. כַּמָּה שְׁקָלִים נִשְׁאֲרוּ ${nm.f?"לָהּ":"לוֹ"}?`, "",
       g2Opts(m-p1-p2,[m-p1-p2+10,m-p1-p2-10,m-p1]), String(m-p1-p2),
       `הָיוּ ${m} שְׁקָלִים. קָנוּ בְּ־${p1} וְעוֹד ${p2} — יַחַד ${p1+p2}. נִשְׁאֲרוּ ${m-p1-p2} שְׁקָלִים.`, {type:"wpMoney2"},
       "מחסרים את שני המחירים, אחד אחרי השני.",
@@ -1659,8 +1661,8 @@ function genWord2(L){
   }
   if(kind===2){
     const a=rnd(30,maxN), e=rnd(5,Math.min(15,a-10)), add=rnd(5,Math.min(20,100-(a-e)));
-    const [foodPlural]=pick([["תַּפֻּוחִים","תַּפֻּוחַ"],["עֻוגִיּוֹת","עֻוגִייָּה"]]);
-    return Q(`בְּקֻופְסָה הָיוּ ${a} ${foodPlural}. ${nm.nm} ${ate} ${e} ${foodPlural}, וְאַחַר כָּךְ אִמָּא הוֹסִיפָה ${add} ${foodPlural}. כַּמָּה ${foodPlural} יֵשׁ בְּקֻופְסָה עַכְשָׁיו?`, "",
+    const [foodPlural]=pick([["תַּפּוּחִים","תַּפּוּחַ"],["עוּגִיּוֹת","עוּגִייָּה"]]);
+    return Q(`בְּקוּפְסָה הָיוּ ${a} ${foodPlural}. ${nm.nm} ${ate} ${e} ${foodPlural}, וְאַחַר כָּךְ אִמָּא הוֹסִיפָה ${add} ${foodPlural}. כַּמָּה ${foodPlural} יֵשׁ בְּקוּפְסָה עַכְשָׁיו?`, "",
       g2Opts(a-e+add,[a-e+add+10,a-e+add-10,a-e]), String(a-e+add),
       `הָיוּ ${a}, אָכְלוּ ${e} — נִשְׁאֲרוּ ${a-e}. הוֹסִיפוּ ${add} — עַכְשָׁיו יֵשׁ ${a-e+add}.`, {type:"wpBox"},
       "קודם מחסרים את מה שאכלו, ואז מוסיפים את מה שהוסיפו.",

@@ -2602,7 +2602,7 @@ function makeOptions(correct, wrongs){
     }
   }
   let k=2;
-  while(opts.length<4){ const f=correct+"’"; if(!seen.has(f+k)){opts.push(f+k);seen.add(f+k);} k++; }
+  while(opts.length<2){ const f=correct+"’"; if(!seen.has(f+k)){opts.push(f+k);seen.add(f+k);} k++; } // AUDIT 24.11: fewer options instead of a fake copy of the answer
   for(let i=opts.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[opts[i],opts[j]]=[opts[j],opts[i]];}
   return opts;
 }

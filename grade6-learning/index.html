@@ -1284,6 +1284,24 @@ const ENG_SUBJ=[
  {t:'The dogs',th:0,be:'are'},{t:'Tom and Ben',th:0,be:'are'},{t:'The teacher',th:1,be:'is'}
 ];
 const ENG_OBJ=['football','music','in the garden','at school','in the park','with friends','TV','homework','a book','breakfast','in the sea','a song','pictures','games'];
+// AUDIT 24.11: verb -> objects that make sense together (no more "we slept football")
+const ENG_VOBJ={play:['football','games','music','in the park','with friends'],watch:['TV','a movie','football'],wash:['the dishes','the car','their hands'],
+ cook:['dinner','breakfast','soup'],clean:['the room','the house','the kitchen'],help:['at home','in the kitchen','their friends'],work:['at school','in the garden','at home'],
+ walk:['in the park','to school','with friends'],listen:['to music','to the teacher','to a song'],open:['the door','the window','a book'],close:['the door','the window','a book'],
+ visit:['Grandma','friends','the museum'],study:['English','at school','with friends'],jump:['in the park','in the garden','on the bed'],paint:['pictures','the fence','flowers'],
+ call:['Grandma','friends','home'],dance:['at the party','with friends','in the living room'],live:['in a big house','in Israel','near the school'],run:['in the park','to school','fast'],
+ swim:['in the sea','in the pool','with friends'],go:['to school','to the park','home'],do:['homework','sports','the dishes'],have:['breakfast','lunch','a party'],
+ eat:['breakfast','pizza','an apple'],drink:['water','juice','milk'],read:['a book','a story','the newspaper'],write:['a letter','a story','an email'],
+ sing:['a song','in the choir','at the party'],sleep:['at home','in the tent','late'],buy:['bread','a book','ice cream'],see:['a movie','friends','the sea'],
+ come:['to school','home','to the party'],sit:['on the chair','in the classroom','near the window'],put:['the book on the table','the cup in the sink','the toys in the box'],
+ make:['a cake','breakfast','a sandwich'],take:['the bus','a photo','an umbrella'],give:['a gift to Mom','water to the dog','a book to a friend'],
+ speak:['English','Hebrew','with the teacher'],drive:['a car','to work','to the beach'],fly:['a kite']};
+function _eobj(v){return _epick(ENG_VOBJ[v.i]||ENG_OBJ);}
+const ENG_VX=ENG_V.filter(v=>v.i!=='live'); // 'live' does not fit "every day / now" frames
+// subjects that can do everyday human actions (not "It" / "The dogs")
+function _esubj(f){const p=ENG_SUBJ.filter(x=>x.t!=='It'&&x.t!=='The dogs');return _epick(f?p.filter(f):p);}
+// lower-case a subject inside a sentence, but keep I and names (Tom, Dad)
+function _elc(t){return /^(I|Tom|Dad)\b/.test(t)?t:t.charAt(0).toLowerCase()+t.slice(1);}
 const ENG_ADJ=[
  {a:'big',c:'bigger',s:'the biggest',he:'גדול'},{a:'small',c:'smaller',s:'the smallest',he:'קטן'},
  {a:'tall',c:'taller',s:'the tallest',he:'גבוה'},{a:'short',c:'shorter',s:'the shortest',he:'נמוך / קצר'},
@@ -1304,111 +1322,113 @@ function _wrongForms(v,correct){
 }
 // ---------- Present Simple ----------
 const ENG_G_PRES=[
- {lvl:1,fn(){const s=_epick(ENG_SUBJ),v=_epick(ENG_V),o=_epick(ENG_OBJ);const c=s.th?v.s:v.i;
+ {lvl:1,fn(){const s=_esubj(),v=_epick(ENG_VX),o=_eobj(v);const c=s.th?v.s:v.i;
    return _eq(1,'השלמת פועל',`${s.t} ___ ${o} every day. (${v.i})`,c,_wrongForms(v,c),`בזמן הווה פשוט: אחרי He/She/It מוסיפים לפועל s — ‏${v.i} ← ${v.s}.`);}},
- {lvl:2,fn(){const s=_epick(ENG_SUBJ.filter(x=>x.th)),v=_epick(ENG_V),o=_epick(ENG_OBJ);const c=v.s;
+ {lvl:2,fn(){const s=_esubj(x=>x.th),v=_epick(ENG_VX),o=_eobj(v);const c=v.s;
    return _eq(2,'צורת גוף שלישי',`${s.t} ___ ${o} every morning. (${v.i})`,c,_wrongForms(v,c),`גוף שלישי יחיד (He/She/It) — הפועל מקבל s: ‏${v.s}.`);}},
- {lvl:3,fn(){const s=_epick(ENG_SUBJ),v=_epick(ENG_V);const c=s.th?"doesn't":"don't";
-   return _eq(3,'שלילה',`${s.t} ___ ${v.i} coffee in the morning.`,c,["doesn't","don't","isn't","not"].filter(x=>x!==c),`שלילה בהווה פשוט: ‏don't לרוב הגופים, ‏doesn't ל־He/She/It — ואחריהם הפועל בצורתו הבסיסית.`);}},
- {lvl:4,fn(){const s=_epick(ENG_SUBJ),v=_epick(ENG_V),o=_epick(ENG_OBJ);const good=`${s.t} always ${s.th?v.s:v.i} ${o}.`;
+ {lvl:3,fn(){const s=_esubj(),v=_epick(ENG_VX);const c=s.th?"doesn't":"don't";
+   return _eq(3,'שלילה',`${s.t} ___ ${v.i} ${_eobj(v)} in the morning.`,c,["doesn't","don't","isn't","not"].filter(x=>x!==c),`שלילה בהווה פשוט: ‏don't לרוב הגופים, ‏doesn't ל־He/She/It — ואחריהם הפועל בצורתו הבסיסית.`);}},
+ {lvl:4,fn(){const s=_esubj(),v=_epick(ENG_VX),o=_eobj(v);const good=`${s.t} always ${s.th?v.s:v.i} ${o}.`;
    const bad1=`${s.t} ${s.th?v.s:v.i} always ${o}.`,bad2=`${s.t} always ${v.i} ${o}.`,bad3=`Always ${s.t} ${s.th?v.s:v.i} ${o}.`;
    const wrongs=[bad1,bad2,bad3].filter(x=>x!==good);if(wrongs.length<3)return null;
    return _eq(4,'משפט נכון','Which sentence is correct?',good,wrongs,`מילת התדירות (always) באה לפני הפועל, והפועל מתאים לגוף.`);}},
- {lvl:5,fn(){const s=_epick(ENG_SUBJ),v=_epick(ENG_V),o=_epick(ENG_OBJ);const c=s.th?'Does':'Do';
-   return _eq(5,'שאלה',`___ ${s.t.toLowerCase()} ${v.i} ${o} every week?`,c,['Does','Do','Is','Are'].filter(x=>x!==c),`שאלה בהווה פשוט: ‏Do לרוב הגופים ו־Does ל־He/She/It.`);}},
- {lvl:6,fn(){const v=_epick(ENG_V),o=_epick(ENG_OBJ);const c=v.s;
+ {lvl:5,fn(){const s=_esubj(),v=_epick(ENG_VX),o=_eobj(v);const c=s.th?'Does':'Do';
+   return _eq(5,'שאלה',`___ ${_elc(s.t)} ${v.i} ${o} every week?`,c,['Does','Do','Is','Are'].filter(x=>x!==c),`שאלה בהווה פשוט: ‏Do לרוב הגופים ו־Does ל־He/She/It.`);}},
+ {lvl:6,fn(){const v=_epick(ENG_VX),o=_eobj(v);const c=v.s;
    return _eq(6,'השלמה מתקדמת',`My friend ___ ${o} on Sundays. (${v.i})`,c,_wrongForms(v,c).concat(['do']).slice(0,3),`הנושא "My friend" הוא גוף שלישי — הפועל בצורת ${v.s}.`);}},
- {lvl:7,fn(){const s=_epick(ENG_SUBJ),v=_epick(ENG_V),o=_epick(ENG_OBJ);const good=`${s.t} ${s.th?v.s:v.i} ${o} every day.`;
+ {lvl:7,fn(){const s=_esubj(),v=_epick(ENG_VX),o=_eobj(v);const good=`${s.t} ${s.th?v.s:v.i} ${o} every day.`;
    const b1=`${s.t} ${v.i} ${o} every day.`,b2=`${s.t} ${v.g} ${o} every day.`,b3=`${s.t} ${v.p} ${o} every day.`;
    const wrongs=[b1,b2,b3].filter(x=>x!==good);if(wrongs.length<3)return null;
    return _eq(7,'מצא את המשפט הנכון','Which sentence is correct?',good,wrongs,`"every day" מסמן הווה פשוט — צורת הפועל חייבת להתאים לגוף הנושא.`);}},
- {lvl:8,fn(){const v=_epick(ENG_V);const good=`She ${v.s} every morning.`;
+ {lvl:8,fn(){const HS={play:'משחקת',cook:'מבשלת',clean:'מנקה',work:'עובדת',walk:'הולכת ברגל',study:'לומדת',jump:'קופצת',paint:'מציירת',dance:'רוקדת',run:'רצה',swim:'שוחה',read:'קוראת',write:'כותבת',sing:'שרה',speak:'מדברת',drive:'נוהגת',help:'עוזרת',listen:'מקשיבה'};
+   const v=_epick(ENG_V.filter(x=>HS[x.i]));const good=`She ${v.s} every morning.`;
    const wrongs=[`She ${v.i} every morning.`,`She ${v.g} every morning.`,`She ${v.p} every morning.`];
-   return _eq(8,'תרגום','איך אומרים באנגלית: "היא '+(v.he.replace('ל',''))+' בכל בוקר"?',good,wrongs,`אחרי She הפועל מקבל s: ‏${v.s}.`);}}
+   return _eq(8,'תרגום','איך אומרים באנגלית: "היא '+HS[v.i]+' בכל בוקר"?',good,wrongs,`אחרי She הפועל מקבל s: ‏${v.s}.`);}}
 ];
 // ---------- Present Progressive ----------
 const ENG_G_PROG=[
- {lvl:1,fn(){const s=_epick(ENG_SUBJ),v=_epick(ENG_V);return _eq(1,'צורת be',`${s.t} ___ ${v.g} now.`,s.be,['am','is','are','be'].filter(x=>x!==s.be),`בהווה מתמשך: ‏I-am, ‏He/She/It-is, ‏You/We/They-are.`);}},
- {lvl:2,fn(){const s=_epick(ENG_SUBJ),v=_epick(ENG_V.filter(x=>!['dance','live','close','run','swim','sit','put','make','take','give','drive','come','write'].includes(x.i))),o=_epick(ENG_OBJ);
+ {lvl:1,fn(){const s=_esubj(),v=_epick(ENG_VX);return _eq(1,'צורת be',`${s.t} ___ ${v.g} now.`,s.be,['am','is','are','be'].filter(x=>x!==s.be),`בהווה מתמשך: ‏I-am, ‏He/She/It-is, ‏You/We/They-are.`);}},
+ {lvl:2,fn(){const s=_esubj(),v=_epick(ENG_V.filter(x=>!['dance','live','close','run','swim','sit','put','make','take','give','drive','come','write'].includes(x.i))),o=_eobj(v);
    return _eq(2,'השלמת -ing',`${s.t} ${s.be} ___ ${o} right now. (${v.i})`,v.g,_wrongForms(v,v.g),`מוסיפים ing לפועל: ‏${v.i} ← ${v.g}.`);}},
- {lvl:3,fn(){const s=_epick(ENG_SUBJ),v=_epick(ENG_V.filter(x=>['dance','live','close','make','take','give','drive','come','write'].includes(x.i))),o=_epick(ENG_OBJ);
+ {lvl:3,fn(){const s=_esubj(),v=_epick(ENG_V.filter(x=>['dance','live','close','make','take','give','drive','come','write'].includes(x.i))),o=_eobj(v);
    return _eq(3,'השמטת e',`${s.t} ${s.be} ___ ${o} now. (${v.i})`,v.g,[v.i+'ing',v.s,v.p],`כשמוסיפים ing לפועל שמסתיים ב־e שקטה — משמיטים אותה: ‏${v.i} ← ${v.g}.`);}},
- {lvl:4,fn(){const s=_epick(ENG_SUBJ),v=_epick(ENG_V.filter(x=>['run','swim','sit','put'].includes(x.i))),o=_epick(ENG_OBJ);
+ {lvl:4,fn(){const s=_esubj(),v=_epick(ENG_V.filter(x=>['run','swim','sit','put'].includes(x.i))),o=_eobj(v);
    return _eq(4,'הכפלת אות',`${s.t} ${s.be} ___ ${o} now. (${v.i})`,v.g,[v.i+'ing',v.s,v.p],`בפעלים קצרים (תנועה+עיצור) מכפילים את האות האחרונה: ‏${v.i} ← ${v.g}.`);}},
- {lvl:5,fn(){const s=_epick(ENG_SUBJ),v=_epick(ENG_V),o=_epick(ENG_OBJ);const c=s.be+"n't";if(s.be==='am')return null;
+ {lvl:5,fn(){const s=_esubj(),v=_epick(ENG_VX),o=_eobj(v);const c=s.be+"n't";if(s.be==='am')return null;
    return _eq(5,'שלילה',`${s.t} ___ ${v.g} ${o} now.`,c,["isn't","aren't","don't","doesn't"].filter(x=>x!==c),`שלילה בהווה מתמשך: ‏isn't / aren't + פועל עם ing.`);}},
- {lvl:6,fn(){const s=_epick(ENG_SUBJ.filter(x=>x.t!=='I')),v=_epick(ENG_V),o=_epick(ENG_OBJ);const c=s.be==='is'?'Is':'Are';
-   return _eq(6,'שאלה',`___ ${s.t.toLowerCase()} ${v.g} ${o} now?`,c,['Is','Are','Do','Does'].filter(x=>x!==c),`שאלה בהווה מתמשך מתחילה ב־Is או Are לפי הנושא.`);}},
- {lvl:7,fn(){const s=_epick(ENG_SUBJ),v=_epick(ENG_V),o=_epick(ENG_OBJ);const good=`Look! ${s.t} ${s.be} ${v.g} ${o}.`;
+ {lvl:6,fn(){const s=_esubj(x=>x.t!=='I'),v=_epick(ENG_VX),o=_eobj(v);const c=s.be==='is'?'Is':'Are';
+   return _eq(6,'שאלה',`___ ${_elc(s.t)} ${v.g} ${o} now?`,c,['Is','Are','Do','Does'].filter(x=>x!==c),`שאלה בהווה מתמשך מתחילה ב־Is או Are לפי הנושא.`);}},
+ {lvl:7,fn(){const s=_esubj(),v=_epick(ENG_VX),o=_eobj(v);const good=`Look! ${s.t} ${s.be} ${v.g} ${o}.`;
    const wrongs=[`Look! ${s.t} ${s.th?v.s:v.i} ${o}.`,`Look! ${s.t} ${s.be} ${v.i} ${o}.`,`Look! ${s.t} ${v.g} ${o}.`].filter(x=>x!==good);if(wrongs.length<3)return null;
    return _eq(7,'הווה פשוט או מתמשך','Which sentence is correct?',good,wrongs,`"Look!" ו־"now" מסמנים פעולה שקורה עכשיו — הווה מתמשך: be + ing.`);}},
- {lvl:8,fn(){const s=_epick(ENG_SUBJ),v=_epick(ENG_V),o=_epick(ENG_OBJ);const good=`${s.t} ${s.th?v.s:v.i} ${o} every day, but now ${s.t==='I'?'I am':(s.th?'he is':'they are')} resting.`;
-   const simpler=`${s.t} ${s.be} ${v.g} ${o} right now.`;const alt=`At the moment, ${s.t.toLowerCase()} ${s.be} ${v.g} ${o}.`;
-   return _eq(8,'הבנה','Which sentence uses BOTH tenses correctly?',_epick([simpler,alt]),[`${s.t} is ${v.i} ${o} every day.`,`${s.t} ${v.p} ${o} now.`,`${s.t} ${s.be} ${v.s} ${o} now.`],`שימו לב לסימנים: every day = הווה פשוט; now / at the moment = הווה מתמשך.`);}}
+ {lvl:8,fn(){const s=_esubj(),v=_epick(ENG_VX),o=_eobj(v);const PR={I:'I am',You:'you are',We:'we are',She:'she is','My sister':'she is',They:'they are','Tom and Ben':'they are'};const good=`${s.t} ${s.th?v.s:v.i} ${o} every day, but now ${PR[s.t]||'he is'} resting.`;
+   return _eq(8,'הבנה','Which sentence uses BOTH tenses correctly?',good,[`${s.t} ${s.be} ${v.g} ${o} every day, but now ${PR[s.t]||'he is'} rest.`,`${s.t} ${v.g} ${o} every day, but now ${PR[s.t]||'he is'} resting.`,`${s.t} ${s.th?v.i:v.s} ${o} every day, but now ${PR[s.t]||'he is'} rests.`],`שימו לב לסימנים: every day = הווה פשוט; now / at the moment = הווה מתמשך.`);}}
 ];
 // ---------- Past Simple ----------
 const ENG_G_PAST=[
- {lvl:1,fn(){const v=_epick(ENG_V.filter(x=>x.p===x.i+'ed'||x.p===x.i+'d'||x.p.endsWith('ied'))),o=_epick(ENG_OBJ);
+ {lvl:1,fn(){const v=_epick(ENG_V.filter(x=>x.p===x.i+'ed'||x.p===x.i+'d'||x.p.endsWith('ied'))),o=_eobj(v);
    return _eq(1,'עבר רגיל',`We ___ ${o} yesterday. (${v.i})`,v.p,_wrongForms(v,v.p),`עבר פשוט של פועל רגיל: מוסיפים ed — ‏${v.i} ← ${v.p}.`);}},
- {lvl:2,fn(){const v=_epick(ENG_V.filter(x=>['ran','went','ate','saw','came','took','gave','made','wrote','sang','slept','bought','swam','drank','spoke','drove','flew','sat','had'].includes(x.p))),o=_epick(ENG_OBJ);
+ {lvl:2,fn(){const v=_epick(ENG_V.filter(x=>['ran','went','ate','saw','came','took','gave','made','wrote','sang','slept','bought','swam','drank','spoke','drove','flew','sat','had'].includes(x.p))),o=_eobj(v);
    return _eq(2,'עבר חריג',`She ___ ${o} last night. (${v.i})`,v.p,_wrongForms(v,v.p),`פועל חריג — צורת העבר מיוחדת: ‏${v.i} ← ${v.p}.`);}},
- {lvl:3,fn(){const s=_epick(ENG_SUBJ),v=_epick(ENG_V),o=_epick(ENG_OBJ);const c=(s.t==='I'||s.th)?'was':'were';
+ {lvl:3,fn(){const s=_esubj(),v=_epick(ENG_VX),o=_eobj(v);const c=(s.t==='I'||s.th)?'was':'were';
    const end=_epick(['at home yesterday','happy yesterday','in the park last week','tired last night','at school yesterday','in the garden last Sunday']);
    return _eq(3,'was / were',`${s.t} ___ ${end}.`.replace('..','.'),c,['was','were','is','are'].filter(x=>x!==c),`עבר של be: ‏was ליחיד ו־were לרבים (וגם ל־You).`);}},
- {lvl:4,fn(){const s=_epick(ENG_SUBJ),v=_epick(ENG_V),o=_epick(ENG_OBJ);
+ {lvl:4,fn(){const s=_esubj(),v=_epick(ENG_VX),o=_eobj(v);
    return _eq(4,'שלילה בעבר',`${s.t} didn't ___ ${o} yesterday.`,v.i,[v.p,v.s,v.g],`אחרי didn't הפועל חוזר לצורת הבסיס: ‏didn't ${v.i}.`);}},
- {lvl:5,fn(){const s=_epick(ENG_SUBJ),v=_epick(ENG_V),o=_epick(ENG_OBJ);
-   return _eq(5,'שאלה בעבר',`Did ${s.t.toLowerCase()} ___ ${o} last week?`,v.i,[v.p,v.s,v.g],`שאלה עם Did — הפועל בצורת הבסיס.`);}},
- {lvl:6,fn(){const v=_epick(ENG_V),o=_epick(ENG_OBJ);const good=`Two days ago, we ${v.p} ${o}.`;
+ {lvl:5,fn(){const s=_esubj(),v=_epick(ENG_VX),o=_eobj(v);
+   return _eq(5,'שאלה בעבר',`Did ${_elc(s.t)} ___ ${o} last week?`,v.i,[v.p,v.s,v.g],`שאלה עם Did — הפועל בצורת הבסיס.`);}},
+ {lvl:6,fn(){const v=_epick(ENG_VX),o=_eobj(v);const good=`Two days ago, we ${v.p} ${o}.`;
    const wrongs=[`Two days ago, we ${v.i} ${o}.`,`Two days ago, we ${v.g} ${o}.`,`Two days ago, we ${v.s} ${o}.`].filter(x=>x!==good);if(wrongs.length<3)return null;
    return _eq(6,'משפט נכון','Which sentence is correct?',good,wrongs,`ביטויי עבר (yesterday, last week, two days ago) דורשים פועל בעבר.`);}},
- {lvl:7,fn(){const v=_epick(ENG_V),o=_epick(ENG_OBJ);const good=`He ${v.p} ${o} and then went home.`;
+ {lvl:7,fn(){const v=_epick(ENG_VX),o=_eobj(v);const good=`He ${v.p} ${o} and then went home.`;
    const wrongs=[`He ${v.i} ${o} and then went home.`,`He ${v.g} ${o} and then went home.`,`He is ${v.g} ${o} and then went home.`].filter(x=>x!==good);if(wrongs.length<3)return null;
    return _eq(7,'הבנת הקשר','Which sentence is correct?',good,wrongs,`כל הפעלים בסיפור על העבר נשארים בעבר.`);}},
- {lvl:8,fn(){const v=_epick(ENG_V);const good=`Yesterday I ${v.p} early and felt great.`;
-   const wrongs=[`Yesterday I ${v.i} early and felt great.`,`Yesterday I ${v.g} early and felt great.`,`Yesterday I ${v.s} early and felt great.`].filter(x=>x!==good);if(wrongs.length<3)return null;
+ {lvl:8,fn(){const v=_epick(ENG_VX),o=_eobj(v);const good=`Yesterday I ${v.p} ${o} and felt great.`;
+   const wrongs=[`Yesterday I ${v.i} ${o} and felt great.`,`Yesterday I ${v.g} ${o} and felt great.`,`Yesterday I ${v.s} ${o} and felt great.`].filter(x=>x!==good);if(wrongs.length<3)return null;
    return _eq(8,'תרגום','Which sentence is correct?',good,wrongs,`המילה Yesterday פותחת משפט בעבר — הפועל חייב להיות בעבר (${v.p}).`);}}
 ];
 // ---------- Future ----------
 const ENG_G_FUT=[
- {lvl:1,fn(){const s=_epick(ENG_SUBJ),v=_epick(ENG_V),o=_epick(ENG_OBJ);
+ {lvl:1,fn(){const s=_esubj(),v=_epick(ENG_VX),o=_eobj(v);
    return _eq(1,'will',`${s.t} will ___ ${o} tomorrow.`,v.i,[v.s,v.p,v.g],`אחרי will הפועל בצורת הבסיס.`);}},
- {lvl:2,fn(){const s=_epick(ENG_SUBJ),v=_epick(ENG_V),o=_epick(ENG_OBJ);
+ {lvl:2,fn(){const s=_esubj(),v=_epick(ENG_VX),o=_eobj(v);
    return _eq(2,'going to',`${s.t} ___ going to ${v.i} ${o} tomorrow.`,s.be,['am','is','are','be'].filter(x=>x!==s.be),`מבנה העתיד: be + going to + פועל בסיסי.`);}},
- {lvl:3,fn(){const s=_epick(ENG_SUBJ),v=_epick(ENG_V),o=_epick(ENG_OBJ);
+ {lvl:3,fn(){const s=_esubj(),v=_epick(ENG_VX),o=_eobj(v);
    return _eq(3,'שלילה',`${s.t} ___ ${v.i} ${o} tomorrow. It's too late.`,"won't",["won't","willn't","isn't","don't"].filter(x=>x!=="won't"),`שלילת will היא won't.`);}},
- {lvl:4,fn(){const s=_epick(ENG_SUBJ.filter(x=>x.t!=='I')),v=_epick(ENG_V),o=_epick(ENG_OBJ);
-   return _eq(4,'שאלה',`Will ${s.t.toLowerCase()} ___ ${o} next week?`,v.i,[v.s,v.p,v.g],`שאלת עתיד: Will + נושא + פועל בסיסי.`);}},
- {lvl:5,fn(){const s=_epick(ENG_SUBJ),v=_epick(ENG_V),o=_epick(ENG_OBJ);const good=`${s.t} will ${v.i} ${o} next summer.`;
+ {lvl:4,fn(){const s=_esubj(x=>x.t!=='I'),v=_epick(ENG_VX),o=_eobj(v);
+   return _eq(4,'שאלה',`Will ${_elc(s.t)} ___ ${o} next week?`,v.i,[v.s,v.p,v.g],`שאלת עתיד: Will + נושא + פועל בסיסי.`);}},
+ {lvl:5,fn(){const s=_esubj(),v=_epick(ENG_VX),o=_eobj(v);const good=`${s.t} will ${v.i} ${o} next summer.`;
    const wrongs=[`${s.t} will ${v.s} ${o} next summer.`,`${s.t} will ${v.p} ${o} next summer.`,`${s.t} ${v.p} ${o} next summer.`].filter(x=>x!==good);if(wrongs.length<3)return null;
    return _eq(5,'משפט נכון','Which sentence is correct?',good,wrongs,`next summer = עתיד; will + צורת בסיס.`);}},
- {lvl:6,fn(){const s=_epick(ENG_SUBJ),v=_epick(ENG_V),o=_epick(ENG_OBJ);const good=`We have tickets. We are going to ${v.i} ${o} on Friday.`;
+ {lvl:6,fn(){const s=_esubj(),v=_epick(ENG_VX),o=_eobj(v);const good=`We have tickets. We are going to ${v.i} ${o} on Friday.`;
    const wrongs=[`We have tickets. We are going to ${v.s} ${o} on Friday.`,`We have tickets. We going to ${v.i} ${o} on Friday.`,`We have tickets. We are go to ${v.i} ${o} on Friday.`];
    return _eq(6,'תוכנית','Which sentence is correct?',good,wrongs,`לתוכנית קיימת משתמשים ב־going to, עם be מתאים.`);}},
  {lvl:7,fn(){const sc=_epick([['drop','the glass'],['spill','the juice'],['break','the plate'],['drop','the phone'],['fall','off the chair']]);const good=`Watch out! You are going to ${sc[0]} ${sc[1]}!`;
    const wrongs=[`Watch out! You are going to ${sc[0]}s ${sc[1]}!`,`Watch out! You going to ${sc[0]} ${sc[1]}!`,`Watch out! You are ${sc[0]} ${sc[1]}!`];
    return _eq(7,'הבנה','Which sentence is correct?',good,wrongs,`מבנה מלא: are going to + פועל בסיסי.`);}},
- {lvl:8,fn(){const s=_epick(ENG_SUBJ),v=_epick(ENG_V),o=_epick(ENG_OBJ);const good=`I think ${s.t.toLowerCase()} will ${v.i} ${o} tomorrow.`;
-   const wrongs=[`I think ${s.t.toLowerCase()} will ${v.s} ${o} tomorrow.`,`I think ${s.t.toLowerCase()} will ${v.p} ${o} tomorrow.`,`I think ${s.t.toLowerCase()} is will ${v.i} ${o} tomorrow.`].filter(x=>x!==good);if(wrongs.length<3)return null;
+ {lvl:8,fn(){const s=_esubj(),v=_epick(ENG_VX),o=_eobj(v);const good=`I think ${_elc(s.t)} will ${v.i} ${o} tomorrow.`;
+   const wrongs=[`I think ${_elc(s.t)} will ${v.s} ${o} tomorrow.`,`I think ${_elc(s.t)} will ${v.p} ${o} tomorrow.`,`I think ${_elc(s.t)} is will ${v.i} ${o} tomorrow.`].filter(x=>x!==good);if(wrongs.length<3)return null;
    return _eq(8,'תרגום','Which sentence is correct?',good,wrongs,`גם אחרי "I think" — will נשאר עם פועל בסיסי.`);}}
 ];
 // ---------- Comparatives & Superlatives ----------
 const ENG_G_COMP=[
- {lvl:1,fn(){const a=_epick(ENG_ADJ);return _eq(1,'השוואה','An elephant is ___ than a mouse.',a.c,[a.a,a.s,a.c+'er'].filter(x=>x!==a.c),`אחרי than משתמשים בצורת ההשוואה: ‏${a.a} ← ${a.c}.`);}},
- {lvl:2,fn(){const a=_epick(ENG_ADJ);return _eq(2,'שיא','This is ___ day of the year.',a.s,[a.a,a.c,'the '+a.c].filter(x=>x!==a.s),`צורת השיא באה עם the: ‏${a.s}.`);}},
+ {lvl:1,fn(){const a=_epick(ENG_ADJ.filter(x=>['big','strong','tall'].includes(x.a)));return _eq(1,'השוואה','An elephant is ___ than a mouse.',a.c,[a.a,a.s,a.c+'er'].filter(x=>x!==a.c),`אחרי than משתמשים בצורת ההשוואה: ‏${a.a} ← ${a.c}.`);}},
+ {lvl:2,fn(){const a=_epick(ENG_ADJ.filter(x=>['long','short','hot','cold','happy','good','bad'].includes(x.a)));return _eq(2,'שיא','This is ___ day of the year.',a.s,[a.a,a.c,'the '+a.c].filter(x=>x!==a.s),`צורת השיא באה עם the: ‏${a.s}.`);}},
  {lvl:3,fn(){const a=_epick(ENG_ADJ.filter(x=>['good','bad','many','little','far'].includes(x.a)));
-   return _eq(3,'חריגים',_epick(['My new phone is ___ than the old one.','This road is ___ than that one.','Summer here is ___ than winter.']),a.c,[a.a+'er',a.a,a.s],`צורות חריגות: ‏good ← better, ‏bad ← worse.`);}},
- {lvl:4,fn(){const a=_epick(ENG_ADJ);return _eq(4,'השוואת שוויון','Tom is as ___ as his brother.',a.a,[a.c,a.s,'more '+a.a],`במבנה as...as הפועל־התואר נשאר בצורתו הבסיסית: as ${a.a} as.`);}},
- {lvl:5,fn(){const a=_epick(ENG_ADJ);const good=`The red car is ${a.c} than the blue car.`;
+   const FR={good:['My new phone is ___ than the old one.','This game is ___ than the last one.'],bad:['The weather today is ___ than yesterday.','My cold is ___ than last week.'],many:['I have ___ books than my brother.'],little:['I have ___ time than you today.'],far:['My school is ___ from my house than the park.']};
+   return _eq(3,'חריגים',_epick(FR[a.a]),a.c,[a.a+'er',a.a,a.s],`צורות חריגות: ‏good ← better, ‏bad ← worse.`);}},
+ {lvl:4,fn(){const a=_epick(ENG_ADJ.filter(x=>['tall','short','strong','fast','slow','happy','funny','nice','young','old'].includes(x.a)));return _eq(4,'השוואת שוויון','Tom is as ___ as his brother.',a.a,[a.c,a.s,'more '+a.a],`במבנה as...as הפועל־התואר נשאר בצורתו הבסיסית: as ${a.a} as.`);}},
+ {lvl:5,fn(){const a=_epick(ENG_ADJ.filter(x=>['big','small','fast','slow','new','old','clean','long','short','nice'].includes(x.a)));const good=`The red car is ${a.c} than the blue car.`;
    const wrongs=[`The red car is ${a.a} than the blue car.`,`The red car is ${a.s} than the blue car.`,`The red car is more ${a.a} than the blue car.`].filter(x=>x!==good);if(wrongs.length<3)return null;
    return _eq(5,'משפט נכון','Which sentence is correct?',good,wrongs,`בהשוואה בין שניים: comparative + than.`);}},
- {lvl:6,fn(){const a=_epick(ENG_ADJ);const good=`Of the three boys, Dan is ${a.s}.`;
+ {lvl:6,fn(){const a=_epick(ENG_ADJ.filter(x=>['tall','short','strong','fast','slow','happy','funny','nice','young','old'].includes(x.a)));const good=`Of the three boys, Dan is ${a.s}.`;
    const wrongs=[`Of the three boys, Dan is ${a.c}.`,`Of the three boys, Dan is ${a.a}.`,`Of the three boys, Dan is ${a.c} than.`].filter(x=>x!==good);if(wrongs.length<3)return null;
    return _eq(6,'שיא בהקשר','Which sentence is correct?',good,wrongs,`כשמשווים אחד מתוך קבוצה של שלושה ומעלה — צורת שיא עם the.`);}},
- {lvl:7,fn(){const a=_epick(ENG_ADJ),b=_epick(ENG_ADJ.filter(x=>x.a!==a.a));const good=`Winter is ${a.c} than summer, but spring is ${b.s} season of all.`;
-   const wrongs=[`Winter is ${a.a} than summer, but spring is ${b.c} season of all.`,`Winter is ${a.c} summer, but spring is ${b.s} season of all.`,`Winter is ${a.s} than summer, but spring is ${b.s} season of all.`];
-   return _eq(7,'מעורב','Which sentence is correct?',good,wrongs,`than ← comparative; ‏"of all" ← superlative עם the.`);}},
- {lvl:8,fn(){const a=_epick(ENG_ADJ);return _eq(8,'תרגום',`איך אומרים: "זה ${a.he} יותר" — בעזרת המילה ${a.a}?`,_epick([`This book is ${a.c}.`,`This one is ${a.c}.`]),[`This book is ${a.a}.`,`This book is ${a.s}.`,`This book is ${a.c} than.`,`This one is ${a.a}.`,`This one is ${a.s}.`],`"יותר" = comparative: ‏${a.c}.`);}}
+ {lvl:7,fn(){const SC=_epick([[['cold'],['hot'],(c,s)=>`Winter is ${c} than autumn, but summer is ${s} season of all.`],[['fast'],['big'],(c,s)=>`A horse is ${c} than a cow, but the whale is ${s} animal of all.`],[['old'],['young'],(c,s)=>`Grandpa is ${c} than Dad, but the baby is ${s} in the family.`],[['tall'],['short'],(c,s)=>`Dan is ${c} than Tom, but Ben is ${s} boy in the class.`]]);
+   const a=ENG_ADJ.find(x=>x.a===SC[0][0]),b=ENG_ADJ.find(x=>x.a===SC[1][0]),T=SC[2];const good=T(a.c,b.s);
+   const wrongs=[T(a.a,b.c),T(a.c,b.c),T(a.s,b.s)].filter(x=>x!==good);
+   return _eq(7,'מעורב','Which sentence is correct?',good,wrongs,`than ← comparative; ‏"of all" / "in the family" ← superlative עם the.`);}},
+ {lvl:8,fn(){const a=_epick(ENG_ADJ.filter(x=>['big','small','long','short','new','old','easy','good','bad','nice','funny','clean'].includes(x.a)));return _eq(8,'תרגום',`איך אומרים: "זה ${a.he} יותר" — בעזרת המילה ${a.a}?`,_epick([`This book is ${a.c}.`,`This one is ${a.c}.`]),[`This book is ${a.a}.`,`This book is ${a.s}.`,`This book is ${a.c} than.`,`This one is ${a.a}.`,`This one is ${a.s}.`],`"יותר" = comparative: ‏${a.c}.`);}}
 ];
 const DATA_ENG_GRAMMAR={id:'eng-grammar',emoji:'📏',name:'אנגלית — דקדוק',book:"New Practice Your Grammar for the 6th Grade (אריק כהן)",topics:[
  {id:'eng-pres',emoji:'🔁',name:'Present Simple — הווה פשוט',desc:'שגרה והרגלים: צורות הפועל, שלילה ושאלות',tips:`<ul><li>חפשו מילות סימן: every day, always, usually.</li><li>אחרי He/She/It — לא לשכוח את ה־s על הפועל.</li></ul>`,gens:ENG_G_PRES},
@@ -1524,18 +1544,18 @@ const ENG_G_BE=[
  {lvl:2,fn(){const s=_epick(ENG_SUBJ);const c=s.th?'has':'have';return _eq(2,'have/has',`${s.t} ___ a new bag.`,c,['has','have','is','are'].filter(x=>x!==c),'has ל־He/She/It, ‏have לכל השאר.');}},
  {lvl:3,fn(){const s=_epick(ENG_SUBJ.filter(x=>x.t!=='I'));const c=s.be==='is'?"isn't":"aren't";
    return _eq(3,'שלילה',`${s.t} ___ at home now.`,c,["isn't","aren't","don't","doesn't"].filter(x=>x!==c),"שלילת be: isn't / aren't.");}},
- {lvl:4,fn(){const s=_epick(ENG_SUBJ.filter(x=>x.t!=='I'));const c=s.be==='is'?'Is':'Are';
-   return _eq(4,'שאלה',`___ ${s.t.toLowerCase()} your friend?`,c,['Is','Are','Do','Has'].filter(x=>x!==c),'שאלה עם be מתחילה ב־Is או Are.');}},
+ {lvl:4,fn(){const s=_epick(ENG_SUBJ.filter(x=>!['I','You','It','The dogs'].includes(x.t)));const c=s.be==='is'?'Is':'Are';
+   return _eq(4,'שאלה',`___ ${_elc(s.t)} your friend${s.be==='are'?'s':''}?`,c,['Is','Are','Do','Has'].filter(x=>x!==c),'שאלה עם be מתחילה ב־Is או Are.');}},
  {lvl:5,fn(){const s=_epick(ENG_SUBJ);const c=(s.t==='I'||s.th)?'was':'were';
    return _eq(5,'was/were',`${s.t} ___ in the garden yesterday.`,c,['was','were','is','are'].filter(x=>x!==c),'העבר של be: was ליחיד, were לרבים.');}},
- {lvl:6,fn(){const s=_epick(ENG_SUBJ);const c=s.th?'has':'have';const good=`${s.t} ${c} two brothers.`;
+ {lvl:6,fn(){const s=_esubj();const c=s.th?'has':'have';const good=`${s.t} ${c} two brothers.`;
    const wrongs=[`${s.t} is two brothers.`,`${s.t} are two brothers.`,`${s.t} ${s.be} have two brothers.`].filter(x=>x!==good);
    return _eq(6,'משפט נכון','Which sentence is correct?',good,wrongs,'לציון שיש למישהו משהו — have/has, לא be.');}},
- {lvl:7,fn(){const s=_epick(ENG_SUBJ);const good=`${s.t} ${s.be} my best friend.`;
-   const wrongs=[`${s.t} has my best friend.`,`${s.t} have my best friend.`,`${s.t} is have my best friend.`].filter(x=>x!==good);
+ {lvl:7,fn(){const s=_epick(ENG_SUBJ.filter(x=>!['I','We','It','The dogs'].includes(x.t)));const fr=(s.be==='are'&&s.t!=='You')?'my best friends':'my best friend';const good=`${s.t} ${s.be} ${fr}.`;
+   const wrongs=[`${s.t} has ${fr}.`,`${s.t} have ${fr}.`,`${s.t} is have ${fr}.`].filter(x=>x!==good);
    return _eq(7,'be או have','Which sentence is correct?',good,wrongs,'כשמתארים מי מישהו — משתמשים ב־be.');}},
  {lvl:8,fn(){const s=_epick(ENG_SUBJ.filter(x=>x.t!=='I'));const c=s.be==='is'?'Was':'Were';
-   return _eq(8,'שאלת עבר',`___ ${s.t.toLowerCase()} at school yesterday?`,c,['Was','Were','Is','Did'].filter(x=>x!==c),'שאלה על העבר עם be: Was או Were.');}}
+   return _eq(8,'שאלת עבר',`___ ${_elc(s.t)} at school yesterday?`,c,['Was','Were','Is','Did'].filter(x=>x!==c),'שאלה על העבר עם be: Was או Were.');}}
 ];
 const ENG_ORDER_BASE=[
  ['Tom','plays','football','in the park'],['The cat','drinks','milk','in the kitchen'],
@@ -1553,10 +1573,10 @@ const ENG_ORDER_SCRAMBLES=[
  b=>`${b[2]} ${b[0]} ${b[1]} ${b[3]}.`, b=>`${b[1]} ${b[0]} ${b[2]} ${b[3]}.`
 ];
 function _ordQ(lvl,withTime){
-  const b=_epick(ENG_ORDER_BASE);const suf=_epick(['',' every day',' on Sundays',' after school',' in the morning',' at night']);
+  const b=_epick(ENG_ORDER_BASE);const suf=withTime?'':_epick(['',' every day',' on Sundays']);const lc0=w=>/^(Tom|Dana|Mom)\b/.test(w)?w:w.charAt(0).toLowerCase()+w.slice(1);
   let good=b.join(' ')+suf+'.';let wrongs=_esamp(ENG_ORDER_SCRAMBLES,3).map(f=>f(b).replace(/\.$/,suf+'.'));
-  if(withTime){good='Every morning, '+b[0].charAt(0).toLowerCase()+b[0].slice(1)+' '+b[1]+' '+b[2]+' '+b[3]+suf+'.';
-    wrongs=_esamp(ENG_ORDER_SCRAMBLES,3).map(f=>('Every morning, '+f(b).charAt(0).toLowerCase()+f(b).slice(1)).replace(/\.$/,suf+'.'));}
+  if(withTime){good='On Sundays, '+lc0(b[0])+' '+b[1]+' '+b[2]+' '+b[3]+'.';
+    wrongs=_esamp(ENG_ORDER_SCRAMBLES,3).map(f=>'On Sundays, '+lc0(f(b)));}
   return _eq(lvl,'סדר משפט','Which sentence is correct?',good,wrongs,'סדר המילים הבסיסי: נושא + פועל + מושא + מקום.');
 }
 const ENG_G_ORDER=[
@@ -1584,7 +1604,7 @@ const ENG_G_SPELL=[
  {lvl:1,fn(){const w=_epick(ENG_SPELL_BANK);return _eq(1,'כתיב','בחרו את הכתיב הנכון של "'+w.he+'":',w.w,w.wrong,'הכתיב הנכון: '+w.w+'.');}},
  {lvl:3,fn(){const w=_epick(ENG_SPELL_BANK);return _eq(3,'כתיב','בחרו את הכתיב הנכון של "'+w.he+'":',w.w,w.wrong,'שימו לב לאותיות הכפולות ולסדר האותיות: '+w.w+'.');}},
  {lvl:5,fn(){const w=_epick(ENG_SPELL_BANK);return _eq(5,'כתיב','Which word is spelled correctly?',w.w,w.wrong,'הכתיב הנכון של '+w.he+': ‏'+w.w+'.');}},
- {lvl:7,fn(){const w=_epick(ENG_SPELL_BANK);return _eq(7,'כתיב במשפט',`I see a ___ in the picture. (${w.he})`,w.w,w.wrong,'גם בתוך משפט — הכתיב הנכון הוא '+w.w+'.');}},
+ {lvl:7,fn(){const NOUN=['friend','school','teacher','computer','animal','elephant','mountain','kitchen','woman','window','star','moon','house','flower','tree','bird','table','chair','dog','horse','umbrella','apple','orange','bicycle','garden','library'];const ok=ENG_SPELL_BANK.filter(x=>NOUN.includes(x.w));const w=_epick(ok.length?ok:ENG_SPELL_BANK);const art=/^[aeiou]/.test(w.w)?'an':'a';return _eq(7,'כתיב במשפט',`I see ${art} ___ in the picture. (${w.he})`,w.w,w.wrong,'גם בתוך משפט — הכתיב הנכון הוא '+w.w+'.');}},
  {lvl:8,fn(){const w=_epick(ENG_SPELL_BANK);return _eq(8,'כתיב מדויק','איך כותבים נכון "'+w.he+'" באנגלית? (שימו לב לכל אות)',w.w,w.wrong,'הכתיב המדויק: '+w.w+'.');}}
 ];
 function _spellAll(){const out=[];for(const L of [1,2,3,4,5,6,7,8]){const src=ENG_G_SPELL.reduce((acc,g)=>Math.abs(g.lvl-L)<Math.abs(acc.lvl-L)?g:acc,ENG_G_SPELL[0]);out.push({lvl:L,fn(){const q=src.fn();if(q)q.lvl=L;return q;}});}return out;}
@@ -3051,7 +3071,7 @@ function makeOptions(correct, wrongs){
     }
   }
   let k=2;
-  while(opts.length<4){ const f=correct+"’"; if(!seen.has(f+k)){opts.push(f+k);seen.add(f+k);} k++; }
+  while(opts.length<2){ const f=correct+"’"; if(!seen.has(f+k)){opts.push(f+k);seen.add(f+k);} k++; } // AUDIT 24.11: fewer options instead of a fake copy of the answer
   for(let i=opts.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[opts[i],opts[j]]=[opts[j],opts[i]];}
   return opts;
 }
@@ -3978,7 +3998,7 @@ function pbFrac(cfg,kind){
   if(scen==='spin'){
     text=`גלגל מזל מחולק ל־${t} חלקים שווים, ו־${f} מהם צבועים בכחול. מסובבים את הגלגל. מה ההסתברות שהוא ייעצר על כחול?`;
   }else{
-    text=kind==='word'?`בשקית יש ${t} כדורים: ${f} אדומים והשאר כחולים. מוציאים כדור אחד בלי להסתכל. מה ההסתברות שייצא כדור אדום?`
+    text=kind==='word'?`בשקית יש ${t} כדורים: ${f===1?'כדור אדום אחד':f+' אדומים'} והשאר כחולים. מוציאים כדור אחד בלי להסתכל. מה ההסתברות שייצא כדור אדום?`
       :`בשקית ${t} כדורים, ${f} מהם אדומים. מה ההסתברות להוציא כדור אדום?`;
   }
   const candRaw=[`${f+1} מתוך ${t}`,`${f} מתוך ${t+1}`,`${t-f} מתוך ${t}`,`${f+1} מתוך ${t+1}`,`${Math.max(1,f-1)} מתוך ${t}`];
@@ -3998,7 +4018,7 @@ function pbCmp(cfg,kind){
   else ans=f1/t1>f2/t2?'שקית א׳':'שקית ב׳';
   const text=kind==='word'
     ?`בשקית א׳ יש ${t1} כדורים, ${f1} מהם אדומים. בשקית ב׳ יש ${t2} כדורים, ${f2} מהם אדומים. מאיזו שקית ההסתברות להוציא כדור אדום גדולה יותר?`
-    :`שקית א׳: ${f1} אדומים מתוך ${t1}. שקית ב׳: ${f2} אדומים מתוך ${t2}. באיזו שקית ההסתברות להוציא אדום גדולה יותר?`;
+    :`שקית א׳: ${f1===1?'אדום אחד':f1+' אדומים'} מתוך ${t1}. שקית ב׳: ${f2===1?'אדום אחד':f2+' אדומים'} מתוך ${t2}. באיזו שקית ההסתברות להוציא אדום גדולה יותר?`;
   const allOpts=['שקית א׳','שקית ב׳','ההסתברות שווה בשתי השקיות'];
   return{text,options:makeOptions(ans,uniqWrongs(ans,allOpts)),answer:ans,
     explain:`שקית א׳: ${f1} מתוך ${t1}. שקית ב׳: ${f2} מתוך ${t2}. ${equal?'שני השברים שווים אחרי צמצום — ההסתברות שווה.':(f1/t1>f2/t2?'החלק האדום בשקית א׳ גדול יותר.':'החלק האדום בשקית ב׳ גדול יותר.')}`};
