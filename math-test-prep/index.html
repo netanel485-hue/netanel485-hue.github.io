@@ -647,7 +647,7 @@ function fixMath(s){
   s = s.replace(/<span class="frac"><span class="top">(-?[\d,]+)<\/span><span class="bot">(-?[\d,]+)<\/span><\/span>|<span class="m">([^<]*)<\/span>/g,
     (mm, tn, td, mv)=>{ atoms.push(mm); vals.push(td!==undefined && td!==null ? parseFloat(tn.replace(/,/g,""))/parseFloat(td.replace(/,/g,"")) : parseFloat(String(mv).replace(/,/g,""))); return "\u0001"+(atoms.length-1)+"\u0002"; });
   const tags=[];
-  s = s.replace(/<[^>]+>/g, mm=>{ tags.push(mm); return "\u0003"+(tags.length-1)+"\u0004"; });
+  s = s.replace(/<[^>]+>/g, mm=>{ tags.push(mm); return "\u0003"+String.fromCharCode(0xE000+tags.length-1)+"\u0004"; }); /* AUDIT 24.11: index as a non-digit so math wrapping cannot break it */
   const RUN = /[\d\u0001(\[_\u25a1\u2212-][\d\s+\-\u2212\u00d7\u00f7=<>\.,\/)\]\u00b2\u00b3%\u00b0_\u25a1\u0001\u0002\(\[]*/g;
   s = s.replace(RUN, run=>{
     let a=0, b=run.length;
@@ -665,7 +665,7 @@ function fixMath(s){
     return run.slice(0,a) + '<span class="m">' + core + '</span>' + run.slice(b);
   });
   s = s.replace(/\u0001(\d+)\u0002/g, (m,i)=>atoms[+i]);
-  s = s.replace(/\u0003(\d+)\u0004/g, (m,i)=>tags[+i]);
+  s = s.replace(/\u0003([\uE000-\uF8FF])\u0004/g, (m,ch)=>tags[ch.charCodeAt(0)-0xE000]);
   return s;
 }
 
@@ -3536,7 +3536,7 @@ renderHome();
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(function(){});}catch(e){}
 </script>
 <script type="module" src="../shared/cloud.js"></script>
-<style id="g6-no-tts-css">.ttsbtn,.tts-toggle,.qtools .ttsbtn{display:none!important}</style>
+<style id="g6-no-tts-css">.ttsbtn,.tts-toggle,.qtools .ttsbtn,.tts-replay{display:none!important}</style>
 <script id="g6-no-tts">/* כיתה ו׳: בלי הקראה בקול (22/11/2026). להסרה: למחוק את שני הבלוקים. */
 try{ttsOn=false;}catch(e){}
 speakAuto=function(){};speakText=function(){};

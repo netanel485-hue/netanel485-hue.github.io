@@ -687,7 +687,7 @@ function fixMath(s){
   s = s.replace(/<span class="frac"><span class="top">(-?[\d,]+)<\/span><span class="bot">(-?[\d,]+)<\/span><\/span>|<span class="m">([^<]*)<\/span>/g,
     (mm, tn, td, mv)=>{ atoms.push(mm); vals.push(td!==undefined && td!==null ? parseFloat(tn.replace(/,/g,""))/parseFloat(td.replace(/,/g,"")) : parseFloat(String(mv).replace(/,/g,""))); return "\u0001"+(atoms.length-1)+"\u0002"; });
   const tags=[];
-  s = s.replace(/<[^>]+>/g, mm=>{ tags.push(mm); return "\u0003"+(tags.length-1)+"\u0004"; });
+  s = s.replace(/<[^>]+>/g, mm=>{ tags.push(mm); return "\u0003"+String.fromCharCode(0xE000+tags.length-1)+"\u0004"; }); /* AUDIT 24.11: index as a non-digit so math wrapping cannot break it */
   const RUN = /[\d\u0001(\[_\u25a1\u2212-][\d\s+\-\u2212\u00d7\u00f7=<>\.,\/)\]\u00b2\u00b3%\u00b0_\u25a1\u0001\u0002\(\[]*/g;
   s = s.replace(RUN, run=>{
     let a=0, b=run.length;
@@ -705,7 +705,7 @@ function fixMath(s){
     return run.slice(0,a) + '<span class="m">' + core + '</span>' + run.slice(b);
   });
   s = s.replace(/\u0001(\d+)\u0002/g, (m,i)=>atoms[+i]);
-  s = s.replace(/\u0003(\d+)\u0004/g, (m,i)=>tags[+i]);
+  s = s.replace(/\u0003([\uE000-\uF8FF])\u0004/g, (m,ch)=>tags[ch.charCodeAt(0)-0xE000]);
   return s;
 }
 
@@ -1443,7 +1443,7 @@ function genF7(L){
       steps:[`כופלים את המונה בשלם: ${a} × ${N} = ${a*N}`,`המכנה נשאר ${b}: ${a*N}/${b}`,`מצמצמים ו/או הופכים למספר מעורב: ${mt(r)}`]});
   }
   if(kind===4){
-    const d=pick([2,3,4,5,6]), n=rnd(1,d-1), w=rnd(1,5), N=rnd(2,L===3?9:6), r=rmul(mixR(w,n,d),R(N));
+    const d=pick([2,3,4,5,6]), n=cop(d), w=rnd(1,5), N=rnd(2,L===3?9:6), r=rmul(mixR(w,n,d),R(N));
     return FQ({L, r, wrongStr:[], text:`חשבו: ${mixedHTML(w,n,d)} × ${N}`,
       why:`הופכים לשבר מדומה: ${w} ${n}/${d} = ${w*d+n}/${d}. כופלים: ${w*d+n} × ${N} = ${(w*d+n)*N}, כלומר ${(w*d+n)*N}/${d} = ${mt(r)}.`, hint:"קודם הופכים את המספר המעורב לשבר מדומה, ורק אז כופלים.",
       steps:[`הופכים לשבר מדומה: ${w} ${n}/${d} = ${w*d+n}/${d}`,`כופלים את המונה: ${w*d+n} × ${N} = ${(w*d+n)*N}`,`התוצאה: ${(w*d+n)*N}/${d} = ${mt(r)}`]});
@@ -1474,8 +1474,8 @@ function genF8(L){
       steps:[`כופלים: ${a} × ${c} = ${a*c} במונה, ${b} × ${d} = ${b*d} במכנה`,`${a*c}/${b*d}`,`מצמצמים עד הסוף: ${mt(r)}`]});
   }
   if(kind===3){ /* mixed × fraction / mixed × mixed */
-    const d1=pick([2,3,4,5]), d2=pick([2,3,4,5,6]); const w1=rnd(1,4), n1=rnd(1,d1-1);
-    const two = rnd(0,1)===1; const w2=rnd(1,3), n2=rnd(1,d2-1);
+    const d1=pick([2,3,4,5]), d2=pick([2,3,4,5,6]); const w1=rnd(1,4), n1=cop(d1);
+    const two = rnd(0,1)===1; const w2=rnd(1,3), n2=cop(d2);
     const A=mixR(w1,n1,d1), B= two? mixR(w2,n2,d2) : R(n2,d2); const r=rmul(A,B);
     const txt = `${mixedHTML(w1,n1,d1)} × ${two? mixedHTML(w2,n2,d2) : fr(n2,d2)}`;
     const sA=`${w1} ${n1}/${d1} = ${A.n===w1*d1+n1? A.n+"/"+A.d : (w1*d1+n1)+"/"+d1}`;
@@ -1484,7 +1484,7 @@ function genF8(L){
       steps:[`הופכים לשברים מדומים: ${w1} ${n1}/${d1} = ${w1*d1+n1}/${d1}${two? `, ${w2} ${n2}/${d2} = ${w2*d2+n2}/${d2}`:""}`,`כופלים מונה במונה ומכנה במכנה (ומצמצמים)`,`התוצאה: ${mt(r)}`]});
   }
   /* kind 5 — whole × mixed with simplification */
-  const d=pick([2,4,5,6]), w=rnd(1,6), n=rnd(1,d-1), c=pick([2,3,4,5,6,8]), e=pick([3,4,5,6,8]); const a=rnd(1,e-1);
+  const d=pick([2,4,5,6]), w=rnd(1,6), n=cop(d), c=pick([2,3,4,5,6,8]), e=pick([3,4,5,6,8]); const a=cop(e);
   const r=rmul(mixR(w,n,d),R(a,e));
   return FQ({L, r, wrongStr:[], text:`חשבו: ${mixedHTML(w,n,d)} × ${fr(a,e)}`,
     why:`${w} ${n}/${d} = ${w*d+n}/${d}. כופלים: ${(w*d+n)*a}/${d*e} = ${mt(r)}.`, hint:"הופכים למדומה, כופלים, מצמצמים.",
@@ -1519,7 +1519,7 @@ function genF9(L){
       why:`חילוק בשבר = כפל בהופכי: ${N} × ${b}/${a} = ${N*b}/${a} = ${mt(r)}.`, hint:"חילוק בשבר? הופכים את השבר (המכנה למעלה) והופכים את הפעולה לכפל.",
       steps:[`הופכים את הפעולה לכפל, ואת השבר להופכי: ${N} × ${b}/${a}`,`כופלים: ${N*b}/${a}`,`מצמצמים: ${mt(r)}`]});
   }
-  const d=pick([2,3,4,5]), n=rnd(1,d-1), w=rnd(1,5), N=pick([2,3,4,5]); const A=mixR(w,n,d), r=rmul(A,R(1,N));
+  const d=pick([2,3,4,5]), n=cop(d), w=rnd(1,5), N=pick([2,3,4,5]); const A=mixR(w,n,d), r=rmul(A,R(1,N));
   return FQ({L, r, wrongStr:[], text:`חשבו: ${mixedHTML(w,n,d)} ÷ ${N}`,
     why:`${w} ${n}/${d} = ${w*d+n}/${d}. ÷ ${N} = × 1/${N}: ${w*d+n}/${d*N} = ${mt(r)}.`, hint:"קודם הופכים את המספר המעורב לשבר מדומה, ואז מחלקים.",
     steps:[`הופכים למדומה: ${w} ${n}/${d} = ${w*d+n}/${d}`,`מחלקים ב־${N} = כופלים ב־1/${N}: ${w*d+n}/${d*N}`,`מצמצמים: ${mt(r)}`]});
@@ -1542,12 +1542,12 @@ function genF10(L){
       steps:[`הופכים את הפעולה לכפל, ואת המחלק להופכי: ${a}/${b} × ${d}/${c}`,`כופלים: ${a*d}/${b*c}`,`מצמצמים: ${mt(r)}`]});
   }
   if(kind===3){
-    let w,n,d,c,e,r,t=0; do{ d=pick([2,3,4,5,6]); w=rnd(1,4); n=rnd(1,d-1); e=pick([2,3,4,5,6,8]); c=rnd(1,e-1); r=rdiv(mixR(w,n,d),R(c,e)); t++; }while(t<300 && !(r.n<=40&&r.d<=20));
+    let w,n,d,c,e,r,t=0; do{ d=pick([2,3,4,5,6]); w=rnd(1,4); n=cop(d); e=pick([2,3,4,5,6,8]); c=cop(e); r=rdiv(mixR(w,n,d),R(c,e)); t++; }while(t<300 && !(r.n<=40&&r.d<=20));
     return FQ({L, r, wrongStr:[], text:`חשבו: ${mixedHTML(w,n,d)} ÷ ${fr(c,e)}`,
       why:`${w} ${n}/${d} = ${w*d+n}/${d}. הופכים את המחלק וכופלים: ${w*d+n}/${d} × ${e}/${c} = ${(w*d+n)*e}/${d*c} = ${mt(r)}.`, hint:"קודם הופכים מעורב למדומה, אחר כך הופכים את המחלק וכופלים.",
       steps:[`הופכים למדומה: ${w} ${n}/${d} = ${w*d+n}/${d}`,`הופכים לכפל בהופכי: ${w*d+n}/${d} × ${e}/${c}`,`כופלים ומצמצמים: ${mt(r)}`]});
   }
-  let w1,n1,d1,w2,n2,d2,r,t=0; do{ d1=pick([2,3,4,5]); d2=pick([2,3,4,5]); w1=rnd(1,5); n1=rnd(1,d1-1); w2=rnd(1,3); n2=rnd(1,d2-1); r=rdiv(mixR(w1,n1,d1),mixR(w2,n2,d2)); t++; }while(t<300 && !(r.n<=40&&r.d<=24));
+  let w1,n1,d1,w2,n2,d2,r,t=0; do{ d1=pick([2,3,4,5]); d2=pick([2,3,4,5]); w1=rnd(1,5); n1=cop(d1); w2=rnd(1,3); n2=cop(d2); r=rdiv(mixR(w1,n1,d1),mixR(w2,n2,d2)); t++; }while(t<300 && !(r.n<=40&&r.d<=24));
   return FQ({L, r, wrongStr:[], text:`חשבו: ${mixedHTML(w1,n1,d1)} ÷ ${mixedHTML(w2,n2,d2)}`,
     why:`${w1} ${n1}/${d1} = ${w1*d1+n1}/${d1} ו־${w2} ${n2}/${d2} = ${w2*d2+n2}/${d2}. ${w1*d1+n1}/${d1} × ${d2}/${w2*d2+n2} = ${mt(r)}.`, hint:"שני המספרים המעורבים הופכים למדומים. אחר כך: הופכים את המחלק וכופלים.",
     steps:[`הופכים שניהם למדומים: ${w1*d1+n1}/${d1} ו־${w2*d2+n2}/${d2}`,`הופכים לכפל בהופכי: ${w1*d1+n1}/${d1} × ${d2}/${w2*d2+n2}`,`כופלים ומצמצמים: ${mt(r)}`]});
@@ -1616,11 +1616,11 @@ const WP1=[
      steps:[`כמה השתמשו בסך הכול: ${rt(f.A)} + ${rt(f.B)} = ${rt(f.s)}`,`הקופסה כולה היא 1 = ${f.s.d}/${f.s.d}`,`נשאר: 1 − ${rt(f.s)} = ${rt(r)}`]}); },
  function(L){ const [d1,d2]=dpair(L); let A,B,a,b,t=0; do{ a=rnd(2,d1-1+ (d1===2?1:0)); b=rnd(1,d2-1); A=R(a,d1); B=R(b,d2); t++; }while(t<200 && !(rcmp(A,B)>0 && a<d1));
    if(!(rcmp(A,B)>0)) return WP1[0](L); const r=rsub(A,B);
-   return FQ({L, r, wrongStr:[fr(Math.max(1,a-b),Math.abs(d1-d2)||d1)], text:`במיכל הדלק של מכונית היו ${fr(a,d1)} מהמיכל לפני הנסיעה. בסוף הנסיעה נשארו ${fr(b,d2)} מהמיכל. איזה חלק מהמיכל נצרך בנסיעה?`,
+   return FQ({L, r, wrongStr:[fr(Math.max(1,a-b),Math.abs(d1-d2)||d1)], text:`${a===d1?'מיכל הדלק של מכונית היה מלא לפני הנסיעה.':`במיכל הדלק של מכונית היו ${fr(a,d1)} מהמיכל לפני הנסיעה.`} בסוף הנסיעה נשארו ${fr(b,d2)} מהמיכל. איזה חלק מהמיכל נצרך בנסיעה?`,
      why:`הדלק שנצרך = מה שהיה − מה שנשאר: ${a}/${d1} − ${b}/${d2}. `+addSteps({n:a,d:d1},{n:b,d:d2},true).join(". ")+".", hint:"כמה נצרך = מה שהיה פחות מה שנשאר.",
      steps:[`כותבים תרגיל: ${a}/${d1} − ${b}/${d2}`].concat(addSteps({n:a,d:d1},{n:b,d:d2},true))}); },
  function(L){ const [a,b]=mixPair(L,false); const r=radd(mixR(a.w,a.n,a.d),mixR(b.w,b.n,b.d));
-   return FQ({L, r, text:`אימון כדורגל התחיל בחימום של ${MIXP(a)} שעות, ואחריו תרגול שערים של ${MIXP(b)} שעות. כמה שעות נמשך האימון בסך הכול?`,
+   return FQ({L, r, text:`באימון הכדורגל רצו השחקנים בחימום ${MIXP(a)} ק״מ, ובסוף האימון עוד ${MIXP(b)} ק״מ. כמה ק״מ רצו בסך הכול?`,
      why:`״בסך הכול״ — מחברים: ${a.w} ${a.n}/${a.d} + ${b.w} ${b.n}/${b.d}. `+mixSteps(a,b,false).join(". ")+".", hint:"בסך הכול = חיבור. שלמים עם שלמים ושברים עם שברים.",
      steps:["כותבים תרגיל: "+a.w+" "+a.n+"/"+a.d+" + "+b.w+" "+b.n+"/"+b.d].concat(mixSteps(a,b,false))}); },
  function(L){ const [a,b]=mixPair(L,true); const r=rsub(mixR(a.w,a.n,a.d),mixR(b.w,b.n,b.d));
@@ -1635,7 +1635,7 @@ const WP1=[
 function genW1(L){ return pick(WP1)(L); }
 const WP2=[
  function(L){ const b=pick([2,3,4,5,6,8,10]), a=cop(b), k=rnd(2,L===1?5:8), N=b*k;
-   return FQ({L, r:R(a*k), text:`בכיתה ${N} תלמידים. ${fr(a,b)} מהם משחקים כדורגל בהפסקה. כמה תלמידים משחקים כדורגל בהפסקה?`,
+   return FQ({L, r:R(a*k), text:`${N<15?'בחוג':N<=40?'בכיתה':'בשכבה'} ${N} תלמידים. ${fr(a,b)} מהם משחקים כדורגל בהפסקה. כמה תלמידים משחקים כדורגל בהפסקה?`,
      why:`״${a}/${b} מ־${N}״: ${N} ÷ ${b} = ${k}, ו־${k} × ${a} = ${a*k}.`, hint:"חלק מכמות: מחלקים במכנה, כופלים במונה.",
      steps:[`חלק מכמות — כותבים: ${a}/${b} × ${N}`,`${N} ÷ ${b} = ${k}`,`${k} × ${a} = ${a*k}. תשובה: ${a*k} תלמידים`]}); },
  function(L){ const b=pick([3,4,5,6,8,10]), a=cop(b), k=rnd(2,L===1?5:8), N=b*k;
@@ -1671,7 +1671,7 @@ function genW2(L){ return pick(WP2)(L); }
 const NOTE3 = `<br><span class="wpnote">✍️ כתבו קודם את התרגיל במחברת — ורק אחר כך את התשובה כאן.</span>`;
 const WP3=[
  function(L){ const f=wf(L,true), r=rsub(R(1),f.s);
-   return FQ({L, open:true, r, text:`קורא קרא ביום ראשון ${fr(f.n1,f.d1)} מהספר, וביום שני עוד ${fr(f.n2,f.d2)} מהספר. איזה חלק מהספר נשאר לו לקרוא?`, note:NOTE3,
+   return FQ({L, open:true, r, text:`תלמיד קרא ביום ראשון ${fr(f.n1,f.d1)} מהספר, וביום שני עוד ${fr(f.n2,f.d2)} מהספר. איזה חלק מהספר נשאר לו לקרוא?`, note:NOTE3,
      why:`קודם מחברים מה שקרא: ${rt(f.A)} + ${rt(f.B)} = ${rt(f.s)}. אחר כך: 1 − ${rt(f.s)} = ${rt(r)}.`, hint:"שני שלבים: (1) כמה קרא בסך הכול? (2) כמה נשאר — מחסרים מ־1.",
      steps:[`שלב 1: ${rt(f.A)} + ${rt(f.B)} = ${rt(f.s)}`,`שלב 2: 1 − ${rt(f.s)} = ${rt(r)}`,`תשובה: ${rt(r)} מהספר`]}); },
  function(L){ const b=pick([2,3,4,5]), d=pick([2,3,4,5]), a=cop(b), c=cop(d), k=rnd(1,3), N=b*d*k;
@@ -1679,7 +1679,7 @@ const WP3=[
    return FQ({L, open:true, r:R(left), text:`בחנות ספורט היו ${N} כדורי כדורגל. בבוקר נמכרו ${fr(a,b)} מהם, ואחר הצהריים נמכרו ${fr(c,d)} מהכדורים שנשארו. כמה כדורים נשארו בסוף היום?`, note:NOTE3,
      why:`בבוקר נמכרו ${N*a/b}, נשארו ${after1}. אחר הצהריים נמכרו ${sold2}, ולכן נשארו ${after1} − ${sold2} = ${left}.`, hint:"שימו לב: השבר השני הוא חלק ממה שנשאר — לא מכל הכדורים.",
      steps:[`בבוקר: ${a}/${b} מ־${N} = ${N*a/b} נמכרו, נשארו ${N} − ${N*a/b} = ${after1}`,`אחר הצהריים: ${c}/${d} מ־${after1} = ${sold2} נמכרו`,`נשארו: ${after1} − ${sold2} = ${left} כדורים`]}); },
- function(L){ const d=pick([2,3,4,5]), n=rnd(1,d-1), w=rnd(1,4), V=pick([40,50,60,80,90,100,120]); const A=mixR(w,n,d), r=rmul(A,R(V));
+ function(L){ const d=pick([2,3,4,5]), n=cop(d), w=rnd(1,4), V=pick([40,50,60,80,90,100,120]); const A=mixR(w,n,d), r=rmul(A,R(V));
    return FQ({L, open:true, r, text:`מכונית נסעה ${mixedHTML(w,n,d)} שעות במהירות קבועה של ${V} ק״מ לשעה. כמה ק״מ היא נסעה?`, note:NOTE3,
      why:`מרחק = זמן × מהירות: ${w} ${n}/${d} × ${V} = ${(w*d+n)*V}/${d} = ${mt(r)}.`, hint:"מרחק = מהירות × זמן. הופכים את המספר המעורב לשבר מדומה.",
      steps:[`כותבים תרגיל: ${w} ${n}/${d} × ${V}`,`הופכים למדומה: ${w*d+n}/${d} × ${V} = ${(w*d+n)*V}/${d}`,`תשובה: ${mt(r)} ק״מ`]}); },
@@ -1691,7 +1691,7 @@ const WP3=[
    return FQ({L, open:true, r, text:`נשארו ${fr(a,b)} מהשוקולד. מחלקים אותם שווה בשווה בין ${k} חברים. איזה חלק מהשוקולד כולו מקבל כל חבר?`, note:NOTE3,
      why:`חילוק בשלם: ${a}/${b} ÷ ${k} = ${a}/${b} × 1/${k} = ${a}/${b*k}${r.n!==a?` = ${rt(r)}`:""}.`, hint:"שווה בשווה = חילוק. חילוק שבר בשלם — המכנה מוכפל.",
      steps:[`כותבים תרגיל: ${a}/${b} ÷ ${k}`,`כפל בהופכי: ${a}/${b} × 1/${k} = ${a}/${b*k}`,`מצמצמים: ${rt(r)}`]}); },
- function(L){ const d=pick([2,3,4]), n=rnd(1,d-1), w=rnd(2,6), b=pick([2,3,4,5]), a=cop(b); const A=mixR(w,n,d), add=rmul(A,R(a,b)), r=radd(A,add);
+ function(L){ const d=pick([2,3,4]), n=cop(d), w=rnd(2,6), b=pick([2,3,4,5]), a=cop(b); const A=mixR(w,n,d), add=rmul(A,R(a,b)), r=radd(A,add);
    return FQ({L, open:true, r, text:`מגדל לגו היה בגובה ${mixedHTML(w,n,d)} ס״מ. הוסיפו עליו קומה בגובה ${fr(a,b)} מגובהו המקורי. מהו הגובה החדש של המגדל?`, note:NOTE3,
      why:`הקומה החדשה: ${a}/${b} × ${rt(A)} = ${rt(add)}. הגובה החדש: ${rt(A)} + ${rt(add)} = ${rt(r)} = ${mt(r)} ס״מ.`, hint:"שני שלבים: (1) כמה גובהה הקומה החדשה? (חלק מהגובה — כפל) (2) מחברים לגובה המקורי.",
      steps:[`שלב 1 — גובה הקומה: ${a}/${b} × ${rt(A)} = ${rt(add)}`,`שלב 2 — מחברים: ${rt(A)} + ${rt(add)} = ${rt(r)}`,`תשובה: ${mt(r)} ס״מ`]}); }
@@ -2710,7 +2710,11 @@ function printTest(direct){
 }
 genInit();
 </script>
-<style id="g6-no-tts-css">.ttsbtn,.tts-toggle,.qtools .ttsbtn{display:none!important}</style>
+<style id="g6-no-tts-css">.ttsbtn,.tts-toggle,.qtools .ttsbtn,.tts-replay{display:none!important}</style>
+<style id="open-layout-css">/* AUDIT 24.11: typed answer right under the question, also on wide screens. להסרה: למחוק את הבלוק. */
+.opts:has(.openbox){display:block!important}
+.opts:has(.openbox) .openbox{margin:12px auto}
+.opts:has(.openbox) .openok{display:block;margin:8px auto 0}</style>
 <script id="g6-no-tts">/* כיתה ו׳: בלי הקראה בקול (22/11/2026). להסרה: למחוק את שני הבלוקים. */
 try{ttsOn=false;}catch(e){}
 speakAuto=function(){};speakText=function(){};
