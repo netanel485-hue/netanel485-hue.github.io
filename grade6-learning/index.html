@@ -723,6 +723,17 @@ body[data-subj="history"] :is(#hubQuiz,#hubEnd){--c:var(--fun-history)}
 body:not(.kc-opts) #mathWrap .tabs:has(#modeTopics){display:none!important}
 #kcMore{display:block;margin:14px auto 4px;min-height:44px;padding:8px 14px;border:0;background:none;font:inherit;font-size:14px;font-weight:700;color:var(--ink-soft);text-decoration:underline;cursor:pointer}
 </style>
+<style id="hub-sheets-css">
+/* HUB-SHEETS — קישור למחולל דפי חזרה להדפסה (26/11/2026). להסרה: למחוק את הבלוק הזה ואת a#hubSheets. */
+#hubSheets{display:flex;align-items:center;gap:12px;margin:12px 0 4px;min-height:64px;padding:10px 16px;border-radius:20px;text-decoration:none;
+  background:var(--card-focus,#fff);color:var(--ink,#1E4634);border:2px dashed #C9B8F5;transition:transform .08s ease}
+#hubSheets:active{transform:translateY(2px)}
+#hubSheets:focus-visible{outline:3px solid #7C3AED;outline-offset:2px}
+#hubSheets .hx-em{font-size:28px;line-height:1}
+#hubSheets b{display:block;font-size:17px;font-weight:800}
+#hubSheets small{display:block;font-size:13.5px;font-weight:600;color:var(--ink-soft,#4F6B5D);margin-top:2px}
+#hubSheets .hx-ar{margin-right:auto;font-size:22px;font-weight:900;color:#6D28D9}
+</style>
 </head>
 <body>
 <header id="hubTopbar"><div class="h-top-inner">
@@ -743,6 +754,7 @@ body:not(.kc-opts) #mathWrap .tabs:has(#modeTopics){display:none!important}
   <div id="hubHomeTop"></div>
   <div id="hubGrid" class="h-grid"></div>
 <a id="hubFrac" href="../math-test-fractions/"><span class="hx-em" aria-hidden="true">🍕</span><span><b>מבחן בשברים — הכנה למבחן הקרוב</b><small>חיבור, חיסור, כפל וחילוק · שאלות סגורות, מילוליות ופתוחות</small></span><i class="hx-ar" aria-hidden="true">←</i></a>
+<a id="hubSheets" href="../review-sheets/"><span class="hx-em" aria-hidden="true">🖨️</span><span><b>מחולל דפי חזרה בשברים — להדפסה</b><small>להורים · 8 עמודים חדשים בכל לחיצה, עם דף תשובות</small></span><i class="hx-ar" aria-hidden="true">←</i></a>
 <a id="hubExtra" href="../math-test-prep/"><span class="hx-em" aria-hidden="true">📐</span><span><b>חזרה למבחן הקודם</b><small>גאומטריה וחישוב · מסלול השבוע</small></span><i class="hx-ar" aria-hidden="true">←</i></a>
   <div class="h-rowbtns" style="justify-content:center;margin-top:16px">
     <button class="btn-ghost" onclick="hubShare()">📤 שיתוף האתר</button>
